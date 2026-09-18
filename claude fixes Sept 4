@@ -1,0 +1,226 @@
+ChatSched — Claude fixes, Sept 4
+=================================
+
+Scope: this file documents ONLY the fourth task resolved from
+"Claude To fix 1..txt" — item 8, HIGH: Business profile data leakage
+through shared-request/conversation policies. Items 5, 6, and 7 were
+already completed and documented separately ("claude fixes Sept 1"
+through "Sept 3"). Items 9 onward were left untouched.
+
+------------------------------------------------------------------------
+1. What the finding said, verified against the real source
+------------------------------------------------------------------------
+Two policies on public.profiles, both confirmed by reading the actual
+SQL:
+
+  profiles_select_via_shared_request (schema_phase6.sql) — lets a
+  publisher read a business's profiles row if that publisher has a
+  requests row from that business.
+
+  profiles_select_via_shared_conversation (schema_phase29_conversations.sql)
+  — the same idea, via the conversations table instead.
+
+Both policies' own comments say the intent is just showing a business
+name to the publisher counterpart. But RLS is a row filter, not a column
+filter — once either exists() check passes, the ENTIRE profiles row
+becomes readable: phone, industry, city, province, website, and every
+verification flag added since (schema_phase7.sql). This is real and
+independent of what any frontend file renders: a publisher who shares
+one active request with a business can fetch that business's phone
+number today via a direct PostgREST call, regardless of the fact that no
+UI currently displays it.
+
+------------------------------------------------------------------------
+2. Why this one needed a different shape than item 6's fix
+------------------------------------------------------------------------
+Item 6 (public publisher columns) could simply narrow the base table's
+RLS policy, because nothing legitimate depended on a non-owner reading a
+full publisher row through the base table — public browsing moved
+entirely to a view. This one is different: AuthContext.tsx loads the
+LOGGED-IN USER'S OWN full profile via `select("*")` at session start,
+used throughout the app (a business editing their own phone/city/
+province in Dashboard.tsx, among other things). profiles_select_own_or_
+admin has to keep granting full columns for a user's own row — that
+policy is untouched here. Postgres column-level GRANTs can't be
+conditioned on which RLS policy branch matched, so there's no way to
+keep "authenticated" able to read their own phone via the base table
+while blocking them from reading someone else's phone via that same
+grant. The only way to give a genuinely narrower result for the
+cross-party case specifically is a separate, column-restricted view with
+its own row logic — exactly what the finding's own required fix asks
+for ("explicit safe views/RPCs for cross-party profile access").
+
+I looked for an avatar field to include, per the finding's suggested
+return shape (display name / business name / avatar / permitted public
+metadata) — confirmed there is no avatar concept on profiles at all in
+this codebase; schema_phase34_social_connect.sql's avatar_url column is
+on a completely different table, for publishers' connected social
+accounts. So the safe surface here is exactly full_name and
+company_name, which I confirmed by reading every real consumer of the
+two policies before writing the view — none of them ever read anything
+else off the embedded business object.
+
+------------------------------------------------------------------------
+3. What I found while tracing every real caller, beyond the finding
+------------------------------------------------------------------------
+Traced every place `business:profiles(...)` was embedded via PostgREST,
+not just the two files the finding names (those are the schema files
+that DEFINE the vulnerable policies; the actual exposure lives wherever
+the frontend uses them):
+
+  Genuinely relies on profiles_select_via_shared_request (fixed):
+    - src/components/PublisherDashboardView.tsx (`requests` query)
+    - src/lib/campaignWorkspace.ts (`requests` query)
+
+  Genuinely relies on profiles_select_via_shared_conversation (fixed):
+    - src/pages/Messages.tsx (`conversations` query)
+
+  Looked like it should also be affected, but isn't — confirmed by
+  checking whether any policy anywhere covers a channel_requests ->
+  profiles relationship (it doesn't, none does):
+    - src/components/PublisherDashboardView.tsx and
+      src/lib/campaignWorkspace.ts each ALSO embed `business:profiles(...)`
+      on a `channel_requests` query. No RLS policy in this entire schema
+      has ever covered that relationship, so that embed was already
+      silently returning null before this fix — a pre-existing,
+      unrelated gap, not something this change makes worse. Left alone;
+      see "what's not done" below.
+
+  Also looked related, but a different (already-public) relationship
+  entirely:
+    - src/pages/MediaKit.tsx and src/pages/PublisherProfile.tsx each
+      embed `business:profiles(full_name, company_name)` on a `reviews`
+      query, to attribute a public review to the business that wrote it.
+      reviews_select_public already makes those rows fully public
+      regardless of either policy this fix touches, and neither policy's
+      exists() check ever matches a reviews row in the first place — so
+      this embed's behavior (already inconsistent: it only resolves a
+      name today when the viewer happens to coincidentally also share an
+      unrelated request/conversation with that same business) is
+      completely unaffected by removing the two policies. Left alone —
+      see "what's not done" below.
+
+------------------------------------------------------------------------
+4. Files changed
+------------------------------------------------------------------------
+- supabase/schema_phase84_safe_cross_party_profile_access.sql (NEW)
+    - Drops profiles_select_via_shared_request and
+      profiles_select_via_shared_conversation entirely.
+      profiles_select_own_or_admin is untouched.
+    - Creates public.business_contact_public — a view exposing only
+      (id, full_name, company_name), owned by postgres (same
+      security_invoker = false / SQL-editor-ownership technique as
+      publishers_public in schema_phase82), with its own WHERE clause
+      that's a direct column-restricted translation of the two dropped
+      policies' exists() checks, plus an own-row branch (so a business
+      viewing themselves through this view, e.g. their own entry in
+      their own Messages.tsx conversation list, still resolves) and an
+      admin branch for completeness.
+    - Grants SELECT on the view to authenticated (not anon — no
+      legitimate logged-out use case for this).
+
+- src/lib/businessContact.ts (NEW)
+    - fetchBusinessContacts(businessIds): batches a lookup against
+      business_contact_public for a set of business ids and returns a
+      Map for client-side merging. This is a separate top-level query,
+      not a PostgREST embed, deliberately: embedding resolves through a
+      real foreign-key constraint, and business_contact_public has no FK
+      from requests/conversations pointing at it (only the base profiles
+      table does) — relying on a view being embeddable under a different
+      name isn't something to bet a security fix on across PostgREST
+      versions without being able to test it live.
+
+- src/components/PublisherDashboardView.tsx (EDITED)
+    - The `requests` query's `business:profiles(...)` embed is removed;
+      the row is fetched plain, then fetchBusinessContacts() resolves
+      the safe contact info and it's merged onto each row client-side.
+      The `channel_requests` query above it is untouched (see "what's
+      not done").
+
+- src/lib/campaignWorkspace.ts (EDITED)
+    - Same treatment for its `requests` query. Its `channel_requests`
+      query is untouched for the same reason.
+
+- src/pages/Messages.tsx (EDITED)
+    - Same treatment for its `conversations` query (the only query in
+      this file that touched profiles).
+
+- src/lib/types.ts (EDITED)
+    - PublisherRequest.business narrowed from
+      Pick<Profile, "full_name" | "company_name" | "phone" |
+      "email_verified" | "phone_verified" | "business_verified"> to just
+      Pick<Profile, "full_name" | "company_name"> — confirmed by grep
+      that nothing anywhere in the codebase ever read the other four
+      fields off this type. Conversation.business already only declared
+      full_name/company_name, so no change was needed there.
+
+- supabase/tests/business_contact_public_test.sql (NEW)
+    - pgTAP test file, 11 assertions. Proves: a publisher sharing a
+      request sees the business via business_contact_public with no
+      phone key at all in the view; that same publisher gets zero rows
+      querying the base profiles table directly (the row itself is
+      gone, not just column-restricted); an unrelated publisher sees
+      nothing via either surface; a publisher sharing a conversation
+      instead of a request gets the same safe access; the business's own
+      session and an admin session both still read phone straight off
+      the base table; and an anonymous session sees nothing on either
+      surface.
+
+- supabase/tests/README.md (EDITED)
+    - Added a section documenting how to run
+      business_contact_public_test.sql and what it covers.
+
+- Claude To fix 1..txt (EDITED)
+    - Marked item 8 as [COMPLETED], pointing at the new migration, the
+      new test file, and this document.
+
+------------------------------------------------------------------------
+5. Why this shape, not a different one
+------------------------------------------------------------------------
+- A view with its own auth.uid()-aware WHERE clause, not narrower RLS
+  policies on profiles itself, because (as explained above) Postgres
+  column-level GRANTs can't be conditioned on which policy branch
+  matched a row, and AuthContext.tsx's own-profile load genuinely needs
+  every column on the own-row path. A view was the only mechanism that
+  could give a real answer to "full columns for your own row, name-only
+  for someone else's" at once.
+- A separate top-level query (via a small shared helper) rather than
+  trying to make the view embeddable under the `profiles` relationship
+  name, because PostgREST's embedding depends on a real foreign-key
+  constraint that a view doesn't carry, and betting a security fix on an
+  embedding trick working across PostgREST versions — with no live
+  instance in this sandbox to verify it — is exactly the kind of
+  "assumed rather than confirmed" mistake this whole exercise is meant
+  to avoid.
+- Left the channel_requests-embed and reviews-embed cases alone rather
+  than "fixing" them into working, because neither ever depended on the
+  two policies this task removes — extending business_contact_public's
+  reach to cover them would be adding a new capability under the banner
+  of a security fix, not restoring something the fix broke.
+
+------------------------------------------------------------------------
+6. What's NOT done, and why that's a deliberate boundary here
+------------------------------------------------------------------------
+- The channel_requests -> profiles relationship (PublisherDashboardView.tsx
+  and campaignWorkspace.ts each still embed `business:profiles(...)` on
+  their channel_requests query, both no-ops today) is a real, separate
+  gap — a publisher using a "request"-flow channel currently can't see
+  the business's name on that dashboard at all. Worth fixing, but it's a
+  missing feature, not a security hole, and the finding's own
+  affected-files list names only schema_phase6.sql and
+  schema_phase29_conversations.sql.
+- The reviews -> profiles relationship (MediaKit.tsx, PublisherProfile.tsx)
+  is similarly a real, separate inconsistency (a public review's author
+  business name resolves inconsistently depending on the viewer's
+  unrelated relationships) — also worth a dedicated look, also out of
+  this task's named scope.
+- Items 9 through 13 in "Claude To fix 1..txt" are untouched.
+- Claude to fix 2.txt and Claude to fix 3.txt were not opened.
+- Same standing honesty note this project's test suite has carried since
+  it began: no Postgres, Docker, or Supabase CLI in this sandbox, so
+  neither the new migration nor the new test file has been run against a
+  real database. Everything here was reviewed by hand, line-by-line,
+  against the actual current policy definitions and every real caller in
+  the codebase — not written from memory of what they "should" say. The
+  first real `supabase test db` run is the actual test of whether this
+  is correct.

@@ -1,0 +1,6 @@
+{
+  "name": "ChatSched",
+  "description": "Connect with trusted South African publishers and creators across social media, influencer, website, podcast, and radio channels to book sponsored posts.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,51 @@
+-- ChatSched — Phase 92 schema additions
+-- Run once in the Supabase SQL editor, AFTER schema_phase91_public_form_rate_limiting.sql.
+-- (Renumbered from this project's original phase 83 — that slot was
+-- independently taken by schema_phase83_secure_payout_rpcs.sql in the
+-- lineage this got merged into. Content unchanged from the original.)
+--
+-- Fixes: "claude to fix 2" item 23 — new channels can be exposed while
+-- empty.
+--
+-- ── The problem ──────────────────────────────────────────────────────────
+-- schema_phase78_launch_seven_channels.sql flipped sports, events,
+-- community, transport, informal-retail, associations, and restaurants
+-- from active=false to active=true "together" — its own comment already
+-- said plainly that none of the 7 had a real publisher or listing at the
+-- time, and that this was an explicit instruction overriding the original
+-- per-channel plan (each shipped inactive in schema_phase74–77 until real
+-- verified owners existed to list). That comment is honest about the
+-- schema-level effect, but the column it's changing (channels.active)
+-- isn't actually what gates visibility in the app today — see below —
+-- so the practical fix lives in src/lib/featureFlags.ts, not here. This
+-- migration exists so the *database* stops asserting something false
+-- too: right now `select * from channels where active` claims these 7
+-- are live, which isn't true and isn't just a UI concern — anyone
+-- querying this table directly (an admin, a future feature, a support
+-- investigation) gets the wrong answer.
+--
+-- ── Why this alone doesn't fix the actual bug ───────────────────────────
+-- channels.active has no consumer anywhere in this codebase beyond the
+-- INSERT/UPDATE statements that set it (checked: no RLS policy, no
+-- application query, filters on it). The real gate the frontend uses is
+-- src/lib/featureFlags.ts's isChannelEnabled() — a Vite env var with a
+-- DEFAULT_ON list, entirely separate from this column. That's the actual
+-- fix for what businesses/publishers see (src/lib/featureFlags.ts, this
+-- same task): removing these 7 slugs from DEFAULT_ON is what makes
+-- ChannelHub.tsx show their existing "Coming soon" badge, makes
+-- ChannelPage.tsx show the existing ComingSoonDetail instead of a live
+-- booking flow, and makes getEnabledChannels() (Browse.tsx's filter
+-- chips, BudgetCalculator.tsx, Transparency.tsx, CaseStudies.tsx) stop
+-- listing them as available today. This migration is the accompanying
+-- database-accuracy fix, not a substitute for that one.
+--
+-- ── Why this is safe ─────────────────────────────────────────────────────
+-- verification_required is untouched, matching schema_phase78's own note
+-- that it's a separate question. Nothing references active in a way that
+-- would change publisher applications, admin tooling, or existing
+-- channel_requests/opportunities for these channels — there aren't any
+-- real ones yet, which is the entire premise of this fix.
+
+update public.channels
+set active = false
+where slug in ('sports', 'events', 'community', 'transport', 'informal-retail', 'associations', 'restaurants');

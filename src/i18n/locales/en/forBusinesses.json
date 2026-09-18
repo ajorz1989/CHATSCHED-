@@ -1,0 +1,130 @@
+{
+  "seo": {
+    "title": "For Businesses · ChatSched",
+    "description": "Book real South African publishers and creators directly — no ad account, no bidding, no algorithm. Escrow-held payment, tracked campaigns, proof once it's live."
+  },
+  "hero": {
+    "badge": "For Businesses",
+    "title": "Reach the audience your customers already trust.",
+    "subtitle": "ChatSched connects South African small businesses directly with the pages, creators and channels their customers already follow — no algorithm, no ad account, no bidding war. You pay only once a real person has confirmed your placement is live.",
+    "ctaBrowse": "Browse Publishers →",
+    "ctaRegister": "Register as a Business →"
+  },
+  "howItWorks": {
+    "badge": "How it works",
+    "title": "From request to live, in four steps.",
+    "steps": [
+      {
+        "title": "Find your channel",
+        "body": "Browse social pages, influencers, websites, podcasts and radio slots by category, province and audience to find the match for your customers."
+      },
+      {
+        "title": "Submit a request",
+        "body": "Pick a publisher and send a feature request describing what you want to promote — no account manager, no ad account, no minimum spend."
+      },
+      {
+        "title": "Pay into escrow",
+        "body": "Once the publisher approves, pay securely by card, instant EFT, or manual EFT. Funds sit with ChatSched — not the publisher — until the placement is actually live."
+      },
+      {
+        "title": "Get proof, not promises",
+        "body": "Watch your request move from submitted to live, with proof once it's done. No guessing where your budget went."
+      }
+    ],
+    "escrowLink": "See the full escrow & payout timeline →"
+  },
+  "channels": {
+    "badge": "Five channels, one flow",
+    "title": "Book wherever your customers already are.",
+    "subtitle": "Every channel below runs through the same simple request-and-approve flow — pick the ones that fit."
+  },
+  "tools": {
+    "badge": "In your dashboard",
+    "title": "A full marketing suite, not just a directory.",
+    "subtitle": "Once you're registered, these tools live right in your dashboard alongside your requests.",
+    "items": [
+      {
+        "name": "Match",
+        "body": "Describe your business in plain language — get a ranked list of publishers who actually fit."
+      },
+      {
+        "name": "Reach Planner",
+        "body": "A guided wizard that turns a goal into a plan and a schedule."
+      },
+      {
+        "name": "AI Content Studio",
+        "body": "One photo or brief becomes nine ready-to-post formats — Facebook, Instagram, TikTok, WhatsApp, and more."
+      },
+      {
+        "name": "Campaign Builder",
+        "body": "Turn a plain-language brief into a scored campaign, with suggestions to improve it."
+      },
+      {
+        "name": "Campaign Tracker",
+        "body": "Real tracking links for every campaign — clicks, visits, leads and conversions, not estimates."
+      },
+      {
+        "name": "ROI Calculator",
+        "body": "Put in a budget, get an estimated reach and return before you commit."
+      }
+    ]
+  },
+  "comparison": {
+    "badge": "Why not just run social ads?",
+    "title": "A direct marketplace, not an ad platform.",
+    "colUs": "ChatSched",
+    "colThem": "Social Ad Platforms",
+    "rows": [
+      {
+        "us": "You know exactly who's featuring you and why they fit your customers.",
+        "them": "Your ad competes for attention inside an anonymous feed algorithm."
+      },
+      {
+        "us": "Publishers are manually checked before they're ever listed.",
+        "them": "Reach numbers are self-reported and can't always be verified."
+      },
+      {
+        "us": "Payment sits in escrow until the placement is confirmed live.",
+        "them": "You pay upfront and hope the algorithm delivers."
+      },
+      {
+        "us": "Local, trusted channels your customers already follow.",
+        "them": "Increasingly blocked by ad blockers and ignored by banner blindness."
+      }
+    ]
+  },
+  "escrowStrip": {
+    "title": "🔒 Your payment stays in the ChatSched payment flow",
+    "body": "After a campaign is approved, the payment stays in the ChatSched payment flow until the applicable live-placement condition is met. The publisher payout then follows the published payout timeline."
+  },
+  "faq": {
+    "title": "Common questions",
+    "items": [
+      {
+        "q": "Do I need a contract or subscription?",
+        "a": "No contract either way. Browsing is always free — sending a request needs a one-time ChatSched Business activation (R399, once-off — no renewal, ever), which also unlocks managed advertising and includes a R199 launch credit."
+      },
+      {
+        "q": "How do I know a publisher is legitimate?",
+        "a": "Every publisher and creator is reviewed by hand before they're listed, and carries a visible trust score and level built from real campaign history — not just a follower count."
+      },
+      {
+        "q": "When does money actually move?",
+        "a": "Once a publisher approves your request, you have {{days}} days to pay into escrow. It's held there — not released to the publisher — until the placement is confirmed live."
+      },
+      {
+        "q": "What if a publisher doesn't respond?",
+        "a": "Publishers have {{days}} days to approve or decline a request. If it's not actioned in that window, it closes automatically — you're never left waiting indefinitely."
+      },
+      {
+        "q": "Which channels can I book?",
+        "a": "Social media pages and groups, influencers, websites, podcasts and radio slots — all through the same request-and-approve flow."
+      }
+    ]
+  },
+  "finalCta": {
+    "title": "Ready to get in front of a real audience?",
+    "ctaBrowse": "Browse Publishers →",
+    "ctaRegister": "Register as a Business →"
+  }
+}

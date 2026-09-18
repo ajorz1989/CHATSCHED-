@@ -1,0 +1,195 @@
+﻿14. HIGH — Payout worker is explicitly a placeholder
+Affected file
+* workers/payoutWorker.js
+* src/pages/AdminPayouts.tsx
+Finding
+The worker itself explicitly says it is not production-ready.
+It uses:
+* illustrative PayFast endpoint
+* placeholder signing/authentication
+* assumed payout API
+* placeholder recipient structure
+The admin UI also says this is an experimental pipeline and that the actual payout system remains manual.
+Assessment
+Do not activate this worker in production.
+Required fix
+Either:
+Option A: remove/deactivate the experimental pipeline until a real supported payout API/partner is implemented.
+Option B: fully implement and independently validate the payout provider integration.
+Until then, retain one clearly documented, secure payout process and reconcile it manually.
+Severity: HIGH
+________________
+
+
+15. HIGH — Delete-account flow can erase historical business/financial records
+Affected file
+* supabase/functions/delete-account/index.ts
+Finding
+The current deletion cascade can remove records such as:
+* payments
+* reviews
+* messages
+* conversations
+* disputes
+* notifications
+* campaigns
+* requests
+The function comments themselves identify the concern that financial records may need retention for tax/accounting reasons.
+Required fix
+Before launch, decide and document a retention policy.
+For completed financial/campaign records, consider:
+* anonymization
+* retention of transaction IDs/amounts
+* removal of personal contact data
+rather than unrestricted cascade deletion.
+This requires product/legal/accounting review in addition to code changes.
+Severity: HIGH
+________________
+
+
+16. MEDIUM/HIGH — Public forms need server-side abuse controls
+Affected areas
+* contact_messages
+* advertise_inquiries
+* public agency leads
+* partner application
+* careers
+* work with us
+* community Q&A
+Finding
+Client-side honeypots are helpful but are not a security boundary.
+A bot can call the backend directly.
+Required fix
+Route sensitive public form writes through protected Edge Functions or add server-side rate limiting/WAF/Turnstile where justified.
+At minimum implement per-IP/per-email/per-route throttling.
+Severity: MEDIUM/HIGH
+________________
+
+
+17. MEDIUM — Error-message migration is incomplete
+Affected files/examples
+* src/pages/AdminLeads.tsx
+* src/pages/PublisherDashboardView.tsx
+* src/pages/AdminPayouts.tsx
+* src/pages/CommunityQa.tsx
+* src/pages/ChannelRequestForm.tsx
+* src/pages/Partners.tsx
+* src/pages/WorkWithUs.tsx
+* src/pages/PartnersApply.tsx
+* src/pages/Advertise.tsx
+* src/pages/Contact.tsx
+* src/pages/Messages.tsx
+* src/pages/AdminCompliance.tsx
+* src/pages/Careers.tsx
+* src/pages/Dashboard.tsx
+* src/pages/BusinessPublisherRelationships.tsx
+Finding
+The centralized formatter exists, but many handlers still use raw error.message.
+Required fix
+Centralize user-facing error mapping and keep raw technical errors in Sentry/console logs only.
+Severity: MEDIUM
+________________
+
+
+18. MEDIUM — Currency migration is not complete in current source
+Finding
+The codebase has src/lib/currency.ts, but current source still contains direct Rand display patterns in multiple places.
+Examples include:
+* AdminPayouts.tsx
+* EarningsDashboard.tsx
+* BusinessOpportunities.tsx
+* OpportunityFeed.tsx
+* AdminAnalytics.tsx
+* CreateRequestForClient.tsx
+* CampaignWorkspace.tsx
+Required fix
+Complete migration to the shared currency formatter.
+Add a static check/lint rule that flags direct currency interpolation outside the currency utility/tests.
+Severity: MEDIUM
+________________
+
+
+19. MEDIUM — Shared Button migration is incomplete
+Finding
+src/components/Button.tsx exists, but many raw <button> elements remain in the codebase.
+This is not a critical functional problem, but it contributes to inconsistent behavior/style and makes global accessibility/variant changes harder.
+Required fix
+Migrate actual brand/action buttons to the shared component while keeping semantic button types and special controls intact.
+Severity: LOW/MEDIUM
+________________
+
+
+20. MEDIUM — Subscription feature-flag/gating architecture needs cleanup
+Finding
+There are multiple layers of subscription gating/feature-flag concepts, and the current code/docs do not line up cleanly.
+Given the latest intended model is now once-off activation rather than recurring subscription, this abstraction will need another commercial-model pass anyway.
+Required fix
+Before changing billing, define one canonical entitlements model:
+activation status → entitlement → feature access
+Do not let UI pages independently infer subscription state.
+Severity: MEDIUM
+________________
+
+
+21. MEDIUM — Grace-period logic should be configuration, not buried product policy
+The current subscription system contains a fixed grace-period decision (historically 7 days).
+Because the commercial model is being reconsidered, make billing/lapse policy configurable and document the decision.
+Severity: MEDIUM
+________________
+
+
+22. MEDIUM — Platform security headers need deployment hardening
+The codebase does not clearly provide a complete production header policy at the hosting layer.
+Add and test:
+* Content-Security-Policy
+* Strict-Transport-Security on HTTPS
+* X-Content-Type-Options
+* Referrer-Policy
+* Permissions-Policy as appropriate
+* frame-ancestors / clickjacking protection
+Ensure CSP accommodates Supabase, PayFast, OAuth and analytics correctly.
+Severity: MEDIUM
+________________
+
+
+23. MEDIUM — New channels can be exposed while empty
+Affected files
+* src/lib/featureFlags.ts
+* supabase/schema_phase78_launch_seven_channels.sql
+The seven expansion channels were switched to active together despite the source comments explicitly noting that they had no real inventory when launched.
+That creates an empty-marketplace problem.
+Required fix
+Until real supply exists:
+* hide the channel from default discovery, OR
+* present as “Coming Soon — Applications Open”
+Do not imply a channel is commercially live when there are no real listings.
+Severity: MEDIUM/HIGH UX
+________________
+
+
+24. MEDIUM — Channel verification requirement is not enough by itself
+channels.verification_required is now backed by the publisher_verification_checks table and admin checklist infrastructure.
+However, the verification policy needs to vary by inventory type.
+Examples:
+* Sports → sponsorship authority
+* Event → organiser authority
+* Property → owner/manager authority
+* Transport → operator authority
+* Community → administrator authority
+Before monetising these channels heavily, confirm the business logic enforces the relevant checklist.
+Severity: MEDIUM/HIGH
+________________
+
+
+25. LOW/MEDIUM — SEO sitemap is still fixed-route only
+Affected files
+* public/sitemap.xml
+* src/components/Seo.tsx
+The current sitemap lists fixed public routes and intentionally excludes dynamic publisher/channel pages.
+That is acceptable while inventory is small, but once real publisher inventory grows, dynamic sitemap generation becomes important.
+Likewise, Vite SPA social previews remain limited without SSR/prerendering.
+Recommendation
+Later introduce:
+* dynamic sitemap
+* prerender/SSR/edge rendering for high-value public profiles
+Severity: LOW now, MEDIUM at scale

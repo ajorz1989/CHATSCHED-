@@ -1,0 +1,317 @@
+{
+  "seo": {
+    "title": "ChatSched — Managed Advertising, Marketplace & Publisher Network",
+    "description": "South African advertising for small businesses: build a managed campaign with ChatSched or browse local advertising placements and send requests through the platform."
+  },
+  "hero": {
+    "badge": "LOCAL ADVERTISING, WITHOUT THE HEADACHE",
+    "title1": "Reach local customers.",
+    "title2": "Without the ad-platform headache.",
+    "subtitle": "Tell us your goal and budget — we build the campaign. Or browse real local pages, podcasts and radio slots yourself. Either way, it is tracked from request to proof.",
+    "ctaBuildCampaign": "Build My Campaign →",
+    "ctaBrowseMarketplace": "Browse Advertising →",
+    "noAccount": "No ad account needed",
+    "secure": "Payment held securely until your placement is confirmed live",
+    "tracked": "One tracked workflow"
+  },
+  "metrics": {
+    "ariaLabel": "ChatSched network proof",
+    "businesses": "Businesses on ChatSched",
+    "paidOut": "Paid out to publishers",
+    "provinces": "South African provinces"
+  },
+  "audienceSplit": {
+    "heading": "Whichever side you're on, it's built for you.",
+    "businessBadge": "Business / Advertiser",
+    "businessTitle": "Reach the audience your customers already trust",
+    "businessBody": "R399, once-off, gets you the marketplace, managed campaigns and a R199 launch credit included. No renewal, ever. Browsing is free — sending a request needs that one-time activation.",
+    "businessCta": "Build My Campaign →",
+    "publisherBadge": "Publisher / Creator",
+    "publisherTitle": "Monetise the audience you've already built",
+    "publisherBody": "R199, once-off, for full Publisher Network access — approve requests, set your own price, opportunities, earnings and analytics. No renewal, ever. Listing a basic profile stays free.",
+    "publisherCta": "Join as a Publisher →"
+  },
+  "layers": {
+    "badge": "THE CHATSCHED MODEL",
+    "title": "However you want to advertise, there is a way in.",
+    "subtitle": "Three layers. One platform behind them. Your campaign stays in the same tracked workflow from request to proof.",
+    "agencyBadge": "AGENCY",
+    "agencyTitle": "Managed Advertising",
+    "agencyBody": "Tell us the goal, audience and budget. We plan and manage the campaign with you.",
+    "agencyCta": "Build My Campaign",
+    "marketplaceBadge": "MARKETPLACE",
+    "marketplaceTitle": "Self-Service Advertising",
+    "marketplaceBody": "Discover real inventory, compare options and choose where you want to advertise.",
+    "marketplaceCta": "Browse Advertising",
+    "networkBadge": "NETWORK",
+    "networkTitle": "Publisher Network",
+    "networkBody": "Already have an audience? Turn your page, site, podcast, radio inventory or other opportunity into advertising supply.",
+    "networkCta": "Join as a Publisher"
+  },
+  "featured": {
+    "badge": "On the board",
+    "title": "Some of the pages already on the board.",
+    "subtitle": "A handful of the pages and groups already live on ChatSched — more join every week.",
+    "emptyTitle": "No publishers yet",
+    "emptyDescription": "Add the first one from the admin panel to fill this in.",
+    "viewAll": "Browse all publishers →"
+  },
+  "channelsSection": {
+    "badge": "Live advertising channels",
+    "title": "Choose the way your customers already pay attention.",
+    "subtitle": "Start with live channels. More inventory types appear as real supply is verified and opened."
+  },
+  "valueProp": {
+    "badge": "Why not just run social ads?",
+    "title1": "Zero ad spend wasted on algorithms.",
+    "title2": "100% aimed at people who already trust the page.",
+    "body": "Social ad platforms bid your budget against a black box and hope the right person scrolls past at the right second. ChatSched puts you directly in front of an audience a real local creator already built — no auction, no algorithm, no guessing."
+  },
+  "howItWorks": {
+    "badge": "How it works",
+    "title": "Whichever side you're on, it's the same simple flow.",
+    "cta": "See the full picture →",
+    "scene1Chip": "Discover",
+    "scene1Title": "Find a placement, or list your inventory",
+    "scene1BrowseLabel": "Browse",
+    "scene2Chip": "Request",
+    "scene2Title": "Send a request, or review one",
+    "scene2Status": "Feature request submitted",
+    "scene2Pending": "Pending",
+    "scene3Chip": "Live",
+    "scene3Title": "Go live, then keep the proof",
+    "scene3Status": "Placement live — proof delivered",
+    "categories": [
+      "Social Media",
+      "Influencer",
+      "Podcast",
+      "Radio",
+      "Website"
+    ]
+  },
+  "payment": {
+    "badge": "How payment works",
+    "title": "A clear payment flow, from approval to live placement.",
+    "step1": "Business requests, creator approves — or it auto-closes after {{days}} days of no response.",
+    "step2": "Business pays through the ChatSched payment flow after the request is approved — payment is not released to the publisher before the agreed release condition.",
+    "step3": "Creator is paid out within {{hours}} hours of going live — {{share}}% to the creator, a flat {{commission}}% platform fee.",
+    "cta": "See the full payment timeline →"
+  },
+  "caseStudies": {
+    "badge": "Illustrative examples",
+    "title": "Not sure what a booking actually looks like? We walk through three.",
+    "cta": "See the walkthroughs →"
+  },
+  "heroMockup": {
+    "liveNow": "LIVE INVENTORY",
+    "marketplaceLabel": "Advertising placement",
+    "placementTitle": "Cape Town Local Audience",
+    "verified": "VERIFIED",
+    "price": "Starting price",
+    "status": "Status",
+    "ready": "READY",
+    "footer": "Choose the placement. ChatSched keeps the request, payment and proof together."
+  },
+  "quickStart": {
+    "badge": "Quick Start",
+    "title": "Pick a goal and a budget. We'll take it from there.",
+    "subtitle": "Jump straight into a pre-filled campaign brief — you can change anything before you submit.",
+    "goalLabel": "What's the goal?",
+    "budgetLabel": "What's the budget?",
+    "cta": "Start My Campaign →"
+  },
+  "toolsTeaser": {
+    "badge": "Layer 4 — Tools",
+    "title": "One platform. More ways to grow.",
+    "subtitle": "Find advertising. Run campaigns. Use practical business tools.",
+    "cta": "Explore ChatSched Tools →",
+    "emptyTitle": "Tools are on the way.",
+    "emptyDescription": "The first ChatSched Tools are being published — check back soon."
+  },
+  "featureChips": {
+    "local": {
+      "title": "Local",
+      "body": "Target by location, audience and channel."
+    },
+    "tracked": {
+      "title": "Tracked",
+      "body": "Keep requests, approvals and campaign proof in one place."
+    },
+    "transparent": {
+      "title": "Transparent",
+      "body": "See the placement, price and platform fee before you commit."
+    },
+    "noAdAccount": {
+      "title": "No ad account needed",
+      "body": "Do it yourself or let ChatSched build the campaign."
+    }
+  },
+  "twoWays": {
+    "badge": "Two ways to advertise",
+    "title": "One platform. Choose how much help you want.",
+    "subtitle": "Let ChatSched run the campaign for you, or choose your own advertising placements from the marketplace.",
+    "agencyBadge": "WE BUILD IT",
+    "agencyTitle": "Managed Advertising",
+    "agencyBody": "Tell us your goal, audience and budget. ChatSched turns the brief into a campaign plan and manages the booking workflow.",
+    "agencyCta": "Build My Campaign →",
+    "marketplaceBadge": "YOU CHOOSE",
+    "marketplaceTitle": "Browse Advertising",
+    "marketplaceBody": "Search real advertising inventory, compare placements and send your request through ChatSched.",
+    "marketplaceCta": "Browse Advertising →"
+  },
+  "comparison": {
+    "badge": "Why not just run social ads?",
+    "title": "No algorithm. No ad account. No bidding war.",
+    "subtitle": "Traditional ad platforms sell access to an auction. ChatSched lets you choose real advertising inventory and keeps the workflow in one place.",
+    "platforms": "",
+    "traditional": "Traditional ad platforms",
+    "chatsched": "ChatSched",
+    "closer": "Choose where your message appears — then keep the proof.",
+    "rows": {
+      "account": {
+        "label": "Ad account",
+        "traditional": "Set up and manage one",
+        "chatsched": "None needed"
+      },
+      "auction": {
+        "label": "Buying model",
+        "traditional": "Bid in an auction",
+        "chatsched": "Choose a placement"
+      },
+      "audience": {
+        "label": "Audience",
+        "traditional": "Algorithmic delivery",
+        "chatsched": "Known local audience"
+      },
+      "workflow": {
+        "label": "Workflow",
+        "traditional": "Multiple tools",
+        "chatsched": "One tracked workflow"
+      },
+      "proof": {
+        "label": "Proof",
+        "traditional": "Dashboard metrics",
+        "chatsched": "Placement proof"
+      }
+    }
+  },
+  "marketplace": {
+    "badge": "REAL MARKETPLACE INVENTORY",
+    "title": "Advertising inventory is already waiting.",
+    "subtitle": "Browse real publishers and placements, see the audience context, then make your request through ChatSched.",
+    "emptyTitle": "No public inventory yet",
+    "emptyDescription": "Verified publisher inventory will appear here as it is opened.",
+    "cta": "Browse All Advertising →"
+  },
+  "channels": {
+    "badge": "WHERE YOUR CUSTOMERS PAY ATTENTION",
+    "title": "One audience. Many ways to reach them.",
+    "subtitle": "Social pages, creators, websites, podcasts, radio and other local opportunities — with supply opened as it is verified."
+  },
+  "local": {
+    "badge": "LOCAL BY DESIGN",
+    "title": "Your customers are not “South Africa”. They are in a neighbourhood.",
+    "subtitle": "Use local context to find advertising opportunities around the places your customers actually live, work and spend time.",
+    "cta": "Find My Audience →",
+    "items": {
+      "township": {
+        "title": "Spaza Shops & Township Traders",
+        "body": "Reach community audiences through local publishers and advertising opportunities."
+      },
+      "transport": {
+        "title": "Minibus Taxi & Transport Media",
+        "body": "Put your message where local commuters already spend attention."
+      },
+      "associations": {
+        "title": "Local Associations & Networks",
+        "body": "Reach niche communities through trusted local organisations and publishers."
+      },
+      "suburbs": {
+        "title": "Right down to your neighbourhood",
+        "body": "Build a more local campaign around suburbs and specific audience locations."
+      }
+    }
+  },
+  "how": {
+    "badge": "FROM REQUEST TO PROOF",
+    "title": "From first message to proof of results — here is exactly what happens.",
+    "closer": "Money does not move until the work does.",
+    "cta": "See the full process →",
+    "steps": {
+      "1": {
+        "title": "Tell us your goal",
+        "body": "Choose the managed route or start browsing."
+      },
+      "2": {
+        "title": "Choose your audience",
+        "body": "Use location, category and channel context."
+      },
+      "3": {
+        "title": "Choose the placement",
+        "body": "Review the advertising opportunity and price."
+      },
+      "4": {
+        "title": "Confirm the campaign",
+        "body": "Requests, approvals and payment stay in ChatSched."
+      },
+      "5": {
+        "title": "Go live",
+        "body": "The publisher completes the agreed placement."
+      },
+      "6": {
+        "title": "Keep the proof",
+        "body": "Campaign completion and proof stay attached to the workflow."
+      }
+    }
+  },
+  "trust": {
+    "badge": "TRUST & PAYMENT",
+    "title": "Your money. Your campaign. Your proof.",
+    "subtitle": "ChatSched is designed to keep both sides inside one clear workflow.",
+    "payment": {
+      "title": "Secure payment",
+      "body": "Your payment is held securely by ChatSched — not released to the publisher — until your placement is confirmed live."
+    },
+    "verified": {
+      "title": "Verified participants",
+      "body": "Businesses and publishers use ChatSched verification and trust controls before campaigns move forward."
+    },
+    "tracked": {
+      "title": "One tracked workflow",
+      "body": "Requests, approvals, payment status and campaign proof stay connected in one place."
+    },
+    "cta": "Explore the Trust Centre →"
+  },
+  "tools": {
+    "badge": "PRACTICAL TOOLS",
+    "title": "More than a marketplace. Tools to help you advertise.",
+    "subtitle": "Find advertising, plan campaigns and use practical tools built around local business growth.",
+    "cta": "Explore ChatSched Tools →"
+  },
+  "pricing": {
+    "badge": "SIMPLE PRICING",
+    "title": "Start without another monthly subscription.",
+    "subtitle": "Business and publisher activation is once-off. No renewal. Booking fees are shown before you commit.",
+    "businessLabel": "Business activation",
+    "publisherLabel": "Publisher activation",
+    "onceOff": "Once-off. No renewal.",
+    "businessBody": "Access campaign building, managed advertising and the marketplace.",
+    "publisherBody": "Unlock your publisher profile and advertising network features.",
+    "businessCta": "Get Started →",
+    "publisherCta": "Join as a Publisher →",
+    "commission": "Completed bookings use one transparent {{commission}}% platform commission; {{share}}% goes to the publisher."
+  },
+  "publisherCta": {
+    "badge": "FOR PUBLISHERS & CREATORS",
+    "title": "You already built the audience. Now make it work for you.",
+    "subtitle": "Turn your social page, website, podcast, radio inventory or other advertising opportunity into revenue.",
+    "cta": "Join as a Publisher →"
+  },
+  "final": {
+    "title": "Ready to reach your customers?",
+    "subtitle": "Tell us what you are trying to achieve, or find your own advertising placement.",
+    "build": "Build My Campaign →",
+    "browse": "Browse Advertising →",
+    "closer": "No ad account. No bidding war. One tracked workflow."
+  }
+}

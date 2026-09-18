@@ -1,0 +1,193 @@
+ChatSched — Claude fixes, Sept 5
+=================================
+
+Scope: this file documents ONLY the fifth task resolved from
+"Claude To fix 1..txt" — item 9, HIGH: Business-to-publisher
+communication conflicts with the new agency model. Items 5, 6, 7, and 8
+were already completed and documented separately ("claude fixes Sept 1"
+through "Sept 4"). Items 10 onward were left untouched.
+
+------------------------------------------------------------------------
+1. What the finding said, and what I actually found when I checked it
+------------------------------------------------------------------------
+The finding names four affected files and says the current business
+model (Business -> ChatSched -> Publisher) conflicts with the codebase
+still supporting direct, unmediated 1:1 business<->publisher
+conversations, "opened by Contact Publisher" per schema_phase29's own
+comment.
+
+I read all four files before writing anything, and found the actual
+picture was more mixed than the finding's own affected-files list
+suggests:
+
+  Still a real, live problem:
+    conversations_insert_business (schema_phase29_conversations.sql)
+    lets ANY authenticated business open a brand-new conversations row
+    with ANY approved publisher, with no requirement that a campaign
+    request or booking exists at all. This is exactly the unmediated
+    "Business direct to Publisher" path the current model is meant to
+    prevent, and it's real: confirmed by reading the policy's own
+    `with check` clause directly.
+
+  Already fixed, not actually broken (confirmed by reading the current
+  code, not assumed from the finding's file list):
+    - src/pages/PublisherProfile.tsx has NO "Contact Publisher" CTA
+      anywhere, for either booking flow. It already says "Start Campaign
+      Request" everywhere, inserts into `requests` (never `conversations`),
+      and its non-request-flow branch already carries "ChatSched handles
+      the publisher relationship: briefing, scheduling, verification, and
+      escrow" copy with a "Managed" badge. I checked this file
+      exhaustively (grepped every "message"/"conversation" mention in it)
+      and found zero references to the messaging system at all. This
+      page needed no code change; it's only in this writeup because the
+      finding named it.
+    - There is no live UI link anywhere in this codebase pointing at
+      `/messages?publisher=...` (confirmed by grep across all of src/) —
+      the literal "Contact Publisher" entry point schema_phase29's header
+      comment describes has already been fully removed from the visible
+      UI. The capability was still reachable at the database/API level
+      regardless of any button existing for it, which is why closing it
+      only in the UI was never going to be a real fix on its own — see
+      below.
+    - 11 of the 12 channel definitions (src/channels/*) already use
+      `bookingFlow: "request"`, meaning channel_requests with no direct
+      messaging involved at all. Only the original social-media channel
+      still uses `bookingFlow: "directory"`, and even that one already
+      routes through the same "Start Campaign Request" -> `requests`
+      table flow as every other channel, with the same "ChatSched
+      manages this" framing in its own copy.
+
+This confirms the actual bug isn't "a visible Contact Publisher button
+somewhere" (already gone) — it's that the underlying `conversations`
+table's INSERT policy still allowed the thing the button used to trigger,
+reachable by anyone calling the Supabase API directly regardless of
+what's in the UI.
+
+------------------------------------------------------------------------
+2. A separate, mediated messaging system already exists and was not
+   touched
+------------------------------------------------------------------------
+While tracing this I found the codebase already has a SECOND, entirely
+separate messaging system: a `messages` table
+(schema_phase56_channel_messaging.sql) scoped to a specific
+`request_id`/`channel_request_id` — i.e., chat tied to an actual
+campaign/booking, surfaced via a `MessageThread` component inside
+PublisherDashboardView.tsx and CampaignWorkspace.tsx. This is the
+already-correct, campaign-scoped, mediated alternative to the free-
+standing `conversations` table this task retires. Nothing about this
+second system needed any change — it was never the problem, and I left
+it completely alone.
+
+------------------------------------------------------------------------
+3. Files changed
+------------------------------------------------------------------------
+- supabase/schema_phase85_retire_direct_messaging.sql (NEW)
+    - Drops conversations_insert_business.
+    - Creates conversations_insert_admin: `for insert with check
+      (public.is_admin() and auth.uid() = business_id)`. This keeps the
+      original policy's own `auth.uid() = business_id` requirement
+      exactly as it was (so even an admin can't set business_id to
+      someone else's real id — they can only open a new conversation
+      appearing as themselves), and simply requires is_admin() as an
+      additional condition. The net effect: only ChatSched (an admin
+      session) can open a brand-new conversations row now; an ordinary
+      business cannot. Existing conversations, and both
+      conversation_messages policies (which govern sending within an
+      already-open thread), are completely untouched — this closes the
+      door on new unmediated contact without retroactively touching
+      anything that already exists.
+
+- src/pages/Messages.tsx (EDITED)
+    - Removed the entire dead `/messages?publisher=` auto-create-
+      conversation block (the useEffect that called
+      findOrCreateConversation, plus its opening/openError state) — this
+      code was already unreachable via any UI link, and after the DB fix
+      it would only ever produce a permission-denied error for a
+      business, so removing it outright (matching the instruction to
+      "retire" this path) is cleaner than leaving dead, now-guaranteed-
+      to-fail code in place.
+    - Updated three pieces of copy that the DB fix made false: the page
+      intro ("Talk to publishers and businesses here" -> "Direct notes
+      from the ChatSched team..."), the empty-state description
+      ("Contact a publisher from their listing to start a conversation
+      here" -> pointing at the dashboard/campaign workspace instead,
+      where campaign-scoped messaging actually lives), and the "no
+      conversation selected" placeholder text. Left everything else
+      (loading an existing conversation, the message composer, realtime
+      updates) completely unchanged — none of it assumed a business
+      could create new threads.
+
+- src/lib/conversations.ts (DELETED)
+    - findOrCreateConversation() had exactly one caller
+      (Messages.tsx's now-removed block); confirmed via grep that
+      nothing else in the codebase imports this file before deleting it.
+      Its entire purpose was letting a business cold-start a conversation
+      with a publisher — precisely the capability this task retires, so
+      keeping an unused-but-working version of it around would be
+      exactly the kind of "still technically reachable" residual risk
+      this whole finding is about.
+
+- supabase/tests/retire_direct_messaging_test.sql (NEW)
+    - pgTAP test file, 5 assertions. Proves: an ordinary business can no
+      longer open a new conversation with a publisher it has no existing
+      thread with; that same business can still send a message in a
+      conversation that already existed before this fix (and so can the
+      publisher on that same thread) — confirming existing threads are
+      untouched; an admin can still open a brand-new conversation,
+      appearing as the business_id side themselves, keeping publisher-
+      ChatSched communication alive; and even an admin can't open one
+      with business_id set to a real business's id instead of their own.
+
+- supabase/tests/README.md (EDITED)
+    - Added a section documenting how to run
+      retire_direct_messaging_test.sql and what it covers.
+
+- Claude To fix 1..txt (EDITED)
+    - Marked item 9 as [COMPLETED], pointing at the new migration, the
+      new test file, and this document.
+
+------------------------------------------------------------------------
+4. Why this shape, not a different one
+------------------------------------------------------------------------
+- Tightened the INSERT policy rather than dropping the `conversations`/
+  `conversation_messages` tables outright, because the finding explicitly
+  says to "keep publisher <-> ChatSched communication" — the existing
+  design already supported an admin account being the business_id side
+  of a conversation (the original policy's own `role in ('business',
+  'admin')` check), so the mechanism for ChatSched-to-publisher contact
+  was already there; only the ordinary-business branch needed removing.
+- Left existing conversations and message-sending completely untouched
+  rather than also trying to lock/hide old threads, because the finding
+  asks to retire the pattern going forward (stop the bypass), not to
+  retroactively delete data — and I have no way to know from this
+  sandbox whether any real conversations exist in a live deployment or
+  what forcibly cutting off an active thread (support-related or
+  otherwise) would break. Closing the door on NEW unmediated contact is
+  the actual "bypass risk" named in the finding; anything beyond that is
+  a separate, more destructive decision I wasn't asked to make.
+- Did not modify PublisherProfile.tsx, because it already has nothing to
+  fix — confirmed by direct inspection, not assumed from the finding's
+  own file list. Listing it as "checked, found already correct" felt
+  more honest than silently skipping it or, worse, changing something
+  that didn't need changing just because the finding named the file.
+
+------------------------------------------------------------------------
+5. What's NOT done, and why that's a deliberate boundary here
+------------------------------------------------------------------------
+- Items 10 through 13 in "Claude To fix 1..txt" are untouched.
+- Claude to fix 2.txt and Claude to fix 3.txt were not opened.
+- I did not build any new "ChatSched reaches out to a publisher"
+  admin UI — conversations_insert_admin makes this possible at the
+  database level now, but no admin page currently calls it (nothing did
+  before this fix either, since the only prior caller was the business-
+  facing Messages.tsx flow that's now removed). That's a genuine gap if
+  ChatSched staff ever want to proactively message a publisher through
+  this system, but building that tool wasn't part of this finding.
+- Same standing honesty note this project's test suite has carried since
+  it began: no Postgres, Docker, or Supabase CLI in this sandbox, so
+  neither the new migration nor the new test file has been run against a
+  real database. Everything here was reviewed by hand, line-by-line,
+  against the actual current policy definitions and every real UI path
+  in the codebase — not written from memory of what they "should" say.
+  The first real `supabase test db` run is the actual test of whether
+  this is correct.

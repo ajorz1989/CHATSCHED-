@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Fallback only — the real, up-to-date sitemap is generated at build time
+  by scripts/generate-sitemap.mjs (npm's "postbuild" step, see
+  package.json) into dist/sitemap.xml, which also adds every live
+  approved publisher profile and channel page from the database. This
+  file is what ships only if that step never runs (e.g. the build
+  pipeline fails before reaching postbuild) — kept reasonably complete
+  and current by hand as a fallback, not authoritative. If you're editing
+  routes, update STATIC_ROUTES in that script; this file will drift from
+  it over time and that's an accepted trade-off for a fallback, not a bug
+  to keep chasing.
+
+  "claude to fix 2" item 25 — this list used to cover only 13 fixed
+  routes; audited against every <Route> in src/App.tsx and brought up to
+  the same 61 public, indexable static routes the generator script uses
+  (still none of the dynamic publisher/channel/article URLs, which need a
+  live database or the generator's source-file parsing to enumerate —
+  see that script for why this file alone can't include them).
+
+  Update the domain below if it ever changes — currently the real domain
+  (chatsched.com), matching robots.txt and the rest of the codebase.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://chatsched.com/</loc><priority>1.0</priority></url>
+  <url><loc>https://chatsched.com/browse</loc><priority>0.9</priority></url>
+  <url><loc>https://chatsched.com/pricing</loc><priority>0.8</priority></url>
+  <url><loc>https://chatsched.com/how-it-works</loc><priority>0.7</priority></url>
+  <url><loc>https://chatsched.com/how-payment-works</loc><priority>0.7</priority></url>
+  <url><loc>https://chatsched.com/for-businesses</loc><priority>0.7</priority></url>
+  <url><loc>https://chatsched.com/for-publishers</loc><priority>0.7</priority></url>
+  <url><loc>https://chatsched.com/advertise</loc><priority>0.7</priority></url>
+  <url><loc>https://chatsched.com/about</loc><priority>0.6</priority></url>
+  <url><loc>https://chatsched.com/categories</loc><priority>0.6</priority></url>
+  <url><loc>https://chatsched.com/suburbs</loc><priority>0.6</priority></url>
+  <url><loc>https://chatsched.com/channels</loc><priority>0.6</priority></url>
+  <url><loc>https://chatsched.com/network</loc><priority>0.6</priority></url>
+  <url><loc>https://chatsched.com/faq</loc><priority>0.6</priority></url>
+  <url><loc>https://chatsched.com/fees</loc><priority>0.6</priority></url>
+  <url><loc>https://chatsched.com/budget-calculator</loc><priority>0.6</priority></url>
+  <url><loc>https://chatsched.com/business-success</loc><priority>0.6</priority></url>
+  <url><loc>https://chatsched.com/publisher-success</loc><priority>0.6</priority></url>
+  <url><loc>https://chatsched.com/case-studies</loc><priority>0.6</priority></url>
+  <url><loc>https://chatsched.com/blog</loc><priority>0.6</priority></url>
+  <url><loc>https://chatsched.com/contact</loc><priority>0.5</priority></url>
+  <url><loc>https://chatsched.com/audience-finder</loc><priority>0.5</priority></url>
+  <url><loc>https://chatsched.com/reach-checker</loc><priority>0.5</priority></url>
+  <url><loc>https://chatsched.com/earnings-estimator</loc><priority>0.5</priority></url>
+  <url><loc>https://chatsched.com/channel-quiz</loc><priority>0.5</priority></url>
+  <url><loc>https://chatsched.com/compare</loc><priority>0.5</priority></url>
+  <url><loc>https://chatsched.com/map</loc><priority>0.5</priority></url>
+  <url><loc>https://chatsched.com/fees/calculator</loc><priority>0.5</priority></url>
+  <url><loc>https://chatsched.com/mission</loc><priority>0.5</priority></url>
+  <url><loc>https://chatsched.com/transparency</loc><priority>0.5</priority></url>
+  <url><loc>https://chatsched.com/trust</loc><priority>0.5</priority></url>
+  <url><loc>https://chatsched.com/work-with-us</loc><priority>0.5</priority></url>
+  <url><loc>https://chatsched.com/partners</loc><priority>0.5</priority></url>
+  <url><loc>https://chatsched.com/careers</loc><priority>0.5</priority></url>
+  <url><loc>https://chatsched.com/register</loc><priority>0.5</priority></url>
+  <url><loc>https://chatsched.com/build-my-campaign</loc><priority>0.5</priority></url>
+  <url><loc>https://chatsched.com/help</loc><priority>0.5</priority></url>
+  <url><loc>https://chatsched.com/community</loc><priority>0.5</priority></url>
+  <url><loc>https://chatsched.com/community/qa</loc><priority>0.4</priority></url>
+  <url><loc>https://chatsched.com/community/announcements</loc><priority>0.4</priority></url>
+  <url><loc>https://chatsched.com/community/events</loc><priority>0.4</priority></url>
+  <url><loc>https://chatsched.com/trust/business-standards</loc><priority>0.4</priority></url>
+  <url><loc>https://chatsched.com/trust/creator-standards</loc><priority>0.4</priority></url>
+  <url><loc>https://chatsched.com/trust/disputes</loc><priority>0.4</priority></url>
+  <url><loc>https://chatsched.com/trust/fraud-prevention</loc><priority>0.4</priority></url>
+  <url><loc>https://chatsched.com/trust/payments</loc><priority>0.4</priority></url>
+  <url><loc>https://chatsched.com/trust/platform-compliance</loc><priority>0.4</priority></url>
+  <url><loc>https://chatsched.com/trust/safety</loc><priority>0.4</priority></url>
+  <url><loc>https://chatsched.com/trust/verification</loc><priority>0.4</priority></url>
+  <url><loc>https://chatsched.com/glossary</loc><priority>0.4</priority></url>
+  <url><loc>https://chatsched.com/media-kit</loc><priority>0.4</priority></url>
+  <url><loc>https://chatsched.com/investors</loc><priority>0.4</priority></url>
+  <url><loc>https://chatsched.com/roadmap</loc><priority>0.4</priority></url>
+  <url><loc>https://chatsched.com/press</loc><priority>0.4</priority></url>
+  <url><loc>https://chatsched.com/compliance</loc><priority>0.4</priority></url>
+  <url><loc>https://chatsched.com/partners/apply</loc><priority>0.4</priority></url>
+  <url><loc>https://chatsched.com/platform-rules</loc><priority>0.3</priority></url>
+  <url><loc>https://chatsched.com/security</loc><priority>0.3</priority></url>
+  <url><loc>https://chatsched.com/privacy</loc><priority>0.3</priority></url>
+  <url><loc>https://chatsched.com/terms</loc><priority>0.3</priority></url>
+  <url><loc>https://chatsched.com/accessibility</loc><priority>0.3</priority></url>
+  <url><loc>https://chatsched.com/login</loc><priority>0.3</priority></url>
+</urlset>

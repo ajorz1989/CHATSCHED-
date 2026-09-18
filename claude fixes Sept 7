@@ -1,0 +1,186 @@
+ChatSched — Claude fixes, Sept 7
+=================================
+
+Scope: this file documents ONLY the seventh task resolved from
+"Claude To fix 1..txt" — item 11, HIGH: Launch-credit race condition.
+Items 5 through 10 were already completed and documented separately
+("claude fixes Sept 1" through "Sept 6"). Items 12 and 13 were left
+untouched.
+
+------------------------------------------------------------------------
+1. What the finding said, verified against the real source
+------------------------------------------------------------------------
+supabase/functions/payfast-checkout/index.ts read
+business_launch_credits.remaining, computed creditApplied in JavaScript,
+wrote payment state, and — for a partially-covered payment — deferred the
+ACTUAL business_launch_credits.remaining deduction to a later,
+completely separate request: payfast-notify's redeemLaunchCredit(), which
+only runs once PayFast's webhook confirms the payment. Two concurrent
+checkouts for two different payments belonging to the same business could
+each read the same pre-deduction "remaining" figure before either one's
+write took effect.
+
+------------------------------------------------------------------------
+2. A design principle I found and preserved, not just a bug to squash
+------------------------------------------------------------------------
+Before changing anything, I found that the deferred-deduction design
+wasn't accidental — schema_phase55_subscriptions.sql's own comment on
+payments.credit_applied says the deduction is deliberately deferred
+"until payfast-notify confirms the payment actually completed, the same
+way payments.status itself only ever changes from that webhook, never
+from checkout." That's a real, sensible principle: don't spend a
+business's credit on a payment that might never actually go through.
+
+But I also found the race is real in BOTH branches of payfast-checkout,
+not just the partial-coverage one the finding's own phrasing most
+directly describes:
+  - For a FULLY-covered campaign (credit >= amount), the code marks the
+    payment 'paid' immediately, with no PayFast round-trip and no later
+    confirmation step at all. This branch has no opportunity to defer
+    anything — its "reservation" and its "confirmation" are the same
+    atomic moment, so the deferred-deduction principle doesn't apply to
+    it, and it needed an immediate, atomic fix regardless.
+  - For the partially-covered branch, the deferred-deduction principle is
+    worth keeping, but the COMPUTATION that decides how much credit a
+    given payment gets to claim still has to be race-free the instant
+    it's decided — otherwise two concurrent checkouts could each
+    provisionally claim the full remaining balance before either
+    outcome is known.
+
+This is why the fix is a reserve -> confirm/release pattern, not a
+single "deduct everything at checkout" change: it closes the race for
+both branches while keeping the original "don't finalize until PayFast
+confirms" principle intact for the branch where it still applies.
+
+------------------------------------------------------------------------
+3. The fix
+------------------------------------------------------------------------
+supabase/schema_phase88_atomic_launch_credit_redemption.sql (NEW):
+  - launch_credit_redemptions — one row per payment that ever claimed
+    credit. UNIQUE(payment_id) is both the payment-to-credit relation and
+    the idempotency key the finding asks for: a payment can only ever
+    have one redemption row, so a retried reserve call detects "already
+    reserved" and returns the existing figures instead of reserving
+    again. status: reserved -> confirmed (payment completed, no further
+    balance change) or released (payment failed/cancelled, amount added
+    back).
+  - reserve_launch_credit_for_payment(payment_id) — called from
+    payfast-checkout at checkout time. Locks the business's one
+    business_launch_credits row (SELECT ... FOR UPDATE) for the duration
+    of the transaction — this is the actual fix: two concurrent calls for
+    the same business now serialize on this lock, so the second one
+    always sees the balance the first one actually left, never a stale
+    pre-deduction value. Computes and immediately deducts
+    LEAST(remaining, payment.amount), inserts the redemption row, updates
+    payments.credit_applied.
+  - confirm_launch_credit_redemption(payment_id) — called from
+    payfast-notify on COMPLETE. No balance math — the deduction already
+    happened at reservation time — just flips the redemption to
+    'confirmed' so it can never be released later.
+  - release_launch_credit_redemption(payment_id) — called from
+    payfast-notify on FAILED or CANCELLED. Locks the same credit row and
+    adds the reserved amount back to remaining, then marks the redemption
+    'released'. A no-op if nothing was reserved, or if the redemption is
+    already confirmed/released — safe to call unconditionally.
+  - All three: PUBLIC execute revoked, granted only to authenticated —
+    same defense-in-depth convention established in item 7.
+
+supabase/functions/payfast-checkout/index.ts (EDITED):
+  - Replaced the read-compute-write sequence with a single call to
+    reserve_launch_credit_for_payment(). For the fully-covered branch,
+    also calls confirm_launch_credit_redemption() in the same request
+    right after marking the payment paid — there's no later webhook to
+    defer to for this branch, so its reservation is confirmed
+    immediately rather than left 'reserved' forever.
+  - Removed the now-unused local applyLaunchCredit() helper.
+
+supabase/functions/payfast-notify/index.ts (EDITED):
+  - The COMPLETE branch now calls confirm_launch_credit_redemption()
+    instead of the old redeemLaunchCredit() (deleted — its only caller
+    was this line, confirmed via grep before removal).
+  - Added a CANCELLED branch (previously only FAILED was handled) —
+    both now mark the payment failed and call
+    release_launch_credit_redemption(), so credit isn't left stuck
+    reserved against a payment that will never complete.
+  - Fixed a second, real, separate bug found while making this change:
+    the amount-mismatch check compared PayFast's actual charge against
+    the FULL payment.amount, even though payfast-checkout only ever asks
+    PayFast to charge amountDue (the post-credit figure). This meant any
+    partially-credit-covered payment would ALWAYS fail this check and
+    could never actually be marked paid — broken before this redesign
+    touched anything, found because the redesign needed a correct
+    "expected" figure to confirm against. Now compares against
+    payment.amount - payment.credit_applied.
+
+supabase/tests/atomic_launch_credit_redemption_test.sql (NEW):
+  - pgTAP test file, 12 assertions. A true race between concurrent
+    requests can't be simulated inside one pgTAP transaction (there's
+    only one session) — what it proves instead is that the sequential
+    state transitions serialize correctly: a R60 payment against a R100
+    balance is fully covered; a second R60 payment for the same business
+    then only gets the genuinely-remaining R40, not a stale R100;
+    re-reserving the first payment again returns the stored figure
+    rather than attempting a fresh, impossible deduction; confirming one
+    reservation and releasing a different one only affects the released
+    payment's own amount; and releasing an already-confirmed redemption
+    is a safe no-op that doesn't give back money already spent.
+
+supabase/DEPLOY.md (EDITED): new section covering both fixes, redeploy
+steps for the two changed functions, and the known gap below.
+
+------------------------------------------------------------------------
+4. Known gap, flagged plainly rather than quietly shipped
+------------------------------------------------------------------------
+A checkout that reserves credit and is then silently abandoned — never
+completes, and PayFast never sends a FAILED/CANCELLED ITN either (the
+business just closes the tab) — leaves that reservation at 'reserved'
+indefinitely, with its amount unavailable to other payments until
+released. Retrying checkout for the SAME request is safe (the
+reservation is idempotent per payment_id, so it returns the existing
+figures rather than reserving again) — this only affects credit that's
+never retried and never explicitly fails. A scheduled sweep releasing
+stale 'reserved' rows after some window would close this properly.
+Building that would mean a new scheduled-job system within an already
+large fix (the same reasoning schema_phase87 used for not rebuilding a
+full grace-period lifecycle for Featured Placement), so it wasn't built
+here — flagged in the migration's own header comment and in DEPLOY.md
+instead of left to be discovered later.
+
+------------------------------------------------------------------------
+5. Why this shape, not a different one
+------------------------------------------------------------------------
+- Reserve/confirm/release, not a single atomic deduct-at-checkout step,
+  specifically to keep schema_phase55's own "don't touch the balance
+  until PayFast confirms" principle intact for the one branch where it
+  still meaningfully applies (the partial-coverage, redirect-to-PayFast
+  path), while still closing the race for the branch where that
+  principle can't apply at all (the fully-covered, immediate-finalize
+  path).
+- A new dedicated table (launch_credit_redemptions) rather than trying to
+  infer redemption history from payments.credit_applied alone, because
+  the finding explicitly asks for "an explicit reservation/redemption
+  record" and "a payment-to-credit relation" — payments.credit_applied on
+  its own can't distinguish reserved from confirmed from released, or
+  guarantee a payment was only ever redeemed against once.
+- Fixed the amount-mismatch bug in the same pass rather than filing it
+  separately, because it sat directly in the code path this fix needed
+  to touch anyway (the exact "expected" value payfast-notify checks
+  against), and the redesign would have been silently non-functional for
+  every partial-credit payment without also fixing it.
+
+------------------------------------------------------------------------
+6. What's NOT done, and why that's a deliberate boundary here
+------------------------------------------------------------------------
+- The stale-reservation cleanup gap in section 4 is real and documented,
+  not silently left out.
+- Items 12 and 13 in "Claude To fix 1..txt" are untouched.
+- Claude to fix 2.txt and Claude to fix 3.txt were not opened.
+- Same standing honesty note this project's test suite has carried since
+  it began: no Postgres, Docker, Supabase CLI, or live PayFast sandbox in
+  this sandbox, so none of the new SQL, Edge Function changes, or pgTAP
+  tests have been run. Everything here was reviewed by hand, line-by-
+  line, against the actual current code — not written from memory of
+  what it "should" say. A real PayFast sandbox transaction using partial
+  launch credit, and a genuine concurrent-request test (a load-testing
+  tool firing two overlapping checkout calls, not two sequential manual
+  ones), are the actual tests of whether this is correct.

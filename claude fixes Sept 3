@@ -1,0 +1,226 @@
+ChatSched — Claude fixes, Sept 3
+=================================
+
+Scope: this file documents ONLY the third task resolved from
+"Claude To fix 1..txt" — item 7, CRITICAL: Payout RPCs are insufficiently
+protected. Items 5 and 6 were already completed and documented separately
+("claude fixes Sept 1" and "claude fixes Sept 2"). Items 8 onward were
+left untouched.
+
+------------------------------------------------------------------------
+1. Important context found while investigating, before anything else
+------------------------------------------------------------------------
+workers/README.md is explicit: this whole payout/ledger pipeline is
+"experimental, not-production-ready... nothing here runs unless you
+deliberately start these processes yourself." The live payout mechanism
+today is the "Mark payout sent" button in Admin.tsx's Requests tab,
+completely separate from any of this. I'm recording this for accuracy —
+it does NOT reduce the severity of the fix. Every one of these tables and
+functions is already deployed and reachable over the live Supabase API
+the moment these migrations run, regardless of whether anyone ever starts
+the Node workers. An unauthenticated or ordinary logged-in user hitting
+this API today is a real exposure independent of whether the batch/ledger
+pipeline is "finished."
+
+------------------------------------------------------------------------
+2. What the finding said, verified against the real source
+------------------------------------------------------------------------
+Two separate, both-real problems, confirmed by reading the actual SQL:
+
+  A) schema_payouts_phase1.sql never calls `alter table ... enable row
+     level security` for any of its four new tables (publisher_ledger,
+     payouts, payout_items, payout_provider_events) — every other table
+     in this schema does this immediately after creation. Combined with
+     Supabase's default project-level grants (every public-schema table
+     gets full CRUD access for `anon`/`authenticated` unless RLS says
+     otherwise), this meant, before this fix, ANY authenticated user —
+     not just admins — could directly SELECT/INSERT/UPDATE/DELETE these
+     tables via PostgREST: a publisher could INSERT a positive
+     publisher_ledger row crediting themselves, or UPDATE payouts.status
+     straight to 'completed', completely bypassing every RPC.
+
+  B) create_payout_batch(), mark_payout_item_attempt(), and
+     update_payout_status() (schema_payouts_functions.sql) never call
+     is_admin() at all. approve_payout() already does — the finding's
+     own text confirms this one is fine. Because these are `security
+     definer` functions, fixing (A) alone would NOT have protected them
+     — a security definer function runs with the function owner's
+     privileges regardless of RLS on the tables it touches, so the only
+     real gate for these three has to be an explicit in-function check.
+
+  Plus the specific idempotency gap named in the finding:
+  mark_payout_item_attempt() inserted a negative publisher_ledger row
+  every time it received p_status = 'succeeded', with no check for
+  whether that ledger entry already existed — confirmed by reading the
+  function body directly.
+
+------------------------------------------------------------------------
+3. What I found while tracing this, beyond the finding's own description
+------------------------------------------------------------------------
+Traced every real caller of all four functions before deciding how to
+gate each one:
+
+  - src/pages/AdminPayouts.tsx calls create_payout_batch() and
+    approve_payout() via supabase.rpc() — a real logged-in admin session
+    (it's a tab inside /admin, already gated by
+    <RequireAuth role="admin"> in App.tsx). auth.uid() is set here.
+
+  - workers/payoutWorker.js calls mark_payout_item_attempt() over a raw
+    `pg` connection using DATABASE_URL — a direct Postgres connection,
+    not a PostgREST/Supabase-client session. auth.uid() is null there.
+    workers/webhookServer.js writes to payout_items and
+    publisher_ledger the same way (raw SQL, same DATABASE_URL pattern) —
+    it doesn't call mark_payout_item_attempt() at all, it duplicates the
+    logic inline. That duplication is a real, separate observation
+    (see "what's not done" below) but out of this task's scope, since
+    the finding's own affected-files list names only the two SQL files.
+
+  - update_payout_status() has no caller anywhere in this codebase today
+    (its own comment calls it "Optional") — still live and callable by
+    anyone before this fix.
+
+  This confirms a bare `is_admin()` check on mark_payout_item_attempt()
+  and update_payout_status() would have been WRONG — it would have
+  rejected the trusted worker's own null-auth.uid() context along with
+  genuine attackers, breaking real (if experimental) functionality. This
+  codebase already has an established idiom for exactly this
+  distinction — prevent_self_verification() / prevent_role_change() both
+  use "auth.uid() is not null and not is_admin()" to mean "block a real
+  logged-in non-admin session, but don't block a trusted server-side
+  context where there's no session at all." I used the same shape here
+  for the three functions that needed a new check, and left
+  approve_payout()'s existing bare is_admin() check untouched — that one
+  is meant to require an actual human admin decision even from a trusted
+  connection, and the finding says it's already correct.
+
+  I also traced webhookServer.js's own raw SQL and found it already
+  implements exactly the idempotency guard the finding says
+  mark_payout_item_attempt() is missing (a "not exists" check against
+  publisher_ledger keyed on reference_id + type = 'payout') — I used the
+  identical pattern inside the RPC itself, since that's the literal gap
+  named.
+
+------------------------------------------------------------------------
+4. Files changed
+------------------------------------------------------------------------
+- supabase/schema_phase83_secure_payout_rpcs.sql (NEW)
+    - Enables RLS on all four payout tables. publisher_ledger, payouts,
+      and payout_items each get a single admin-only policy (`for all
+      using (is_admin()) with check (is_admin())`) — confirmed via a
+      full grep of src/ that AdminPayouts.tsx is the only frontend
+      consumer of any of these tables today, so admin-only matches
+      actual current need exactly. payout_provider_events gets an
+      admin-only SELECT policy only (no insert/update/delete policy at
+      all for any authenticated-role caller) — it's written exclusively
+      by webhookServer.js's own raw DATABASE_URL connection, which
+      bypasses RLS entirely regardless, so there's no legitimate
+      PostgREST-level writer to allow for.
+    - Revokes EXECUTE on all four RPCs from PUBLIC, then grants it back
+      to `authenticated` only — so `anon` (a logged-out visitor) can no
+      longer even attempt any of these calls, regardless of what the
+      in-function check would have decided. Defense in depth alongside,
+      not instead of, the checks below.
+    - create_payout_batch(): adds the auth.uid()-aware admin/worker
+      check, and adds `perform pg_advisory_xact_lock(hashtext(
+      'create_payout_batch'))` at the top of the transaction to
+      serialize concurrent batch-generation calls — the finding's "lock
+      the relevant ledger/balance rows during batch generation."
+      publisher_available_balance is an aggregate view with no single
+      row to `for update` lock per publisher, so an advisory lock
+      serializing the whole (infrequent, admin-triggered) operation is
+      the correct tool here rather than a row lock that doesn't apply to
+      an aggregate read. Every other line of the function body is
+      unchanged from schema_payouts_functions.sql.
+    - mark_payout_item_attempt(): adds the same admin/worker check; adds
+      an explicit allowed-transition whitelist (modelled on the actual
+      transitions payoutWorker.js and webhookServer.js use today —
+      pending/processing -> sent/failed — plus the pre-existing
+      succeeded branch, with succeeded and failed both terminal, no
+      transition backward ever allowed); and makes the ledger insert on
+      succeeded idempotent via the same "no existing payout ledger row
+      for this item" guard webhookServer.js's own raw SQL already uses.
+    - update_payout_status(): adds the same admin/worker check and its
+      own explicit allowed-transition whitelist for the payouts.status
+      lifecycle (pending/approved/processing/file_generated/sent, with
+      completed/failed/canceled terminal). Deliberately excludes
+      'approved' from every allowed target — that transition stays
+      exclusively approve_payout()'s job, so this more general-purpose
+      function can't be used to route around its dedicated pending-only
+      check.
+
+- supabase/tests/payout_rpc_authorization_test.sql (NEW)
+    - pgTAP test file, 15 assertions. Proves: RLS blocks a non-admin from
+      seeing any row in all four tables, while an admin sees them fully;
+      all three previously-unprotected RPCs return ok:false for a
+      non-admin; an anonymous session gets a real Postgres permission
+      error (not a jsonb response) attempting any of them, proving the
+      PUBLIC execute revoke actually took effect; an admin can walk a
+      real payout item through pending -> sent -> succeeded with exactly
+      one ledger entry created; an admin attempting to move that same
+      item backward out of succeeded is rejected as an invalid
+      transition; and an admin's create_payout_batch() call succeeds
+      end-to-end, correctly picking up a publisher's real positive
+      ledger balance into a new batch.
+
+- supabase/tests/README.md (EDITED)
+    - Added a section documenting how to run
+      payout_rpc_authorization_test.sql and what it covers.
+
+- Claude To fix 1..txt (EDITED)
+    - Marked item 7 as [COMPLETED], pointing at the new migration, the
+      new test file, and this document.
+
+------------------------------------------------------------------------
+5. Why this shape, not a different one
+------------------------------------------------------------------------
+- Admin-only RLS on all four tables, not a scoped "publisher can see
+  their own payout_items/ledger rows" policy, because no current
+  frontend page needs that (EarningsDashboard.tsx computes a publisher's
+  own figures from publishers/requests directly, not from this ledger) —
+  adding read access nobody asked for would widen the surface again for
+  no benefit. A future feature that wants publishers to see their own
+  payout history can add that policy deliberately, as its own decision.
+- The "auth.uid() is not null and not is_admin()" check, not a bare
+  is_admin(), on the three previously-unprotected functions, because a
+  bare check would have broken the actual trusted worker path that calls
+  mark_payout_item_attempt() today (confirmed by reading
+  payoutWorker.js's connection code directly, not assumed) — and this
+  codebase already has an established, correct idiom for exactly this
+  distinction elsewhere.
+- Left approve_payout() completely untouched beyond the PUBLIC-execute
+  revoke, because the finding's own text says it's already correct, and
+  because releasing real money is arguably the single most sensitive
+  action in this whole pipeline — requiring a real human admin session
+  even from an otherwise-trusted connection is a deliberate, reasonable
+  design choice worth preserving exactly as it was written, not
+  "fixing" it to match the other three.
+- An advisory transaction lock for the batch-generation race, not a row
+  lock, because publisher_available_balance is an aggregate view (SUMs
+  across two tables) with no single row that represents "this
+  publisher's balance" to lock — the standard, correct Postgres tool for
+  serializing an infrequent whole-operation race like this is
+  pg_advisory_xact_lock, not a workaround like locking arbitrary
+  ledger rows that wouldn't actually prevent the race.
+
+------------------------------------------------------------------------
+6. What's NOT done, and why that's a deliberate boundary here
+------------------------------------------------------------------------
+- Items 8 through 13 in "Claude To fix 1..txt" are untouched.
+- A real, separate design smell I noticed while tracing this (not part
+  of the finding, not fixed here): webhookServer.js duplicates
+  mark_payout_item_attempt()'s ledger-insert logic inline via raw SQL
+  instead of calling the RPC, so the "succeeded" path now has two
+  independent implementations of the same idempotency guard that have to
+  be kept in sync by hand. Worth unifying at some point, but the
+  finding's own affected-files list names only the two SQL files, not
+  the Node workers, so I left workers/webhookServer.js and
+  workers/payoutWorker.js completely untouched.
+- Claude to fix 2.txt and Claude to fix 3.txt were not opened.
+- Same standing honesty note this project's test suite has carried since
+  it began: no Postgres, Docker, or Supabase CLI in this sandbox, so
+  neither the new migration nor the new test file has been run against a
+  real database. Everything here was reviewed by hand, line-by-line,
+  against the actual current definitions of every function and every
+  real caller in the codebase — not written from memory of what they
+  "should" say. The first real `supabase test db` run is the actual test
+  of whether this is correct.

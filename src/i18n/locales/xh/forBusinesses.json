@@ -1,0 +1,130 @@
+{
+  "seo": {
+    "title": "Kumashishini · ChatSched",
+    "description": "Bhukisha abapapashi nabavelisi bokwenene baseMzantsi Afrika ngokuthe ngqo — akukho ekhawunti yentengiso, akukho ukubhida, akukho ii-alghorithm. Intlawulo igcinwe kwi-escrow, iiphulo ezilandelelweyo, ubungqina xa sele ibonakala."
+  },
+  "hero": {
+    "badge": "Kumashishini",
+    "title": "Fikelela kubaphulaphuli abasele bethenjiwe ngabathengi bakho.",
+    "subtitle": "I-ChatSched idibanisa amashishini amancinci aseMzantsi Afrika ngokuthe ngqo namaphepha, abavelisi, kunye neendlela abathengi babo abasele bezilandela — akukho alghorithm, akukho ekhawunti yentengiso, akukho mfazwe yokubhida. Uhlawula kuphela xa umntu wokwenene eqinisekise ukuba ukubonakaliswa kwakho kuyasebenza.",
+    "ctaBrowse": "Jonga Abapapashi →",
+    "ctaRegister": "Bhalisa Njengeshishini →"
+  },
+  "howItWorks": {
+    "badge": "Ukusebenza kwayo",
+    "title": "Ukusuka kwisicelo ukuya ekusebenzeni, ngamanyathelo amane.",
+    "steps": [
+      {
+        "title": "Fumana indlela yakho",
+        "body": "Khangela amaphepha entlalo, abanomtsalane, iiwebhusayithi, iipodcast kunye neeslothi zomsakazo ngokohlobo, iphondo kunye nabaphulaphuli ukufumana into efanelekileyo kubathengi bakho."
+      },
+      {
+        "title": "Ngenisa isicelo",
+        "body": "Khetha umpapashi kwaye uthumele isicelo sokubonakaliswa esichaza into ofuna ukuyibonakalisa — akukho mlawuli we-akhawunti, akukho ekhawunti yentengiso, akukho mlinganiselo osezantsi wokuchitha."
+      },
+      {
+        "title": "Hlawula kwi-escrow",
+        "body": "Xa umpapashi evumile, hlawula ngokhuseleko ngekhadi, i-EFT ekhawulezayo, okanye i-EFT eyenziwa ngesandla. Imali ihlala kwi-ChatSched — hayi kumpapashi — de ukubonakaliswa kube kusebenza ngokwenene."
+      },
+      {
+        "title": "Fumana ubungqina, hayi izithembiso",
+        "body": "Jonga isicelo sakho sisuka ekungenisweni siye ekusebenzeni, ufumane ubungqina xa sele kwenzekile. Akukho ukuqikelela ukuba uhlahlo-lwabiwo mali lwakho luye phi."
+      }
+    ],
+    "escrowLink": "Bona umzila opheleleyo we-escrow kunye nokuhlawulwa →"
+  },
+  "channels": {
+    "badge": "Iindlela ezintlanu, umjelo omnye",
+    "title": "Bhukisha naphi na apho abathengi bakho bakhona.",
+    "subtitle": "Indlela nganye engezantsi isebenza ngomjelo ofanayo olula wesicelo-negunyaziso — khetha ezo zifanelekileyo."
+  },
+  "tools": {
+    "badge": "Kwibhodi lakho",
+    "title": "Isixhobo esipheleleyo sentengiso, hayi nje uluhlu.",
+    "subtitle": "Xa sele ubhalisile, ezi zixhobo zihlala kwibhodi lakho kunye nezicelo zakho.",
+    "items": [
+      {
+        "name": "Match",
+        "body": "Chaza ishishini lakho ngolwimi olucacileyo — fumana uluhlu olucwangcisiweyo lwabapapashi abafanelekileyo ngokwenene."
+      },
+      {
+        "name": "Isicwangciso Sokufikelela",
+        "body": "Isikhokelo esikhokelayo esiguqula injongo isibe sisicwangciso kunye neshedyuli."
+      },
+      {
+        "name": "Isitudiyo Somxholo we-AI",
+        "body": "Ifoto enye okanye ibali libe ziifomathi ezilithoba ezilungele ukupostwa — Facebook, Instagram, TikTok, WhatsApp, nokunye."
+      },
+      {
+        "name": "Umakhi Wephulo",
+        "body": "Guqula ibali elilula ngolwimi ibe liphulo elifakelwe amanqaku, kunye neengcebiso zokulenza ngcono."
+      },
+      {
+        "name": "Umlandeleli Wephulo",
+        "body": "Amakhonkco okulandelela okwenyani kwiphulo ngalinye — iinqindilili, iindwendwe, iinkokeli kunye noguqulo, hayi izilinganiselo."
+      },
+      {
+        "name": "Umbali-Manani we-ROI",
+        "body": "Faka uhlahlo-lwabiwo mali, fumane ukufikelela okuqikelelweyo nombuyekezo phambi kokuba uzibophelele."
+      }
+    ]
+  },
+  "comparison": {
+    "badge": "Kutheni ungenzi nje izaziso zenkcazelo?",
+    "title": "Imarike ethe ngqo, hayi iqonga lentengiso.",
+    "colUs": "ChatSched",
+    "colThem": "Amaqonga Entengiso Yentlalo",
+    "rows": [
+      {
+        "us": "Uyazi ngokuqinisekileyo ukuba ngubani okubonakalisayo kwaye kutheni befanelekile kubathengi bakho.",
+        "them": "Isaziso sakho sikhuphisana ngengqalelo ngaphakathi kwi-alghorithm engaziwayo."
+      },
+      {
+        "us": "Abapapashi bahlolwa ngesandla phambi kokuba baliswe.",
+        "them": "Amanani okufikelela azichazwa ngokwabo kwaye awanakuqinisekiswa ngamaxesha onke."
+      },
+      {
+        "us": "Intlawulo ihlala kwi-escrow de ukubonakaliswa kuqinisekiswe kusebenza.",
+        "them": "Uhlawula ngaphambili kwaye unethemba lokuba i-alghorithm izokunika okulindelekileyo."
+      },
+      {
+        "us": "Iindlela zasekuhlaleni, ezithenjiweyo abathengi bakho abasele bezilandela.",
+        "them": "Ngokuya kuya kuvinjwa zizivimbi zezaziso kwaye zingahoywa ngenxa yokungananzelwa kweebhaneri."
+      }
+    ]
+  },
+  "escrowStrip": {
+    "title": "🔒 Imali ayihambi de umsebenzi wenzeke",
+    "body": "Intlawulo yakho ihlala kwi-escrow — hayi kumpapashi — de ukubonakaliswa kwakho kuqinisekiswe kusebenza. Umpapashi uhlawulwa ngaphakathi kweeyure ezi-{{hours}} emva kokuqala ukusebenza. Akukho namnye othwala umngcipheko yedwa."
+  },
+  "faq": {
+    "title": "Imibuzo eqhelekileyo",
+    "items": [
+      {
+        "q": "Ndifuna isivumelwano okanye ukubhalisela?",
+        "a": "Akukho sivumelwano nangayiphi na indlela. Ukukhangela kusoloko kusimahla — ukuthumela isicelo kufuna ukwenziwa okwesihlandlo esinye kwe-ChatSched Business (R399, ngokwesihlandlo esinye — ayihlaziywa nanini na), ekwavula intengiso elawulwayo kwaye ibandakanya ikhredithi yokuqalisa engange-R199."
+      },
+      {
+        "q": "Ndazi njani ukuba umpapashi usemthethweni?",
+        "a": "Wonke umpapashi nomvelisi uphononongwa ngesandla phambi kokuba baliswe, kwaye baphethe amanqaku okuthenjwa kunye nezinga elakhelwe kwimbali yephulo yokwenyani — hayi nje inani labalandeli."
+      },
+      {
+        "q": "Imali ihamba nini ngokwenyani?",
+        "a": "Xa umpapashi evumile isicelo sakho, unentsuku ezi-{{days}} zokuhlawula kwi-escrow. Igcinwa apho — ingakhutshelwa kumpapashi — de ukubonakaliswa kuqinisekiswe kusebenza."
+      },
+      {
+        "q": "Kuthekani ukuba umpapashi akaphenduli?",
+        "a": "Abapapashi banentsuku ezi-{{days}} zokuvuma okanye ukwala isicelo. Ukuba asenziwanga nto ngaphakathi kwelo xesha, iyavaleka ngokuzenzekelayo — awusoze walindela ngonaphakade."
+      },
+      {
+        "q": "Ziziphi iindlela endinokubhukisha kuzo?",
+        "a": "Amaphepha nemiqulu yentlalo, abanomtsalane, iiwebhusayithi, iipodcast kunye neeslothi zomsakazo — konke ngomjelo ofanayo wesicelo-negunyaziso."
+      }
+    ]
+  },
+  "finalCta": {
+    "title": "Ukulungele ukufika phambi kwabaphulaphuli bokwenene?",
+    "ctaBrowse": "Jonga Abapapashi →",
+    "ctaRegister": "Bhalisa Njengeshishini →"
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "seo": {
+    "title": "Vir Besighede · ChatSched",
+    "description": "Bespreek regte Suid-Afrikaanse uitgewers en vervaardigers direk — geen advertensierekening, geen bieding, geen algoritme nie. Betaling in trust gehou, opgespoorde veldtogte, bewys sodra dit regstreeks is."
+  },
+  "hero": {
+    "badge": "Vir Besighede",
+    "title": "Bereik die gehoor wat jou kliënte reeds vertrou.",
+    "subtitle": "ChatSched verbind Suid-Afrikaanse klein besighede direk met die bladsye, vervaardigers en kanale wat hul kliënte reeds volg — geen algoritme, geen advertensierekening, geen biedingsoorlog nie. Jy betaal eers sodra 'n regte persoon bevestig het jou plasing is regstreeks.",
+    "ctaBrowse": "Blaai deur Uitgewers →",
+    "ctaRegister": "Registreer as 'n Besigheid →"
+  },
+  "howItWorks": {
+    "badge": "Hoe dit werk",
+    "title": "Van versoek tot regstreeks, in vier stappe.",
+    "steps": [
+      {
+        "title": "Vind jou kanaal",
+        "body": "Blaai deur sosiale bladsye, beïnvloeders, webwerwe, potgooie en radioslotte volgens kategorie, provinsie en gehoor om die perfekte pas vir jou kliënte te vind."
+      },
+      {
+        "title": "Dien 'n versoek in",
+        "body": "Kies 'n uitgewer en stuur 'n uitstalversoek wat beskryf wat jy wil bevorder — geen rekeningbestuurder, geen advertensierekening, geen minimum uitgawe nie."
+      },
+      {
+        "title": "Betaal in trust",
+        "body": "Sodra die uitgewer goedkeur, betaal veilig met kaart, onmiddellike EFT, of handmatige EFT. Fondse bly by ChatSched — nie die uitgewer nie — totdat die plasing werklik regstreeks is."
+      },
+      {
+        "title": "Kry bewys, nie beloftes nie",
+        "body": "Kyk hoe jou versoek beweeg van ingedien na regstreeks, met bewys sodra dit klaar is. Geen raai oor waar jou begroting heen is nie."
+      }
+    ],
+    "escrowLink": "Sien die volledige trust- en uitbetalingstydlyn →"
+  },
+  "channels": {
+    "badge": "Vyf kanale, een vloei",
+    "title": "Bespreek waar jou kliënte ook al is.",
+    "subtitle": "Elke kanaal hieronder loop deur dieselfde eenvoudige versoek-en-goedkeur-vloei — kies die wat pas."
+  },
+  "tools": {
+    "badge": "In jou paneelbord",
+    "title": "'n Volledige bemarkingstel, nie net 'n gids nie.",
+    "subtitle": "Sodra jy geregistreer is, leef hierdie gereedskap reg in jou paneelbord langs jou versoeke.",
+    "items": [
+      {
+        "name": "Match",
+        "body": "Beskryf jou besigheid in gewone taal — kry 'n gerangskikte lys van uitgewers wat werklik pas."
+      },
+      {
+        "name": "Bereik-beplanner",
+        "body": "'n Begeleide wysigaar wat 'n doel in 'n plan en 'n skedule omskep."
+      },
+      {
+        "name": "KI-inhoudstudio",
+        "body": "Een foto of brief word nege gereed-om-te-plaas formate — Facebook, Instagram, TikTok, WhatsApp, en meer."
+      },
+      {
+        "name": "Veldtogbouer",
+        "body": "Verander 'n eenvoudige brief in 'n geëvalueerde veldtog, met voorstelle om dit te verbeter."
+      },
+      {
+        "name": "Veldtogopspoorder",
+        "body": "Regte opsporingskakels vir elke veldtog — klikke, besoeke, leidrade en omskakelings, nie skattings nie."
+      },
+      {
+        "name": "OBB-Berekenaar",
+        "body": "Sit 'n begroting in, kry 'n geskatte bereik en opbrengs voor jy verbind."
+      }
+    ]
+  },
+  "comparison": {
+    "badge": "Waarom nie net sosiale advertensies loop nie?",
+    "title": "'n Direkte mark, nie 'n advertensieplatform nie.",
+    "colUs": "ChatSched",
+    "colThem": "Sosiale Advertensieplatforms",
+    "rows": [
+      {
+        "us": "Jy weet presies wie jou uitstal en waarom hulle by jou kliënte pas.",
+        "them": "Jou advertensie meeding om aandag binne 'n anonieme voer-algoritme."
+      },
+      {
+        "us": "Uitgewers word met die hand nagegaan voordat hulle ooit gelys word.",
+        "them": "Bereikgetalle word self-aangemeld en kan nie altyd geverifieer word nie."
+      },
+      {
+        "us": "Betaling bly in trust totdat die plasing bevestig regstreeks is.",
+        "them": "Jy betaal vooraf en hoop die algoritme lewer."
+      },
+      {
+        "us": "Plaaslike, vertroude kanale wat jou kliënte reeds volg.",
+        "them": "Toenemend geblokkeer deur advertensieblokkeerders en geïgnoreer deur baniersblindheid."
+      }
+    ]
+  },
+  "escrowStrip": {
+    "title": "🔒 Geld beweeg nie totdat die werk beweeg nie",
+    "body": "Jou betaling bly in trust — nie by die uitgewer nie — totdat jou plasing bevestig regstreeks is. Die uitgewer word binne {{hours}} uur na regstreeks-gaan uitbetaal. Niemand dra die risiko alleen nie."
+  },
+  "faq": {
+    "title": "Algemene vrae",
+    "items": [
+      {
+        "q": "Benodig ek 'n kontrak of intekening?",
+        "a": "Geen kontrak nie, in elk geval. Blaai is altyd gratis — om 'n versoek te stuur benodig 'n eenmalige ChatSched Besigheid-aktivering (R399, eenmalig — nooit hernu nie), wat ook bestuurde advertensies ontsluit en 'n R199-loodskrediet insluit."
+      },
+      {
+        "q": "Hoe weet ek 'n uitgewer is wettig?",
+        "a": "Elke uitgewer en vervaardiger word met die hand nagegaan voordat hulle gelys word, en dra 'n sigbare vertrouetelling en vlak gebou uit werklike veldtoggeskiedenis — nie net 'n volgelinggetal nie."
+      },
+      {
+        "q": "Wanneer beweeg geld eintlik?",
+        "a": "Sodra 'n uitgewer jou versoek goedkeur, het jy {{days}} dae om in trust te betaal. Dit word daar gehou — nie aan die uitgewer vrygestel nie — totdat die plasing bevestig regstreeks is."
+      },
+      {
+        "q": "Wat as 'n uitgewer nie reageer nie?",
+        "a": "Uitgewers het {{days}} dae om 'n versoek goed te keur of af te wys. As dit nie binne daardie venster hanteer word nie, sluit dit outomaties — jy word nooit onbepaald wagtend gelaat nie."
+      },
+      {
+        "q": "Watter kanale kan ek bespreek?",
+        "a": "Sosiale media-bladsye en -groepe, beïnvloeders, webwerwe, potgooie en radioslotte — alles deur dieselfde versoek-en-goedkeur-vloei."
+      }
+    ]
+  },
+  "finalCta": {
+    "title": "Gereed om voor 'n regte gehoor te kom?",
+    "ctaBrowse": "Blaai deur Uitgewers →",
+    "ctaRegister": "Registreer as 'n Besigheid →"
+  }
+}

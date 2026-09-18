@@ -1,0 +1,141 @@
+ChatSched — Claude fixes, Sept 1
+=================================
+
+Scope: this file documents ONLY the first task resolved from
+"Claude To fix 1..txt" — item 5, CRITICAL: Admin role escalation risk.
+Items 6 onward in that file (and everything in "Claude to fix 2.txt" /
+"Claude to fix 3.txt") were left untouched, per instructions.
+
+------------------------------------------------------------------------
+1. What the finding actually said, verified against the real source
+------------------------------------------------------------------------
+The audit named two suspects and asked for a fix. I read the actual code
+before writing anything, and found two genuinely separate, real holes —
+not one:
+
+  A) handle_new_user() (originally in schema.sql, redefined by
+     schema_phase5.sql, redefined again by schema_phase7.sql) builds a
+     new profiles row using:
+         coalesce(new.raw_user_meta_data ->> 'role', 'business')
+     It only supplies a fallback if the 'role' key is missing — it never
+     validates the value that IS present. profiles_role_check (added in
+     schema_phase5.sql) allows the value to be 'business', 'admin', or
+     'publisher'. Register.tsx and AuthContext.tsx only ever send
+     "business" or "publisher" in their TypeScript types, but that's a
+     UI-layer constraint only — nothing stops a direct call to
+     supabase.auth.signUp() with options.data = { role: 'admin' } (e.g.
+     from curl, Postman, or a modified frontend build) from producing an
+     admin account the instant the row is created.
+
+  B) profiles_update_own_or_admin (schema.sql):
+         for update using (auth.uid() = id or public.is_admin())
+     has no WITH CHECK clause. Postgres reuses the USING clause as the
+     check when none is given, so a logged-in business or publisher can
+     run `update profiles set role = 'admin' where id = auth.uid()`
+     today and it succeeds outright — RLS restricts which ROWS an update
+     can touch, not which COLUMNS within an allowed row. The codebase
+     already knew this pattern and had already fixed it once:
+     prevent_self_verification() (schema_phase7.sql) resets
+     email_verified/phone_verified/business_verified back to their old
+     values whenever a real logged-in non-admin session tries to change
+     them. role was simply never added to that same protection.
+
+------------------------------------------------------------------------
+2. Files changed
+------------------------------------------------------------------------
+- supabase/schema_phase81_prevent_role_escalation.sql (NEW)
+    - Redefines handle_new_user() a third time (schema.sql ->
+      schema_phase5.sql -> schema_phase7.sql -> this file). The only
+      change from schema_phase7.sql's version: the role value is now
+      whitelisted in plpgsql before the insert — only 'publisher' is
+      accepted as an explicit request; anything else (including 'admin',
+      an unrecognised string, or no role key at all) falls back to
+      'business'. Every other column this function already populated
+      (full_name, company_name, phone, email_verified) is carried over
+      unchanged.
+    - Adds prevent_role_change(), a BEFORE UPDATE trigger function on
+      public.profiles, and its trigger trg_prevent_role_change. Shape is
+      deliberately identical to prevent_self_verification(): if
+      auth.uid() is not null (a real client session) and the session is
+      not an admin, new.role is forced back to old.role. auth.uid() is
+      null for trusted server-side/service-role contexts, so the
+      documented "make yourself an admin" SQL-editor UPDATE at the
+      bottom of schema.sql, and any future server-side admin-promotion
+      tooling, both continue to work exactly as before — only a live
+      client session gets blocked.
+    - No existing table, column, policy, or function is dropped or
+      altered destructively; this is purely additive, matching every
+      other schema_phase*.sql file's own stated convention.
+
+- supabase/tests/prevent_role_escalation_test.sql (NEW)
+    - pgTAP test file, 6 assertions, following the exact style already
+      established by rls_channels_publishers_channel_requests_test.sql
+      and enforce_channel_request_transition_test.sql
+      (set_config('request.jwt.claim.sub', ...) + `set role authenticated`
+      to simulate a real session; lives_ok + a follow-up is() for cases
+      where RLS/a trigger silently no-ops a write rather than raising an
+      error).
+    - Covers: (1) a signUp()-style auth.users insert with
+      raw_user_meta_data containing role: 'admin' produces a 'business'
+      profile, not 'admin'; (2) the same signup path still correctly
+      creates a 'publisher' profile when that's genuinely requested
+      (regression check, so the whitelist doesn't accidentally break the
+      legitimate publisher flow); (3) a logged-in business user's own
+      UPDATE ... SET role = 'admin' runs without SQL error but is
+      silently reverted by the trigger; (4) an admin can still change
+      another user's role, confirming the trigger only blocks non-admin
+      sessions and doesn't lock the column entirely.
+
+- supabase/tests/README.md (EDITED)
+    - Added a new section documenting how to run
+      prevent_role_escalation_test.sql and what it covers, in the same
+      format as the two existing "Running ..." sections.
+
+- Claude To fix 1..txt (EDITED)
+    - Marked item 5 as [COMPLETED], pointing at this file and the two
+      new SQL files, per the task instructions.
+
+------------------------------------------------------------------------
+3. Why this shape, not a different one
+------------------------------------------------------------------------
+- Reused prevent_self_verification()'s exact pattern instead of
+  inventing a new mechanism, because this codebase has already solved
+  "RLS can't restrict columns" once, in the same table, for a
+  near-identical reason — a second, differently-shaped fix for the same
+  problem would just be inconsistent for no benefit.
+- Whitelisted at the signup function rather than trying to tighten
+  profiles_role_check further, because the check constraint's job is
+  "what values can this column ever legally hold" (still true — admins
+  do need role = 'admin' to exist as a value, just never via signup),
+  not "what can an unauthenticated signup request choose."
+- Did not touch is_admin(), the SELECT/INSERT policies on profiles, or
+  any other table — the finding's four numbered required-fix items map
+  1:1 onto the trigger, the whitelist, "never trust admin from
+  metadata," and "promotion via a secure server/admin path" (already
+  true and left alone); item 5 (pgTAP tests) is the new test file.
+
+------------------------------------------------------------------------
+4. What's NOT done, and why that's a deliberate boundary here
+------------------------------------------------------------------------
+- Items 6 through 13 in "Claude To fix 1..txt" (public publisher column
+  exposure, payout RPC authorization, business-profile leakage via
+  shared-request policies, the business↔publisher messaging model
+  conflict, pricing spec mismatch, launch-credit race condition,
+  non-atomic opportunity acceptance, and the E2E suite gaps) are
+  untouched. Per this task's instructions, only the first task in the
+  file was to be resolved.
+- Claude to fix 2.txt and Claude to fix 3.txt were not opened for
+  editing at all.
+- Same honesty note this codebase's test suite has carried since the
+  compliance-test build: this sandbox has no Postgres, Docker, or
+  Supabase CLI, so neither the new migration nor the new test file has
+  been run against a real database. Both were reviewed by hand,
+  line-by-line, against the actual current definitions of
+  handle_new_user(), prevent_self_verification(), and
+  profiles_update_own_or_admin — not written from memory of what they
+  "should" say. The first real `supabase test db` run (via the existing
+  CI job in .github/workflows/ci.yml, which already applies every
+  schema_phase*.sql via run-all-migrations.sh and then runs the whole
+  supabase/tests/ suite automatically — no CI file changes were needed
+  for this new test to be picked up) is the actual test of whether this
+  is correct.

@@ -1,0 +1,149 @@
+ChatSched — Claude fixes, Sept 8
+=================================
+
+Scope: this file documents ONLY the eighth task resolved from
+"Claude To fix 1..txt" — item 12, HIGH: Opportunity acceptance is not
+atomic. Items 5 through 11 were already completed and documented
+separately ("claude fixes Sept 1" through "Sept 7"). Item 13 was left
+untouched.
+
+------------------------------------------------------------------------
+1. What the finding said, verified against the real source
+------------------------------------------------------------------------
+src/pages/BusinessOpportunities.tsx's decide() function, on accept:
+  1. UPDATEs opportunity_applications.status = 'accepted' as its own,
+     independent request.
+  2. THEN, as a completely separate request, inserts the actual
+     requests/channel_requests row — with the insert's result never even
+     checked (`await supabase.from("requests").insert(...)`, no
+     destructured {error}, no error handling of any kind).
+If step 2 fails for any reason, step 1 has already committed. The
+finding's own framing ("application can become accepted while the actual
+booking/request creation fails") is exactly right.
+
+------------------------------------------------------------------------
+2. What I found while tracing this, beyond the finding's own description
+------------------------------------------------------------------------
+Read the trigger that step 1's UPDATE actually depends on before writing
+anything, since the finding doesn't mention it: close_out_accepted_
+opportunity() (schema_phase69_opportunity_multi_accept.sql), an AFTER
+UPDATE trigger on opportunity_applications.status, fires the instant step
+1 commits — and once enough slots are filled, it ALSO declines every
+other pending application on that opportunity and marks the opportunity
+itself 'filled'. This means the real blast radius of step 2 failing is
+larger than "one application shows accepted with no booking" — if it was
+the last needed slot, every OTHER applicant has already been declined
+and the opportunity has already closed, all before the failed booking
+insert is even attempted.
+
+I also found a second, related race the finding's own wording doesn't
+name directly, but its required fix's own step 1 ("locks the
+application") implies needs covering: for an opportunity needing more
+than one publisher (publishers_needed > 1), two concurrent accept calls
+for two DIFFERENT pending applications on the SAME opportunity could
+each check "is there still a slot open" before either commits, and both
+proceed — overbooking the opportunity beyond what it actually needed.
+Locking only the application row (as the finding's own step 1 literally
+says) doesn't prevent this, since the two calls touch two different
+application rows; the opportunity row itself has to be locked too, since
+that's the actual shared, contended resource.
+
+------------------------------------------------------------------------
+3. The fix
+------------------------------------------------------------------------
+supabase/schema_phase89_atomic_opportunity_acceptance.sql (NEW):
+  - accept_opportunity_application(application_id) — a single RPC
+    implementing the finding's own five numbered steps exactly:
+    1. Locks the application (SELECT ... FOR UPDATE).
+    2. Verifies state — locks the opportunity too (closing the multi-slot
+       race above), checks the caller is the opportunity's own business
+       or an admin, checks the application is still pending, checks the
+       opportunity is still open, and re-counts accepted applications
+       against publishers_needed rather than trusting any cached count.
+    3. Creates the request/channel_request — identical field mapping to
+       what BusinessOpportunities.tsx used to do client-side, just
+       executed here instead.
+    4. Updates the application to 'accepted' — the same write that fires
+       close_out_accepted_opportunity(), completely unchanged; it now
+       just runs inside the same transaction as the booking insert
+       above, rather than as an already-committed, separate request.
+    5. Commits as one unit via the function's own implicit transaction —
+       any exception anywhere above rolls back everything, including the
+       status update and its trigger cascade. There is no longer a state
+       where an application shows accepted (or other applicants show
+       declined, or the opportunity shows filled) with no actual booking
+       behind it.
+  - PUBLIC execute revoked, granted only to authenticated — same
+    defense-in-depth convention established in item 7 and continued in
+    item 11.
+
+src/pages/BusinessOpportunities.tsx (EDITED):
+  - decide()'s accept branch now calls this RPC once and checks its
+    result, surfacing any rejection (not pending, not open, already
+    fully booked, not your opportunity) as an actual error message
+    instead of silently doing nothing. The decline branch is unchanged —
+    it was already a single, safe UPDATE with no dependent insert, and
+    the finding's own scope names only acceptance as the atomicity
+    problem.
+
+supabase/tests/atomic_opportunity_acceptance_test.sql (NEW):
+  - pgTAP test file, 9 assertions. A true race between concurrent accept
+    calls can't be simulated inside one pgTAP transaction (same
+    limitation as item 11's test file) — what it proves is that the
+    sequential state transitions are correct: an unrelated business can't
+    accept on an opportunity it doesn't own; the real owner accepting a
+    social-media publisher's application creates a real requests row and
+    marks it accepted in one call; accepting that same application again
+    fails; accepting a second (non-social-media) application creates a
+    real channel_requests row, AND close_out_accepted_opportunity's
+    existing cascade correctly fires from inside that same
+    transaction — the opportunity flips to filled and the still-pending
+    third application is auto-declined, proving the cascade and the
+    booking insert now genuinely share one atomic unit.
+
+supabase/tests/README.md (EDITED): added a section documenting how to
+run the new test file and what it covers.
+
+------------------------------------------------------------------------
+4. Why this shape, not a different one
+------------------------------------------------------------------------
+- Named and shaped exactly as the finding's own required fix specifies
+  (accept_opportunity_application(), the same five numbered steps) —
+  there was no ambiguity to resolve here the way there was for items 8
+  and 10, so the fix follows the finding's own design directly rather
+  than substituting a different architecture.
+- Locking the opportunity row in addition to the application, beyond
+  what the finding's own step 1 literally names, because the multi-slot
+  overbooking race is real (confirmed by reading
+  close_out_accepted_opportunity() and publishers_needed's own
+  schema_phase69 history) and the finding's required fix already implies
+  it should be covered — "locks the application" was the closest
+  existing instruction to build from, not a ceiling on what needed
+  locking.
+- Left the decline path completely untouched, because it was never the
+  problem: a single UPDATE with no dependent row creation doesn't have
+  an atomicity gap to close, and touching it would be scope creep beyond
+  what "opportunity acceptance is not atomic" actually names.
+
+------------------------------------------------------------------------
+5. What's NOT done, and why that's a deliberate boundary here
+------------------------------------------------------------------------
+- Did not add a business-subscription-active check to the new RPC, even
+  though the ORIGINAL opportunity could only have been posted with one
+  (opportunities_insert_own's own gate) — under the once-off membership
+  model (item 10), subscriptions essentially never lapse anymore except
+  via admin revoke, and adding a check here would be scope creep beyond
+  this finding's atomicity-only concern, consistent with the same
+  decision made for item 11's credit RPCs.
+- Item 13 in "Claude To fix 1..txt" is untouched.
+- Claude to fix 2.txt and Claude to fix 3.txt were not opened.
+- Same standing honesty note this project's test suite has carried since
+  it began: no Postgres, Docker, or Supabase CLI in this sandbox, so
+  neither the new migration nor the new test file has been run against a
+  real database. Everything here was reviewed by hand, line-by-line,
+  against the actual current trigger and frontend code — not written
+  from memory of what it "should" say. The first real `supabase test db`
+  run, and a genuine concurrent-request test (a load-testing tool firing
+  two overlapping accept calls for different applications on the same
+  multi-slot opportunity, not two sequential manual ones), are the
+  actual tests of whether this is correct.

@@ -1,0 +1,18 @@
+Service/Channel,Backend evidence,Frontend evidence,State,Action
+Social media,Core publisher/request model + directory booking flow,"Browse, Home, channel hub, publisher profiles",LIVE,Keep as core inventory
+Influencer,Typed request fields + channel module + request flow,"Channel Hub, channel page, publisher/request surfaces",LIVE by default after Layer 1,Keep
+Podcast,Typed request fields + module + request flow,"Channel Hub, channel page",LIVE by default after Layer 1,Keep
+Website,Typed request fields + module + request flow,"Channel Hub, channel page",LIVE by default after Layer 1,Keep
+Radio,Typed request fields + module + request flow,"Channel Hub, channel page",LIVE by default after Layer 1,Keep
+Sports,Schema/module present,Frontend detail pages and application paths exist,COMING SOON,Add supply-first state
+Events,Schema/module present,Frontend detail pages and application paths exist,COMING SOON,Add verified event inventory first
+Community,Schema/module present,Frontend detail pages and application paths exist,COMING SOON,Add verified groups first
+Transport,Schema/module present,Frontend detail pages and application paths exist,COMING SOON,Add route/media inventory first
+Informal retail,Schema/module present,Frontend detail pages and application paths exist,COMING SOON,Add real shops/inventory first
+Associations,Schema/module present,Frontend detail pages and application paths exist,COMING SOON,Add association inventory first
+Restaurants,Schema/module present,Frontend detail pages and application paths exist,COMING SOON,Add restaurant placements first
+In-venue screens,Phase 96 channel schema/module; manual Phase-1 delivery notes,Channel registry/detail route present,BETA / COMING SOON,Do not advertise as fully automated DOOH until playback proof is built
+Marketing Suite,Real match/reach/content/campaign/ROI tooling in source,Business-facing tools/pages,LIVE,Package as ChatSched Tools / Marketing Suite
+WhatsApp receptionist,No dedicated production service found in audited schema/functions,No dedicated production product page/service,ROADMAP,Do not market as live
+Lead capture,Public forms + agency leads + rate-limited Edge Function,Forms and agency flow,LIVE,"Position as lead capture workflow, not a generic SaaS tool"
+Quote/booking/review/offer tools,No equivalent dedicated backend product service found,No dedicated production product page/service,ROADMAP,Keep in roadmap

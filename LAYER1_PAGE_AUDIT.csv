@@ -1,0 +1,96 @@
+Page,Route(s),Recommendation,Primary improvement
+About.tsx,/about,SECONDARY — remove from primary nav,Outcome-first and task-focused.
+Accessibility.tsx,/accessibility,KEEP/HUB — trust/legal,Outcome-first and task-focused.
+AccountSettings.tsx,/account,KEEP — contextual/app,Outcome-first and task-focused.
+Admin.tsx,,KEEP — contextual/app,Outcome-first and task-focused.
+AdminAnalytics.tsx,,KEEP — contextual/app,Outcome-first and task-focused.
+AdminAuditLog.tsx,,KEEP — contextual/app,Outcome-first and task-focused.
+AdminCampaigns.tsx,,KEEP — contextual/app,Outcome-first and task-focused.
+AdminCareers.tsx,,KEEP — contextual/app,Outcome-first and task-focused.
+AdminChannelRequests.tsx,,KEEP — contextual/app,Outcome-first and task-focused.
+AdminClients.tsx,,KEEP — contextual/app,Outcome-first and task-focused.
+AdminCompliance.tsx,,KEEP — contextual/app,Outcome-first and task-focused.
+AdminLeads.tsx,,KEEP — contextual/app,Outcome-first and task-focused.
+AdminMessageSafety.tsx,,KEEP — contextual/app,Outcome-first and task-focused.
+AdminOpportunities.tsx,,KEEP — contextual/app,Outcome-first and task-focused.
+AdminPayouts.tsx,,KEEP — contextual/app,Outcome-first and task-focused.
+AdminSecurity.tsx,,KEEP — contextual/app,Outcome-first and task-focused.
+Advertise.tsx,/advertise,SECONDARY — remove from primary nav,Outcome-first and task-focused.
+AudienceFinder.tsx,/audience-finder,KEEP — core funnel,Outcome-first and task-focused.
+Blog.tsx,/blog,KEEP/CONSOLIDATE — content hub,Outcome-first and task-focused.
+BlogPost.tsx,/blog/:slug,KEEP/CONSOLIDATE — content hub,Outcome-first and task-focused.
+Browse.tsx,/browse,KEEP — core funnel,Progressive filters; obvious request CTA.
+BudgetCalculator.tsx,/budget-calculator,KEEP — contextual/app,Outcome-first and task-focused.
+BuildMyCampaign.tsx,/build-my-campaign,KEEP — core funnel,Outcome-first and task-focused.
+BusinessOpportunities.tsx,,KEEP — contextual/app,Outcome-first and task-focused.
+BusinessPublisherRelationships.tsx,,KEEP — contextual/app,Outcome-first and task-focused.
+BusinessStandards.tsx,/trust/business-standards,KEEP/HUB — trust/legal,Outcome-first and task-focused.
+BusinessSuccess.tsx,/business-success,KEEP/CONSOLIDATE — content hub,Outcome-first and task-focused.
+BusinessSuccessArticle.tsx,/business-success/:slug,KEEP/CONSOLIDATE — content hub,Outcome-first and task-focused.
+CampaignCompliance.tsx,,KEEP — contextual/app,Outcome-first and task-focused.
+CampaignWorkspace.tsx,,KEEP — contextual/app,Outcome-first and task-focused.
+Careers.tsx,/careers,SECONDARY — remove from primary nav,Outcome-first and task-focused.
+CaseStudies.tsx,/case-studies,KEEP — core funnel,Outcome-first and task-focused.
+Categories.tsx,/categories,KEEP — core funnel,Outcome-first and task-focused.
+ChannelHub.tsx,/channels,KEEP — core funnel,Actual live/coming-soon state and inventory vocabulary.
+ChannelPage.tsx,/channels/:slug,KEEP — core funnel,Outcome-first and task-focused.
+ChannelQuiz.tsx,/channel-quiz,KEEP — contextual/app,Outcome-first and task-focused.
+ComingSoon.tsx,*,REPLACE — dedicated 404,Outcome-first and task-focused.
+Community.tsx,/community,KEEP/CONSOLIDATE — content hub,Outcome-first and task-focused.
+CommunityAnnouncements.tsx,/community/announcements,KEEP/CONSOLIDATE — content hub,Outcome-first and task-focused.
+CommunityEvents.tsx,/community/events,KEEP/CONSOLIDATE — content hub,Outcome-first and task-focused.
+CommunityQa.tsx,/community/qa,KEEP/CONSOLIDATE — content hub,Outcome-first and task-focused.
+ComparePublishers.tsx,/compare,KEEP — contextual/app,Outcome-first and task-focused.
+Compliance.tsx,/compliance,KEEP/HUB — trust/legal,Outcome-first and task-focused.
+Contact.tsx,/contact,SECONDARY — remove from primary nav,Outcome-first and task-focused.
+CreatorStandards.tsx,/trust/creator-standards,KEEP/HUB — trust/legal,Outcome-first and task-focused.
+Dashboard.tsx,,KEEP — contextual/app,Outcome-first and task-focused.
+EarningsDashboard.tsx,,KEEP — contextual/app,Outcome-first and task-focused.
+EarningsEstimator.tsx,/earnings-estimator,KEEP — contextual/app,Outcome-first and task-focused.
+Faq.tsx,/faq,MERGE/HUB — Help,Outcome-first and task-focused.
+Fees.tsx,/fees,MERGE INTO Pricing,Outcome-first and task-focused.
+ForBusinesses.tsx,/for-businesses,KEEP — core funnel,Outcome-first and task-focused.
+ForPublishers.tsx,/for-publishers,KEEP — core funnel,Outcome-first and task-focused.
+ForgotPassword.tsx,/forgot-password,KEEP — auth,Outcome-first and task-focused.
+FraudPrevention.tsx,/trust/fraud-prevention,KEEP/HUB — trust/legal,Outcome-first and task-focused.
+Glossary.tsx,/glossary,MERGE/HUB — Help,Outcome-first and task-focused.
+Help.tsx,/help,MERGE/HUB — Help,Outcome-first and task-focused.
+Home.tsx,/,KEEP — core funnel,Outcome-first hero; managed vs self-service; no unsupported counters.
+HowItWorks.tsx,/how-it-works,MERGE/HUB — How it works,Outcome-first and task-focused.
+HowPaymentWorks.tsx,/how-payment-works,MERGE/HUB — How it works,Outcome-first and task-focused.
+Investors.tsx,/investors,SECONDARY — remove from primary nav,Outcome-first and task-focused.
+Login.tsx,/login,KEEP — auth,Outcome-first and task-focused.
+MapView.tsx,,KEEP — contextual/app,Outcome-first and task-focused.
+MediaKit.tsx,/media-kit,KEEP — contextual/app,Outcome-first and task-focused.
+MediaNetwork.tsx,/network,MERGE INTO For Publishers,Outcome-first and task-focused.
+Messages.tsx,,KEEP — contextual/app,Outcome-first and task-focused.
+MfaSetup.tsx,/mfa-setup,KEEP — contextual/app,Outcome-first and task-focused.
+MfaVerify.tsx,/mfa-verify,KEEP — contextual/app,Outcome-first and task-focused.
+Mission.tsx,/mission,SECONDARY — remove from primary nav,Outcome-first and task-focused.
+OpportunityFeed.tsx,,KEEP — contextual/app,Outcome-first and task-focused.
+Partners.tsx,/partners,SECONDARY — remove from primary nav,Outcome-first and task-focused.
+PartnersApply.tsx,/partners/apply,SECONDARY — remove from primary nav,Outcome-first and task-focused.
+PaymentResult.tsx,,KEEP — contextual/app,Outcome-first and task-focused.
+PlatformRules.tsx,/platform-rules,KEEP/HUB — trust/legal,Outcome-first and task-focused.
+Press.tsx,/press,SECONDARY — remove from primary nav,Outcome-first and task-focused.
+Pricing.tsx,/pricing,KEEP — core funnel,"One pricing truth; separate activation, campaign spend, commission, tools."
+Privacy.tsx,/privacy,KEEP/HUB — trust/legal,Outcome-first and task-focused.
+PublisherApply.tsx,,KEEP — contextual/app,Outcome-first and task-focused.
+PublisherProfile.tsx,/browse/:id,KEEP — core funnel,"Audience fit, placement, proof, price, request; no private contacts."
+PublisherRelationships.tsx,,KEEP — contextual/app,Outcome-first and task-focused.
+PublisherSuccess.tsx,/publisher-success,KEEP/CONSOLIDATE — content hub,Outcome-first and task-focused.
+PublisherSuccessArticle.tsx,/publisher-success/:slug,KEEP/CONSOLIDATE — content hub,Outcome-first and task-focused.
+ReachChecker.tsx,/reach-checker,KEEP — contextual/app,Outcome-first and task-focused.
+Register.tsx,/register,KEEP — auth,Outcome-first and task-focused.
+ResetPassword.tsx,/reset-password,KEEP — auth,Outcome-first and task-focused.
+Roadmap.tsx,/roadmap,SECONDARY — remove from primary nav,Outcome-first and task-focused.
+Safety.tsx,/trust/safety,KEEP/HUB — trust/legal,Outcome-first and task-focused.
+SavedLists.tsx,/lists,KEEP — contextual/app,Outcome-first and task-focused.
+SavedSearches.tsx,/saved-searches,KEEP — contextual/app,Outcome-first and task-focused.
+Security.tsx,/security,KEEP/HUB — trust/legal,Outcome-first and task-focused.
+Suburbs.tsx,/suburbs,KEEP — contextual/app,Outcome-first and task-focused.
+Terms.tsx,/terms,KEEP/HUB — trust/legal,Outcome-first and task-focused.
+TrackRedirect.tsx,/t/:slug,REVIEW,Outcome-first and task-focused.
+Transparency.tsx,/transparency,KEEP/HUB — trust/legal,Outcome-first and task-focused.
+TrustCentre.tsx,/trust,KEEP/HUB — trust/legal,Outcome-first and task-focused.
+WorkWithUs.tsx,/work-with-us,SECONDARY — remove from primary nav,Outcome-first and task-focused.

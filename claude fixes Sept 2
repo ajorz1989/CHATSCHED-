@@ -1,0 +1,236 @@
+ChatSched — Claude fixes, Sept 2
+=================================
+
+Scope: this file documents ONLY the second task resolved from
+"Claude To fix 1..txt" — item 6, CRITICAL: Public publisher rows expose
+sensitive columns. Item 5 (admin role escalation) was already completed
+and documented separately in "claude fixes Sept 1". Items 7 onward in
+that file were left untouched.
+
+------------------------------------------------------------------------
+1. What the finding said, verified against the real source
+------------------------------------------------------------------------
+publishers_select_approved_or_own_or_admin (schema_phase5.sql):
+    for select using (status = 'approved' or auth.uid() = user_id or public.is_admin())
+This has no `to authenticated` restriction, so it applies to the `anon`
+role too. It's a ROW filter only — once any row passes it (which every
+approved publisher always does, for literally anyone), the ENTIRE row
+becomes readable through PostgREST, including every sensitive column the
+table has accumulated since schema_phase5.sql first added the policy:
+email, mobile_number, company_registration, vat_number, admin_notes,
+rejected_reason, business_name (schema_phase5.sql), and payout_method,
+payout_details, payout_account_verified_at (schema_payouts_phase1.sql).
+This is real and independent of any frontend file: an unauthenticated
+`GET /rest/v1/publishers?select=*&status=eq.approved` returns all of it
+today, regardless of what any UI chooses to render.
+
+------------------------------------------------------------------------
+2. What I found while tracing this, beyond the finding's own description
+------------------------------------------------------------------------
+I read every one of the 16 frontend files that touch the `publishers`
+table (not just the one named in the finding, BusinessHomeSummary.tsx)
+before writing anything, to classify each as own-row, admin, or genuine
+public/marketplace browsing:
+
+  Public browsing (needed the fix): src/hooks/usePublishers.ts (the
+  central data source behind 14 separate consumer pages — Browse, Home,
+  PublisherProfile, ComparePublishers, MediaKit, MapView, the
+  marketing-suite tools, AudienceFinder, BuildMyCampaign, CaseStudies,
+  SavedLists, SavedSearches, Suburbs, Categories),
+  src/components/BusinessHomeSummary.tsx (3 separate query call sites),
+  src/lib/recentlyViewed.ts, src/pages/ReachChecker.tsx,
+  src/pages/About.tsx, src/pages/Press.tsx (the last two are
+  count-only, head:true queries for the public publisher-count stat).
+
+  Own-row (no change needed — already gated by user_id = auth.uid()):
+  src/components/PortfolioManager.tsx, src/components/
+  PublisherDashboardView.tsx, src/lib/accountExport.ts, src/lib/
+  campaignWorkspace.ts, src/pages/CampaignCompliance.tsx, src/pages/
+  EarningsDashboard.tsx, src/pages/OpportunityFeed.tsx, src/pages/
+  PublisherApply.tsx (insert only, not select).
+
+  Admin (no change needed — already gated by is_admin()):
+  src/pages/Admin.tsx, src/pages/AdminCampaigns.tsx, src/components/
+  CreateRequestForClient.tsx.
+
+I also traced every OTHER table's RLS policies that reference
+`public.publishers` in a subquery (channel_requests, and similar
+patterns elsewhere) to confirm none of them depend on the "approved"
+branch specifically — they all match via `p.user_id = auth.uid()`, the
+own-branch, so narrowing the approved branch away doesn't affect them.
+
+Most importantly, I found a real, non-obvious dependency that the
+finding didn't mention: calculate_trust_score(), calculate_publisher_
+score(), assign_publisher_level(), and refresh_publisher_scores() (all
+in schema_phase5.sql, later redefined by schema_phase9.sql and
+schema_phase11.sql) were never declared SECURITY DEFINER. refresh_
+publisher_scores() is called by a trigger that fires `after insert or
+update on public.reviews`, and reviews_insert_own_completed
+(schema_phase2.sql) lets an ordinary BUSINESS — not the publisher, not
+an admin — insert a review after their own completed request. Because
+these functions default to SECURITY INVOKER, that trigger's internal
+`select * from publishers where id = ...` runs under the REVIEWING
+BUSINESS's own RLS. Today that succeeds because of the very "approved"
+branch this fix needed to remove. If I'd removed that branch without
+also fixing these functions, every review submission would have started
+silently zeroing out the reviewed publisher's trust_score and
+publisher_score, because the SELECT would return no row and the
+calculation functions fall back to returning 0 when nothing is found.
+This would have been a severe, silent regression shipped alongside a
+security fix — found by tracing the actual trigger chain, not assumed.
+
+------------------------------------------------------------------------
+3. Files changed
+------------------------------------------------------------------------
+- supabase/schema_phase82_restrict_public_publisher_columns.sql (NEW)
+    - Redefines calculate_trust_score(), calculate_publisher_score(),
+      assign_publisher_level(), and refresh_publisher_scores() as
+      SECURITY DEFINER (with set search_path = public). Every function
+      body is copied verbatim from its latest existing definition
+      (schema_phase11.sql for calculate_trust_score, schema_phase9.sql
+      for refresh_publisher_scores, schema_phase5.sql for the other
+      two) — this is purely a security-context annotation change, no
+      logic was touched.
+    - Creates public.publishers_public, a view exposing only the columns
+      the public-facing marketplace UI actually reads (checked directly
+      against every usePublishers() consumer, plus
+      MarketplaceProfileView.tsx for channel_metadata specifically) for
+      status = 'approved' rows. Explicitly excludes: email,
+      mobile_number, business_name, company_registration, vat_number,
+      admin_notes, rejected_reason, reviewed_at, payout_method,
+      payout_details, payout_account_verified_at, authenticity_risk,
+      authenticity_notes, authenticity_checked_at, email_verified,
+      phone_verified, identity_verified, account_age_months, and
+      posting_frequency. Documented in a `comment on view` so this stays
+      visible from inside the database itself, not just this file.
+      Relies on the standard Postgres/Supabase "safe view" pattern:
+      created via the SQL editor, so it's owned by the `postgres` role,
+      and an ordinary view without security_invoker = true (the
+      Postgres default) resolves the underlying table access using the
+      VIEW OWNER's privileges — postgres bypasses RLS entirely — so the
+      view's own `where status = 'approved'` becomes the only row filter
+      that applies, for anon and authenticated alike.
+    - Grants SELECT on publishers_public to anon and authenticated.
+    - Drops publishers_select_approved_or_own_or_admin and replaces it
+      with publishers_select_own_or_admin — the "status = 'approved'"
+      branch is removed from the base table entirely. Public browsing
+      now exclusively goes through publishers_public; a logged-in
+      publisher still sees their own full row, and admins still see
+      every column of every row.
+
+- src/hooks/usePublishers.ts (EDITED)
+    - fetchApprovedPublishers() now queries "publishers_public" instead
+      of "publishers", and the now-redundant .eq("status", "approved")
+      filter is removed (the view already only contains approved rows).
+
+- src/components/BusinessHomeSummary.tsx (EDITED)
+    - All three publisher queries (the requested-publishers category/
+      province lookup, the category-based recommendation query, and the
+      province-fallback recommendation query) now use "publishers_public"
+      instead of "publishers", with the redundant approved filter
+      removed from the two that had it.
+
+- src/lib/recentlyViewed.ts (EDITED)
+    - The "recently viewed publishers" lookup now uses "publishers_public"
+      instead of "publishers"; redundant approved filter removed.
+
+- src/pages/ReachChecker.tsx (EDITED)
+    - The reach-estimation query now uses "publishers_public" instead of
+      "publishers"; redundant approved filter removed. This one already
+      used a narrow select("id, name, followers") rather than "*", but
+      the ROW itself was only reachable via the now-removed base-table
+      "approved" branch, so it needed to move to the view regardless of
+      which columns it asked for.
+
+- src/pages/About.tsx and src/pages/Press.tsx (EDITED)
+    - Both public-publisher-count stats (count: "exact", head: true) now
+      query "publishers_public" instead of "publishers"; redundant
+      approved filter removed.
+
+- supabase/tests/publishers_public_column_restriction_test.sql (NEW)
+    - pgTAP test file, 8 assertions, following the established pattern
+      in this directory. Proves: an unrelated authenticated user (and a
+      fully anonymous session) can read the approved row via
+      publishers_public; that row has no email, payout_details, or
+      admin_notes KEY at all in the view (checked via
+      to_jsonb(...) ? 'column', not just "the value happens to be
+      null"); the same unrelated user gets ZERO rows querying the base
+      publishers table directly for that same row (not
+      column-restricted — the row itself is gone); and the owner and an
+      admin can still read sensitive columns straight off the base
+      table, confirming the fix narrows who gets the row rather than
+      what a legitimate reader of it can see.
+
+- supabase/tests/rls_channels_publishers_channel_requests_test.sql (EDITED)
+    - This pre-existing test file had one assertion that would have
+      started failing after this fix: "an unrelated authenticated user
+      can see an approved publisher" against the base publishers table,
+      expecting count = 1. Found this by re-reading the file's own
+      fixtures while tracing dependencies, not by running anything.
+      Split into two assertions matching the new behaviour: base table
+      now returns 0 rows for that same query, and publishers_public
+      returns 1. Updated the file's plan() count from 17 to 18 and its
+      header comments to explain both the historical 16→17 change and
+      this new 17→18 change.
+
+- supabase/tests/README.md (EDITED)
+    - Updated the migration-version note for
+      rls_channels_publishers_channel_requests_test.sql (now needs
+      schema_phase82, not just schema_phase78, because of the edit
+      above) and its assertion count (16→18 total across both changes).
+      Added a new section documenting how to run
+      publishers_public_column_restriction_test.sql and what it covers.
+
+- Claude To fix 1..txt (EDITED)
+    - Marked item 6 as [COMPLETED], pointing at the new migration, the
+      new test file, the updated existing test file, and this document.
+
+------------------------------------------------------------------------
+4. Why this shape, not a different one
+------------------------------------------------------------------------
+- A safe view, not a second "public_publishers" table or an RPC, because
+  the finding's own required-fix list offered "safe view/RPC or split
+  into separate tables" as options, and a view is the lowest-risk of the
+  three here: no data migration, no dual-write risk between two tables
+  staying in sync, and it reads naturally through the same PostgREST/
+  supabase-js `.from()` interface the frontend already uses everywhere
+  else, so the touched files only needed a one-line table-name swap.
+- Kept the view's column list to what's actually rendered today (traced
+  against real consumer code) rather than "everything that isn't on the
+  finding's never-expose list" — a narrower default surface is safer,
+  and any field a future feature genuinely needs to show publicly can be
+  added to the view explicitly, as a deliberate decision, rather than
+  already being exposed by default.
+- Made the four scoring functions SECURITY DEFINER instead of leaving
+  the approved branch in place for their sake, because that would have
+  meant not actually fixing the finding — the whole point is that
+  "approved" should no longer grant column-unrestricted access to
+  anyone, and these functions don't need a business's row-visibility at
+  all; they're server-computed fields (trust_score, publisher_score,
+  level) no ordinary user can write to directly in the first place, so
+  running them as definer is the more correct design regardless of this
+  fix, not just a workaround for it.
+- Fixed the one pre-existing test assertion this change would have
+  broken, rather than leaving a known-stale test in the suite — a pgTAP
+  file whose own comments claim to test current behavior but assert the
+  pre-fix behavior would be actively misleading to whoever runs this
+  suite for the first time.
+
+------------------------------------------------------------------------
+5. What's NOT done, and why that's a deliberate boundary here
+------------------------------------------------------------------------
+- Items 7 through 13 in "Claude To fix 1..txt" are untouched. Item 8
+  (business profile leakage via shared-request/conversation policies) is
+  the same class of bug as item 6 — RLS restricting rows, not columns —
+  but on the `profiles` table instead of `publishers`, and is its own
+  numbered task; it was not folded into this one.
+- Claude to fix 2.txt and Claude to fix 3.txt were not opened.
+- Same standing honesty note this project's test suite has carried since
+  it began: no Postgres, Docker, or Supabase CLI in this sandbox, so
+  neither the new migration nor either test file (new or edited) has
+  been run against a real database. Everything here was reviewed by
+  hand, line-by-line, against the actual current definitions of
+  publishers_select_approved_or_own_or_admin, the four scoring
+  functions, and every consumer file — not written from memory of what
+  they "should" say. The first real `supabase test db` run is the actual
+  test of whether this is correct.

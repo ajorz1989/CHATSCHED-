@@ -1,0 +1,130 @@
+{
+  "seo": {
+    "title": "Amabhizinisi · ChatSched",
+    "description": "Bhuka abashicileli nabadidiyeli bangempela baseNingizimu Afrika ngokuqondile — ayikho i-akhawunti yokukhangisa, ayikho ukubhida, ayikho i-alghorithm. Inkokhelo igcinwa kwi-escrow, imikhankaso elandelelwayo, ubufakazi uma isisebenza."
+  },
+  "hero": {
+    "badge": "Amabhizinisi",
+    "title": "Finyelela izilaleli osezizethemba amakhasimende akho.",
+    "subtitle": "I-ChatSched ixhumanisa amabhizinisi amancane aseNingizimu Afrika ngqo namakhasi, abadidiyeli namashaneli amakhasimende awo asewalandela — ayikho i-alghorithm, ayikho i-akhawunti yokukhangisa, ayikho impi yokubhida. Ukhokha kuphela uma umuntu wangempela eseqinisekise ukuthi ukuboniswa kwakho kuyasebenza.",
+    "ctaBrowse": "Bhuka Abashicileli →",
+    "ctaRegister": "Bhalisa Njengebhizinisi →"
+  },
+  "howItWorks": {
+    "badge": "Ukusebenza kwayo",
+    "title": "Kusukela esicelweni kuya ekusebenzeni, ngezinyathelo ezine.",
+    "steps": [
+      {
+        "title": "Thola ishaneli lakho",
+        "body": "Bheka amakhasi omphakathi, izikhulumeli, amawebhusayithi, ama-podcast namaqembu omsakazo ngesigaba, isifundazwe nezilaleli ukuze uthole okufanele amakhasimende akho."
+      },
+      {
+        "title": "Thumela isicelo",
+        "body": "Khetha umshicileli bese uthumela isicelo sokuboniswa esichaza ofuna ukukukhangisa — ayikho umphathi we-akhawunti, ayikho i-akhawunti yokukhangisa, asikho isamba esiphansi."
+      },
+      {
+        "title": "Khokha kwi-escrow",
+        "body": "Uma umshicileli evumile, khokha ngokuphepha ngekhadi, i-EFT esheshayo, noma i-EFT eyenziwa ngesandla. Imali ihlala ne-ChatSched — hhayi umshicileli — kuze kube ukuboniswa kuyasebenza ngempela."
+      },
+      {
+        "title": "Thola ubufakazi, hhayi izithembiso",
+        "body": "Bheka isicelo sakho sisuka ekuthunyelweni siye ekusebenzeni, unobufakazi uma sekuphelile. Asikho ukuqagela ukuthi isabelomali sakho siye kuphi."
+      }
+    ],
+    "escrowLink": "Bona umzila ophelele we-escrow nokukhokhwa →"
+  },
+  "channels": {
+    "badge": "Amashaneli amahlanu, uhambo olulodwa",
+    "title": "Bhuka noma yikuphi lapho amakhasimende akho ekhona.",
+    "subtitle": "Ishaneli ngalinye ngezansi lisebenza ngohambo olufanayo olulula lwesicelo-nokuvuma — khetha lawo afanele."
+  },
+  "tools": {
+    "badge": "Ebhodini lakho",
+    "title": "Isethi ephelele yokukhangisa, hhayi nje uhlu.",
+    "subtitle": "Uma usubhalisile, lawa mathuluzi ahlala ebhodini lakho ehambisana nezicelo zakho.",
+    "items": [
+      {
+        "name": "Match",
+        "body": "Chaza ibhizinisi lakho ngolimi olucacile — thola uhlu oluhleliwe lwabashicileli abafanele ngempela."
+      },
+      {
+        "name": "Umhleli Wokufinyelela",
+        "body": "Isihlahlandlela esiqondisayo esiguqula umgomo ube uhlelo nesheduli."
+      },
+      {
+        "name": "Isitudiyo Sokuqukethwe se-AI",
+        "body": "Isithombe esisodwa noma umbiko kube amafomethi ayisishiyagalolunye asekulungele ukuthunyelwa — Facebook, Instagram, TikTok, WhatsApp, nokunye."
+      },
+      {
+        "name": "Umakhi Womkhankaso",
+        "body": "Guqula umbiko olula ube umkhankaso onamaphuzu, kanye neziphakamiso zokuwenza ngcono."
+      },
+      {
+        "name": "Umlandeleli Womkhankaso",
+        "body": "Izixhumanisi zangempela zokulandelela umkhankaso ngamunye — ukuchofoza, ukuvakasha, abaholele kanye nokuguqulwa, hhayi izilinganiselo."
+      },
+      {
+        "name": "Isibali-ROI",
+        "body": "Faka isabelomali, uthole ukufinyelela okulinganiselwe nembuyiselo ngaphambi kokuzibophezela."
+      }
+    ]
+  },
+  "comparison": {
+    "badge": "Kungani ungagijimi nje izikhangiso zomphakathi?",
+    "title": "Imakethe eqondile, hhayi inkundla yokukhangisa.",
+    "colUs": "ChatSched",
+    "colThem": "Izinkundla Zokukhangisa Zomphakathi",
+    "rows": [
+      {
+        "us": "Uyazi ncamashi ukuthi ubani okukhangisayo nokuthi kungani efanele amakhasimende akho.",
+        "them": "Isikhangiso sakho siqhudelana ngokunakwa ngaphakathi kwe-alghorithm engaziwa."
+      },
+      {
+        "us": "Abashicileli bahlolwa ngesandla ngaphambi kokuba baliswe.",
+        "them": "Izinombolo zokufinyelela zibikwa ngokuzenzakalelayo futhi azihlale ziqinisekiswa."
+      },
+      {
+        "us": "Inkokhelo ihlala kwi-escrow kuze kube ukuboniswa kuqinisekisiwe kuyasebenza.",
+        "them": "Ukhokha kusengaphambili bese uthembela ekutheni i-alghorithm izokuletha."
+      },
+      {
+        "us": "Amashaneli endawo, athembekile amakhasimende akho asewalandela.",
+        "them": "Kuvinjwa kancane kancane izivimbeli zezikhangiso futhi kunganakwa ngenxa yokungabonakali kwamabhena."
+      }
+    ]
+  },
+  "escrowStrip": {
+    "title": "🔒 Imali ayihambi kuze kuhambe umsebenzi",
+    "body": "Inkokhelo yakho ihlala kwi-escrow — hhayi nomshicileli — kuze kube ukuboniswa kwakho kuqinisekisiwe kuyasebenza. Umshicileli ukhokhwa ngaphakathi kwamahora angu-{{hours}} emva kokuqala ukusebenza. Akekho oyedwa othwala ubungozi."
+  },
+  "faq": {
+    "title": "Imibuzo evamile",
+    "items": [
+      {
+        "q": "Ngidinga isivumelwano noma ukubhalisela?",
+        "a": "Asikho isivumelwano nganoma iyiphi indlela. Ukubheka kuhlale kumahhala — ukuthumela isicelo kudinga ukwenziwa kanye kwe-ChatSched Business (R399, kanye kuphela — ayibuyi nanini), okuvula futhi ukukhangisa okuphethwe futhi kufaka isikweletu sokuqalisa esingu-R199."
+      },
+      {
+        "q": "Ngazi kanjani ukuthi umshicileli usemthethweni?",
+        "a": "Umshicileli nomdidiyeli ngamunye uhlolwa ngesandla ngaphambi kokuba baliswe, futhi baphethe amaphuzu okwethenjwa nezinga elakhiwe emlandweni wempela womkhankaso — hhayi nje inombolo yabalandeli."
+      },
+      {
+        "q": "Imali ihamba nini ngempela?",
+        "a": "Uma umshicileli evumile isicelo sakho, unezinsuku ezingu-{{days}} zokukhokha kwi-escrow. Igcinwa lapho — ingakhishelwa umshicileli — kuze kube ukuboniswa kuqinisekisiwe kuyasebenza."
+      },
+      {
+        "q": "Kwenzekani uma umshicileli engaphenduli?",
+        "a": "Abashicileli banezinsuku ezingu-{{days}} zokuvuma noma ukwenqaba isicelo. Uma kungenziwanga lutho kuleso sikhathi, siyavaleka ngokuzenzakalelayo — awusoze walinda ingunaphakade."
+      },
+      {
+        "q": "Yimaphi amashaneli engingawabhuka?",
+        "a": "Amakhasi namaqembu omphakathi, izikhulumeli, amawebhusayithi, ama-podcast namaqembu omsakazo — konke ngohambo olufanayo lwesicelo-nokuvuma."
+      }
+    ]
+  },
+  "finalCta": {
+    "title": "Ukulungele ukufika phambi kwezilaleli zangempela?",
+    "ctaBrowse": "Bhuka Abashicileli →",
+    "ctaRegister": "Bhalisa Njengebhizinisi →"
+  }
+}

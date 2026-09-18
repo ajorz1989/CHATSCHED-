@@ -1,0 +1,229 @@
+﻿5. CRITICAL — Admin role escalation risk [COMPLETED — see schema_phase81_prevent_role_escalation.sql, supabase/tests/prevent_role_escalation_test.sql, and "claude fixes Sept 1" for the full writeup]
+Affected files
+* supabase/schema.sql
+* supabase/schema_phase5.sql
+* supabase/schema_phase7.sql
+* src/contexts/AuthContext.tsx
+* src/pages/Register.tsx
+Finding
+profiles_update_own_or_admin allows a user to update their own profiles row.
+handle_new_user() also accepts the role from new.raw_user_meta_data.
+prevent_self_verification() protects verification fields, but it does not protect the role column.
+Because is_admin() trusts profiles.role = 'admin', role should never be client-writable.
+Risk
+A non-admin authenticated user may be able to promote their own profile to admin through a normal update if the current Supabase policy behavior matches the source SQL.
+This would be a full privilege-escalation path.
+Required fix
+1. Add a BEFORE UPDATE trigger that prevents non-admin users from changing profiles.role.
+2. Whitelist signup roles to business or publisher only.
+3. Never trust admin from user metadata.
+4. Admin promotion must occur through a secure server/admin path.
+5. Add pgTAP/RLS tests proving a normal user cannot promote themselves.
+Severity: CRITICAL — launch blocker
+________________
+
+
+6. CRITICAL — Public publisher rows expose sensitive columns [COMPLETED — see schema_phase82_restrict_public_publisher_columns.sql, supabase/tests/publishers_public_column_restriction_test.sql, the updated rls_channels_publishers_channel_requests_test.sql, and "claude fixes Sept 2" for the full writeup]
+Affected files
+* supabase/schema_phase5.sql
+* supabase/schema_payouts_phase1.sql
+* public publisher query components such as BusinessHomeSummary.tsx
+Finding
+The public publisher select policy allows approved/owned/admin rows to be selected without column-level restriction.
+RLS controls rows, not individual columns.
+The publisher row contains sensitive fields including, depending on migration history:
+* email
+* mobile number
+* company registration
+* VAT number
+* admin notes
+* rejection reason
+* payout method
+* payout details JSON
+* payout account verification timestamp
+Some frontend queries also use broad select("*") patterns.
+Risk
+An approved publisher row can potentially expose sensitive/private operational fields through PostgREST even if the UI does not render them.
+Required fix
+Create a safe public publisher view/RPC or split public/private fields into separate tables.
+Public results should contain only fields intended for the marketplace.
+Never expose:
+* payout details
+* admin notes
+* private contact details
+* internal rejection details
+* sensitive business information
+Add anonymous/PostgREST tests.
+Severity: CRITICAL — launch blocker
+________________
+
+
+7. CRITICAL — Payout RPCs are insufficiently protected [COMPLETED — see schema_phase83_secure_payout_rpcs.sql, supabase/tests/payout_rpc_authorization_test.sql, and "claude fixes Sept 3" for the full writeup]
+Affected files
+* supabase/schema_payouts_phase1.sql
+* supabase/schema_payouts_functions.sql
+Finding
+The payout tables do not show explicit RLS enablement in the payout schema.
+More importantly, these SECURITY DEFINER functions lack sufficient authorization controls:
+* create_payout_batch()
+* mark_payout_item_attempt()
+* update_payout_status()
+approve_payout() does check is_admin(), but the other functions do not.
+mark_payout_item_attempt() also creates a negative publisher ledger entry every time it receives succeeded, without an obvious idempotency guard.
+Risk
+Potential unauthorized creation/modification of payout state and duplicate ledger debits.
+Required fix
+* Enable RLS on payout tables.
+* Revoke function execution from PUBLIC.
+* Grant only the intended service/admin role.
+* Prefer invoking worker-only operations through authenticated server infrastructure.
+* Add explicit allowed status transitions.
+* Make payout success idempotent.
+* Add a unique payout reference/event key.
+* Ensure one payout cannot be applied twice.
+* Lock the relevant ledger/balance rows during batch generation.
+Severity: CRITICAL — launch blocker
+________________
+
+
+8. HIGH — Business profile data leakage through shared-request/conversation policies [COMPLETED — see schema_phase84_safe_cross_party_profile_access.sql, supabase/tests/business_contact_public_test.sql, and "claude fixes Sept 4" for the full writeup]
+Affected files
+* supabase/schema_phase6.sql
+* supabase/schema_phase29_conversations.sql
+Finding
+Policies intended to give a user limited shared profile information grant access to an entire profiles row.
+The source comments describe this as effectively exposing a name, but RLS cannot restrict selected columns.
+Risk
+Fields such as phone and other profile data can be exposed to parties who merely share a request or conversation.
+Required fix
+Use explicit safe views/RPCs for cross-party profile access.
+Return only:
+* display name
+* business name where appropriate
+* avatar
+* permitted public metadata
+Severity: HIGH
+________________
+
+
+9. HIGH — Business-to-publisher communication conflicts with the new agency model [COMPLETED — see schema_phase85_retire_direct_messaging.sql, supabase/tests/retire_direct_messaging_test.sql, and "claude fixes Sept 5" for the full writeup]
+Affected files
+* src/lib/conversations.ts
+* src/pages/Messages.tsx
+* src/pages/PublisherProfile.tsx
+* supabase/schema_phase29_conversations.sql
+Finding
+The current repository still supports direct 1:1 business↔publisher conversations.
+The source comments explicitly say the conversation is opened by “Contact Publisher”.
+This conflicts with the current business model decision:
+Business → ChatSched → Publisher
+Required fix
+Public business CTA:
+Request Booking
+or
+Start Campaign Request
+Route communication through the ChatSched/agency layer.
+Keep publisher↔ChatSched communication.
+Retire open-ended business↔publisher direct messaging for the agency-controlled campaign path.
+Severity: HIGH — business model / bypass risk
+________________
+
+
+10. HIGH — Current pricing code does not match the latest intended pricing specification [COMPLETED — see schema_phase86_once_off_activation_pricing.sql, schema_phase87_featured_placement_subscriptions.sql, supabase/tests/once_off_pricing_and_featured_placement_test.sql, and "claude fixes Sept 6" for the full writeup]
+Affected files
+* src/lib/constants.ts
+* src/lib/subscriptions.ts
+* src/components/SubscriptionSection.tsx
+* src/pages/Pricing.tsx
+* src/pages/Fees.tsx
+* src/pages/ForPublishers.tsx
+* src/pages/ForBusinesses.tsx
+* supabase/schema_phase55_subscriptions.sql
+* subscription Edge Functions
+Current source configuration
+* Publisher: R99/month
+* Business: R199/month
+* Launch Credit: R199
+* Marketplace commission: 12%
+* Publisher share: 88%
+Latest business decision
+The latest requested commercial model is:
+* Publisher: R199 once-off activation
+* Business: R299 once-off activation
+* Commission: 8%
+* Secondary placements: from R99/month, with actual inventory pricing allowed above that where appropriate
+Assessment
+This is not a coding bug relative to the historical Phase 1–3 logs, because those logs described the older R99/R199 monthly model.
+It is a current product-spec mismatch and must be resolved before the public launch pricing is finalized.
+Severity: HIGH — launch/commercial requirement
+________________
+
+
+11. HIGH — Launch-credit race condition [COMPLETED — see schema_phase88_atomic_launch_credit_redemption.sql, supabase/tests/atomic_launch_credit_redemption_test.sql, and "claude fixes Sept 7" for the full writeup]
+Affected file
+* supabase/functions/payfast-checkout/index.ts
+Finding
+The checkout path reads the current launch credit, computes creditApplied, writes payment state, and later decrements the credit separately.
+Concurrent checkout requests may both observe the same remaining credit before either redemption is written.
+Risk
+One launch credit could be applied to multiple payments.
+Required fix
+Use an atomic server-side operation:
+* row lock
+* UPDATE ... WHERE remaining >= amount RETURNING ...
+* explicit reservation/redemption record
+* payment-to-credit relation
+* idempotency key
+Severity: HIGH
+________________
+
+
+12. HIGH — Opportunity acceptance is not atomic [COMPLETED — see schema_phase89_atomic_opportunity_acceptance.sql, supabase/tests/atomic_opportunity_acceptance_test.sql, and "claude fixes Sept 8" for the full writeup]
+Affected file
+* src/pages/BusinessOpportunities.tsx
+Finding
+The acceptance path updates the application to accepted and then creates the related booking/request.
+The insert result is not sufficiently handled as one atomic transaction.
+Risk
+Application can become accepted while the actual booking/request creation fails.
+Required fix
+Create a server-side atomic RPC such as:
+accept_opportunity_application()
+that:
+1. locks the application
+2. verifies state
+3. creates the request/channel request
+4. updates the application
+5. commits as one unit
+Severity: HIGH
+________________
+
+
+13. HIGH — Current E2E claims are overstated / suite is incomplete
+Affected files
+* e2e/auth-flows.spec.ts
+* e2e/marketplace-happy-path.spec.ts
+* playwright.config.ts
+* package.json
+Findings
+auth-flows.spec.ts references /signup, but the actual current route is /register.
+playwright.config.ts uses:
+http://localhost:5173
+while the dev server is configured for:
+http://localhost:3000
+The marketplace happy path still contains TODOs for:
+* business sign-in
+* publisher selection
+* payment
+* application submission
+Assessment
+The repository does contain Playwright infrastructure, but the historical claim of a complete 196/196 E2E production suite is not supported by the current source files.
+Required fix
+* Align Playwright webServer/baseURL.
+* Update route expectations.
+* Seed dedicated test accounts/database.
+* Remove TODOs.
+* Complete both sides of the marketplace happy path.
+* Add subscription and managed-campaign journeys.
+* Run in CI.
+Severity: HIGH

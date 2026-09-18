@@ -1,0 +1,133 @@
+﻿26. LOW/MEDIUM — i18n is structurally clean but not complete
+Current i18n infrastructure is good, but the application remains English-first in several new product areas.
+Native-language QA for Afrikaans, isiXhosa and isiZulu is not proven by code alone.
+Recommendation
+Treat translations as a content QA project after core launch correctness is complete.
+Severity: LOW/MEDIUM
+________________
+
+
+27. LOW — Branding metadata still uses old “billboard” positioning
+Affected files
+* package.json
+* index.html
+Examples include:
+* package name: billboard-app
+* title: ChatSched — Turn Pages Into Billboards
+* organization description still describes the older social-media-page/group marketplace concept
+This is inconsistent with the new universal advertising / managed advertising direction.
+Required fix
+Update package metadata and public SEO/OG/schema copy to the final approved positioning.
+Severity: LOW but important before public launch
+________________
+
+
+28. LOW/MEDIUM — “Trusted by” wording needs evidence
+Affected file
+* src/components/TrustedByStrip.tsx
+The component states:
+“Real businesses, already putting real pages to work.”
+with logos such as ScanWorth, VA Sports, World Travel, CIS and Idex & Cense.
+If every logo is a verified/current customer, this is fine.
+If any are founder-owned projects, partners, examples or ecosystem relationships, the wording is too strong.
+Required fix
+Use “Trusted by” only where customer evidence exists.
+Otherwise use wording such as:
+* “Businesses in the ChatSched ecosystem”
+* “Brands in our network”
+Severity: LOW/HIGH trust impact depending on factuality
+________________
+
+
+29. HIGH — Escrow language may overstate the actual payment architecture
+Affected files
+* src/pages/ForBusinesses.tsx
+* src/pages/HowPaymentWorks.tsx
+* related home/pricing copy
+The website repeatedly says:
+* “pay into escrow”
+* “money sits in escrow”
+However, the actual documented current architecture is PayFast checkout plus admin/manual payout, and the experimental payout worker is not a real escrow settlement system.
+Risk
+“Escrow” can imply a legal/regulatory arrangement that may not match the implemented payment flow.
+Required fix
+Use wording that accurately describes the actual payment mechanism, subject to legal/provider review.
+Example direction:
+“Payment is held pending campaign completion.”
+Do not use “escrow” unless the legal/provider arrangement genuinely supports it.
+Severity: HIGH before taking live money
+________________
+
+
+30. Homepage claims need evidence
+Affected file
+* src/pages/Home.tsx
+Current headline metrics include hard-coded targets such as:
+* 150+ businesses
+* R500,000+ paid out
+* 3x average bookings
+* 9/9 provinces
+The first three are static literals in the page rather than current database counts.
+Risk
+They can read as live platform statistics even if they are not currently true.
+Required fix
+Either:
+* drive them from verified live metrics, or
+* replace them with verified structural facts.
+Your transparency page should remain consistent with homepage claims.
+Severity: HIGH trust/conversion risk
+________________
+
+
+31. Current BuildMyCampaign is good but not yet a fully transactional agency quote engine
+The current page is now a real six-step campaign planning/recommendation experience and is substantially better than a simple lead form.
+However, the output still hands the opportunity into the agency workflow rather than completing:
+recommendation → quote → approval → payment → campaign
+That is acceptable for an early managed-service model.
+Future upgrade
+Turn the recommendation into a structured agency quote and approval flow.
+Severity: MEDIUM product opportunity
+________________
+
+
+32. Opportunity channel support — historical Phase 80 is now CLOSED
+This must be explicitly recorded because an earlier audit identified it as open.
+supabase/schema_phase80_opportunities_all_channels.sql is present in the current ZIP.
+It replaces the old hardcoded 5-channel opportunity check with a foreign key to public.channels(slug).
+The business/publisher opportunity UI already contains the expanded channel mappings.
+Assessment: FIX VERIFIED PRESENT
+________________
+
+
+33. Publisher verification checklist — historical Task 2 is CLOSED
+supabase/schema_phase79_publisher_verification_checks.sql exists and:
+* stores current verification-check state
+* links to channels(slug)
+* has admin-only RLS
+* is intentionally current-state rather than history
+* relies on admin_audit_log for immutable history
+Assessment: FIX VERIFIED PRESENT
+Still verify real Supabase execution in staging.
+________________
+
+
+34. OAuth security — historical vulnerability appears fixed
+The previous OAuth token-in-query-string issue has been corrected in the current implementation.
+The source now uses server-side OAuth initiation and encrypted token storage.
+tokenCrypto.ts uses AES-GCM style encrypted-at-rest handling.
+Assessment: PASS structurally
+Continue to verify:
+* OAuth state replay resistance
+* redirect URI restrictions
+* token rotation/expiry
+* secret storage
+in staging.
+________________
+
+
+35. Message safety / anti-bypass — good foundation
+The current product contains client-side prescan plus database-trigger-level message safety patterns covering phone/email/WhatsApp/external platform-like exchanges.
+This is good.
+The remaining business-model issue is not the absence of safety scanning, but the fact that the public UX still exposes “Contact Publisher” paths that conflict with your new agency positioning.
+Assessment: GOOD FOUNDATION, NEEDS AGENCY UX ALIGNMENT
+________________
