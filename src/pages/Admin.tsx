@@ -209,7 +209,7 @@ export default function Admin() {
       partnerRes, adRes, annRes, evtRes, qRes, channelRes, verifRes,
     ] = results;
 
-    const namedResults: [string, typeof reqRes][] = [
+    const namedResults = [
       ["requests", reqRes],
       ["publishers", pubRes],
       ["businesses", bizRes],
@@ -224,7 +224,7 @@ export default function Admin() {
       ["community questions", qRes],
       ["channels", channelRes],
       ["verification", verifRes],
-    ];
+    ] as const;
     const failed = namedResults.filter(([, result]) => result.error);
     if (failed.length > 0) {
       setLoadError("Some admin data could not be loaded: " + failed.map(([name, result]) => name + " (" + (result.error?.message ?? "unknown error") + ")").join(", "));
