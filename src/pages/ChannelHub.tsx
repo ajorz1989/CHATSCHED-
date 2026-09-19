@@ -17,7 +17,7 @@ import type { ChannelModule } from "../lib/channelTypes";
 import Seo from "../components/Seo";
 import ChannelIcon from "../components/ChannelIcon";
 
-// ─── Channel card ─────────────────────────────────────────────────────────────
+// ─── Channel card ──────────────────────────────────────────────────────────────
 
 function ChannelCard({ module }: { module: ChannelModule }) {
   const { definition: ch } = module;
@@ -61,15 +61,26 @@ function ChannelCard({ module }: { module: ChannelModule }) {
       </div>
 
       {/* CTA */}
-      <div className="px-5 pb-5">
+      <div className="px-5 pb-5 flex flex-col gap-2">
         {enabled ? (
           ch.isLive && ch.bookingFlow === "directory" ? (
-            <Link
-              to="/browse"
-              className="block w-full text-center border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold text-sm px-4 py-2.5 rounded hover:bg-billboard-yellowDeep transition hover:-translate-y-0.5"
-            >
-              Explore live inventory →
-            </Link>
+            // Fix: directory channels previously only showed "Explore live inventory"
+            // with no way to reach the channel's own detail page. Now shows both:
+            // primary = browse inventory, secondary = view channel page.
+            <>
+              <Link
+                to="/browse"
+                className="block w-full text-center border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold text-sm px-4 py-2.5 rounded hover:bg-billboard-yellowDeep transition hover:-translate-y-0.5"
+              >
+                Explore live inventory →
+              </Link>
+              <Link
+                to={`/channels/${ch.slug}`}
+                className="block w-full text-center border-[3px] border-billboard-ink text-billboard-ink font-semibold text-sm px-4 py-2 rounded hover:bg-billboard-paperDim transition"
+              >
+                View channel page →
+              </Link>
+            </>
           ) : ch.isLive ? (
             <Link
               to={`/channels/${ch.slug}`}
@@ -117,7 +128,7 @@ function CategorySection({ label, channels }: { label: string; channels: Channel
   );
 }
 
-// ─── Stats bar ────────────────────────────────────────────────────────────────
+// ─── Stats bar ──────────────────────────────────────────────────────────────────
 
 function StatsBar() {
   const all = getAllChannels();
@@ -141,7 +152,7 @@ function StatsBar() {
   );
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// ─── Page ───────────────────────────────────────────────────────────────────────
 
 export default function ChannelHub() {
   const groups = getChannelsByCategory();
