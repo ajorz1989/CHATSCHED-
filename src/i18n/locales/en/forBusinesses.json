@@ -1,14 +1,14 @@
 {
   "seo": {
-    "title": "For Businesses · ChatSched",
-    "description": "Book real South African publishers and creators directly — no ad account, no bidding, no algorithm. Escrow-held payment, tracked campaigns, proof once it's live."
+    "title": "For Businesses \u00b7 ChatSched",
+    "description": "Book real South African publishers and creators directly \u2014 no ad account, no bidding, no algorithm. Secure payment, tracked campaigns, proof once it's live."
   },
   "hero": {
     "badge": "For Businesses",
     "title": "Reach the audience your customers already trust.",
-    "subtitle": "ChatSched connects South African small businesses directly with the pages, creators and channels their customers already follow — no algorithm, no ad account, no bidding war. You pay only once a real person has confirmed your placement is live.",
-    "ctaBrowse": "Browse Publishers →",
-    "ctaRegister": "Register as a Business →"
+    "subtitle": "ChatSched connects South African small businesses directly with the pages, creators and channels their customers already follow \u2014 no algorithm, no ad account, no bidding war. You pay only once a real person has confirmed your placement is live.",
+    "ctaBrowse": "Browse Publishers \u2192",
+    "ctaRegister": "Register as a Business \u2192"
   },
   "howItWorks": {
     "badge": "How it works",
@@ -20,23 +20,23 @@
       },
       {
         "title": "Submit a request",
-        "body": "Pick a publisher and send a feature request describing what you want to promote — no account manager, no ad account, no minimum spend."
+        "body": "Pick a publisher and send a feature request describing what you want to promote \u2014 no account manager, no ad account, no minimum spend."
       },
       {
-        "title": "Pay into escrow",
-        "body": "Once the publisher approves, pay securely by card, instant EFT, or manual EFT. Funds sit with ChatSched — not the publisher — until the placement is actually live."
+        "title": "Pay securely",
+        "body": "Once the publisher approves, pay securely by card, instant EFT, or manual EFT. Funds stay in the ChatSched payment flow \u2014 not released to the publisher \u2014 until the placement is actually live."
       },
       {
         "title": "Get proof, not promises",
         "body": "Watch your request move from submitted to live, with proof once it's done. No guessing where your budget went."
       }
     ],
-    "escrowLink": "See the full escrow & payout timeline →"
+    "escrowLink": "See the full payment & payout timeline \u2192"
   },
   "channels": {
     "badge": "Five channels, one flow",
     "title": "Book wherever your customers already are.",
-    "subtitle": "Every channel below runs through the same simple request-and-approve flow — pick the ones that fit."
+    "subtitle": "Every channel below runs through the same simple request-and-approve flow \u2014 pick the ones that fit."
   },
   "tools": {
     "badge": "In your dashboard",
@@ -45,15 +45,15 @@
     "items": [
       {
         "name": "Match",
-        "body": "Describe your business in plain language — get a ranked list of publishers who actually fit."
+        "body": "Describe your business in plain language \u2014 get a ranked list of publishers who actually fit."
       },
       {
         "name": "Reach Planner",
         "body": "A guided wizard that turns a goal into a plan and a schedule."
       },
       {
-        "name": "AI Content Studio",
-        "body": "One photo or brief becomes nine ready-to-post formats — Facebook, Instagram, TikTok, WhatsApp, and more."
+        "name": "Content Studio",
+        "body": "One photo or brief becomes nine ready-to-post formats \u2014 Facebook, Instagram, TikTok, WhatsApp, and more."
       },
       {
         "name": "Campaign Builder",
@@ -61,7 +61,7 @@
       },
       {
         "name": "Campaign Tracker",
-        "body": "Real tracking links for every campaign — clicks, visits, leads and conversions, not estimates."
+        "body": "Real tracking links for every campaign \u2014 clicks, visits, leads and conversions, not estimates."
       },
       {
         "name": "ROI Calculator",
@@ -84,7 +84,7 @@
         "them": "Reach numbers are self-reported and can't always be verified."
       },
       {
-        "us": "Payment sits in escrow until the placement is confirmed live.",
+        "us": "Payment stays in the ChatSched payment flow until the placement is confirmed live.",
         "them": "You pay upfront and hope the algorithm delivers."
       },
       {
@@ -94,7 +94,7 @@
     ]
   },
   "escrowStrip": {
-    "title": "🔒 Your payment stays in the ChatSched payment flow",
+    "title": "\ud83d\udd12 Your payment stays in the ChatSched payment flow",
     "body": "After a campaign is approved, the payment stays in the ChatSched payment flow until the applicable live-placement condition is met. The publisher payout then follows the published payout timeline."
   },
   "faq": {
@@ -102,29 +102,29 @@
     "items": [
       {
         "q": "Do I need a contract or subscription?",
-        "a": "No contract either way. Browsing is always free — sending a request needs a one-time ChatSched Business activation (R399, once-off — no renewal, ever), which also unlocks managed advertising and includes a R199 launch credit."
+        "a": "No contract either way. Browsing is always free \u2014 sending a request needs a one-time ChatSched Business activation (R399, once-off \u2014 no renewal, ever), which also unlocks managed advertising and includes a R199 launch credit."
       },
       {
         "q": "How do I know a publisher is legitimate?",
-        "a": "Every publisher and creator is reviewed by hand before they're listed, and carries a visible trust score and level built from real campaign history — not just a follower count."
+        "a": "Every publisher and creator is reviewed by hand before they're listed, and carries a visible trust score and level built from real campaign history \u2014 not just a follower count."
       },
       {
         "q": "When does money actually move?",
-        "a": "Once a publisher approves your request, you have {{days}} days to pay into escrow. It's held there — not released to the publisher — until the placement is confirmed live."
+        "a": "Once a publisher approves your request, you have {{days}} days to pay. The payment stays in the ChatSched payment flow \u2014 not released to the publisher \u2014 until the placement is confirmed live."
       },
       {
         "q": "What if a publisher doesn't respond?",
-        "a": "Publishers have {{days}} days to approve or decline a request. If it's not actioned in that window, it closes automatically — you're never left waiting indefinitely."
+        "a": "Publishers have {{days}} days to approve or decline a request. If it's not actioned in that window, it closes automatically \u2014 you're never left waiting indefinitely."
       },
       {
         "q": "Which channels can I book?",
-        "a": "Social media pages and groups, influencers, websites, podcasts and radio slots — all through the same request-and-approve flow."
+        "a": "Social media pages and groups, influencers, websites, podcasts and radio slots \u2014 all through the same request-and-approve flow."
       }
     ]
   },
   "finalCta": {
     "title": "Ready to get in front of a real audience?",
-    "ctaBrowse": "Browse Publishers →",
-    "ctaRegister": "Register as a Business →"
+    "ctaBrowse": "Browse Publishers \u2192",
+    "ctaRegister": "Register as a Business \u2192"
   }
 }
