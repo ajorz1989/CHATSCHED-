@@ -66,6 +66,10 @@ const HOW_TO_APPLY = [
   },
 ];
 
+function formatDateOnly(value: string): string {
+  const parts = value.slice(0, 10).split("-");
+  return parts.length === 3 ? parts[2] + "/" + parts[1] + "/" + parts[0] : value;
+}
 function formatMB(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(0)}MB`;
 }
@@ -460,12 +464,12 @@ export default function Careers() {
                 {career.salary_min != null || career.salary_max != null ? (
                   <p className="font-mono text-xs mt-4">
                     {career.salary_period === "unspecified" ? "Salary / rate: " : "Pay: "}
-                    {career.salary_min != null ? "R" + career.salary_min.toLocaleString("en-ZA") : ""}{career.salary_min != null && career.salary_max != null ? " – " : ""}{career.salary_max != null ? "R" + career.salary_max.toLocaleString("en-ZA") : ""}
+                    {career.salary_min != null ? "R" + Number(career.salary_min).toLocaleString("en-ZA") : ""}{career.salary_min != null && career.salary_max != null ? " – " : ""}{career.salary_max != null ? "R" + Number(career.salary_max).toLocaleString("en-ZA") : ""}
                     {career.salary_period !== "unspecified" ? " / " + career.salary_period : ""}
                   </p>
                 ) : null}
                 {career.application_deadline && (
-                  <p className="text-[11px] text-billboard-inkSoft mt-2">Apply by {new Date(career.application_deadline).toLocaleDateString("en-ZA")}</p>
+                  <p className="text-[11px] text-billboard-inkSoft mt-2">Apply by {formatDateOnly(career.application_deadline)}</p>
                 )}
                 <button
                   type="button"
