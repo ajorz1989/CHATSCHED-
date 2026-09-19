@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import Seo from "../components/Seo";
 import MarketingIcon, { type MarketingIconName } from "../components/MarketingIcon";
 import { formatCurrency as formatCurrencyShared } from "../lib/currency";
@@ -108,7 +108,7 @@ function PayoutMockup() {
   );
 }
 
-function BenefitItem({ children }: { children: React.ReactNode }) {
+function BenefitItem({ children }: { children: ReactNode }) {
   return (
     <li className="flex items-start gap-2.5 text-sm leading-relaxed">
       <span aria-hidden="true" className="mt-[3px] inline-flex items-center justify-center w-4 h-4 rounded-full border-2 border-billboard-ink text-[10px] font-bold shrink-0">✓</span>
