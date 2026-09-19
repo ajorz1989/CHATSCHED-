@@ -101,15 +101,16 @@ const socialMediaModule: ChannelModule = {
       { key: "results", label: "Results", description: "Overall impact on brand awareness or sales." },
     ],
     publisherRequirements: [
-      "Minimum 1 000 followers on at least one platform",
+      // Fix: minimum was incorrectly stated as 1 000 — updated to 3 000
+      "Minimum 3 000 followers on at least one platform",
       "Engagement rate of 2% or higher",
       "Active posting history of at least 6 months",
-      "South African–based or SA-focused audience",
+      "South African\u2013based or SA-focused audience",
     ],
     advertiserBenefits: [
       "Authentic posts from trusted community voices",
       "Reach highly specific local audiences",
-      "Low minimum spend — start from R250 per post",
+      "Low minimum spend \u2014 start from R250 per post",
       "Browse, compare, and book without a media buyer",
     ],
     exampleUseCases: [
