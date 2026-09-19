@@ -241,7 +241,7 @@ export const WHATSAPP_NUMBER = "27608973472"; // 060 897 3472
 export const WHATSAPP_NUMBER_DISPLAY = "060 897 3472";
 export const CONTACT_EMAIL = "info@chatsched.com";
 export const CONTACT_WEBSITE = "chatsched.com";
-export const CONTACT_ADDRESS_LINES = ["West Way Farmstay Accommodation", "R27, Langebaan, 7357", "South Africa"];
+export const CONTACT_ADDRESS_LINES = ["Century Boulevard, Century City Dr", "Century City", "Cape Town, 7441", "South Africa"];
 
 export function whatsappLink(message?: string): string {
   const base = `https://wa.me/${WHATSAPP_NUMBER}`;
