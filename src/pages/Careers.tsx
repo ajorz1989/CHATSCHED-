@@ -427,6 +427,36 @@ export default function Careers() {
                   <span className="font-mono text-[10px] border border-billboard-ink/20 rounded-full px-2 py-1">{career.employment_type === "full_time" ? "Full-time" : career.employment_type === "part_time" ? "Part-time" : career.employment_type === "internship" ? "Internship" : career.employment_type.charAt(0).toUpperCase() + career.employment_type.slice(1)}</span>
                 </div>
                 <p className="text-sm text-billboard-inkSoft mt-4 leading-relaxed flex-1">{career.short_summary}</p>
+                <details className="mt-4 border-t-2 border-billboard-ink/10 pt-3">
+                  <summary className="cursor-pointer font-bold text-sm select-none">View role details</summary>
+                  <div className="pt-4 space-y-4 text-sm text-billboard-inkSoft">
+                    <p className="whitespace-pre-wrap leading-relaxed">{career.description}</p>
+                    {career.responsibilities.length > 0 && (
+                      <div>
+                        <h4 className="font-bold text-billboard-ink mb-1.5">Responsibilities</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                          {career.responsibilities.map((item) => <li key={item}>{item}</li>)}
+                        </ul>
+                      </div>
+                    )}
+                    {career.requirements.length > 0 && (
+                      <div>
+                        <h4 className="font-bold text-billboard-ink mb-1.5">Requirements</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                          {career.requirements.map((item) => <li key={item}>{item}</li>)}
+                        </ul>
+                      </div>
+                    )}
+                    {career.nice_to_have.length > 0 && (
+                      <div>
+                        <h4 className="font-bold text-billboard-ink mb-1.5">Nice to have</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                          {career.nice_to_have.map((item) => <li key={item}>{item}</li>)}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </details>
                 {career.salary_min != null || career.salary_max != null ? (
                   <p className="font-mono text-xs mt-4">
                     Salary: {career.salary_min != null ? "R" + career.salary_min.toLocaleString("en-ZA") : ""}{career.salary_min != null && career.salary_max != null ? " – " : ""}{career.salary_max != null ? "R" + career.salary_max.toLocaleString("en-ZA") : ""} / year
