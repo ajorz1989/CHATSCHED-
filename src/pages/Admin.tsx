@@ -21,6 +21,9 @@ import AdminOpportunities from "./AdminOpportunities";
 import AdminSecurity from "./AdminSecurity";
 import AdminCompliance from "./AdminCompliance";
 import AdminMessageSafety from "./AdminMessageSafety";
+import AdminCareersManager from "./AdminCareersManager";
+import AdminAJCreations from "./AdminAJCreations";
+import AdminNavigation, { type AdminTab } from "../components/AdminNavigation";
 import PayoutComplianceHint from "../components/PayoutComplianceHint";
 import { CATEGORIES, PROVINCES, PLATFORMS, SWATCHES, PUBLISHER_SHARE, PAYOUT_DUE_DAYS, FEATURED_DURATION_DAYS, WORK_WITH_US_CATEGORIES, WORK_WITH_US_ATTACHMENT_BUCKET, PARTNER_CATEGORIES, PARTNER_TYPES, ADVERTISE_PRODUCTS, COMMUNITY_EVENT_TYPES, COMMUNITY_QUESTION_CATEGORIES } from "../lib/constants";
 import { computeVerificationLevel } from "../lib/businessVerification";
@@ -39,7 +42,7 @@ import type { Publisher, PublisherRequest, ContactMessage, RequestStatus, Platfo
 // view's own request shape rather than reopening the shared type.
 type AdminRequestRow = PublisherRequest & { business: (Pick<Profile, "full_name" | "company_name" | "phone">) | null };
 
-type Tab = "requests" | "applications" | "publishers" | "businesses" | "messages" | "analytics" | "payouts" | "channel_requests" | "reports" | "disputes" | "security" | "compliance" | "safety" | "leads" | "clients" | "campaigns" | "audit_log" | "opportunities" | "work_with_us" | "partners" | "advertise" | "community";
+export type AdminTab = "requests" | "applications" | "publishers" | "businesses" | "messages" | "analytics" | "payouts" | "channel_requests" | "reports" | "disputes" | "security" | "compliance" | "safety" | "leads" | "clients" | "campaigns" | "audit_log" | "opportunities" | "work_with_us" | "partners" | "advertise" | "community" | "careers" | "aj_creations";
 const STATUSES: RequestStatus[] = ["pending", "contacted", "confirmed", "declined", "completed"];
 const WWU_STATUSES: WorkWithUsStatus[] = ["new", "contacted", "archived"];
 const WWU_STATUS_LABEL: Record<WorkWithUsStatus, string> = { new: "New", contacted: "Contacted", archived: "Archived" };
@@ -157,7 +160,7 @@ function AuthenticityCheck({ publisher: p, onChecked }: { publisher: Publisher; 
 
 export default function Admin() {
   const { user } = useAuth();
-  const [tab, setTab] = useState<Tab>("requests");
+  const [tab, setTab] = useState<AdminTab>("requests");
   const [requests, setRequests] = useState<AdminRequestRow[]>([]);
   const [publishers, setPublishers] = useState<Publisher[]>([]);
   const [businesses, setBusinesses] = useState<Profile[]>([]);
@@ -177,10 +180,14 @@ export default function Admin() {
   const [verificationRequiredChannels, setVerificationRequiredChannels] = useState<Set<string>>(new Set());
   const [verificationChecks, setVerificationChecks] = useState<Record<string, { checksConfirmed: string[]; checksTotal: number }>>({});
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   async function loadAll() {
     setLoading(true);
-    const [{ data: reqData }, { data: pubData }, { data: bizData }, { data: msgData }, { data: reportData }, { data: disputeData }, { data: wwuData }, { data: partnerData }, { data: adData }, { data: annData }, { data: evtData }, { data: qData }, { data: channelData }, { data: verifData }] = await Promise.all([
+    setLoadError(null);
+
+    const results = await Promise.all([
       supabase.from("requests").select("*, publisher:publishers(id,name), business:profiles(full_name, company_name, phone), payments(*)").order("created_at", { ascending: false }),
       supabase.from("publishers").select("*").order("created_at", { ascending: false }),
       supabase.from("profiles").select("*").eq("role", "business").order("created_at", { ascending: false }),
@@ -193,37 +200,63 @@ export default function Admin() {
       supabase.from("community_announcements").select("*").order("pinned", { ascending: false }).order("created_at", { ascending: false }),
       supabase.from("community_events").select("*").order("starts_at", { ascending: false }),
       supabase.from("community_questions").select("*").order("created_at", { ascending: false }),
-      // Task 2 — public read, same as every other channels-table query in
-      // this codebase (channels_select_all).
       supabase.from("channels").select("slug, verification_required"),
       supabase.from("publisher_verification_checks").select("publisher_id, checks_confirmed, checks_total"),
     ]);
-    setRequests((reqData ?? []) as unknown as AdminRequestRow[]);
-    setPublishers((pubData ?? []) as Publisher[]);
-    setBusinesses((bizData ?? []) as Profile[]);
-    setMessages((msgData ?? []) as ContactMessage[]);
-    setReports((reportData ?? []) as unknown as Report[]);
-    setWorkWithUs((wwuData ?? []) as WorkWithUsApplication[]);
-    setPartners((partnerData ?? []) as PartnerApplication[]);
-    setAdvertiseInquiries((adData ?? []) as AdvertiseInquiry[]);
-    setCommunityAnnouncements((annData ?? []) as CommunityAnnouncement[]);
-    setCommunityEvents((evtData ?? []) as CommunityEvent[]);
-    setCommunityQuestions((qData ?? []) as CommunityQuestion[]);
-    setDisputes(((disputeData ?? []) as unknown as Dispute[]).map((d) => ({
+
+    const [
+      reqRes, pubRes, bizRes, msgRes, reportRes, disputeRes, wwuRes,
+      partnerRes, adRes, annRes, evtRes, qRes, channelRes, verifRes,
+    ] = results;
+
+    const namedResults: [string, typeof reqRes][] = [
+      ["requests", reqRes],
+      ["publishers", pubRes],
+      ["businesses", bizRes],
+      ["messages", msgRes],
+      ["reports", reportRes],
+      ["disputes", disputeRes],
+      ["work with us", wwuRes],
+      ["partners", partnerRes],
+      ["advertise", adRes],
+      ["community announcements", annRes],
+      ["community events", evtRes],
+      ["community questions", qRes],
+      ["channels", channelRes],
+      ["verification", verifRes],
+    ];
+    const failed = namedResults.filter(([, result]) => result.error);
+    if (failed.length > 0) {
+      setLoadError("Some admin data could not be loaded: " + failed.map(([name, result]) => name + " (" + (result.error?.message ?? "unknown error") + ")").join(", "));
+    }
+
+    setRequests((reqRes.data ?? []) as unknown as AdminRequestRow[]);
+    setPublishers((pubRes.data ?? []) as Publisher[]);
+    setBusinesses((bizRes.data ?? []) as Profile[]);
+    setMessages((msgRes.data ?? []) as ContactMessage[]);
+    setReports((reportRes.data ?? []) as unknown as Report[]);
+    setWorkWithUs((wwuRes.data ?? []) as WorkWithUsApplication[]);
+    setPartners((partnerRes.data ?? []) as PartnerApplication[]);
+    setAdvertiseInquiries((adRes.data ?? []) as AdvertiseInquiry[]);
+    setCommunityAnnouncements((annRes.data ?? []) as CommunityAnnouncement[]);
+    setCommunityEvents((evtRes.data ?? []) as CommunityEvent[]);
+    setCommunityQuestions((qRes.data ?? []) as CommunityQuestion[]);
+    setDisputes(((disputeRes.data ?? []) as unknown as Dispute[]).map((d) => ({
       ...d,
       dispute_messages: (d.dispute_messages ?? []).slice().sort((a, b) => a.created_at.localeCompare(b.created_at)),
     })));
     setVerificationRequiredChannels(
-      new Set(((channelData ?? []) as { slug: string; verification_required: boolean }[]).filter((c) => c.verification_required).map((c) => c.slug))
+      new Set(((channelRes.data ?? []) as { slug: string; verification_required: boolean }[]).filter((ch) => ch.verification_required).map((ch) => ch.slug))
     );
     setVerificationChecks(
       Object.fromEntries(
-        ((verifData ?? []) as { publisher_id: string; checks_confirmed: string[]; checks_total: number }[]).map((v) => [
+        ((verifRes.data ?? []) as { publisher_id: string; checks_confirmed: string[]; checks_total: number }[]).map((v) => [
           v.publisher_id,
           { checksConfirmed: v.checks_confirmed, checksTotal: v.checks_total },
         ])
       )
     );
+
     setLoading(false);
   }
 
@@ -234,20 +267,41 @@ export default function Admin() {
   if (!isSupabaseConfigured) return <SetupNotice />;
 
   async function updateStatus(id: string, status: RequestStatus) {
+    const previous = requests.find((r) => r.id === id)?.status;
+    setActionError(null);
     setRequests((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)));
-    await supabase.from("requests").update({ status }).eq("id", id);
+
+    const { error } = await supabase.from("requests").update({ status }).eq("id", id);
+    if (error) {
+      if (previous) setRequests((prev) => prev.map((r) => (r.id === id ? { ...r, status: previous } : r)));
+      setActionError(formatSupabaseError(error, "Couldn't update the request status"));
+      return;
+    }
+
     supabase.functions.invoke("notify", { body: { kind: "status_change", request_id: id } }).catch(() => {});
   }
 
   async function updateAgreedAmount(id: string, agreed_amount: number | null) {
+    const previous = requests.find((r) => r.id === id)?.agreed_amount ?? null;
+    setActionError(null);
     setRequests((prev) => prev.map((r) => (r.id === id ? { ...r, agreed_amount } : r)));
-    await supabase.from("requests").update({ agreed_amount }).eq("id", id);
+
+    const { error } = await supabase.from("requests").update({ agreed_amount }).eq("id", id);
+    if (error) {
+      setRequests((prev) => prev.map((r) => (r.id === id ? { ...r, agreed_amount: previous } : r)));
+      setActionError(formatSupabaseError(error, "Couldn't update the agreed amount"));
+    }
   }
 
   async function markPayoutSent(paymentId: string) {
-    await supabase.from("payments").update({ payout_status: "paid", payout_date: new Date().toISOString() }).eq("id", paymentId);
+    setActionError(null);
+    const { error } = await supabase.from("payments").update({ payout_status: "paid", payout_date: new Date().toISOString() }).eq("id", paymentId);
+    if (error) {
+      setActionError(formatSupabaseError(error, "Couldn't mark the payout as sent"));
+      return;
+    }
     logAdminAction("payout_marked_sent", "payments", paymentId);
-    loadAll();
+    await loadAll();
   }
 
   // EFT payments (schema_phase28_eft_payment.sql) have no PayFast webhook to
@@ -256,9 +310,14 @@ export default function Admin() {
   // account and marks it paid here. Same two-step shape as
   // channel_requests' payment_submitted -> paid.
   async function confirmEftPayment(paymentId: string) {
-    await supabase.from("payments").update({ status: "paid", paid_at: new Date().toISOString() }).eq("id", paymentId);
+    setActionError(null);
+    const { error } = await supabase.from("payments").update({ status: "paid", paid_at: new Date().toISOString() }).eq("id", paymentId);
+    if (error) {
+      setActionError(formatSupabaseError(error, "Couldn't confirm the EFT payment"));
+      return;
+    }
     logAdminAction("eft_payment_confirmed", "payments", paymentId);
-    loadAll();
+    await loadAll();
   }
 
   // Approving recomputes trust_score / publisher_score / level right away via
@@ -454,67 +513,55 @@ export default function Admin() {
   const openReports = reports.filter((r) => r.status === "open");
   const openDisputes = disputes.filter((d) => d.status === "open" || d.status === "awaiting_response");
 
-  const tabs: [Tab, string][] = [
-    ["requests", `Requests (${requests.length})`],
-    ["applications", `Applications (${pendingApplications.length})`],
-    ["publishers", `Publishers (${reviewedPublishers.length})`],
-    ["channel_requests", "Channel Requests"],
-    ["work_with_us", `Work With Us (${workWithUs.length})`],
-    ["partners", `Partners (${partners.length})`],
-    ["advertise", `Advertise (${advertiseInquiries.length})`],
-    ["community", `Community (${communityQuestions.filter((q) => q.status === "pending").length} pending)`],
-    ["reports", `Reports (${openReports.length})`],
-    ["disputes", `Disputes (${openDisputes.length})`],
-    ["businesses", `Businesses (${businesses.length})`],
-    ["messages", `Messages (${messages.length})`],
-    ["analytics", "Analytics"],
-    ["payouts", "Payouts ⚠"],
-    ["security", "Security"],
-    ["compliance", "Compliance"],
-    ["safety", "Message Safety"],
-    ["leads", "Leads"],
-    ["clients", "Clients"],
-    ["campaigns", "Campaigns"],
-    ["audit_log", "Audit Log"],
-    ["opportunities", "Opportunities"],
-  ];
+  const navCounts: Partial<Record<AdminTab, string | number>> = {
+    requests: requests.length,
+    applications: pendingApplications.length,
+    publishers: reviewedPublishers.length,
+    businesses: businesses.length,
+    messages: messages.length,
+    channel_requests: "•",
+    work_with_us: workWithUs.length,
+    partners: partners.length,
+    advertise: advertiseInquiries.length,
+    community: communityQuestions.filter((q) => q.status === "pending").length,
+    reports: openReports.length,
+    disputes: openDisputes.length,
+    payouts: "⚠",
+  };
 
   return (
-    <div className="max-w-5xl mx-auto px-5 py-16">
+    <div className="max-w-[1440px] mx-auto px-5 py-8 md:py-10">
       <Seo title="Admin · ChatSched" noindex />
-      <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">Admin</span>
-      <div className="flex flex-wrap items-end justify-between gap-3 mb-8">
-        <h1 className="text-3xl md:text-4xl">Run the platform.</h1>
-        <div className="flex flex-wrap gap-2">
-          {/* Careers, Tools, and Visual Identity each have their own standalone route/page (not tabs here) — Careers is a separate review-queue workflow, Tools is a full catalogue-authoring form, Visual Identity is a design-review sandbox, none fit the tab bar's status-transition pattern. */}
-          <Link to="/admin/careers" className="font-mono text-xs font-semibold uppercase border-2 border-billboard-ink rounded px-3 py-2 hover:-translate-y-0.5 transition shrink-0">
-            Careers applications →
-          </Link>
-          <Link to="/admin/tools" className="font-mono text-xs font-semibold uppercase border-2 border-billboard-ink rounded px-3 py-2 hover:-translate-y-0.5 transition shrink-0">
-            ChatSched Tools →
-          </Link>
-          <Link to="/admin/visual-identity" className="font-mono text-xs font-semibold uppercase border-2 border-billboard-ink rounded px-3 py-2 hover:-translate-y-0.5 transition shrink-0">
-            Visual Identity →
-          </Link>
+      <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
+        <div>
+          <span className="inline-block font-mono text-[10px] font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-2">Admin</span>
+          <h1 className="text-3xl md:text-4xl">Run the platform.</h1>
+          <p className="text-sm text-billboard-inkSoft mt-1.5">One control centre for marketplace operations, content, finance and high-privilege tools.</p>
         </div>
+        <Link to="/careers" target="_blank" rel="noopener noreferrer" className="font-mono text-xs font-semibold uppercase border-2 border-billboard-ink rounded px-3 py-2 hover:-translate-y-0.5 transition">
+          View public Careers →
+        </Link>
       </div>
 
-      <div className="flex gap-2 mb-8 border-b-[3px] border-billboard-ink overflow-x-auto">
-        {tabs.map(([key, label]) => (
-          <button
-            key={key}
-            onClick={() => setTab(key)}
-            className={`font-mono text-xs font-semibold uppercase tracking-wide px-4 py-3 -mb-[3px] border-b-[3px] whitespace-nowrap transition ${tab === key ? "border-billboard-ink text-billboard-ink" : "border-transparent text-billboard-inkSoft"}`}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
+      {loadError && (
+        <div className="mb-5 rounded-lg border-2 border-billboard-red bg-billboard-red/5 px-4 py-3 text-sm text-billboard-red" role="alert">
+          {loadError}
+        </div>
+      )}
+      {actionError && (
+        <div className="mb-5 rounded-lg border-2 border-billboard-yellowDeep bg-billboard-yellow/10 px-4 py-3 text-sm text-billboard-ink" role="alert">
+          {actionError}
+        </div>
+      )}
 
-      {loading ? (
-        <SkeletonRows count={4} />
-      ) : tab === "requests" ? (
-        <RequestsTab requests={requests} onStatusChange={updateStatus} onAmountChange={updateAgreedAmount} onPayoutSent={markPayoutSent} onEftConfirm={confirmEftPayment} />
+      <div className="grid lg:grid-cols-[280px_minmax(0,1fr)] gap-6 items-start">
+        <AdminNavigation tab={tab} onSelect={(next) => { setActionError(null); setTab(next); }} counts={navCounts} />
+
+        <section aria-live="polite" aria-busy={loading}>
+          {loading ? (
+            <SkeletonRows count={4} />
+          ) : tab === "requests" ? (
+              <RequestsTab requests={requests} onStatusChange={updateStatus} onAmountChange={updateAgreedAmount} onPayoutSent={markPayoutSent} onEftConfirm={confirmEftPayment} />
       ) : tab === "applications" ? (
         <ApplicationsTab
           applications={pendingApplications}
@@ -575,9 +622,15 @@ export default function Admin() {
         <AdminOpportunities />
       ) : tab === "businesses" ? (
         <BusinessesTab businesses={businesses} onToggle={toggleBusinessFlag} />
-      ) : (
-        <MessagesTab messages={messages} />
-      )}
+          ) : tab === "careers" ? (
+            <AdminCareersManager />
+          ) : tab === "aj_creations" ? (
+            <AdminAJCreations />
+          ) : (
+            <MessagesTab messages={messages} />
+          )}
+        </section>
+      </div>
     </div>
   );
 }
