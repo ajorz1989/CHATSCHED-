@@ -18,6 +18,12 @@ export const CATEGORIES: Category[] = [
   { slug: "pets", name: "Pets & Animals", icon: "pets" },
   { slug: "events", name: "Events & Entertainment", icon: "events" },
   { slug: "social-followers", name: "Social Followers", icon: "social" },
+  // New categories aligned to the channel hub's live and upcoming channels.
+  // Icons are new named values added to CategoryIcon.tsx in the same PR.
+  { slug: "sports-recreation", name: "Sports & Recreation", icon: "sports" },
+  { slug: "transport-commute", name: "Transport & Commute", icon: "transport" },
+  { slug: "township-trade", name: "Township & Informal Trade", icon: "township" },
+  { slug: "business-professional", name: "Business & Professional", icon: "business" },
 ];
 
 export const PROVINCES = [
