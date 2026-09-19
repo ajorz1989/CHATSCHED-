@@ -341,10 +341,39 @@ export interface ContactMessage {
   created_at: string;
 }
 
+export type CareerStatus = "draft" | "active" | "paused" | "closed";
+
+export type CareerRemoteType = "onsite" | "hybrid" | "remote";
+export type CareerEmploymentType = "full_time" | "part_time" | "contract" | "freelance" | "internship";
+
+export interface Career {
+  id: string;
+  slug: string;
+  job_title: string;
+  department: string;
+  location: string;
+  remote_type: CareerRemoteType;
+  employment_type: CareerEmploymentType;
+  salary_min: number | null;
+  salary_max: number | null;
+  salary_currency: string;
+  short_summary: string;
+  description: string;
+  responsibilities: string[];
+  requirements: string[];
+  nice_to_have: string[];
+  status: CareerStatus;
+  application_deadline: string | null;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
 export type CareerApplicationStatus = "new" | "reviewing" | "interview" | "offer" | "hired" | "rejected";
 
 export interface CareerApplication {
   id: string;
+  career_id: string | null;
   name: string;
   email: string;
   role: string;
