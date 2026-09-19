@@ -11,6 +11,7 @@ const LIVE_CHANNELS = new Set(getEnabledChannels().map((c) => c.definition.slug)
 export default function AdminAJCreations() {
   const [selected, setSelected] = useState<ChannelSlug>("social-media");
   const [openForm, setOpenForm] = useState<ChannelSlug | null>("social-media");
+  const [completedChannels, setCompletedChannels] = useState<Set<ChannelSlug>>(new Set());
 
   const selectedModule = useMemo(
     () => ALL_CHANNELS.find((channel) => channel.definition.slug === selected) ?? ALL_CHANNELS[0],
@@ -46,8 +47,8 @@ export default function AdminAJCreations() {
                 <div className="font-mono text-[9px] uppercase tracking-wider text-white/40">Channel types</div>
               </div>
               <div className="rounded-lg border border-white/10 bg-white/[0.04] px-4 py-3">
-                <div className="font-display text-2xl">0</div>
-                <div className="font-mono text-[9px] uppercase tracking-wider text-white/40">Review delay</div>
+                <div className="font-display text-2xl">{completedChannels.size}</div>
+                <div className="font-mono text-[9px] uppercase tracking-wider text-white/40">Published now</div>
               </div>
             </div>
           </div>
@@ -66,6 +67,7 @@ export default function AdminAJCreations() {
             {ALL_CHANNELS.map((channel) => {
               const active = selected === channel.definition.slug;
               const publicLive = LIVE_CHANNELS.has(channel.definition.slug);
+              const completed = completedChannels.has(channel.definition.slug);
               return (
                 <button
                   key={channel.definition.slug}
@@ -92,7 +94,7 @@ export default function AdminAJCreations() {
                     {channel.definition.tagline}
                   </p>
                   <div className={`font-mono text-[9px] uppercase tracking-wider mt-2 ${active ? "text-billboard-inkSoft" : "text-white/30"}`}>
-                    {publicLive ? "Public channel enabled" : "Admin creation available · public launch flag off"}
+                    {completed ? "Published this session · live listing created" : publicLive ? "Public channel enabled" : "Admin creation available · public launch flag off"}
                   </div>
                 </button>
               );
@@ -131,7 +133,20 @@ export default function AdminAJCreations() {
                 View channel <ExternalLink size={13} />
               </Link>
             </div>
-            <PublisherApply adminMode forcedChannel={selected} />
+            <PublisherApply
+              key={selected}
+              adminMode
+              forcedChannel={selected}
+              onAdminCreated={(publisherId, channelSlug) => {
+                setCompletedChannels((prev) => {
+                  const next = new Set(prev);
+                  next.add(channelSlug);
+                  return next;
+                });
+                setSelected(channelSlug);
+                setOpenForm(null);
+              }}
+            />
           </div>
         )}
       </section>
