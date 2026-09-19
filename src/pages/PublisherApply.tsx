@@ -383,9 +383,10 @@ export interface PublisherApplyProps {
    */
   adminMode?: boolean;
   forcedChannel?: ChannelSlug;
+  onAdminCreated?: (publisherId: string, channelSlug: ChannelSlug) => void;
 }
 
-export default function PublisherApply({ adminMode = false, forcedChannel }: PublisherApplyProps) {
+export default function PublisherApply({ adminMode = false, forcedChannel, onAdminCreated }: PublisherApplyProps) {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -522,6 +523,7 @@ export default function PublisherApply({ adminMode = false, forcedChannel }: Pub
         console.warn("AJ: Creations audit log failed (non-fatal)", auditError);
       }
       supabase.functions.invoke("notify-saved-search-matches", { body: { publisher_id: inserted.id } }).catch(() => {});
+      onAdminCreated?.(inserted.id, channelSlug);
     }
 
     // 12-Channel Audit fix A1/B1 — upload proof AFTER the publishers row
