@@ -65,7 +65,7 @@ const CUSTOMER_PROFILE_OPTIONS: Array<{
   { id: "students_young_adults", label: "Students & Young Adults", icon: "people" },
   { id: "working_professionals", label: "Working Professionals", icon: "briefcase" },
   { id: "parents_families", label: "Parents & Families", icon: "people" },
-  { id: "homeowners_renters", label: "Homeowners & Renters", icon: "home" as MarketingIconName },
+  { id: "homeowners_renters", label: "Homeowners & Renters", icon: "building" },
   { id: "business_owners", label: "Business Owners & Decision Makers", icon: "briefcase" },
   { id: "shoppers_deal_seekers", label: "Shoppers & Deal Seekers", icon: "bag" },
   { id: "travellers_visitors", label: "Travellers & Visitors", icon: "globe" },
