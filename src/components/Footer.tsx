@@ -46,7 +46,7 @@ export default function Footer() {
             <Link to="/suburbs" className={LINK_CLASS}>Locations</Link>
             <Link to="/audience-finder" className={LINK_CLASS}>Audience Finder</Link>
             <Link to="/compare" className={LINK_CLASS}>Compare placements</Link>
-            <Link to="/case-studies" className={LINK_CLASS}>Examples</Link>
+            <Link to="/case-studies" className={LINK_CLASS}>Case Studies</Link>
             <Link to="/blog" className={LINK_CLASS}>Resources</Link>
           </div>
 
