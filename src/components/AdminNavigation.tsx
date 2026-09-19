@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   BarChart3,
   BriefcaseBusiness,
@@ -127,6 +127,10 @@ export default function AdminNavigation({
 }) {
   const [openGroup, setOpenGroup] = useState(() => getInitialOpenGroup(tab));
 
+  useEffect(() => {
+    setOpenGroup(getInitialOpenGroup(tab));
+  }, [tab]);
+
   function toggle(groupKey: string) {
     setOpenGroup((prev) => (prev === groupKey ? "" : groupKey));
   }
@@ -209,7 +213,10 @@ export default function AdminNavigation({
                         <button
                           key={item.key}
                           type="button"
-                          onClick={() => item.key && onSelect(item.key)}
+                          onClick={() => {
+                            setOpenGroup(group.key);
+                            if (item.key) onSelect(item.key);
+                          }}
                           className={`w-full flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-xs transition ${isActive ? "bg-billboard-yellow text-billboard-ink font-bold shadow-[0_0_0_1px_rgba(255,255,255,0.12),0_0_18px_rgba(255,205,64,0.14)]" : "text-white/65 hover:text-white hover:bg-white/[0.05]"}`}
                         >
                           {content}
