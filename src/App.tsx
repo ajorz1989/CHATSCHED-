@@ -61,7 +61,6 @@ const PublisherSuccessArticle = lazy(() => import("./pages/PublisherSuccessArtic
 const Transparency = lazy(() => import("./pages/Transparency"));
 // Advertise + Investors merged into CollaborateWithUs — old URLs redirect below
 const CollaborateWithUs = lazy(() => import("./pages/CollaborateWithUs"));
-const Press = lazy(() => import("./pages/Press"));
 const Security = lazy(() => import("./pages/Security"));
 const Help = lazy(() => import("./pages/Help"));
 const Accessibility = lazy(() => import("./pages/Accessibility"));
@@ -184,7 +183,6 @@ function RoutedContent() {
                     <Route path="/collaborate" element={<CollaborateWithUs />} />
                     <Route path="/advertise" element={<Navigate to="/collaborate" replace />} />
                     <Route path="/investors" element={<Navigate to="/collaborate" replace />} />
-                    <Route path="/press" element={<Press />} />
                     <Route path="/security" element={<Security />} />
                     <Route path="/help" element={<Help />} />
                     <Route path="/accessibility" element={<Accessibility />} />
