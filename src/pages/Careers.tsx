@@ -3,197 +3,682 @@ import Seo from "../components/Seo";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
 import { submitPublicForm } from "../lib/publicFormSubmit";
 import { useHoneypot } from "../hooks/useHoneypot";
-import { CAREER_CV_MAX_BYTES, ALLOWED_CV_MIME_TYPES, CAREER_CV_BUCKET, CONTACT_EMAIL } from "../lib/constants";
+import {
+  CAREER_CV_MAX_BYTES,
+  ALLOWED_CV_MIME_TYPES,
+  CAREER_CV_BUCKET,
+  CONTACT_EMAIL,
+  WORK_WITH_US_CATEGORIES,
+  WORK_WITH_US_ATTACHMENT_MAX_BYTES,
+  ALLOWED_WORK_WITH_US_ATTACHMENT_MIME_TYPES,
+  WORK_WITH_US_ATTACHMENT_BUCKET,
+} from "../lib/constants";
+import type { WorkWithUsCategory } from "../lib/types";
 import Button from "../components/Button";
 
+// ---------------------------------------------------------------------------
+// Content
+// ---------------------------------------------------------------------------
+
 const WHY_CHATSCHED = [
-  { title: "Build something from the ground up", body: "This is still early — you're not maintaining someone else's decisions, you're making the first ones." },
-  { title: "Work on marketplace technology", body: "Two-sided matching, trust scoring, payments and payouts — real marketplace problems, not CRUD screens." },
-  { title: "AI + advertising", body: "Audience matching, authenticity checks and content tooling, applied to a market that's still figuring out what AI-assisted advertising looks like." },
-  { title: "South African technology", body: "Built here, for South African businesses and South African publishers — not a global product adapted after the fact." },
-  { title: "Remote/flexible opportunities", body: "Work from wherever you're productive — what matters is the work, not the seat you're in." },
-  { title: "Small-team environment", body: "No layers between you and the decision. What you build ships, and you'll know why it matters." },
+  {
+    tag: "Impact",
+    title: "Your work reaches real South African businesses — fast.",
+    body:
+      "We’re not building features for a demo environment. Every publisher listing, booking flow, and trust signal you ship is used by an actual business trying to reach an actual audience. The feedback loop is weeks, not quarters.",
+  },
+  {
+    tag: "Ownership",
+    title: "No layers. No committees. Just build.",
+    body:
+      "This is a small, deliberately lean team. You’ll have direct input into architecture, product direction, and priorities — not because we’re informal, but because we’ve chosen to stay close to the work on purpose. What you ship, ships.",
+  },
+  {
+    tag: "Growth",
+    title: "Be early to a category that’s still being defined.",
+    body:
+      "AI-assisted advertising, two-sided marketplace matching, trust scoring for local creators — these are genuinely unsolved problems in the South African context. The decisions being made now will shape how this market works for years. You’d be making some of them.",
+  },
+  {
+    tag: "Culture",
+    title: "Built here. For here.",
+    body:
+      "ChatSched exists because global advertising platforms weren’t designed for how South African SMEs actually work. We take that seriously — in the product, in how we write, and in who we hire. Remote-flexible, South African-rooted, and built on the assumption that good work can come from anywhere.",
+  },
+];
+
+const HOW_TO_APPLY = [
+  {
+    step: "01",
+    title: "Pick your path",
+    body: "Full-time, freelance, intern, or collaborator — choose the tab that fits how you’d want to work with us.",
+  },
+  {
+    step: "02",
+    title: "Tell us what you’d bring",
+    body: "No open roles list to match against. Tell us the role you’re after and why you’d be the right person for it.",
+  },
+  {
+    step: "03",
+    title: "We review and reach out",
+    body: "Every application is read by a person. If there’s a fit — now or soon — we’ll get in touch.",
+  },
 ];
 
 function formatMB(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(0)}MB`;
 }
 
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
+
+type Tab = "fulltime" | "workwithus";
+
 export default function Careers() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [role, setRole] = useState("");
-  const [portfolioUrl, setPortfolioUrl] = useState("");
-  const [linkedinUrl, setLinkedinUrl] = useState("");
-  const [location, setLocation] = useState("");
-  const [coverLetter, setCoverLetter] = useState("");
-  const [website, setWebsite] = useState(""); // honeypot
-  const [cvFile, setCvFile] = useState<File | null>(null);
-  const [fileError, setFileError] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [activeTab, setActiveTab] = useState<Tab>("fulltime");
 
-  const [submitting, setSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [sent, setSent] = useState(false);
-  const { isLikelyBot, wrapperProps } = useHoneypot();
+  // ── Full-time form state
+  const [ftName, setFtName] = useState("");
+  const [ftEmail, setFtEmail] = useState("");
+  const [ftRole, setFtRole] = useState("");
+  const [ftPortfolioUrl, setFtPortfolioUrl] = useState("");
+  const [ftLinkedinUrl, setFtLinkedinUrl] = useState("");
+  const [ftLocation, setFtLocation] = useState("");
+  const [ftCoverLetter, setFtCoverLetter] = useState("");
+  const [ftWebsite, setFtWebsite] = useState(""); // honeypot
+  const [ftCvFile, setFtCvFile] = useState<File | null>(null);
+  const [ftFileError, setFtFileError] = useState<string | null>(null);
+  const ftFileInputRef = useRef<HTMLInputElement>(null);
+  const [ftSubmitting, setFtSubmitting] = useState(false);
+  const [ftSubmitError, setFtSubmitError] = useState<string | null>(null);
+  const [ftSent, setFtSent] = useState(false);
+  const { isLikelyBot: ftIsBot, wrapperProps: ftHoneypot } = useHoneypot();
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+  // ── Work With Us form state
+  const [wwuCategory, setWwuCategory] = useState<WorkWithUsCategory | null>(null);
+  const [wwuName, setWwuName] = useState("");
+  const [wwuEmail, setWwuEmail] = useState("");
+  const [wwuLocation, setWwuLocation] = useState("");
+  const [wwuMessage, setWwuMessage] = useState("");
+  const [wwuPortfolioUrl, setWwuPortfolioUrl] = useState("");
+  const [wwuLinkedinUrl, setWwuLinkedinUrl] = useState("");
+  const [wwuWebsite, setWwuWebsite] = useState(""); // honeypot
+  const [wwuFile, setWwuFile] = useState<File | null>(null);
+  const [wwuFileError, setWwuFileError] = useState<string | null>(null);
+  const wwuFileInputRef = useRef<HTMLInputElement>(null);
+  const [wwuSubmitting, setWwuSubmitting] = useState(false);
+  const [wwuSubmitError, setWwuSubmitError] = useState<string | null>(null);
+  const [wwuSent, setWwuSent] = useState(false);
+  const { isLikelyBot: wwuIsBot, wrapperProps: wwuHoneypot } = useHoneypot();
+
+  // ── Full-time handlers
+  function handleFtFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
-    setFileError(null);
-    if (!file) {
-      setCvFile(null);
-      return;
-    }
+    setFtFileError(null);
+    if (!file) { setFtCvFile(null); return; }
     if (!ALLOWED_CV_MIME_TYPES.includes(file.type)) {
-      setFileError("Please upload a PDF or Word document (.pdf, .doc, .docx).");
-      if (fileInputRef.current) fileInputRef.current.value = "";
-      setCvFile(null);
+      setFtFileError("Please upload a PDF or Word document (.pdf, .doc, .docx).");
+      if (ftFileInputRef.current) ftFileInputRef.current.value = "";
+      setFtCvFile(null);
       return;
     }
     if (file.size > CAREER_CV_MAX_BYTES) {
-      setFileError(`That file is ${formatMB(file.size)} — the limit is ${formatMB(CAREER_CV_MAX_BYTES)}.`);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-      setCvFile(null);
+      setFtFileError(`That file is ${formatMB(file.size)} — the limit is ${formatMB(CAREER_CV_MAX_BYTES)}.`);
+      if (ftFileInputRef.current) ftFileInputRef.current.value = "";
+      setFtCvFile(null);
       return;
     }
-    setCvFile(file);
+    setFtCvFile(file);
   }
 
-  async function handleSubmit(e: FormEvent) {
+  async function handleFtSubmit(e: FormEvent) {
     e.preventDefault();
-    if (isLikelyBot(website)) {
-      // Behave like success so a bot gets no signal it was caught.
-      setSubmitting(true);
-      setTimeout(() => { setSubmitting(false); setSent(true); }, 400);
+    if (ftIsBot(ftWebsite)) {
+      setFtSubmitting(true);
+      setTimeout(() => { setFtSubmitting(false); setFtSent(true); }, 400);
       return;
     }
-    if (!cvFile) {
-      setFileError("Please attach your CV.");
-      return;
-    }
-    setSubmitting(true);
-    setSubmitError(null);
+    if (!ftCvFile) { setFtFileError("Please attach your CV."); return; }
+    setFtSubmitting(true);
+    setFtSubmitError(null);
 
-    const ext = cvFile.name.split(".").pop()?.toLowerCase() || "pdf";
+    const ext = ftCvFile.name.split(".").pop()?.toLowerCase() || "pdf";
     const path = `applications/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-    const { error: uploadErr } = await supabase.storage.from(CAREER_CV_BUCKET).upload(path, cvFile, { cacheControl: "3600", upsert: false });
+    const { error: uploadErr } = await supabase.storage
+      .from(CAREER_CV_BUCKET)
+      .upload(path, ftCvFile, { cacheControl: "3600", upsert: false });
     if (uploadErr) {
-      setSubmitting(false);
-      setSubmitError("Couldn't upload your CV — it may be too large or an unsupported type. Try again.");
+      setFtSubmitting(false);
+      setFtSubmitError("Couldn’t upload your CV — it may be too large or an unsupported type. Try again.");
       return;
     }
 
     const result = await submitPublicForm("careers", {
-      name,
-      email,
-      role,
+      name: ftName,
+      email: ftEmail,
+      role: ftRole,
       cv_path: path,
-      cv_filename: cvFile.name,
-      portfolio_url: portfolioUrl.trim() || null,
-      linkedin_url: linkedinUrl.trim() || null,
-      location,
-      cover_letter: coverLetter,
+      cv_filename: ftCvFile.name,
+      portfolio_url: ftPortfolioUrl.trim() || null,
+      linkedin_url: ftLinkedinUrl.trim() || null,
+      location: ftLocation,
+      cover_letter: ftCoverLetter,
     });
 
-    setSubmitting(false);
+    setFtSubmitting(false);
     if (!result.ok) {
-      setSubmitError(result.error ?? "Something went wrong. Please try again.");
+      setFtSubmitError(result.error ?? "Something went wrong. Please try again.");
       return;
     }
-    setSent(true);
+    setFtSent(true);
   }
+
+  // ── Work With Us handlers
+  function handleWwuFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    setWwuFileError(null);
+    if (!f) { setWwuFile(null); return; }
+    if (!ALLOWED_WORK_WITH_US_ATTACHMENT_MIME_TYPES.includes(f.type)) {
+      setWwuFileError("Please attach a PDF, Word doc, or image (JPG/PNG/WebP).");
+      if (wwuFileInputRef.current) wwuFileInputRef.current.value = "";
+      setWwuFile(null);
+      return;
+    }
+    if (f.size > WORK_WITH_US_ATTACHMENT_MAX_BYTES) {
+      setWwuFileError(`That file is ${formatMB(f.size)} — the limit is ${formatMB(WORK_WITH_US_ATTACHMENT_MAX_BYTES)}.`);
+      if (wwuFileInputRef.current) wwuFileInputRef.current.value = "";
+      setWwuFile(null);
+      return;
+    }
+    setWwuFile(f);
+  }
+
+  async function handleWwuSubmit(e: FormEvent) {
+    e.preventDefault();
+    if (wwuIsBot(wwuWebsite)) {
+      setWwuSubmitting(true);
+      setTimeout(() => { setWwuSubmitting(false); setWwuSent(true); }, 400);
+      return;
+    }
+    if (!wwuCategory) { setWwuSubmitError("Pick a category above."); return; }
+    setWwuSubmitting(true);
+    setWwuSubmitError(null);
+
+    let attachment_path: string | null = null;
+    let attachment_filename: string | null = null;
+    if (wwuFile) {
+      const ext = wwuFile.name.split(".").pop()?.toLowerCase() || "pdf";
+      const path = `applications/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const { error: uploadErr } = await supabase.storage
+        .from(WORK_WITH_US_ATTACHMENT_BUCKET)
+        .upload(path, wwuFile, { cacheControl: "3600", upsert: false });
+      if (uploadErr) {
+        setWwuSubmitting(false);
+        setWwuSubmitError("Couldn’t upload your attachment — it may be too large or an unsupported type. Try again.");
+        return;
+      }
+      attachment_path = path;
+      attachment_filename = wwuFile.name;
+    }
+
+    const result = await submitPublicForm("work_with_us", {
+      name: wwuName,
+      email: wwuEmail,
+      category: wwuCategory,
+      location: wwuLocation,
+      message: wwuMessage,
+      portfolio_url: wwuPortfolioUrl.trim() || null,
+      linkedin_url: wwuLinkedinUrl.trim() || null,
+      attachment_path,
+      attachment_filename,
+    });
+
+    setWwuSubmitting(false);
+    if (!result.ok) {
+      setWwuSubmitError(result.error ?? "Something went wrong. Please try again.");
+      return;
+    }
+    setWwuSent(true);
+  }
+
+  // ── Shared field class
+  const fieldCls = "w-full border-2 border-billboard-ink rounded px-3 py-2.5 focus:outline-none focus:border-billboard-inkSoft transition text-sm";
 
   return (
     <div>
-      <Seo title="Careers · ChatSched" description="Build the future of local advertising with ChatSched — open opportunities across a small, remote-friendly South African team." />
+      <Seo
+        title="Careers · ChatSched"
+        description="Join a small South African team building the future of local advertising. Full-time roles, freelance, internships and collaborations — however you work best."
+      />
 
-      <section className="bg-billboard-yellow border-b-[3px] border-billboard-ink py-16">
+      {/* ───────────────────────── HERO ───────────────────────── */}
+      <section className="bg-billboard-yellow border-b-[3px] border-billboard-ink py-20">
         <div className="max-w-3xl mx-auto px-5">
-          <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-ink bg-billboard-paper px-3 py-1.5 rounded mb-4">Careers</span>
-          <h1 className="text-3xl md:text-4xl mb-5">Build the future of local advertising with ChatSched.</h1>
-          <p className="text-lg text-billboard-inkSoft max-w-xl">We're a small, early-stage team connecting South African businesses with the local audiences already worth reaching. If that sounds like your kind of problem, we want to hear from you.</p>
+          <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-ink bg-billboard-paper px-3 py-1.5 rounded mb-5">
+            Careers
+          </span>
+          <h1 className="text-3xl md:text-5xl font-display mb-5 max-w-2xl leading-tight">
+            Help build the advertising infrastructure South Africa actually needs.
+          </h1>
+          <p className="text-lg text-billboard-inkSoft max-w-xl mb-8">
+            We’re a small, early-stage team connecting local businesses with the audiences already worth reaching. Full-time, freelance, or collaborative — however you work best, there’s a way in.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => setActiveTab("fulltime")}
+              className="bg-billboard-ink text-billboard-paper font-bold px-5 py-2.5 rounded border-[3px] border-billboard-ink hover:-translate-y-0.5 transition text-sm"
+            >
+              Apply for a role
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("workwithus")}
+              className="bg-white font-bold px-5 py-2.5 rounded border-[3px] border-billboard-ink hover:-translate-y-0.5 transition text-sm"
+            >
+              Freelance / collaborate
+            </button>
+          </div>
         </div>
       </section>
 
-      <section className="max-w-4xl mx-auto px-5 py-16">
-        <h2 className="font-display text-xl mb-8">Why ChatSched</h2>
+      {/* ───────────────────────── WHY CHATSCHED ───────────────────────── */}
+      <section className="max-w-4xl mx-auto px-5 py-20">
+        <div className="mb-10">
+          <span className="font-mono text-xs font-semibold tracking-wider uppercase text-billboard-inkSoft">
+            Why ChatSched
+          </span>
+          <h2 className="font-display text-2xl md:text-3xl mt-2 max-w-xl">
+            This isn’t a role. It’s a front-row seat to something being built from scratch.
+          </h2>
+        </div>
         <div className="grid sm:grid-cols-2 gap-5">
           {WHY_CHATSCHED.map((item) => (
-            <div key={item.title} className="border-[3px] border-billboard-ink rounded p-5">
-              <h3 className="font-bold mb-1.5">{item.title}</h3>
-              <p className="text-sm text-billboard-inkSoft">{item.body}</p>
+            <div
+              key={item.title}
+              className="border-[3px] border-billboard-ink rounded p-6 flex flex-col gap-3"
+            >
+              <span className="inline-block font-mono text-xs font-bold tracking-wider uppercase bg-billboard-yellow border-2 border-billboard-ink px-2.5 py-1 rounded w-fit">
+                {item.tag}
+              </span>
+              <h3 className="font-bold text-base leading-snug">{item.title}</h3>
+              <p className="text-sm text-billboard-inkSoft leading-relaxed">{item.body}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="max-w-4xl mx-auto px-5 pb-8">
-        <div className="border-[3px] border-dashed border-billboard-ink rounded p-6 bg-billboard-paperDim">
-          <h2 className="font-display text-lg mb-1.5">Open roles</h2>
-          <p className="text-sm text-billboard-inkSoft">We don't run a fixed list of open positions — as a small team, who we need next changes fast. If you think you'd be a good fit anywhere in the business, tell us below what role you're after (or put "General application") and we'll get in touch if there's a match.</p>
+      {/* ───────────────────────── HOW IT WORKS ───────────────────────── */}
+      <section className="border-y-[3px] border-billboard-ink bg-billboard-paperDim py-16">
+        <div className="max-w-4xl mx-auto px-5">
+          <h2 className="font-display text-xl mb-8">How it works</h2>
+          <div className="grid sm:grid-cols-3 gap-6">
+            {HOW_TO_APPLY.map((s) => (
+              <div key={s.step} className="flex gap-4">
+                <span className="font-display text-3xl font-black text-billboard-ink/20 shrink-0 leading-none mt-1">
+                  {s.step}
+                </span>
+                <div>
+                  <h3 className="font-bold mb-1">{s.title}</h3>
+                  <p className="text-sm text-billboard-inkSoft">{s.body}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      <section className="max-w-2xl mx-auto px-5 pb-20">
-        {sent ? (
-          <div className="border-[3px] border-billboard-greenDeep bg-[#EAF3EC] text-billboard-greenDeep rounded p-6">
-            <h2 className="font-bold text-lg mb-1">Application received.</h2>
-            <p className="text-sm">Thanks, {name.split(" ")[0]} — we'll review it and reach out if there's a fit.</p>
+      {/* ───────────────────────── OPEN ROLES NOTE ───────────────────────── */}
+      <section className="max-w-4xl mx-auto px-5 py-10">
+        <div className="border-[3px] border-billboard-ink rounded p-6 flex flex-col sm:flex-row sm:items-center gap-4 bg-billboard-paper">
+          <div className="flex-1">
+            <p className="font-mono text-xs font-semibold tracking-wider uppercase text-billboard-inkSoft mb-1">Open roles</p>
+            <p className="font-bold text-base mb-1">We don’t maintain a fixed list.</p>
+            <p className="text-sm text-billboard-inkSoft">
+              As a small team, who we need next changes quickly. If you think you’d be a strong fit — tell us the role you’re after and make your case. We read every application.
+            </p>
           </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="border-[3px] border-billboard-ink rounded p-6">
-            <div className="grid sm:grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-sm font-semibold mb-1.5">Name</label>
-                <input required value={name} onChange={(e) => setName(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5" />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold mb-1.5">Email</label>
-                <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5" />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold mb-1.5">Role you're applying for</label>
-                <input required value={role} onChange={(e) => setRole(e.target.value)} placeholder="e.g. Full-Stack Developer, or General Application" className="w-full border-2 border-billboard-ink rounded px-3 py-2.5" />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold mb-1.5">Location</label>
-                <input required value={location} onChange={(e) => setLocation(e.target.value)} placeholder="e.g. Cape Town, South Africa" className="w-full border-2 border-billboard-ink rounded px-3 py-2.5" />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold mb-1.5">Portfolio <span className="font-normal text-billboard-inkSoft">(optional)</span></label>
-                <input type="url" value={portfolioUrl} onChange={(e) => setPortfolioUrl(e.target.value)} placeholder="https://…" className="w-full border-2 border-billboard-ink rounded px-3 py-2.5" />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold mb-1.5">LinkedIn <span className="font-normal text-billboard-inkSoft">(optional)</span></label>
-                <input type="url" value={linkedinUrl} onChange={(e) => setLinkedinUrl(e.target.value)} placeholder="https://linkedin.com/in/…" className="w-full border-2 border-billboard-ink rounded px-3 py-2.5" />
-              </div>
-            </div>
+          <button
+            type="button"
+            onClick={() => setActiveTab("fulltime")}
+            className="shrink-0 bg-billboard-yellow border-[3px] border-billboard-ink font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition text-sm"
+          >
+            Apply now →
+          </button>
+        </div>
+      </section>
 
-            <div className="mb-4">
-              <label className="block text-sm font-semibold mb-1.5">CV</label>
-              <input ref={fileInputRef} required type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={handleFileChange} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5 bg-white text-sm" />
-              <p className="text-xs text-billboard-inkSoft mt-1.5">PDF or Word, up to {formatMB(CAREER_CV_MAX_BYTES)}.</p>
-              {fileError && <p className="text-billboard-red text-xs font-semibold mt-1.5">{fileError}</p>}
-            </div>
+      {/* ───────────────────────── TABS ───────────────────────── */}
+      <section className="max-w-2xl mx-auto px-5 pb-24">
+        {/* Tab switcher */}
+        <div className="flex gap-2 mb-8 border-b-[3px] border-billboard-ink pb-4">
+          {([
+            { key: "fulltime" as Tab, label: "Apply for a role" },
+            { key: "workwithus" as Tab, label: "Freelance / collaborate" },
+          ] as const).map((t) => (
+            <button
+              key={t.key}
+              type="button"
+              onClick={() => setActiveTab(t.key)}
+              className={`font-semibold text-sm px-4 py-2 rounded border-2 border-billboard-ink transition ${
+                activeTab === t.key
+                  ? "bg-billboard-ink text-billboard-paper"
+                  : "bg-white hover:bg-billboard-paperDim"
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
 
-            <div className="mb-4">
-              <label className="block text-sm font-semibold mb-1.5">Cover letter</label>
-              <textarea required value={coverLetter} onChange={(e) => setCoverLetter(e.target.value)} rows={6} placeholder="Tell us why you'd be a good fit." className="w-full border-2 border-billboard-ink rounded px-3 py-2.5 resize-y" />
+        {/* ──── FULL-TIME FORM ──── */}
+        {activeTab === "fulltime" && (
+          ftSent ? (
+            <div className="border-[3px] border-billboard-ink rounded p-6 bg-billboard-paper">
+              <span className="inline-block font-mono text-xs font-bold tracking-wider uppercase bg-billboard-yellow border-2 border-billboard-ink px-2.5 py-1 rounded mb-3">
+                Application received
+              </span>
+              <h2 className="font-bold text-xl mb-2">Thanks, {ftName.split(" ")[0]}.</h2>
+              <p className="text-sm text-billboard-inkSoft">
+                We’ve got your application and will review it properly. If there’s a match — now or down the line — we’ll reach out. We don’t send rejection emails, so if you haven’t heard from us within four weeks, the timing wasn’t right.
+              </p>
             </div>
+          ) : (
+            <form onSubmit={handleFtSubmit} className="border-[3px] border-billboard-ink rounded p-6 space-y-4" noValidate>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold mb-1.5">Full name</label>
+                  <input
+                    required
+                    value={ftName}
+                    onChange={(e) => setFtName(e.target.value)}
+                    className={fieldCls}
+                    autoComplete="name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-1.5">Email address</label>
+                  <input
+                    required
+                    type="email"
+                    value={ftEmail}
+                    onChange={(e) => setFtEmail(e.target.value)}
+                    className={fieldCls}
+                    autoComplete="email"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-1.5">Role you’re applying for</label>
+                  <input
+                    required
+                    value={ftRole}
+                    onChange={(e) => setFtRole(e.target.value)}
+                    placeholder="e.g. Full-Stack Developer"
+                    className={fieldCls}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-1.5">Location</label>
+                  <input
+                    required
+                    value={ftLocation}
+                    onChange={(e) => setFtLocation(e.target.value)}
+                    placeholder="e.g. Cape Town, South Africa"
+                    className={fieldCls}
+                    autoComplete="address-level2"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-1.5">
+                    Portfolio{" "}
+                    <span className="font-normal text-billboard-inkSoft">(optional)</span>
+                  </label>
+                  <input
+                    type="url"
+                    value={ftPortfolioUrl}
+                    onChange={(e) => setFtPortfolioUrl(e.target.value)}
+                    placeholder="https://…"
+                    className={fieldCls}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-1.5">
+                    LinkedIn{" "}
+                    <span className="font-normal text-billboard-inkSoft">(optional)</span>
+                  </label>
+                  <input
+                    type="url"
+                    value={ftLinkedinUrl}
+                    onChange={(e) => setFtLinkedinUrl(e.target.value)}
+                    placeholder="https://linkedin.com/in/…"
+                    className={fieldCls}
+                  />
+                </div>
+              </div>
 
-            <div {...wrapperProps}>
-              <label htmlFor="careers-website">Leave this field empty</label>
-              <input id="careers-website" name="website" type="text" tabIndex={-1} autoComplete="off" value={website} onChange={(e) => setWebsite(e.target.value)} />
+              <div>
+                <label className="block text-sm font-semibold mb-1.5">CV</label>
+                <input
+                  ref={ftFileInputRef}
+                  required
+                  type="file"
+                  accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                  onChange={handleFtFileChange}
+                  className="w-full border-2 border-billboard-ink rounded px-3 py-2.5 bg-white text-sm"
+                />
+                <p className="text-xs text-billboard-inkSoft mt-1.5">PDF or Word, up to {formatMB(CAREER_CV_MAX_BYTES)}.</p>
+                {ftFileError && (
+                  <p className="text-billboard-red text-xs font-semibold mt-1.5" role="alert">{ftFileError}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold mb-1.5">Cover letter</label>
+                <textarea
+                  required
+                  value={ftCoverLetter}
+                  onChange={(e) => setFtCoverLetter(e.target.value)}
+                  rows={6}
+                  placeholder="What you’d work on, what you’d bring, and why ChatSched specifically — not a template."
+                  className={`${fieldCls} resize-y`}
+                />
+              </div>
+
+              <div {...ftHoneypot}>
+                <label htmlFor="careers-website">Leave this field empty</label>
+                <input
+                  id="careers-website"
+                  name="website"
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={ftWebsite}
+                  onChange={(e) => setFtWebsite(e.target.value)}
+                />
+              </div>
+
+              {ftSubmitError && (
+                <p className="text-billboard-red text-xs font-semibold" role="alert">{ftSubmitError}</p>
+              )}
+              {!isSupabaseConfigured && (
+                <p className="text-xs text-billboard-inkSoft">
+                  Email <a href={`mailto:${CONTACT_EMAIL}`} className="underline">{CONTACT_EMAIL}</a> directly for now.
+                </p>
+              )}
+              <Button
+                type="submit"
+                variant="primary"
+                size="md"
+                disabled={ftSubmitting || !isSupabaseConfigured}
+                className="w-full"
+              >
+                {ftSubmitting ? "Submitting…" : "Submit my application"}
+              </Button>
+            </form>
+          )
+        )}
+
+        {/* ──── WORK WITH US FORM ──── */}
+        {activeTab === "workwithus" && (
+          wwuSent ? (
+            <div className="border-[3px] border-billboard-ink rounded p-6 bg-billboard-paper">
+              <span className="inline-block font-mono text-xs font-bold tracking-wider uppercase bg-billboard-yellow border-2 border-billboard-ink px-2.5 py-1 rounded mb-3">
+                Received
+              </span>
+              <h2 className="font-bold text-xl mb-2">Thanks, {wwuName.split(" ")[0]}.</h2>
+              <p className="text-sm text-billboard-inkSoft">
+                We’ve got your message. If there’s a fit — now or when the timing is right — we’ll be in touch.
+              </p>
             </div>
+          ) : (
+            <form onSubmit={handleWwuSubmit} className="border-[3px] border-billboard-ink rounded p-6 space-y-4" noValidate>
+              {/* Category picker */}
+              <div>
+                <label className="block text-sm font-semibold mb-2">How would you work with us?</label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {WORK_WITH_US_CATEGORIES.map((c) => (
+                    <button
+                      key={c.value}
+                      type="button"
+                      onClick={() => setWwuCategory(c.value)}
+                      className={`text-left border-[3px] rounded px-3 py-2.5 transition text-sm font-semibold ${
+                        wwuCategory === c.value
+                          ? "border-billboard-ink bg-billboard-yellow"
+                          : "border-billboard-ink bg-white hover:bg-billboard-paperDim"
+                      }`}
+                    >
+                      {c.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-            {submitError && <p className="text-billboard-red text-xs font-semibold mb-3">{submitError}</p>}
-            {!isSupabaseConfigured && (
-              <p className="text-xs text-billboard-inkSoft mb-3">The database isn't connected yet, so this form won't save — email {CONTACT_EMAIL} for now.</p>
-            )}
-            <Button type="submit" variant="primary" size="md" disabled={submitting || !isSupabaseConfigured} className="w-full">
-              {submitting ? "Submitting…" : "Submit application"}
-            </Button>
-          </form>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold mb-1.5">Full name</label>
+                  <input
+                    required
+                    value={wwuName}
+                    onChange={(e) => setWwuName(e.target.value)}
+                    className={fieldCls}
+                    autoComplete="name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-1.5">Email address</label>
+                  <input
+                    required
+                    type="email"
+                    value={wwuEmail}
+                    onChange={(e) => setWwuEmail(e.target.value)}
+                    className={fieldCls}
+                    autoComplete="email"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-1.5">Location</label>
+                  <input
+                    required
+                    value={wwuLocation}
+                    onChange={(e) => setWwuLocation(e.target.value)}
+                    placeholder="e.g. Johannesburg, South Africa"
+                    className={fieldCls}
+                    autoComplete="address-level2"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-1.5">
+                    Portfolio / website{" "}
+                    <span className="font-normal text-billboard-inkSoft">(optional)</span>
+                  </label>
+                  <input
+                    type="url"
+                    value={wwuPortfolioUrl}
+                    onChange={(e) => setWwuPortfolioUrl(e.target.value)}
+                    placeholder="https://…"
+                    className={fieldCls}
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block text-sm font-semibold mb-1.5">
+                    LinkedIn{" "}
+                    <span className="font-normal text-billboard-inkSoft">(optional)</span>
+                  </label>
+                  <input
+                    type="url"
+                    value={wwuLinkedinUrl}
+                    onChange={(e) => setWwuLinkedinUrl(e.target.value)}
+                    placeholder="https://linkedin.com/in/…"
+                    className={fieldCls}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold mb-1.5">
+                  Attachment{" "}
+                  <span className="font-normal text-billboard-inkSoft">(optional — CV, deck, or sample work)</span>
+                </label>
+                <input
+                  ref={wwuFileInputRef}
+                  type="file"
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/jpeg,image/png,image/webp"
+                  onChange={handleWwuFileChange}
+                  className="w-full border-2 border-billboard-ink rounded px-3 py-2.5 bg-white text-sm"
+                />
+                <p className="text-xs text-billboard-inkSoft mt-1.5">
+                  PDF, Word, or image, up to {formatMB(WORK_WITH_US_ATTACHMENT_MAX_BYTES)}.
+                </p>
+                {wwuFileError && (
+                  <p className="text-billboard-red text-xs font-semibold mt-1.5" role="alert">{wwuFileError}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold mb-1.5">What you’d bring, and how you’d want to be involved</label>
+                <textarea
+                  required
+                  value={wwuMessage}
+                  onChange={(e) => setWwuMessage(e.target.value)}
+                  rows={6}
+                  placeholder="Be specific about what you do well, what kind of engagement you’re looking for, and any relevant experience."
+                  className={`${fieldCls} resize-y`}
+                />
+              </div>
+
+              <div {...wwuHoneypot}>
+                <label htmlFor="wwu-website">Leave this field empty</label>
+                <input
+                  id="wwu-website"
+                  name="website"
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={wwuWebsite}
+                  onChange={(e) => setWwuWebsite(e.target.value)}
+                />
+              </div>
+
+              {wwuSubmitError && (
+                <p className="text-billboard-red text-xs font-semibold" role="alert">{wwuSubmitError}</p>
+              )}
+              {!isSupabaseConfigured && (
+                <p className="text-xs text-billboard-inkSoft">
+                  Email <a href={`mailto:${CONTACT_EMAIL}`} className="underline">{CONTACT_EMAIL}</a> directly for now.
+                </p>
+              )}
+              <Button
+                type="submit"
+                variant="primary"
+                size="md"
+                disabled={wwuSubmitting || !isSupabaseConfigured}
+                className="w-full"
+              >
+                {wwuSubmitting ? "Submitting…" : "Send my details"}
+              </Button>
+            </form>
+          )
         )}
       </section>
     </div>
