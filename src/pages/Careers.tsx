@@ -459,7 +459,9 @@ export default function Careers() {
                 </details>
                 {career.salary_min != null || career.salary_max != null ? (
                   <p className="font-mono text-xs mt-4">
-                    Salary: {career.salary_min != null ? "R" + career.salary_min.toLocaleString("en-ZA") : ""}{career.salary_min != null && career.salary_max != null ? " – " : ""}{career.salary_max != null ? "R" + career.salary_max.toLocaleString("en-ZA") : ""} / year
+                    {career.salary_period === "unspecified" ? "Salary / rate: " : "Pay: "}
+                    {career.salary_min != null ? "R" + career.salary_min.toLocaleString("en-ZA") : ""}{career.salary_min != null && career.salary_max != null ? " – " : ""}{career.salary_max != null ? "R" + career.salary_max.toLocaleString("en-ZA") : ""}
+                    {career.salary_period !== "unspecified" ? " / " + career.salary_period : ""}
                   </p>
                 ) : null}
                 {career.application_deadline && (
