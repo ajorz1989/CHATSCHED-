@@ -5,23 +5,34 @@ import CategoryIcon from "../components/CategoryIcon";
 import LiveChannelTabs from "../components/LiveChannelTabs";
 import Seo from "../components/Seo";
 
+// Bug fix: BLURBS was previously keyed by `c.icon` (e.g. "lifestyle",
+// "community"), which is fragile — if two categories ever share the same
+// icon name, they'd silently share blurbs too, and any new category without
+// a matching icon key rendered nothing (undefined in JSX). Rekeyed by
+// `c.slug` instead, which is guaranteed unique per Category definition.
 const BLURBS: Record<string, string> = {
-  food: "Cafés, restaurants, food reviewers and deal pages.",
-  fitness: "Gyms, trainers, running clubs and wellness communities.",
-  beauty: "Salons, barbers, skincare and grooming pages.",
-  home: "Trades, contractors and household service providers.",
-  family: "Parenting groups, school communities and neighbourhood pages.",
-  auto: "Workshops, dealers and motoring communities.",
-  fashion: "Streetwear, thrift and style-focused accounts.",
-  tech: "Gaming, gadgets and local tech communities.",
-  "lifestyle": "Things-to-do, local culture and lifestyle pages.",
-  "news": "Local news, traffic, alerts and municipal updates.",
-  "community": "Neighbourhood watch, suburb groups and buy-swap-sell pages.",
-  retail: "Malls, markets, local shops and deal pages.",
-  property: "Property listings, rentals and real estate groups.",
-  pets: "Pet owners, animal welfare and vet communities.",
-  events: "Local events, nightlife and what's-on pages.",
-  "social": "Doesn't fit a category yet? List here by follower count instead.",
+  // Existing categories
+  "food": "Cafés, restaurants, food reviewers and deal pages.",
+  "fitness": "Gyms, trainers, running clubs and wellness communities.",
+  "beauty": "Salons, barbers, skincare and grooming pages.",
+  "home": "Trades, contractors and household service providers.",
+  "family": "Parenting groups, school communities and neighbourhood pages.",
+  "auto": "Workshops, dealers and motoring communities.",
+  "fashion": "Streetwear, thrift and style-focused accounts.",
+  "tech": "Gaming, gadgets and local tech communities.",
+  "local-lifestyle": "Things-to-do, local culture and lifestyle pages.",
+  "regional-news": "Local news, traffic, alerts and municipal updates.",
+  "community-groups": "Neighbourhood watch, suburb groups and buy-swap-sell pages.",
+  "retail": "Malls, markets, local shops and deal pages.",
+  "property": "Property listings, rentals and real estate groups.",
+  "pets": "Pet owners, animal welfare and vet communities.",
+  "events": "Local events, nightlife and what's-on pages.",
+  "social-followers": "Doesn't fit a category yet? List here by follower count instead.",
+  // New channel-aligned categories
+  "sports-recreation": "Football clubs, netball leagues, running crews and local sports communities.",
+  "transport-commute": "Minibus taxi networks, commuter channels and transport-route audiences.",
+  "township-trade": "Spaza shops, township traders and informal market communities.",
+  "business-professional": "Business associations, professional networks and trade body members.",
 };
 
 export default function Categories() {
@@ -29,7 +40,10 @@ export default function Categories() {
 
   return (
     <div className="max-w-6xl mx-auto px-5 py-16">
-      <Seo title="Categories · ChatSched" description="Browse South African advertising publishers by category — food, lifestyle, community, retail, property, and more — or by channel." />
+      <Seo
+        title="Categories · ChatSched"
+        description="Browse South African advertising publishers by category — food, lifestyle, community, retail, sports, township trade, and more — or by channel."
+      />
       <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">Categories</span>
       <h1 className="text-3xl md:text-4xl mb-2 max-w-xl">Whatever your customers care about, there's already a local page for it.</h1>
       <p className="text-billboard-inkSoft max-w-xl mb-10">Every category below is filled by real, verified South African pages and creators — pick one and see who's already on the board.</p>
@@ -37,6 +51,9 @@ export default function Categories() {
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {CATEGORIES.map((c) => {
           const count = publishers.filter((p) => p.category === c.name).length;
+          // Bug fix: was `BLURBS[c.icon]` — now `BLURBS[c.slug]` so the lookup
+          // is always unambiguous and never silently returns undefined.
+          const blurb = BLURBS[c.slug] ?? "";
           return (
             <Link
               key={c.slug}
@@ -45,7 +62,7 @@ export default function Categories() {
             >
               <CategoryIcon name={c.icon} className="w-8 h-8 mb-3" />
               <h3 className="font-bold mb-1">{c.name}</h3>
-              <p className="text-xs text-billboard-inkSoft mb-3">{BLURBS[c.icon]}</p>
+              <p className="text-xs text-billboard-inkSoft mb-3">{blurb}</p>
               <span className="font-mono text-xs text-billboard-greenDeep font-semibold">
                 {count} {count === 1 ? "publisher" : "publishers"} →
               </span>
