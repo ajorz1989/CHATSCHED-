@@ -28,13 +28,38 @@ export default function BlogPost() {
         <span>{post.readMins} min read</span>
       </div>
 
+      {/* Article body */}
       <div className="space-y-5 text-billboard-inkSoft leading-relaxed">
         {post.paragraphs.map((p, i) => (
           <p key={i} className={i === 0 ? "text-lg text-billboard-ink" : ""}>{p}</p>
         ))}
       </div>
 
-      <div className="mt-14 pt-8 border-t-2 border-billboard-ink/15">
+      {/* Author Bio */}
+      <div className="mt-12 pt-8 border-t-[3px] border-billboard-ink/15">
+        <h2 className="font-mono text-xs font-semibold uppercase tracking-wider text-billboard-inkSoft mb-4">Author Bio</h2>
+        <div className="flex items-center gap-4">
+          {/* Circle avatar placeholder — replace src with real image once provided */}
+          <div className="w-14 h-14 rounded-full border-2 border-billboard-ink bg-billboard-paperDim flex items-center justify-center shrink-0 overflow-hidden">
+            {/* Replace this div with <img src="..." alt={post.author?.name} className="w-full h-full object-cover" /> when photo is available */}
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" className="text-billboard-inkSoft">
+              <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M4 20c0-4 3.582-7 8-7s8 3 8 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+          </div>
+          <div>
+            <p className="font-bold text-billboard-ink">
+              {post.author?.name ?? "[Author Name]"}
+            </p>
+            <p className="text-sm text-billboard-inkSoft">
+              {post.author?.title ?? "[Job Title] at ChatSched"}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Next post */}
+      <div className="mt-10 pt-8 border-t-2 border-billboard-ink/15">
         <Link
           to={`/blog/${next.slug}`}
           className="group block border-[3px] border-billboard-ink rounded p-5 bg-billboard-paperDim transition hover:-translate-y-1 hover:shadow-blockSm"
