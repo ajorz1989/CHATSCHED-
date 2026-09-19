@@ -99,10 +99,15 @@ function formatEmploymentType(value: CareerEmploymentType): string {
     : value.charAt(0).toUpperCase() + value.slice(1);
 }
 
+function formatDateOnly(value: string): string {
+  const parts = value.slice(0, 10).split("-");
+  return parts.length === 3 ? parts[2] + "/" + parts[1] + "/" + parts[0] : value;
+}
+
 function formatSalary(c: Career): string | null {
   if (c.salary_min == null && c.salary_max == null) return null;
-  const min = c.salary_min != null ? "R" + c.salary_min.toLocaleString("en-ZA") : "";
-  const max = c.salary_max != null ? "R" + c.salary_max.toLocaleString("en-ZA") : "";
+  const min = c.salary_min != null ? "R" + Number(c.salary_min).toLocaleString("en-ZA") : "";
+  const max = c.salary_max != null ? "R" + Number(c.salary_max).toLocaleString("en-ZA") : "";
   const period = c.salary_period === "unspecified" ? "" : " / " + c.salary_period;
   return min && max ? min + " – " + max + period : (min || max) + period;
 }
@@ -428,7 +433,7 @@ export default function AdminCareersManager() {
                     <p className="text-sm text-white/65 mt-2 max-w-3xl leading-relaxed">{career.short_summary}</p>
                     <div className="flex flex-wrap gap-2 mt-3 text-[10px] font-mono uppercase tracking-wide text-white/40">
                       {salary && <span className="border border-white/10 rounded px-2 py-1">{salary}</span>}
-                      {career.application_deadline && <span className="border border-white/10 rounded px-2 py-1">Deadline {new Date(career.application_deadline).toLocaleDateString("en-ZA")}</span>}
+                      {career.application_deadline && <span className="border border-white/10 rounded px-2 py-1">Deadline {formatDateOnly(career.application_deadline)}</span>}
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-2 shrink-0">
