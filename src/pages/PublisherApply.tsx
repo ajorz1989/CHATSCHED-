@@ -1433,7 +1433,7 @@ export default function PublisherApply({ adminMode = false, forcedChannel, onAdm
             <button onClick={() => setStep("details")} className={backClass}>Back</button>
             <button
               onClick={() => setStep(LOW_BARRIER_CHANNELS.includes(channelSlug) ? "review" : "business")}
-              disabled={Number(form.pricePerPost) < MIN_PRICE_PER_POST}
+              disabled={!adminMode && Number(form.pricePerPost) < MIN_PRICE_PER_POST}
               className={`${continueClass} disabled:opacity-60`}
             >
               Continue
