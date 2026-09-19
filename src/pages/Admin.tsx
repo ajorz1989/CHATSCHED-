@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
@@ -182,8 +182,10 @@ export default function Admin() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const loadVersionRef = useRef(0);
 
   async function loadAll() {
+    const loadVersion = ++loadVersionRef.current;
     setLoading(true);
     setLoadError(null);
 
@@ -203,6 +205,8 @@ export default function Admin() {
       supabase.from("channels").select("slug, verification_required"),
       supabase.from("publisher_verification_checks").select("publisher_id, checks_confirmed, checks_total"),
     ]);
+
+    if (loadVersion !== loadVersionRef.current) return;
 
     const [
       reqRes, pubRes, bizRes, msgRes, reportRes, disputeRes, wwuRes,
@@ -257,7 +261,7 @@ export default function Admin() {
       )
     );
 
-    setLoading(false);
+    if (loadVersion === loadVersionRef.current) setLoading(false);
   }
 
   useEffect(() => {
