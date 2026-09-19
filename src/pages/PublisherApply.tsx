@@ -375,7 +375,17 @@ const labelClass = "block text-sm font-semibold mb-1.5";
 const continueClass = "bg-billboard-yellow border-[3px] border-billboard-ink font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition";
 const backClass = "font-bold px-5 py-3";
 
-export default function PublisherApply() {
+export interface PublisherApplyProps {
+  /**
+   * Admin mode is intentionally separate from the public publisher flow.
+   * It reuses this exact onboarding questionnaire and channel-metadata builder,
+   * but an authenticated admin can publish the resulting listing immediately.
+   */
+  adminMode?: boolean;
+  forcedChannel?: ChannelSlug;
+}
+
+export default function PublisherApply({ adminMode = false, forcedChannel }: PublisherApplyProps) {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -387,7 +397,7 @@ export default function PublisherApply() {
   // hop, since RequireAuth doesn't carry a return-to destination).
   const paramChannel = searchParams.get("channel") as ChannelSlug | null;
   const storedChannel = (typeof window !== "undefined" ? sessionStorage.getItem(APPLY_CHANNEL_STORAGE_KEY) : null) as ChannelSlug | null;
-  const channelSlug: ChannelSlug = paramChannel || storedChannel || "social-media";
+  const channelSlug: ChannelSlug = forcedChannel || paramChannel || storedChannel || "social-media";
   const channelModule = getChannelBySlug(channelSlug) ?? getChannelBySlug("social-media")!;
   const ch = channelModule.definition;
   const isRequestFlow = ch.bookingFlow === "request";
@@ -444,7 +454,7 @@ export default function PublisherApply() {
     // any value has been shown. Only the quick, legitimate metric
     // threshold still gates here.
     const metric = Number(form.followers);
-    if (!metric || metric < minMetric) {
+    if (!adminMode && (!metric || metric < minMetric)) {
       setStep("ineligible");
       return;
     }
@@ -455,9 +465,10 @@ export default function PublisherApply() {
     if (!user) return;
     setSubmitting(true);
     setError(null);
+    const now = new Date().toISOString();
     const { data: inserted, error: insertError } = await supabase.from("publishers").insert({
-      user_id: user.id,
-      email: user.email,
+      user_id: adminMode ? null : user.id,
+      email: adminMode ? null : user.email,
       name: form.name || profile?.full_name || "",
       mobile_number: profile?.phone ?? null,
       province: form.province,
@@ -469,7 +480,7 @@ export default function PublisherApply() {
       placement_types: form.placementTypes.length > 0 ? form.placementTypes : null,
       accepted_ad_formats: form.adFormats.length > 0 ? form.adFormats : null,
       category: form.category,
-      followers: Number(form.followers),
+      followers: Number(form.followers) || 0,
       engagement: Number(form.engagement) || 0,
       monthly_reach: Number(form.monthlyReach) || null,
       audience: form.audience,
@@ -479,7 +490,10 @@ export default function PublisherApply() {
       business_name: form.businessName || null,
       company_registration: form.companyRegistration || null,
       vat_number: form.vatNumber || null,
-      status: "pending_review",
+      status: adminMode ? "approved" : "pending_review",
+      verified: adminMode,
+      reviewed_at: adminMode ? now : null,
+      creation_source: adminMode ? "aj_creations" : "standard",
       price_per_post: Number(form.pricePerPost) || MIN_PRICE_PER_POST,
       initials: (form.name || profile?.full_name || "?").slice(0, 2).toUpperCase(),
       swatch: "from-billboard-green to-billboard-greenDeep",
@@ -488,6 +502,26 @@ export default function PublisherApply() {
       setSubmitting(false);
       setError(insertError?.message ?? "Couldn't submit your application");
       return;
+    }
+
+    if (adminMode) {
+      await supabase.rpc("refresh_publisher_scores", { p_publisher_id: inserted.id });
+      try {
+        await supabase.rpc("log_admin_action", {
+          p_action: "aj_creation_published",
+          p_target_table: "publishers",
+          p_target_id: inserted.id,
+          p_detail: {
+            channel_slug: channelSlug,
+            status: "approved",
+            verified: true,
+            bypassed_public_review: true,
+          },
+        });
+      } catch (auditError) {
+        console.warn("AJ: Creations audit log failed (non-fatal)", auditError);
+      }
+      supabase.functions.invoke("notify-saved-search-matches", { body: { publisher_id: inserted.id } }).catch(() => {});
     }
 
     // 12-Channel Audit fix A1/B1 — upload proof AFTER the publishers row
@@ -539,15 +573,17 @@ export default function PublisherApply() {
         <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-greenDeep text-billboard-greenDeep px-3 py-1.5 rounded mb-4">Submitted</span>
         <h1 className="text-2xl md:text-3xl mb-3">Application submitted.</h1>
         <p className="text-billboard-inkSoft mb-8">
-          You're in <strong>Pending Review</strong>. We review every {isRequestFlow ? "creator" : "publisher"} by hand before they go live —
-          we'll be in touch by email either way.
+          {adminMode
+            ? <>This {isRequestFlow ? "channel" : "publisher"} listing is now <strong>Live</strong> in the ChatSched directory.</>
+            : <>You're in <strong>Pending Review</strong>. We review every {isRequestFlow ? "creator" : "publisher"} by hand before they go live —
+              we'll be in touch by email either way.</>}
         </p>
         <p className="text-billboard-inkSoft mb-8">
           Next: connect your social account from your dashboard — it imports your real follower count automatically instead of relying on what you typed above, and tends to speed up review.
         </p>
         <div className="flex flex-wrap justify-center gap-3">
-          <Link to="/dashboard" className="inline-flex items-center gap-2 bg-billboard-yellow border-[3px] border-billboard-ink font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition">
-            Connect your accounts →
+          <Link to={adminMode ? "/admin" : "/dashboard"} className="inline-flex items-center gap-2 bg-billboard-yellow border-[3px] border-billboard-ink font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition">
+            {adminMode ? "Create another listing →" : "Connect your accounts →"}
           </Link>
           <button onClick={() => navigate("/")} className="border-[3px] border-billboard-ink bg-billboard-ink text-billboard-paper font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition">
             Back to home
@@ -575,8 +611,8 @@ export default function PublisherApply() {
 
       {step === "eligibility" && (
         <div className="border-[3px] border-billboard-ink rounded p-6 space-y-4">
-          <h1 className="text-2xl mb-1">Let's check you're eligible.</h1>
-          <p className="text-sm text-billboard-inkSoft mb-5">Most approved publishers meet these three things — check before you start, so you're not stopped halfway through.</p>
+          <h1 className="text-2xl mb-1">{adminMode ? "Build this channel listing." : "Let's check you're eligible."}</h1>
+          <p className="text-sm text-billboard-inkSoft mb-5">{adminMode ? "AJ: Creations uses the same onboarding metric capture as public applications, but admin publishing does not block on the public eligibility threshold." : "Most approved publishers meet these three things — check before you start, so you're not stopped halfway through."}</p>
           <div>
             <label className={labelClass}>{metricLabel}</label>
             <input type="number" value={form.followers} onChange={(e) => update("followers", e.target.value)} className={inputClass} />
@@ -595,7 +631,7 @@ export default function PublisherApply() {
               <span className="text-billboard-inkSoft"> at 2–4 bookings a month, from ChatSched's minimum campaign size for {ch.name}. A rough starting estimate, not a guarantee — busier {ch.name.toLowerCase()} publishers earn more.</span>
             </div>
           )}
-          <button onClick={checkEligibility} className={continueClass}>Continue</button>
+          <button onClick={checkEligibility} className={continueClass}>{adminMode ? "Continue to profile →" : "Continue"}</button>
         </div>
       )}
 
@@ -1431,10 +1467,12 @@ export default function PublisherApply() {
         <div className="border-[3px] border-billboard-ink rounded p-6 space-y-4">
           <h1 className="text-2xl mb-1">Last thing.</h1>
           <p className="text-sm text-billboard-inkSoft">
-            Every application is reviewed by hand — you won't appear in the directory until you're approved.
+            {adminMode
+              ? "AJ: Creations publishes directly to the approved directory. The public review gate is bypassed because this action is performed inside the authenticated admin workspace."
+              : "Every application is reviewed by hand — you won't appear in the directory until you're approved."}
           </p>
 
-          {isRequestFlow && (
+          {isRequestFlow && !adminMode && (
             <div className="border-2 border-billboard-ink rounded p-4 bg-billboard-paperDim">
               <h2 className="font-bold text-sm mb-2">Payment terms for {ch.name} creators</h2>
               <ul className="space-y-1.5 text-sm text-billboard-inkSoft">
@@ -1481,7 +1519,7 @@ export default function PublisherApply() {
             </label>
           )}
 
-          {checks.length > 0 && (
+          {checks.length > 0 && !adminMode && (
             <div className="space-y-2">
               {/* 12-Channel Audit fix B5 — moved here from the Eligibility
                   step (see checkEligibility()'s own comment for why). */}
@@ -1502,11 +1540,13 @@ export default function PublisherApply() {
 
           <label className="flex items-start gap-2 text-sm">
             <input type="checkbox" checked={form.acceptedTerms} onChange={(e) => update("acceptedTerms", e.target.checked)} className="mt-0.5" />
-            I confirm the details above are accurate and accept the {isRequestFlow ? "creator" : "publisher"} terms.
+            {adminMode
+              ? "I confirm these listing details are accurate and want to publish this channel immediately."
+              : <>I confirm the details above are accurate and accept the {isRequestFlow ? "creator" : "publisher"} terms.</>}
           </label>
           <div className="flex justify-between pt-2">
             <button onClick={() => setStep(LOW_BARRIER_CHANNELS.includes(channelSlug) ? "social" : "business")} className={backClass}>Back</button>
-            <button onClick={submitApplication} disabled={!form.acceptedTerms || (isRequestFlow && !form.acceptedPaymentTerms) || (checks.length > 0 && (!form.check1 || !form.check2 || !form.check3)) || (channelSlug === "informal-retail" && !form.retailMunicipalRegistrationConfirmed) || (channelSlug === "transport" && !form.transAuthorityConfirmed) || (channelSlug === "associations" && !form.assocAuthorityConfirmed) || submitting}
+            <button onClick={submitApplication} disabled={!form.acceptedTerms || (!adminMode && isRequestFlow && !form.acceptedPaymentTerms) || (!adminMode && checks.length > 0 && (!form.check1 || !form.check2 || !form.check3)) || (channelSlug === "informal-retail" && !form.retailMunicipalRegistrationConfirmed) || (channelSlug === "transport" && !form.transAuthorityConfirmed) || (channelSlug === "associations" && !form.assocAuthorityConfirmed) || submitting}
               className="bg-billboard-green border-[3px] border-billboard-ink font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition disabled:opacity-60">
               {uploadingProof ? "Uploading proof…" : submitting ? "Submitting…" : "Submit application"}
             </button>
