@@ -215,6 +215,13 @@ export default function AdminCareersManager() {
       setActionError("Salary maximum cannot be lower than salary minimum.");
       return;
     }
+    if (form.status === "active" && form.application_deadline) {
+      const today = new Date().toISOString().slice(0, 10);
+      if (form.application_deadline < today) {
+        setActionError("A live role cannot have an application deadline in the past. Clear the deadline or choose a future date.");
+        return;
+      }
+    }
 
     setSaving(true);
     setActionError(null);
