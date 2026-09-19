@@ -1,195 +1,259 @@
 import { Link } from "react-router-dom";
 import Seo from "../components/Seo";
-import { usePublishers } from "../hooks/usePublishers";
-import { getEnabledChannels } from "../lib/channelRegistry";
-import { WarningIcon } from "../components/UiIcons";
-import MarketingIcon from "../components/MarketingIcon";
 import ChannelIcon from "../components/ChannelIcon";
-import { SCENARIOS } from "../lib/caseStudyScenarios";
+import { getEnabledChannels } from "../lib/channelRegistry";
+
+type CaseStudy = {
+  id: string;
+  label: string;
+  title: string;
+  channelSlugs: string[];
+  challenge: string;
+  strategy: string;
+  result: string;
+  metrics: string[];
+};
+
+const CASE_STUDIES: CaseStudy[] = [
+  {
+    id: "local-product-launch",
+    label: "01 · Local product launch",
+    title: "Turn one product launch into repeated multi-channel exposure.",
+    channelSlugs: ["social-media", "podcast", "website"],
+    challenge: "A consumer brand needs concentrated awareness in a defined city before launch week. The objective is repeated exposure across complementary audiences and touchpoints, not a one-off post.",
+    strategy: "ChatSched coordinates social media, local podcast and website inventory under one brief. Social publishers introduce the product visually, the podcast adds trusted host-read context, and website inventory extends the campaign beyond social feeds.",
+    result: "The campaign is structured as one measurable brief instead of three disconnected buys. Reporting can be reviewed against estimated impressions, reach, engagement, clicks and conversion activity, with spend tied back to the final publisher schedule. Where revenue data is available, cost per acquisition and ROAS can be evaluated alongside reach.",
+    metrics: ["Estimated impressions", "Reach by channel", "Engagement rate", "CTR", "Leads / enquiries", "CPA / CAC", "Revenue / ROAS"],
+  },
+  {
+    id: "retail-promotion",
+    label: "02 · Local retail promotion",
+    title: "Put a time-bound retail offer in front of people close enough to act.",
+    channelSlugs: ["community", "radio", "in-venue-screens"],
+    challenge: "A retailer needs to drive foot traffic and immediate demand for a time-bound promotion. The audience is concentrated geographically, so distribution needs to stay locally relevant.",
+    strategy: "ChatSched combines community publishers with local radio and in-venue advertising. Community inventory creates neighbourhood relevance, social or community content makes the offer shareable, radio adds local frequency, and screens reinforce the message at the point of attention.",
+    result: "The promotion is managed as a single campaign with channel-level delivery tracked against the same objective. The business can compare impressions, estimated reach, engagement, click or WhatsApp activity, redemption signals and final spend to understand which distribution points contributed to demand.",
+    metrics: ["Local reach", "Frequency", "Engagement / shares", "Clicks / WhatsApp enquiries", "Redemptions", "Cost per response", "Sales / ROAS"],
+  },
+  {
+    id: "event-attendance",
+    label: "03 · Event attendance campaign",
+    title: "Build event momentum from awareness through registration.",
+    channelSlugs: ["social-media", "events", "podcast", "sports"],
+    challenge: "An event organiser needs to build awareness, generate registrations and keep momentum over several weeks without relying on one media format.",
+    strategy: "ChatSched coordinates event-focused social publishers, community or local-interest media, podcast inventory and event or sports placements where the audience overlaps with the event profile. Messaging can move from awareness to registration reminders as the event date approaches.",
+    result: "One campaign brief keeps the distribution plan coordinated while each channel is evaluated on the action it is best suited to support. Performance can be assessed through reach, registrations, traffic, engagement, cost per registration and revenue from ticket or booking activity.",
+    metrics: ["Awareness reach", "Event-page traffic", "Registrations / bookings", "Cost per registration", "Engagement rate", "Channel contribution", "Ticket / booking revenue"],
+  },
+  {
+    id: "service-lead-generation",
+    label: "04 · Service lead generation",
+    title: "Create a consistent path from local awareness to qualified enquiry.",
+    channelSlugs: ["social-media", "influencer", "community", "website"],
+    challenge: "A service business wants qualified enquiries from a defined audience rather than broad awareness. The campaign needs enough local relevance to generate conversations and enough distribution diversity to sustain lead flow.",
+    strategy: "ChatSched combines social creators, influencer placements, community inventory and website placements. Creative can be adapted to each channel while the core offer, call to action and qualification criteria remain consistent.",
+    result: "The business gets one campaign structure with a clear path from exposure to enquiry. Lead volume, qualified-lead rate, response time, cost per lead and downstream conversion can be tracked across selected channels instead of being reported as isolated media buys.",
+    metrics: ["Impressions / reach", "CTR", "WhatsApp / enquiry volume", "Qualified-lead rate", "Cost per qualified lead", "Conversion rate", "Customer value / ROAS"],
+  },
+  {
+    id: "community-transport",
+    label: "05 · Community + transport awareness",
+    title: "Extend digital awareness into the places local audiences already move and shop.",
+    channelSlugs: ["community", "transport", "informal-retail", "social-media"],
+    challenge: "A local brand needs broader community visibility in areas where conventional digital targeting alone may miss part of the audience. The campaign must extend beyond social feeds while staying geographically relevant.",
+    strategy: "ChatSched combines community publishers with transport inventory, informal-retail touchpoints and social distribution. The campaign creates multiple opportunities for recognition across neighbourhood and physical environments while maintaining one core message.",
+    result: "The brand gains a broader local media footprint from one managed brief. Measurement can combine estimated reach, placement delivery, geographic coverage, digital engagement, enquiries and spend to show how community and physical touchpoints complement digital distribution.",
+    metrics: ["Geographic coverage", "Estimated audience", "Placement delivery", "Digital engagement", "Enquiries", "Cost per response", "Sales / lead lift"],
+  },
+  {
+    id: "sports-sponsorship",
+    label: "06 · Sports + sponsorship activation",
+    title: "Turn sports attention into a coordinated sponsorship and media programme.",
+    channelSlugs: ["sports", "events", "social-media", "radio"],
+    challenge: "A brand wants to associate itself with a sports audience and build visibility around a team, competition, event or recurring sports property. The campaign needs more than a logo placement; it needs a coordinated audience strategy.",
+    strategy: "ChatSched can combine sports inventory with social creators, event placements, podcast or radio exposure and community distribution. The media plan can be structured around the sports calendar, audience geography and the intended action, such as awareness, attendance, enquiries or product consideration.",
+    result: "The campaign can be evaluated as one sponsorship and media programme. Core measures include audience reach, content engagement, event or match-related traffic, lead activity, sponsorship exposure and commercial outcomes where conversion data is available.",
+    metrics: ["Sponsorship exposure", "Estimated reach", "Content engagement", "Event / match traffic", "Leads / enquiries", "Cost per action", "Revenue / ROAS"],
+  },
+];
+
+function channelName(slug: string, enabledChannels: ReturnType<typeof getEnabledChannels>) {
+  return enabledChannels.find((channel) => channel.definition.slug === slug)?.definition.name ?? slug.replace(/-/g, " ");
+}
 
 export default function CaseStudies() {
-  const { publishers, loading } = usePublishers();
-  const channels = getEnabledChannels();
-
-  const provinceCounts = new Map<string, number>();
-  for (const p of publishers) {
-    provinceCounts.set(p.province, (provinceCounts.get(p.province) ?? 0) + 1);
-  }
-  const topProvinces = [...provinceCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6);
-
-  const channelCounts = new Map<string, number>();
-  for (const p of publishers) {
-    const slug = p.channel_slug || "social-media";
-    channelCounts.set(slug, (channelCounts.get(slug) ?? 0) + 1);
-  }
+  const enabledChannels = getEnabledChannels();
 
   return (
-    <div className="max-w-5xl mx-auto px-5 py-16">
+    <>
       <Seo
-        title="Illustrative Examples · ChatSched"
-        description="Walkthroughs of how a booking moves through ChatSched, from request to payout — illustrative examples, not real customer campaigns."
-        noindex
+        title="Case Studies — Multi-Channel Advertising | ChatSched"
+        description="See how ChatSched structures multi-channel advertising campaigns across social, influencer, podcast, radio, events, sports, community, transport and venue inventory."
       />
-      <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">
-        Illustrative examples
-      </span>
-      <h1 className="text-3xl md:text-4xl mb-3 max-w-2xl">What a booking looks like, start to finish.</h1>
-      <p className="text-billboard-inkSoft max-w-2xl mb-3">
-        ChatSched is in its pilot phase, so we don't have real published case studies yet — this page
-        walks through three fictional scenarios instead, to show exactly how a request moves from first
-        contact to a creator getting paid.
-      </p>
-      <div className="border-2 border-billboard-yellow bg-billboard-yellow/10 rounded p-4 mb-12 max-w-2xl">
-        <p className="text-sm font-semibold flex items-center gap-1.5"><WarningIcon className="w-3.5 h-3.5" /> These are illustrative walkthroughs, not real customers</p>
-        <p className="text-sm text-billboard-inkSoft mt-1">
-          The businesses and creators below are made up to demonstrate the process. No names, figures, or
-          results on this page describe an actual ChatSched campaign. Real stories will replace them here
-          as they happen.
-        </p>
-      </div>
 
-      <div className="flex flex-col gap-10">
-        {SCENARIOS.map((s) => (
-          <div key={s.channel} className="border-[3px] border-billboard-ink rounded-lg bg-white overflow-hidden">
-            <div className="bg-billboard-paperDim border-b-[3px] border-billboard-ink px-6 py-4 flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <MarketingIcon name={s.channelIcon} className="w-6 h-6" />
-                <span className="font-mono text-xs font-semibold uppercase tracking-wide">{s.channel} · Illustrative</span>
+      <main className="bg-billboard-paper">
+        <section className="bg-billboard-yellow border-b-[3px] border-billboard-ink py-16 md:py-24">
+          <div className="max-w-6xl mx-auto px-5">
+            <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-ink bg-billboard-paper px-3 py-1.5 rounded mb-5">
+              Case studies
+            </span>
+            <h1 className="text-4xl md:text-6xl leading-[1.05] max-w-4xl mb-5">
+              How brands turn one campaign brief into coordinated distribution.
+            </h1>
+            <p className="text-lg md:text-xl text-billboard-inkSoft max-w-3xl mb-8">
+              ChatSched connects businesses with advertising inventory across digital, social, broadcast,
+              community, sports, events, transport, retail, hospitality and venue channels. Each campaign is
+              planned around the audience, geography, timing and budget, then translated into a channel mix
+              that can be reviewed and scheduled through ChatSched.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Link to="/build-my-campaign" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-ink text-billboard-paper font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition">
+                Build a campaign →
+              </Link>
+              <Link to="/channels" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-paper font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition">
+                Explore channels
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-10 border-b-2 border-billboard-paperDim">
+          <div className="max-w-6xl mx-auto px-5">
+            <div className="grid sm:grid-cols-3 gap-4">
+              <div className="border-[3px] border-billboard-ink rounded-lg bg-white p-5">
+                <div className="font-display text-3xl text-billboard-greenDeep">{enabledChannels.length}</div>
+                <div className="font-mono text-xs uppercase tracking-wider text-billboard-inkSoft mt-1">enabled channels</div>
+              </div>
+              <div className="border-[3px] border-billboard-ink rounded-lg bg-white p-5">
+                <div className="font-display text-3xl">1</div>
+                <div className="font-mono text-xs uppercase tracking-wider text-billboard-inkSoft mt-1">campaign brief</div>
+              </div>
+              <div className="border-[3px] border-billboard-ink rounded-lg bg-white p-5">
+                <div className="font-display text-3xl">7</div>
+                <div className="font-mono text-xs uppercase tracking-wider text-billboard-inkSoft mt-1">core KPI families</div>
               </div>
             </div>
+          </div>
+        </section>
 
-            <div className="p-6 grid md:grid-cols-2 gap-6 border-b-2 border-billboard-paperDim">
-              <div>
-                <p className="font-mono text-[10px] uppercase text-billboard-inkSoft mb-1">The business</p>
-                <p className="font-bold">{s.business}</p>
-                <p className="text-sm text-billboard-inkSoft mt-1">{s.businessDetail}</p>
-              </div>
-              <div>
-                <p className="font-mono text-[10px] uppercase text-billboard-inkSoft mb-1">The creator</p>
-                <p className="font-bold">{s.creator}</p>
-                <p className="text-sm text-billboard-inkSoft mt-1">{s.creatorDetail}</p>
-              </div>
-              <div className="md:col-span-2 border-t border-billboard-ink/10 pt-4">
-                <p className="font-mono text-[10px] uppercase text-billboard-inkSoft mb-1">What's requested</p>
-                <p className="text-sm">{s.request}</p>
-              </div>
-            </div>
+        <section className="max-w-6xl mx-auto px-5 py-16">
+          <div className="grid lg:grid-cols-2 gap-6">
+            {CASE_STUDIES.map((study) => (
+              <article key={study.id} className="border-[3px] border-billboard-ink rounded-lg bg-white overflow-hidden shadow-blockSm">
+                <div className="bg-billboard-paperDim border-b-[3px] border-billboard-ink px-6 py-4">
+                  <div className="font-mono text-xs font-semibold uppercase tracking-wide text-billboard-red mb-1">
+                    {study.label}
+                  </div>
+                  <h2 className="text-2xl md:text-3xl">{study.title}</h2>
+                  <div className="flex flex-wrap gap-2 mt-4">
+                    {study.channelSlugs.map((slug) => (
+                      <Link
+                        key={slug}
+                        to={`/channels/${slug}`}
+                        className="inline-flex items-center gap-1.5 border-2 border-billboard-ink rounded px-2.5 py-1.5 text-xs font-semibold hover:bg-white transition"
+                      >
+                        <ChannelIcon slug={slug} size="sm" />
+                        {channelName(slug, enabledChannels)}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
 
-            <div className="p-6">
-              <p className="font-mono text-[10px] uppercase text-billboard-inkSoft mb-3">How it would play out</p>
-              <div className="flex flex-col gap-3">
-                {s.steps.map((step, i) => (
-                  <div key={step.title} className="flex gap-3">
-                    <div className="w-6 h-6 rounded-full bg-billboard-yellow border-2 border-billboard-ink flex items-center justify-center font-mono text-[10px] font-bold shrink-0 mt-0.5">
-                      {i + 1}
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold">{step.title}</p>
-                      <p className="text-xs text-billboard-inkSoft mt-0.5">{step.body}</p>
+                <div className="p-6 space-y-7">
+                  <div>
+                    <p className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft mb-2">The Challenge</p>
+                    <p className="text-sm leading-6">{study.challenge}</p>
+                  </div>
+
+                  <div className="border-t-2 border-billboard-paperDim pt-6">
+                    <p className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft mb-2">The Multi-Channel Strategy</p>
+                    <p className="text-sm leading-6">{study.strategy}</p>
+                  </div>
+
+                  <div className="border-t-2 border-billboard-paperDim pt-6">
+                    <p className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft mb-2">The Result</p>
+                    <p className="text-sm leading-6">{study.result}</p>
+                  </div>
+
+                  <div className="border-t-2 border-billboard-paperDim pt-6">
+                    <p className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft mb-3">Performance metrics</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {study.metrics.map((metric) => (
+                        <div key={metric} className="border-2 border-billboard-ink/10 rounded px-3 py-2 text-xs font-semibold bg-billboard-paperDim">
+                          {metric}
+                        </div>
+                      ))}
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="bg-billboard-ink text-billboard-paper border-y-[3px] border-billboard-ink py-16">
+          <div className="max-w-6xl mx-auto px-5">
+            <span className="inline-block font-mono text-xs font-semibold uppercase tracking-wider border-2 border-billboard-yellow text-billboard-yellow px-3 py-1.5 rounded mb-4">
+              What these case studies show
+            </span>
+            <h2 className="text-3xl md:text-4xl max-w-3xl mb-5">
+              One campaign structure. Multiple distribution paths.
+            </h2>
+            <p className="text-billboard-paperDim max-w-3xl text-base md:text-lg leading-7">
+              The common principle is simple: ChatSched is built to coordinate distribution, not force every
+              business into the same advertising package. A campaign can start with a specific audience,
+              geography, objective and custom budget. ChatSched can then structure the media plan across the
+              available inventory, keep the booking process coordinated and give the business a clearer
+              framework for reviewing delivery and commercial performance.
+            </p>
+          </div>
+        </section>
+
+        <section className="max-w-5xl mx-auto px-5 py-16">
+          <div className="border-[3px] border-billboard-ink rounded-lg bg-white overflow-hidden">
+            <div className="bg-billboard-green text-white px-6 py-5">
+              <p className="font-mono text-xs font-semibold uppercase tracking-wider mb-1">Measurement framework</p>
+              <h2 className="font-display text-2xl md:text-3xl">Every campaign is measured against the objective it was built to achieve.</h2>
+            </div>
+            <div className="grid md:grid-cols-2 divide-y-2 md:divide-y-0 md:divide-x-2 divide-billboard-ink">
+              {[
+                ["Awareness", "Reach, impressions, frequency, video views and engagement."],
+                ["Traffic", "Clicks, CTR, landing-page visits and cost per visit."],
+                ["Lead generation", "Enquiries, qualified leads, cost per lead and conversion rate."],
+                ["Sales", "Purchases, revenue, customer acquisition cost and ROAS."],
+                ["Events & sponsorships", "Registrations, attendance, exposure, engagement and commercial response."],
+                ["Channel delivery", "Placement completion, timing, geography and publisher-level reporting."],
+              ].map(([title, body]) => (
+                <div key={title} className="p-5 md:p-6">
+                  <h3 className="font-bold mb-1">{title}</h3>
+                  <p className="text-sm text-billboard-inkSoft leading-6">{body}</p>
+                </div>
+              ))}
             </div>
           </div>
-        ))}
-      </div>
+        </section>
 
-      {/* Everything below this line is real — pulled live from the same
-          publisher directory Browse uses, not illustrative. Kept clearly
-          separate from the scenarios above rather than blended in, so it's
-          never ambiguous which parts of this page are made up and which
-          aren't. */}
-      <div className="border-t-[3px] border-billboard-ink pt-12 mt-14">
-        <div className="flex items-center gap-2 mb-3">
-          <span className="relative flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-billboard-green opacity-75" />
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-billboard-green" />
-          </span>
-          <span className="font-mono text-xs font-semibold tracking-wider uppercase text-billboard-green">Live data — not illustrative</span>
-        </div>
-        <h2 className="text-2xl md:text-3xl mb-3 max-w-xl">What's actually on the platform right now.</h2>
-        <p className="text-billboard-inkSoft max-w-2xl mb-8">
-          Real counts from the same publisher directory Browse searches — no invented names or numbers below this line.
-        </p>
-
-        <div className="grid md:grid-cols-2 gap-5 mb-10">
-          {/* Channel breakdown */}
-          <div className="border-[3px] border-billboard-ink rounded-lg bg-white p-6">
-            <p className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft mb-4">Approved publishers by channel</p>
-            {loading ? (
-              <div className="space-y-3">
-                {[0, 1, 2].map((i) => <div key={i} className="h-8 rounded bg-billboard-paperDim animate-pulse" />)}
-              </div>
-            ) : publishers.length === 0 ? (
-              <p className="text-sm text-billboard-inkSoft">No approved publishers yet — check back soon.</p>
-            ) : (
-              <div className="space-y-3">
-                {channels.map(({ definition: ch }) => {
-                  const count = channelCounts.get(ch.slug) ?? 0;
-                  const pct = publishers.length > 0 ? Math.round((count / publishers.length) * 100) : 0;
-                  return (
-                    <div key={ch.slug}>
-                      <div className="flex items-center justify-between text-sm mb-1">
-                        <span className="inline-flex items-center gap-2 font-semibold"><ChannelIcon slug={ch.slug} size="sm" />{ch.name}</span>
-                        <span className="font-mono text-xs text-billboard-inkSoft">{count}</span>
-                      </div>
-                      <div className="h-2 rounded-full bg-billboard-paperDim overflow-hidden">
-                        <div className="h-full bg-billboard-green rounded-full transition-all duration-700" style={{ width: `${Math.max(pct, count > 0 ? 4 : 0)}%` }} />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+        <section className="bg-billboard-paperDim border-t-[3px] border-billboard-ink py-16">
+          <div className="max-w-4xl mx-auto px-5 text-center">
+            <h2 className="font-display text-3xl md:text-4xl mb-4">Ready to build your campaign?</h2>
+            <p className="text-billboard-inkSoft max-w-2xl mx-auto mb-7">
+              Start with your objective, audience, geography, timing and custom budget. ChatSched can then
+              review the brief and work through the appropriate publisher and media mix.
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+              <Link to="/build-my-campaign" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-yellow font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition">
+                Build a campaign →
+              </Link>
+              <Link to="/channels" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-white font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition">
+                Explore advertising channels
+              </Link>
+              <Link to="/browse" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-white font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition">
+                Browse live inventory
+              </Link>
+            </div>
           </div>
-
-          {/* Province reach */}
-          <div className="border-[3px] border-billboard-ink rounded-lg bg-white p-6">
-            <p className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft mb-4">Where publishers are based</p>
-            {loading ? (
-              <div className="space-y-3">
-                {[0, 1, 2].map((i) => <div key={i} className="h-8 rounded bg-billboard-paperDim animate-pulse" />)}
-              </div>
-            ) : topProvinces.length === 0 ? (
-              <p className="text-sm text-billboard-inkSoft">No approved publishers yet — check back soon.</p>
-            ) : (
-              <div className="grid grid-cols-2 gap-3">
-                {topProvinces.map(([province, count]) => (
-                  <div key={province} className="border-2 border-billboard-paperDim rounded p-3">
-                    <div className="font-mono text-xl font-bold text-billboard-greenDeep">{count}</div>
-                    <div className="text-xs text-billboard-inkSoft">{province}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="border-[3px] border-billboard-ink rounded-lg bg-billboard-ink text-billboard-paper p-6 flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="font-mono text-[10px] uppercase tracking-wider text-billboard-paper/60 mb-1">Total approved publishers, live now</p>
-            <p className="font-display text-3xl">{loading ? "—" : publishers.length}</p>
-          </div>
-          <Link to="/browse" className="inline-flex items-center gap-2 bg-billboard-yellow text-billboard-ink border-[3px] border-billboard-yellow font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition text-sm">
-            See them on Browse →
-          </Link>
-        </div>
-      </div>
-
-      <div className="text-center border-t-2 border-billboard-paperDim pt-10 mt-12">
-        <p className="text-billboard-inkSoft mb-4 max-w-md mx-auto">
-          Want to see the actual mechanics behind payment holds and payout timing, or find a real publisher to work with?
-        </p>
-        <div className="flex flex-wrap justify-center gap-3">
-          <Link to="/how-payment-works" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition text-sm bg-white">
-            See how payment works
-          </Link>
-          <Link to="/browse" className="inline-flex items-center gap-2 bg-billboard-yellow border-[3px] border-billboard-ink font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition text-sm">
-            Browse publishers
-          </Link>
-        </div>
-      </div>
-    </div>
+        </section>
+      </main>
+    </>
   );
 }
