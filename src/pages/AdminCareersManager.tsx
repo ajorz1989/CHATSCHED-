@@ -3,7 +3,7 @@ import { ExternalLink, Plus, Save, Trash2, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
 import { formatSupabaseError } from "../lib/supabaseErrors";
-import type { Career, CareerEmploymentType, CareerRemoteType, CareerStatus } from "../lib/types";
+import type { Career, CareerEmploymentType, CareerRemoteType, CareerSalaryPeriod, CareerStatus } from "../lib/types";
 import SetupNotice from "../components/SetupNotice";
 import { SkeletonRows } from "../components/Skeleton";
 import Button from "../components/Button";
@@ -17,6 +17,7 @@ type FormState = {
   employment_type: CareerEmploymentType;
   salary_min: string;
   salary_max: string;
+  salary_period: CareerSalaryPeriod;
   short_summary: string;
   description: string;
   responsibilities: string;
@@ -36,6 +37,7 @@ const EMPTY_FORM: FormState = {
   employment_type: "full_time",
   salary_min: "",
   salary_max: "",
+  salary_period: "unspecified",
   short_summary: "",
   description: "",
   responsibilities: "",
@@ -78,6 +80,7 @@ function formFromCareer(c: Career): FormState {
     employment_type: c.employment_type,
     salary_min: c.salary_min != null ? String(c.salary_min) : "",
     salary_max: c.salary_max != null ? String(c.salary_max) : "",
+    salary_period: c.salary_period,
     short_summary: c.short_summary,
     description: c.description,
     responsibilities: c.responsibilities.join("\n"),
@@ -100,7 +103,8 @@ function formatSalary(c: Career): string | null {
   if (c.salary_min == null && c.salary_max == null) return null;
   const min = c.salary_min != null ? "R" + c.salary_min.toLocaleString("en-ZA") : "";
   const max = c.salary_max != null ? "R" + c.salary_max.toLocaleString("en-ZA") : "";
-  return min && max ? min + " – " + max + " / year" : (min || max) + " / year";
+  const period = c.salary_period === "unspecified" ? "" : " / " + c.salary_period;
+  return min && max ? min + " – " + max + period : (min || max) + period;
 }
 
 function Field({
@@ -224,6 +228,7 @@ export default function AdminCareersManager() {
       employment_type: form.employment_type,
       salary_min: salaryMin,
       salary_max: salaryMax,
+      salary_period: form.salary_period,
       short_summary: form.short_summary.trim(),
       description: form.description.trim(),
       responsibilities: lines(form.responsibilities),
@@ -358,8 +363,13 @@ export default function AdminCareersManager() {
                 <option value="full_time">Full-time</option><option value="part_time">Part-time</option><option value="contract">Contract</option><option value="freelance">Freelance</option><option value="internship">Internship</option>
               </select>
             </Field>
-            <Field label="Salary minimum (ZAR / year)"><input type="number" min={0} value={form.salary_min} onChange={(e) => setField("salary_min", e.target.value)} className={inputClass} placeholder="Optional" /></Field>
-            <Field label="Salary maximum (ZAR / year)"><input type="number" min={0} value={form.salary_max} onChange={(e) => setField("salary_max", e.target.value)} className={inputClass} placeholder="Optional" /></Field>
+            <Field label="Salary minimum (ZAR)"><input type="number" min={0} value={form.salary_min} onChange={(e) => setField("salary_min", e.target.value)} className={inputClass} placeholder="Optional" /></Field>
+            <Field label="Salary maximum (ZAR)"><input type="number" min={0} value={form.salary_max} onChange={(e) => setField("salary_max", e.target.value)} className={inputClass} placeholder="Optional" /></Field>
+            <Field label="Pay period">
+              <select value={form.salary_period} onChange={(e) => setField("salary_period", e.target.value as CareerSalaryPeriod)} className={inputClass}>
+                <option value="unspecified">Not specified</option><option value="hour">Per hour</option><option value="month">Per month</option><option value="year">Per year</option><option value="project">Per project</option>
+              </select>
+            </Field>
             <Field label="Application deadline"><input type="date" value={form.application_deadline} onChange={(e) => setField("application_deadline", e.target.value)} className={inputClass} /></Field>
             <Field label="Display order"><input type="number" min={0} value={form.sort_order} onChange={(e) => setField("sort_order", e.target.value)} className={inputClass} /></Field>
             <Field label="Status">
