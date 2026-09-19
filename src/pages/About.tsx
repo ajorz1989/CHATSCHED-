@@ -3,10 +3,29 @@ import { Link } from "react-router-dom";
 import Seo from "../components/Seo";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
 
+// Consolidated principles list. Previously About.tsx and Mission.tsx each
+// declared their own `PRINCIPLES` array (a naming collision waiting to
+// happen once merged) with overlapping content — both had a near-identical
+// "real audiences, not vanity metrics" entry worded slightly differently.
+// This is the single, merged, de-duplicated version.
 const PRINCIPLES = [
-  { title: "Real audiences, not vanity metrics", body: "We manually check every channel before it's listed. A follower count means nothing if nobody's actually looking." },
+  { title: "Real audiences, not vanity metrics", body: "We manually check every channel before it's listed — reviewing real, engaged audiences, not follower counts. A number means nothing if nobody's actually paying attention." },
   { title: "On-platform, in the open", body: "Businesses and publishers work through a clear request-and-approve process inside ChatSched — no black box, no hidden hand-off." },
   { title: "Proof before promises", body: "We're not pretending to be bigger than we are. We're proving this works, one real channel and one real business at a time, before we automate anything." },
+  { title: "Fair by default", body: "Publishers keep the large majority of every placement. The people bringing the audience should be the ones benefiting most from it." },
+  { title: "No lock-in", body: "No contracts, no minimum spend. Browsing and listing are always free — a subscription is only needed to send or approve a request, and you can cancel one any time." },
+  { title: "Built for South Africa first", body: "Not a global platform adapted after the fact — every part of this is built around South African businesses and South African audiences." },
+  { title: "Small team, direct accountability", body: "No layers between a decision and the person who made it. If something's wrong, you're talking to the person who can actually fix it." },
+];
+
+// The underlying beliefs behind the principles above — carried over from
+// the standalone Mission page's "What we believe" section, kept in its
+// original numbered-list format as a closing subsection here.
+const BELIEFS = [
+  "Every business deserves real local reach — not just the ones with the budget for a national ad campaign.",
+  "Trust has to be earned placement by placement, not assumed from a follower count or a badge.",
+  "Local still matters, even in a world of global feeds and national platforms.",
+  "The best technology gets out of the way — it shouldn't add a layer between a business and the audience it's trying to reach.",
 ];
 
 const CHANNELS = [
@@ -31,6 +50,31 @@ const COMPARISON = [
   { us: "Local, trusted channels your customers already follow.", them: "Increasingly blocked by ad blockers and ignored by banner blindness." },
 ];
 
+// Roadmap content, carried over from the standalone Roadmap page.
+const NOW = [
+  "12 live advertising channels — social media, influencer, website, podcast, radio, sports, events, community, transport, informal retail, associations, and restaurants",
+  "Held payments, with a publisher paid out within 48 hours of going live",
+  "Manual publisher verification and automated authenticity checks on every listing",
+  "Self-serve applications for both businesses and publishers, with no minimum spend or contract",
+  "A dispute process for when a campaign doesn't go as agreed",
+  "Business and Publisher Success Centres, a live Transparency page, and an ecosystem of partner and advertising options",
+];
+
+const NEXT = [
+  {
+    title: "More channel categories",
+    body: "The platform's own channel taxonomy already has room for print (newspaper, magazine), outdoor (digital billboards, events), and direct (SMS, email) — categories defined in the codebase today with no channels live in them yet. Which of these actually gets built depends on where real demand shows up first.",
+  },
+  {
+    title: "Deeper integrations",
+    body: "Technology Partners are already part of the ecosystem (see Partners); a public API and documented integration points are a natural next step, not yet built.",
+  },
+  {
+    title: "Programmatic buying",
+    body: "Algorithm-driven, automated placement buying is a defined category in the platform's channel taxonomy, alongside the manually-reviewed model that exists today.",
+  },
+];
+
 export default function About() {
   // "Proof before promises" above is a principle; this section is what
   // makes it checkable — real counts, pulled from the same publicly
@@ -39,13 +83,21 @@ export default function About() {
   // uses), not a claim anyone has to take on faith. When there's nothing
   // real yet, it says so plainly instead of showing an empty "0" that
   // reads as broken.
+  //
+  // Bug fix: the original queries never checked for `error`, so a failed
+  // fetch silently fell back to `count ?? 0` and rendered the "no
+  // campaigns yet" empty state even when the request simply failed rather
+  // than genuinely returning zero rows. Both queries below now bail out
+  // on error and leave the state as `null`, which renders nothing instead
+  // of a false "zero".
   const [reviewCount, setReviewCount] = useState<number | null>(null);
   const [avgRating, setAvgRating] = useState<number | null>(null);
   const [publisherCount, setPublisherCount] = useState<number | null>(null);
 
   useEffect(() => {
     if (!isSupabaseConfigured) return;
-    supabase.from("reviews").select("rating", { count: "exact" }).then(({ data, count }) => {
+    supabase.from("reviews").select("rating", { count: "exact" }).then(({ data, count, error }) => {
+      if (error) return;
       setReviewCount(count ?? 0);
       if (data && data.length > 0) {
         const avg = data.reduce((sum, r) => sum + (r.rating ?? 0), 0) / data.length;
@@ -56,14 +108,20 @@ export default function About() {
     // on publishers_select_approved_or_own_or_admin's approved branch,
     // which no longer exists on the base table; the view is approved-only
     // already, so the .eq("status", "approved") filter is dropped too.
-    supabase.from("publishers_public").select("id", { count: "exact", head: true }).then(({ count }) => {
+    supabase.from("publishers_public").select("id", { count: "exact", head: true }).then(({ count, error }) => {
+      if (error) return;
       setPublisherCount(count ?? 0);
     });
   }, []);
 
   return (
     <div>
-      <Seo title="About · ChatSched" description="Why ChatSched exists, and the principles we build around: real audiences, direct dealing, proof before promises." />
+      <Seo
+        title="About · ChatSched"
+        description="Why ChatSched exists, our mission and principles, what's live today and what's next — real audiences, direct dealing, proof before promises."
+      />
+
+      {/* Hero */}
       <section className="bg-billboard-yellow border-b-[3px] border-billboard-ink py-16">
         <div className="max-w-3xl mx-auto px-5">
           <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-ink bg-billboard-paper px-3 py-1.5 rounded mb-4">About</span>
@@ -71,6 +129,17 @@ export default function About() {
           <p className="text-lg text-billboard-inkSoft">
             South African businesses want to reach real local audiences, and the people who've built those audiences — on social pages, as influencers, through websites, podcasts and radio — want to be found and booked properly. ChatSched helps them find each other and keeps the campaign request, communication and proof inside one tracked workflow.
           </p>
+        </div>
+      </section>
+
+      {/* Mission & Vision (merged from the standalone Mission page) */}
+      <section id="mission" className="max-w-3xl mx-auto px-5 py-16">
+        <span className="font-mono text-xs font-semibold tracking-wider uppercase text-billboard-inkSoft">Our mission</span>
+        <h2 className="font-display text-xl mt-2 mb-3">Make it possible for any South African business — not just the ones with an ad budget — to reach a real local audience, directly.</h2>
+        <div className="mt-8">
+          <span className="font-mono text-xs font-semibold tracking-wider uppercase text-billboard-inkSoft">Vision</span>
+          <h3 className="font-display text-lg mt-2 mb-3">Build the infrastructure connecting businesses with trusted audiences.</h3>
+          <p className="text-billboard-inkSoft max-w-xl">Not another ad platform bolted onto someone else's feed — the underlying layer that makes finding, booking and trusting a local audience as simple as it should already be. If we get this right, reaching your own neighbourhood becomes as easy as reaching anyone else, anywhere.</p>
         </div>
       </section>
 
@@ -115,7 +184,8 @@ export default function About() {
         </div>
       </section>
 
-      <section className="max-w-3xl mx-auto px-5 py-16">
+      {/* What we believe — expanded: merged principles + the underlying beliefs */}
+      <section id="what-we-believe" className="max-w-3xl mx-auto px-5 py-16">
         <h2 className="font-display text-xl mb-8">What we believe</h2>
         <div className="space-y-6">
           {PRINCIPLES.map((p) => (
@@ -124,6 +194,19 @@ export default function About() {
               <p className="text-billboard-inkSoft text-sm">{p.body}</p>
             </div>
           ))}
+        </div>
+
+        <div className="mt-12">
+          <span className="font-mono text-xs font-semibold tracking-wider uppercase text-billboard-inkSoft">What we believe</span>
+          <h3 className="font-display text-lg mt-2 mb-8">The thinking underneath all of it.</h3>
+          <div className="space-y-4">
+            {BELIEFS.map((b, i) => (
+              <div key={b} className="flex gap-4 items-start border-b-2 border-billboard-paperDim pb-4 last:border-b-0">
+                <span className="font-display text-lg text-billboard-yellowDeep shrink-0">{String(i + 1).padStart(2, "0")}</span>
+                <p className="text-billboard-inkSoft">{b}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -153,6 +236,38 @@ export default function About() {
         </div>
       </section>
 
+      {/* Roadmap (merged from the standalone Roadmap page) */}
+      <section id="roadmap" className="max-w-3xl mx-auto px-5 py-16">
+        <span className="font-mono text-xs font-semibold tracking-wider uppercase text-billboard-inkSoft">Roadmap</span>
+        <h2 className="font-display text-xl mt-2 mb-2">Where ChatSched is today, and where it's headed.</h2>
+        <p className="text-billboard-inkSoft text-sm mb-8 max-w-xl">A direction, not a promise — what's live now, and the areas being actively explored next. No committed dates, because we'd rather ship something real than hit a deadline we made up.</p>
+
+        <span className="font-mono text-xs font-semibold tracking-wider uppercase text-billboard-greenDeep">Now</span>
+        <h3 className="font-display text-lg mt-2 mb-6">What's live today.</h3>
+        <ul className="space-y-3 mb-12">
+          {NOW.map((item) => (
+            <li key={item} className="flex gap-3 items-start">
+              <span className="font-display text-billboard-greenDeep shrink-0 mt-0.5">✓</span>
+              <span className="text-billboard-inkSoft">{item}</span>
+            </li>
+          ))}
+        </ul>
+
+        <span className="font-mono text-xs font-semibold tracking-wider uppercase text-billboard-yellowDeep">Next</span>
+        <h3 className="font-display text-lg mt-2 mb-8">What's being explored.</h3>
+        <div className="space-y-5">
+          {NEXT.map((item) => (
+            <div key={item.title} className="border-[3px] border-billboard-ink rounded p-5 bg-billboard-paperDim">
+              <h4 className="font-bold mb-1.5">{item.title}</h4>
+              <p className="text-sm text-billboard-inkSoft">{item.body}</p>
+            </div>
+          ))}
+        </div>
+
+        <p className="text-billboard-inkSoft text-sm mt-10">This roadmap reflects direction, not a shipping schedule — priorities shift as real usage shows what actually matters.</p>
+      </section>
+
+      {/* Real numbers, updated live */}
       <section className="max-w-3xl mx-auto px-5 py-16">
         <h2 className="font-display text-xl mb-3">Real numbers, updated live — not a projection.</h2>
         {reviewCount === null ? null : reviewCount === 0 ? (
@@ -177,6 +292,7 @@ export default function About() {
         )}
       </section>
 
+      {/* Where we are right now + closing CTAs */}
       <section className="bg-billboard-paperDim border-t-[3px] border-billboard-ink py-16">
         <div className="max-w-3xl mx-auto px-5">
           <h2 className="font-display text-xl mb-3">Where we are right now</h2>
@@ -186,6 +302,7 @@ export default function About() {
           <div className="flex flex-wrap gap-3">
             <Link to="/browse" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink font-bold px-5 py-3 rounded bg-white">Browse Advertising →</Link>
             <Link to="/contact" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink font-bold px-5 py-3 rounded bg-billboard-yellow">Get in touch →</Link>
+            <Link to="/investors" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink font-bold px-5 py-3 rounded bg-white">Company Overview →</Link>
           </div>
         </div>
       </section>

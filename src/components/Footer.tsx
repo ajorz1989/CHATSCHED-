@@ -52,6 +52,7 @@ export default function Footer() {
 
           <div>
             <h4 className={HEADING_CLASS}>Trust & Help</h4>
+            <Link to="/about" className={LINK_CLASS}>About ChatSched</Link>
             <Link to="/how-it-works" className={LINK_CLASS}>How it works</Link>
             <Link to="/trust" className={LINK_CLASS}>{t("footer.trustCentre")}</Link>
             <Link to="/faq" className={LINK_CLASS}>FAQ</Link>
