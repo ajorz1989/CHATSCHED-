@@ -345,6 +345,7 @@ export type CareerStatus = "draft" | "active" | "paused" | "closed";
 
 export type CareerRemoteType = "onsite" | "hybrid" | "remote";
 export type CareerEmploymentType = "full_time" | "part_time" | "contract" | "freelance" | "internship";
+export type CareerSalaryPeriod = "hour" | "month" | "year" | "project" | "unspecified";
 
 export interface Career {
   id: string;
@@ -357,6 +358,7 @@ export interface Career {
   salary_min: number | null;
   salary_max: number | null;
   salary_currency: string;
+  salary_period: CareerSalaryPeriod;
   short_summary: string;
   description: string;
   responsibilities: string[];
