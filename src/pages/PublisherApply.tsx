@@ -1546,7 +1546,7 @@ export default function PublisherApply({ adminMode = false, forcedChannel }: Pub
           </label>
           <div className="flex justify-between pt-2">
             <button onClick={() => setStep(LOW_BARRIER_CHANNELS.includes(channelSlug) ? "social" : "business")} className={backClass}>Back</button>
-            <button onClick={submitApplication} disabled={!form.acceptedTerms || (!adminMode && isRequestFlow && !form.acceptedPaymentTerms) || (!adminMode && checks.length > 0 && (!form.check1 || !form.check2 || !form.check3)) || (channelSlug === "informal-retail" && !form.retailMunicipalRegistrationConfirmed) || (channelSlug === "transport" && !form.transAuthorityConfirmed) || (channelSlug === "associations" && !form.assocAuthorityConfirmed) || submitting}
+            <button onClick={submitApplication} disabled={!form.acceptedTerms || (!adminMode && isRequestFlow && !form.acceptedPaymentTerms) || (!adminMode && checks.length > 0 && (!form.check1 || !form.check2 || !form.check3)) || (!adminMode && channelSlug === "informal-retail" && !form.retailMunicipalRegistrationConfirmed) || (!adminMode && channelSlug === "transport" && !form.transAuthorityConfirmed) || (!adminMode && channelSlug === "associations" && !form.assocAuthorityConfirmed) || submitting}
               className="bg-billboard-green border-[3px] border-billboard-ink font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition disabled:opacity-60">
               {uploadingProof ? "Uploading proof…" : submitting ? "Submitting…" : "Submit application"}
             </button>
