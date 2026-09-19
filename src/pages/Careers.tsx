@@ -544,9 +544,8 @@ export default function Careers() {
                 </div>
                 <div>
                   <label className="block text-sm font-semibold mb-1.5">Role you’re applying for</label>
-                  {careers.length > 0 ? (
+                  {careers.length > 0 && (
                     <select
-                      required
                       value={selectedCareerId ?? "general"}
                       onChange={(e) => {
                         const id = e.target.value === "general" ? null : e.target.value;
@@ -561,7 +560,8 @@ export default function Careers() {
                         <option key={career.id} value={career.id}>{career.job_title}</option>
                       ))}
                     </select>
-                  ) : (
+                  )}
+                  {!selectedCareerId && (
                     <input
                       required
                       value={ftRole}
@@ -570,7 +570,7 @@ export default function Careers() {
                         setFtRole(e.target.value);
                       }}
                       placeholder="e.g. Full-Stack Developer"
-                      className={fieldCls}
+                      className={fieldCls + (careers.length > 0 ? " mt-2" : "")}
                     />
                   )}
                   <p className="text-xs text-billboard-inkSoft mt-1.5">
