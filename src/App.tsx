@@ -59,7 +59,8 @@ const BusinessSuccessArticle = lazy(() => import("./pages/BusinessSuccessArticle
 const PublisherSuccess = lazy(() => import("./pages/PublisherSuccess"));
 const PublisherSuccessArticle = lazy(() => import("./pages/PublisherSuccessArticle"));
 const Transparency = lazy(() => import("./pages/Transparency"));
-const Advertise = lazy(() => import("./pages/Advertise"));
+// Advertise + Investors merged into CollaborateWithUs — old URLs redirect below
+const CollaborateWithUs = lazy(() => import("./pages/CollaborateWithUs"));
 const Press = lazy(() => import("./pages/Press"));
 const Security = lazy(() => import("./pages/Security"));
 const Help = lazy(() => import("./pages/Help"));
@@ -116,7 +117,6 @@ const ToolDetail = lazy(() => import("./pages/ToolDetail"));
 const WorkWithUs = lazy(() => import("./pages/WorkWithUs"));
 const Partners = lazy(() => import("./pages/Partners"));
 const PartnersApply = lazy(() => import("./pages/PartnersApply"));
-const Investors = lazy(() => import("./pages/Investors"));
 const Mission = lazy(() => import("./pages/Mission"));
 
 // react-leaflet + leaflet pull in a real chunk of JS+CSS for a map only a
@@ -180,7 +180,10 @@ function RoutedContent() {
                     <Route path="/publisher-success" element={<PublisherSuccess />} />
                     <Route path="/publisher-success/:slug" element={<PublisherSuccessArticle />} />
                     <Route path="/transparency" element={<Transparency />} />
-                    <Route path="/advertise" element={<Advertise />} />
+                    {/* Advertise + Investors merged — old URLs redirect to the unified page */}
+                    <Route path="/collaborate" element={<CollaborateWithUs />} />
+                    <Route path="/advertise" element={<Navigate to="/collaborate" replace />} />
+                    <Route path="/investors" element={<Navigate to="/collaborate" replace />} />
                     <Route path="/press" element={<Press />} />
                     <Route path="/security" element={<Security />} />
                     <Route path="/help" element={<Help />} />
@@ -235,7 +238,6 @@ function RoutedContent() {
                     <Route path="/work-with-us" element={<WorkWithUs />} />
                     <Route path="/partners" element={<Partners />} />
                     <Route path="/partners/apply" element={<PartnersApply />} />
-                    <Route path="/investors" element={<Investors />} />
                     <Route path="/mission" element={<Mission />} />
                     <Route path="*" element={<NotFound />} />
       </Routes>
