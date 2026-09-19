@@ -464,14 +464,22 @@ export default function PublisherApply({ adminMode = false, forcedChannel, onAdm
 
   async function submitApplication() {
     if (!user) return;
+    if (adminMode && !form.name.trim()) {
+      setError("Publisher or channel name is required for AJ: Creations.");
+      return;
+    }
+    if (adminMode && (!form.province || !form.city)) {
+      setError("Province and city are required for an admin-created listing.");
+      return;
+    }
     setSubmitting(true);
     setError(null);
     const now = new Date().toISOString();
     const { data: inserted, error: insertError } = await supabase.from("publishers").insert({
       user_id: adminMode ? null : user.id,
       email: adminMode ? null : user.email,
-      name: form.name || profile?.full_name || "",
-      mobile_number: profile?.phone ?? null,
+      name: form.name || (adminMode ? "" : profile?.full_name || ""),
+      mobile_number: adminMode ? null : profile?.phone ?? null,
       province: form.province,
       city: form.city,
       suburb: form.suburb || null,
