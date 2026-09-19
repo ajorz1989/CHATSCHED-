@@ -230,17 +230,17 @@ export default function Admin() {
       setLoadError("Some admin data could not be loaded: " + failed.map(([name, result]) => name + " (" + (result.error?.message ?? "unknown error") + ")").join(", "));
     }
 
-    setRequests((reqRes.data ?? []) as unknown as AdminRequestRow[]);
-    setPublishers((pubRes.data ?? []) as Publisher[]);
-    setBusinesses((bizRes.data ?? []) as Profile[]);
-    setMessages((msgRes.data ?? []) as ContactMessage[]);
-    setReports((reportRes.data ?? []) as unknown as Report[]);
-    setWorkWithUs((wwuRes.data ?? []) as WorkWithUsApplication[]);
-    setPartners((partnerRes.data ?? []) as PartnerApplication[]);
-    setAdvertiseInquiries((adRes.data ?? []) as AdvertiseInquiry[]);
-    setCommunityAnnouncements((annRes.data ?? []) as CommunityAnnouncement[]);
-    setCommunityEvents((evtRes.data ?? []) as CommunityEvent[]);
-    setCommunityQuestions((qRes.data ?? []) as CommunityQuestion[]);
+    if (!reqRes.error) setRequests((reqRes.data ?? []) as unknown as AdminRequestRow[]);
+    if (!pubRes.error) setPublishers((pubRes.data ?? []) as Publisher[]);
+    if (!bizRes.error) setBusinesses((bizRes.data ?? []) as Profile[]);
+    if (!msgRes.error) setMessages((msgRes.data ?? []) as ContactMessage[]);
+    if (!reportRes.error) setReports((reportRes.data ?? []) as unknown as Report[]);
+    if (!wwuRes.error) setWorkWithUs((wwuRes.data ?? []) as WorkWithUsApplication[]);
+    if (!partnerRes.error) setPartners((partnerRes.data ?? []) as PartnerApplication[]);
+    if (!adRes.error) setAdvertiseInquiries((adRes.data ?? []) as AdvertiseInquiry[]);
+    if (!annRes.error) setCommunityAnnouncements((annRes.data ?? []) as CommunityAnnouncement[]);
+    if (!evtRes.error) setCommunityEvents((evtRes.data ?? []) as CommunityEvent[]);
+    if (!qRes.error) setCommunityQuestions((qRes.data ?? []) as CommunityQuestion[]);
     setDisputes(((disputeRes.data ?? []) as unknown as Dispute[]).map((d) => ({
       ...d,
       dispute_messages: (d.dispute_messages ?? []).slice().sort((a, b) => a.created_at.localeCompare(b.created_at)),
