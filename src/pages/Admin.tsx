@@ -245,21 +245,27 @@ export default function Admin() {
     if (!annRes.error) setCommunityAnnouncements((annRes.data ?? []) as CommunityAnnouncement[]);
     if (!evtRes.error) setCommunityEvents((evtRes.data ?? []) as CommunityEvent[]);
     if (!qRes.error) setCommunityQuestions((qRes.data ?? []) as CommunityQuestion[]);
-    setDisputes(((disputeRes.data ?? []) as unknown as Dispute[]).map((d) => ({
-      ...d,
-      dispute_messages: (d.dispute_messages ?? []).slice().sort((a, b) => a.created_at.localeCompare(b.created_at)),
-    })));
-    setVerificationRequiredChannels(
-      new Set(((channelRes.data ?? []) as { slug: string; verification_required: boolean }[]).filter((ch) => ch.verification_required).map((ch) => ch.slug))
-    );
-    setVerificationChecks(
-      Object.fromEntries(
-        ((verifRes.data ?? []) as { publisher_id: string; checks_confirmed: string[]; checks_total: number }[]).map((v) => [
-          v.publisher_id,
-          { checksConfirmed: v.checks_confirmed, checksTotal: v.checks_total },
-        ])
-      )
-    );
+    if (!disputeRes.error) {
+      setDisputes(((disputeRes.data ?? []) as unknown as Dispute[]).map((d) => ({
+        ...d,
+        dispute_messages: (d.dispute_messages ?? []).slice().sort((a, b) => a.created_at.localeCompare(b.created_at)),
+      })));
+    }
+    if (!channelRes.error) {
+      setVerificationRequiredChannels(
+        new Set(((channelRes.data ?? []) as { slug: string; verification_required: boolean }[]).filter((ch) => ch.verification_required).map((ch) => ch.slug))
+      );
+    }
+    if (!verifRes.error) {
+      setVerificationChecks(
+        Object.fromEntries(
+          ((verifRes.data ?? []) as { publisher_id: string; checks_confirmed: string[]; checks_total: number }[]).map((v) => [
+            v.publisher_id,
+            { checksConfirmed: v.checks_confirmed, checksTotal: v.checks_total },
+          ])
+        )
+      );
+    }
 
     if (loadVersion === loadVersionRef.current) setLoading(false);
   }
