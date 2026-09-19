@@ -100,7 +100,7 @@ export default function ForBusinesses() {
         </div>
       </section>
 
-      {/* MARKETING SUITE TEASER */}
+      {/* CASE STUDIES */}\n      <section className="py-16 bg-white border-t-[3px] border-billboard-ink">\n        <div className="max-w-5xl mx-auto px-5">\n          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-5">\n            <div>\n              <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">Case studies</span>\n              <h2 className="text-3xl md:text-4xl mb-3 max-w-2xl">See how multi-channel campaigns are structured.</h2>\n              <p className="text-billboard-inkSoft max-w-2xl">Explore operational walkthroughs covering product launches, retail promotions, events, lead generation, community reach and sports sponsorships.</p>\n            </div>\n            <Link to="/case-studies" className="inline-flex items-center gap-2 shrink-0 border-[3px] border-billboard-ink bg-billboard-yellow font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition">\n              Read case studies →\n            </Link>\n          </div>\n        </div>\n      </section>\n\n      {/* MARKETING SUITE TEASER */}
       <section className="py-16 bg-billboard-ink text-billboard-paper border-b-[3px] border-billboard-ink">
         <div className="max-w-5xl mx-auto px-5">
           <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-yellow text-billboard-yellow px-3 py-1.5 rounded mb-3">{t("tools.badge")}</span>
