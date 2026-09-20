@@ -4,10 +4,9 @@ import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
 import { formatSupabaseError } from "../lib/supabaseErrors";
 import { redirectToPayfast } from "../lib/payfastRedirect";
-import { buildAndDownloadInvoice } from "../lib/invoice";
+import { buildAndDownloadInvoice, chatSchedInvoiceParty } from "../lib/invoice";
 import BankDetailsPanel from "../components/BankDetailsPanel";
 import EscrowNote from "../components/EscrowNote";
-import { CONTACT_ADDRESS_LINES } from "../lib/constants";
 import { formatCurrency } from "../lib/currency";
 import MessageThread from "../components/MessageThread";
 import CampaignComplianceStrip from "../components/CampaignComplianceStrip";
@@ -470,16 +469,36 @@ function RequestCard({ request: r, onChange }: { request: PublisherRequest; onCh
   );
 }
 
-function downloadBusinessInvoice(r: PublisherRequest, payment: NonNullable<PublisherRequest["payments"]>[number], profile: Profile | null) {
+// Builds the SARS-compliant "Billed to" party for a business invoice —
+// full postal address (street, suburb, city, province, postal code) plus
+// the business's own VAT number if they've entered one, rather than just
+// a name and phone number. Any address field the business hasn't filled
+// in yet is simply left out of the lines array — the invoice omits what
+// it doesn't have rather than showing a blank line.
+function billedToParty(profile: Profile | null) {
   const billName = profile?.company_name || profile?.full_name || "Your business";
+  const addressLines = [
+    profile?.address_line1,
+    profile?.address_line2,
+    [profile?.city, profile?.province].filter(Boolean).join(", "),
+    profile?.postal_code,
+  ].filter((l): l is string => Boolean(l && l.trim()));
+  return {
+    heading: "Billed to",
+    lines: [billName, ...addressLines, ...(profile?.phone ? [profile.phone] : [])],
+    vatNumber: profile?.vat_number ?? null,
+  };
+}
+
+function downloadBusinessInvoice(r: PublisherRequest, payment: NonNullable<PublisherRequest["payments"]>[number], profile: Profile | null) {
   const invoiceNumber = `MB-${payment.id.slice(0, 8).toUpperCase()}`;
   const issueDate = new Date(payment.paid_at ?? payment.created_at).toLocaleDateString("en-ZA", { day: "numeric", month: "long", year: "numeric" });
   buildAndDownloadInvoice({
     invoiceNumber,
     issueDate,
     statusLabel: `Paid${payment.paid_at ? ` on ${new Date(payment.paid_at).toLocaleDateString("en-ZA")}` : ""}`,
-    billTo: { heading: "Billed to", lines: [billName, ...(profile?.phone ? [profile.phone] : [])] },
-    from: { heading: "From", lines: ["ChatSched", ...CONTACT_ADDRESS_LINES] },
+    billTo: billedToParty(profile),
+    from: chatSchedInvoiceParty(),
     description: `Advertising placement — ${r.publisher?.name ?? "Publisher"}`,
     channelLabel: "Social Media",
     grossAmount: payment.amount,
@@ -556,6 +575,14 @@ function BusinessProfileCard({ profile, onSaved }: { profile: Profile; onSaved: 
   const [website, setWebsite] = useState(profile.website ?? "");
   const [facebook, setFacebook] = useState(profile.facebook_url ?? "");
   const [instagram, setInstagram] = useState(profile.instagram_url ?? "");
+  // Phase 107 — SARS-compliant tax invoice fields. Kept in their own visual
+  // group below the social links so the form still reads business-details
+  // → online presence → invoicing, rather than mixing address fields in
+  // among unrelated ones.
+  const [addressLine1, setAddressLine1] = useState(profile.address_line1 ?? "");
+  const [addressLine2, setAddressLine2] = useState(profile.address_line2 ?? "");
+  const [postalCode, setPostalCode] = useState(profile.postal_code ?? "");
+  const [vatNumber, setVatNumber] = useState(profile.vat_number ?? "");
   const [saving, setSaving] = useState(false);
 
   const level = computeVerificationLevel(profile);
@@ -570,6 +597,10 @@ function BusinessProfileCard({ profile, onSaved }: { profile: Profile; onSaved: 
       website: website || null,
       facebook_url: facebook || null,
       instagram_url: instagram || null,
+      address_line1: addressLine1 || null,
+      address_line2: addressLine2 || null,
+      postal_code: postalCode || null,
+      vat_number: vatNumber || null,
     }).eq("id", profile.id);
     setSaving(false);
     setEditing(false);
@@ -645,6 +676,35 @@ function BusinessProfileCard({ profile, onSaved }: { profile: Profile; onSaved: 
             <label className="block text-xs font-semibold mb-1">Instagram</label>
             <input value={instagram} onChange={(e) => setInstagram(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-2.5 py-2 text-sm" />
           </div>
+
+          <div className="sm:col-span-2 pt-3 mt-1 border-t-2 border-billboard-paperDim">
+            <p className="font-mono text-[11px] font-semibold uppercase tracking-wide text-billboard-inkSoft mb-1">Billing address</p>
+            <p className="text-[11px] text-billboard-inkSoft mb-3">
+              Used on your invoices — required by SARS for a proper tax invoice. Optional, but a downloaded invoice
+              looks incomplete without it.
+            </p>
+          </div>
+          <div className="sm:col-span-2">
+            <label className="block text-xs font-semibold mb-1">Street address</label>
+            <input value={addressLine1} onChange={(e) => setAddressLine1(e.target.value)} placeholder="e.g. 12 Long Street" className="w-full border-2 border-billboard-ink rounded px-2.5 py-2 text-sm" />
+          </div>
+          <div className="sm:col-span-2">
+            <label className="block text-xs font-semibold mb-1">
+              Address line 2 <span className="font-normal text-billboard-inkSoft">(suburb, complex, unit — optional)</span>
+            </label>
+            <input value={addressLine2} onChange={(e) => setAddressLine2(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-2.5 py-2 text-sm" />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold mb-1">Postal code</label>
+            <input value={postalCode} onChange={(e) => setPostalCode(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-2.5 py-2 text-sm" />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold mb-1">
+              VAT number <span className="font-normal text-billboard-inkSoft">(if registered)</span>
+            </label>
+            <input value={vatNumber} onChange={(e) => setVatNumber(e.target.value)} placeholder="e.g. 4123456789" className="w-full border-2 border-billboard-ink rounded px-2.5 py-2 text-sm" />
+          </div>
+
           <Button variant="primary" size="md" onClick={save} disabled={saving} className="sm:col-span-2">
             {saving ? "Saving…" : "Save"}
           </Button>
