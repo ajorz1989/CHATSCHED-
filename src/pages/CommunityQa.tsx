@@ -24,7 +24,14 @@ export default function CommunityQa() {
     isValidCategory(initialCategory) ? initialCategory : "all"
   );
 
-  const [showForm, setShowForm] = useState(false);
+  // The hub's "Ask a question" link promises an open form — arriving from
+  // there with ?ask=1 should show it, not a collapsed page the user has to
+  // hunt for the button on. Routed in-place (already on /community/qa) only
+  // changes searchParams, so the initial state alone isn't enough.
+  const [showForm, setShowForm] = useState(searchParams.get("ask") === "1");
+  useEffect(() => {
+    if (searchParams.get("ask") === "1") setShowForm(true);
+  }, [searchParams]);
   const [category, setCategory] = useState<CommunityQuestionCategory>(
     isValidCategory(initialCategory) ? initialCategory : "business"
   );
@@ -103,23 +110,23 @@ export default function CommunityQa() {
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold mb-1.5">Category</label>
-                <select value={category} onChange={(e) => setCategory(e.target.value as CommunityQuestionCategory)} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5 bg-white">
+                <label htmlFor="qa-category" className="block text-sm font-semibold mb-1.5">Category</label>
+                <select id="qa-category" value={category} onChange={(e) => setCategory(e.target.value as CommunityQuestionCategory)} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5 bg-white">
                   {COMMUNITY_QUESTION_CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-semibold mb-1.5">Your question</label>
-                <textarea required value={question} onChange={(e) => setQuestion(e.target.value)} rows={4} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5 resize-y" />
+                <label htmlFor="qa-question" className="block text-sm font-semibold mb-1.5">Your question</label>
+                <textarea id="qa-question" required value={question} onChange={(e) => setQuestion(e.target.value)} rows={4} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5 resize-y" />
               </div>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold mb-1.5">Name <span className="font-normal text-billboard-inkSoft">(optional)</span></label>
-                  <input value={name} onChange={(e) => setName(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5" />
+                  <label htmlFor="qa-name" className="block text-sm font-semibold mb-1.5">Name <span className="font-normal text-billboard-inkSoft">(optional)</span></label>
+                  <input id="qa-name" value={name} onChange={(e) => setName(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5" />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold mb-1.5">Email <span className="font-normal text-billboard-inkSoft">(optional, in case we follow up)</span></label>
-                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5" />
+                  <label htmlFor="qa-email" className="block text-sm font-semibold mb-1.5">Email <span className="font-normal text-billboard-inkSoft">(optional, in case we follow up)</span></label>
+                  <input id="qa-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5" />
                 </div>
               </div>
               <div {...wrapperProps}>

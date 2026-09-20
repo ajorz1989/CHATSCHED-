@@ -115,7 +115,6 @@ const STATIC_ROUTES = [
   ["/media-kit", 0.4],
   ["/investors", 0.4],
   ["/roadmap", 0.4],
-  ["/press", 0.4],
   ["/compliance", 0.4],
   ["/partners/apply", 0.4],
   ["/platform-rules", 0.3],

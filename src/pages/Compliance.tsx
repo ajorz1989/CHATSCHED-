@@ -4,14 +4,23 @@ import Seo from "../components/Seo";
 import PlatformRequirementCard from "../components/PlatformRequirementCard";
 import { SkeletonRows } from "../components/Skeleton";
 import { getEnabledPlatformRules, getCategoryRules } from "../lib/compliance";
-import type { PlatformComplianceRule, CampaignCategoryRule } from "../lib/complianceTypes";
+import { reportError } from "../lib/errorTracking";
+import type { PlatformComplianceRule, CampaignCategoryRule, CategoryStatus } from "../lib/complianceTypes";
 
-const CATEGORY_STATUS_META: Record<string, { label: string; className: string }> = {
+const CATEGORY_STATUS_META: Record<CategoryStatus, { label: string; className: string }> = {
   allowed: { label: "Allowed", className: "border-billboard-greenDeep text-billboard-greenDeep" },
   manual_review: { label: "Manual review", className: "border-billboard-yellowDeep text-billboard-ink" },
   restricted: { label: "Restricted", className: "border-billboard-red text-billboard-red" },
   not_accepted: { label: "Not accepted", className: "border-billboard-red text-billboard-red" },
 };
+
+/**
+ * Exhaustive on purpose: chatsched_status is a fixed four-value DB check
+ * constraint (schema_phase39_compliance.sql), so a status the UI hasn't
+ * been taught about is a deploy-order bug, not a data possibility. Typing
+ * the record to CategoryStatus makes the compiler flag any new status
+ * added to the type instead of letting it render an empty badge.
+ */
 
 const FAQ: { q: string; a: string }[] = [
   { q: "What is sponsored content?", a: "Content a creator publishes in exchange for payment, product, or another benefit from a business — the collaborations booked through ChatSched." },
@@ -27,13 +36,22 @@ export default function Compliance() {
   const [platforms, setPlatforms] = useState<PlatformComplianceRule[]>([]);
   const [categories, setCategories] = useState<CampaignCategoryRule[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
-    Promise.all([getEnabledPlatformRules(), getCategoryRules()]).then(([p, c]) => {
-      setPlatforms(p);
-      setCategories(c);
-      setLoading(false);
-    });
+    // Both getters throw on a failed query, so without this catch a
+    // transient network/RLS failure becomes an unhandled rejection and the
+    // page sits on skeletons forever. Show a retryable notice instead.
+    Promise.all([getEnabledPlatformRules(), getCategoryRules()])
+      .then(([p, c]) => {
+        setPlatforms(p);
+        setCategories(c);
+      })
+      .catch((error) => {
+        reportError(error, { source: "Compliance.loadRules" });
+        setLoadError(true);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   return (
@@ -56,6 +74,18 @@ export default function Compliance() {
         <span className="text-billboard-ink">Its own compliance page (under Dashboard → your campaign) shows exactly what's outstanding.</span>
       </p>
 
+      {loadError && (
+        <div className="border-[3px] border-billboard-ink rounded p-5 bg-billboard-paperDim mb-10" role="alert">
+          <p className="font-bold text-sm mb-1">We couldn't load the platform rules just now.</p>
+          <p className="text-sm text-billboard-inkSoft">
+            That's usually a temporary connection problem — refresh to try again. In the meantime, the responsibilities
+            and FAQ below still apply, and{" "}
+            <Link to="/platform-rules" className="text-billboard-greenDeep underline transition-colors hover:text-billboard-ink">the platform rules page</Link>{" "}
+            may still load.
+          </p>
+        </div>
+      )}
+
       {/* Platform-specific requirements */}
       <section className="mb-14">
         <h2 className="text-xl mb-1">Platform requirements</h2>
@@ -66,6 +96,12 @@ export default function Compliance() {
         </p>
         {loading ? (
           <SkeletonRows count={3} />
+        ) : platforms.length === 0 ? (
+          <div className="border-[3px] border-dashed border-billboard-ink rounded p-6 text-sm text-billboard-inkSoft">
+            {loadError
+              ? "Platform rules couldn't be loaded — refresh to try again."
+              : "No platform requirements are published yet — check the full platform rules page."}
+          </div>
         ) : (
           <div className="grid sm:grid-cols-2 gap-3">
             {platforms.map((p) => <PlatformRequirementCard key={p.platform} rule={p} compact />)}
@@ -82,6 +118,12 @@ export default function Compliance() {
         </p>
         {loading ? (
           <SkeletonRows count={2} />
+        ) : categories.length === 0 ? (
+          <div className="border-[3px] border-dashed border-billboard-ink rounded p-6 text-sm text-billboard-inkSoft">
+            {loadError
+              ? "Advertising categories couldn't be loaded — refresh to try again."
+              : "No advertising categories are published yet."}
+          </div>
         ) : (
           <div className="flex flex-wrap gap-2">
             {categories.map((c) => {
@@ -125,7 +167,7 @@ export default function Compliance() {
       </section>
 
       {/* FAQ */}
-      <section>
+      <section className="mb-14">
         <h2 className="text-xl mb-5">Frequently asked questions</h2>
         <div className="space-y-3">
           {FAQ.map((item) => (
@@ -134,6 +176,23 @@ export default function Compliance() {
               <p className="text-sm text-billboard-inkSoft mt-2">{item.a}</p>
             </details>
           ))}
+        </div>
+      </section>
+
+      {/* Bottom CTA */}
+      <section className="bg-billboard-green text-white border-t-[3px] border-billboard-ink -mx-5 px-5 py-16 text-center">
+        <div className="max-w-2xl mx-auto">
+          <h2 className="font-display text-2xl md:text-3xl mb-4">Check your own campaign.</h2>
+          <p className="text-white/85 mb-6 max-w-lg mx-auto">
+            Every campaign you run has its own compliance page, showing exactly what's still outstanding before you
+            publish — the requirements above, applied to that specific brief.
+          </p>
+          <Link
+            to="/dashboard"
+            className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold px-6 py-3 rounded hover:-translate-y-0.5 transition"
+          >
+            Open your campaigns →
+          </Link>
         </div>
       </section>
     </div>

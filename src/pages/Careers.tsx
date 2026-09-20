@@ -1,4 +1,4 @@
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import Seo from "../components/Seo";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
 import { submitPublicForm } from "../lib/publicFormSubmit";
@@ -13,8 +13,9 @@ import {
   ALLOWED_WORK_WITH_US_ATTACHMENT_MIME_TYPES,
   WORK_WITH_US_ATTACHMENT_BUCKET,
 } from "../lib/constants";
-import type { WorkWithUsCategory } from "../lib/types";
+import type { Career, WorkWithUsCategory } from "../lib/types";
 import Button from "../components/Button";
+import { SkeletonRows } from "../components/Skeleton";
 
 // ---------------------------------------------------------------------------
 // Content
@@ -56,7 +57,7 @@ const HOW_TO_APPLY = [
   {
     step: "02",
     title: "Tell us what you’d bring",
-    body: "No open roles list to match against. Tell us the role you’re after and why you’d be the right person for it.",
+    body: "Choose an active role that fits you, or submit a general application and tell us where you could add value.",
   },
   {
     step: "03",
@@ -65,6 +66,10 @@ const HOW_TO_APPLY = [
   },
 ];
 
+function formatDateOnly(value: string): string {
+  const parts = value.slice(0, 10).split("-");
+  return parts.length === 3 ? parts[2] + "/" + parts[1] + "/" + parts[0] : value;
+}
 function formatMB(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(0)}MB`;
 }
@@ -77,6 +82,45 @@ type Tab = "fulltime" | "workwithus";
 
 export default function Careers() {
   const [activeTab, setActiveTab] = useState<Tab>("fulltime");
+  const [careers, setCareers] = useState<Career[]>([]);
+  const [careersLoading, setCareersLoading] = useState(true);
+  const [careersError, setCareersError] = useState<string | null>(null);
+  const [selectedCareerId, setSelectedCareerId] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadCareers() {
+      if (!isSupabaseConfigured) {
+        setCareersLoading(false);
+        return;
+      }
+
+      setCareersLoading(true);
+      const { data, error } = await supabase
+        .from("careers")
+        .select("*")
+        .eq("status", "active")
+        .order("sort_order", { ascending: true })
+        .order("created_at", { ascending: false });
+
+      if (cancelled) return;
+
+      if (error) {
+        setCareers([]);
+        setCareersError("We couldn't load the current openings. You can still submit a general application below.");
+      } else {
+        setCareers((data ?? []) as Career[]);
+        setCareersError(null);
+      }
+      setCareersLoading(false);
+    }
+
+    void loadCareers();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // ── Full-time form state
   const [ftName, setFtName] = useState("");
@@ -164,6 +208,7 @@ export default function Careers() {
       linkedin_url: ftLinkedinUrl.trim() || null,
       location: ftLocation,
       cover_letter: ftCoverLetter,
+      career_id: selectedCareerId,
     });
 
     setFtSubmitting(false);
@@ -329,24 +374,119 @@ export default function Careers() {
         </div>
       </section>
 
-      {/* ───────────────────────── OPEN ROLES NOTE ───────────────────────── */}
-      <section className="max-w-4xl mx-auto px-5 py-10">
-        <div className="border-[3px] border-billboard-ink rounded p-6 flex flex-col sm:flex-row sm:items-center gap-4 bg-billboard-paper">
-          <div className="flex-1">
-            <p className="font-mono text-xs font-semibold tracking-wider uppercase text-billboard-inkSoft mb-1">Open roles</p>
-            <p className="font-bold text-base mb-1">We don’t maintain a fixed list.</p>
-            <p className="text-sm text-billboard-inkSoft">
-              As a small team, who we need next changes quickly. If you think you’d be a strong fit — tell us the role you’re after and make your case. We read every application.
-            </p>
+      {/* ───────────────────────── CURRENT OPENINGS ───────────────────────── */}
+      <section className="max-w-5xl mx-auto px-5 py-12">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
+          <div>
+            <p className="font-mono text-xs font-semibold tracking-wider uppercase text-billboard-red mb-1">Careers</p>
+            <h2 className="font-display text-2xl md:text-3xl">Current openings.</h2>
+            <p className="text-sm text-billboard-inkSoft mt-1.5 max-w-2xl">Roles published by the ChatSched team appear here automatically. Open a role to see the brief, then apply without retyping the job title.</p>
           </div>
-          <button
-            type="button"
-            onClick={() => setActiveTab("fulltime")}
-            className="shrink-0 bg-billboard-yellow border-[3px] border-billboard-ink font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition text-sm"
-          >
-            Apply now →
-          </button>
+          <span className="font-mono text-[10px] uppercase tracking-wider border-2 border-billboard-ink rounded-full px-3 py-1.5 shrink-0">
+            {careersLoading ? "Loading openings" : careers.length === 1 ? "1 opening" : careers.length + " openings"}
+          </span>
         </div>
+
+        {careersError && (
+          <div className="border-2 border-billboard-yellow bg-billboard-yellow/10 rounded-lg p-4 text-sm text-billboard-ink mb-4" role="status">
+            {careersError}
+          </div>
+        )}
+
+        {careersLoading ? (
+          <div className="border-[3px] border-billboard-ink rounded-lg p-5 bg-white"><SkeletonRows count={3} /></div>
+        ) : careers.length === 0 ? (
+          <div className="border-[3px] border-dashed border-billboard-ink rounded-lg p-7 bg-billboard-paper text-center">
+            <h3 className="font-display text-xl mb-2">No active roles right now.</h3>
+            <p className="text-sm text-billboard-inkSoft max-w-xl mx-auto mb-4">
+              We still welcome strong general applications. Tell us what you do, where you could contribute, and what you want to build with ChatSched.
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedCareerId(null);
+                setFtRole("");
+                setActiveTab("fulltime");
+                setTimeout(() => document.getElementById("career-application-form")?.scrollIntoView({ behavior: "smooth", block: "start" }), 0);
+              }}
+              className="bg-billboard-yellow border-[3px] border-billboard-ink font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition text-sm"
+            >
+              Submit a general application →
+            </button>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 gap-4">
+            {careers.map((career) => (
+              <article key={career.id} className="border-[3px] border-billboard-ink rounded-lg bg-white p-5 flex flex-col hover:-translate-y-0.5 transition">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="font-mono text-[10px] uppercase tracking-wider text-billboard-greenDeep font-bold mb-1">{career.department}</p>
+                    <h3 className="font-display text-xl">{career.job_title}</h3>
+                  </div>
+                  <span className="w-2.5 h-2.5 rounded-full bg-billboard-green shrink-0 mt-2" aria-label="Open role" />
+                </div>
+                <div className="flex flex-wrap gap-2 mt-3">
+                  <span className="font-mono text-[10px] border border-billboard-ink/20 rounded-full px-2 py-1">{career.location}</span>
+                  <span className="font-mono text-[10px] border border-billboard-ink/20 rounded-full px-2 py-1">{career.remote_type === "remote" ? "Remote" : career.remote_type === "hybrid" ? "Hybrid" : "On-site"}</span>
+                  <span className="font-mono text-[10px] border border-billboard-ink/20 rounded-full px-2 py-1">{career.employment_type === "full_time" ? "Full-time" : career.employment_type === "part_time" ? "Part-time" : career.employment_type === "internship" ? "Internship" : career.employment_type.charAt(0).toUpperCase() + career.employment_type.slice(1)}</span>
+                </div>
+                <p className="text-sm text-billboard-inkSoft mt-4 leading-relaxed flex-1">{career.short_summary}</p>
+                <details className="mt-4 border-t-2 border-billboard-ink/10 pt-3">
+                  <summary className="cursor-pointer font-bold text-sm select-none">View role details</summary>
+                  <div className="pt-4 space-y-4 text-sm text-billboard-inkSoft">
+                    <p className="whitespace-pre-wrap leading-relaxed">{career.description}</p>
+                    {career.responsibilities.length > 0 && (
+                      <div>
+                        <h4 className="font-bold text-billboard-ink mb-1.5">Responsibilities</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                          {career.responsibilities.map((item) => <li key={item}>{item}</li>)}
+                        </ul>
+                      </div>
+                    )}
+                    {career.requirements.length > 0 && (
+                      <div>
+                        <h4 className="font-bold text-billboard-ink mb-1.5">Requirements</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                          {career.requirements.map((item) => <li key={item}>{item}</li>)}
+                        </ul>
+                      </div>
+                    )}
+                    {career.nice_to_have.length > 0 && (
+                      <div>
+                        <h4 className="font-bold text-billboard-ink mb-1.5">Nice to have</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                          {career.nice_to_have.map((item) => <li key={item}>{item}</li>)}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </details>
+                {career.salary_min != null || career.salary_max != null ? (
+                  <p className="font-mono text-xs mt-4">
+                    {career.salary_period === "unspecified" ? "Salary / rate: " : "Pay: "}
+                    {career.salary_min != null ? "R" + Number(career.salary_min).toLocaleString("en-ZA") : ""}{career.salary_min != null && career.salary_max != null ? " – " : ""}{career.salary_max != null ? "R" + Number(career.salary_max).toLocaleString("en-ZA") : ""}
+                    {career.salary_period !== "unspecified" ? " / " + career.salary_period : ""}
+                  </p>
+                ) : null}
+                {career.application_deadline && (
+                  <p className="text-[11px] text-billboard-inkSoft mt-2">Apply by {formatDateOnly(career.application_deadline)}</p>
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedCareerId(career.id);
+                    setFtRole(career.job_title);
+                    setActiveTab("fulltime");
+                    setTimeout(() => document.getElementById("career-application-form")?.scrollIntoView({ behavior: "smooth", block: "start" }), 0);
+                  }}
+                  className="w-full mt-5 bg-billboard-yellow border-[3px] border-billboard-ink font-bold px-4 py-3 rounded hover:-translate-y-0.5 transition text-sm"
+                >
+                  Apply for this role →
+                </button>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* ───────────────────────── TABS ───────────────────────── */}
@@ -385,7 +525,7 @@ export default function Careers() {
               </p>
             </div>
           ) : (
-            <form onSubmit={handleFtSubmit} className="border-[3px] border-billboard-ink rounded p-6 space-y-4" noValidate>
+            <form id="career-application-form" onSubmit={handleFtSubmit} className="border-[3px] border-billboard-ink rounded p-6 space-y-4" noValidate>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold mb-1.5">Full name</label>
@@ -410,13 +550,38 @@ export default function Careers() {
                 </div>
                 <div>
                   <label className="block text-sm font-semibold mb-1.5">Role you’re applying for</label>
-                  <input
-                    required
-                    value={ftRole}
-                    onChange={(e) => setFtRole(e.target.value)}
-                    placeholder="e.g. Full-Stack Developer"
-                    className={fieldCls}
-                  />
+                  {careers.length > 0 && (
+                    <select
+                      value={selectedCareerId ?? "general"}
+                      onChange={(e) => {
+                        const id = e.target.value === "general" ? null : e.target.value;
+                        setSelectedCareerId(id);
+                        const selected = id ? careers.find((career) => career.id === id) : null;
+                        setFtRole(selected?.job_title ?? "");
+                      }}
+                      className={fieldCls}
+                    >
+                      <option value="general">General application</option>
+                      {careers.map((career) => (
+                        <option key={career.id} value={career.id}>{career.job_title}</option>
+                      ))}
+                    </select>
+                  )}
+                  {!selectedCareerId && (
+                    <input
+                      required
+                      value={ftRole}
+                      onChange={(e) => {
+                        setSelectedCareerId(null);
+                        setFtRole(e.target.value);
+                      }}
+                      placeholder="e.g. Full-Stack Developer"
+                      className={fieldCls + (careers.length > 0 ? " mt-2" : "")}
+                    />
+                  )}
+                  <p className="text-xs text-billboard-inkSoft mt-1.5">
+                    {selectedCareerId ? "You’re applying for the selected ChatSched opening." : "Choose an opening above or tell us the role you’re interested in."}
+                  </p>
                 </div>
                 <div>
                   <label className="block text-sm font-semibold mb-1.5">Location</label>

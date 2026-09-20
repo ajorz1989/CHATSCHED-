@@ -5,28 +5,41 @@ import { supabase, isSupabaseConfigured } from "../lib/supabase";
 import type { CommunityAnnouncement, CommunityEvent } from "../lib/types";
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-ZA", { day: "numeric", month: "short" });
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? "" : d.toLocaleDateString("en-ZA", { day: "numeric", month: "short" });
 }
 
 export default function Community() {
   const [announcements, setAnnouncements] = useState<CommunityAnnouncement[]>([]);
   const [events, setEvents] = useState<CommunityEvent[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
-    if (!isSupabaseConfigured) return;
+    if (!isSupabaseConfigured) { setLoading(false); return; }
+    let outstanding = 2;
+    const done = () => { if (--outstanding === 0) setLoading(false); };
     supabase.from("community_announcements").select("*").eq("is_published", true)
       .order("pinned", { ascending: false }).order("created_at", { ascending: false }).limit(3)
-      .then(({ data }) => setAnnouncements((data ?? []) as CommunityAnnouncement[]));
+      .then(({ data, error }) => {
+        if (error) setLoadError(true);
+        else setAnnouncements((data ?? []) as CommunityAnnouncement[]);
+        done();
+      });
     supabase.from("community_events").select("*").eq("is_published", true)
       .gte("starts_at", new Date().toISOString()).order("starts_at", { ascending: true }).limit(3)
-      .then(({ data }) => setEvents((data ?? []) as CommunityEvent[]));
+      .then(({ data, error }) => {
+        if (error) setLoadError(true);
+        else setEvents((data ?? []) as CommunityEvent[]);
+        done();
+      });
   }, []);
 
   return (
     <div>
       <Seo title="Community · ChatSched" description="Articles, Q&A, announcements, webinars and events for the businesses and publishers building with ChatSched." />
 
-      <section className="bg-billboard-red text-white border-b-[3px] border-billboard-ink py-16">
+      <section className="bg-billboard-green text-white border-b-[3px] border-billboard-ink py-16">
         <div className="max-w-4xl mx-auto px-5">
           <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-white px-3 py-1.5 rounded mb-4">Community</span>
           <h1 className="text-3xl md:text-4xl mb-5">Real questions from real businesses and publishers — not a support ticket, a conversation.</h1>
@@ -36,6 +49,11 @@ export default function Community() {
 
       {/* Publisher & Business Community */}
       <section className="max-w-4xl mx-auto px-5 py-16">
+        {loadError && (
+          <p className="border-[3px] border-dashed border-billboard-ink rounded p-5 text-sm text-billboard-inkSoft mb-6">
+            Some community content couldn't load right now — refresh to try again.
+          </p>
+        )}
         <div className="grid sm:grid-cols-2 gap-5">
           <div className="border-[3px] border-billboard-ink rounded p-6">
             <h2 className="font-display text-lg mb-2">Publisher Community</h2>
@@ -64,7 +82,7 @@ export default function Community() {
           <div className="flex flex-wrap gap-3">
             <Link to="/blog" className="border-[3px] border-billboard-ink rounded px-4 py-2.5 font-semibold text-sm bg-billboard-paper hover:-translate-y-0.5 transition">Blog →</Link>
             <Link to="/community/qa?category=marketing" className="border-[3px] border-billboard-ink rounded px-4 py-2.5 font-semibold text-sm bg-billboard-paper hover:-translate-y-0.5 transition">Marketing Q&amp;A →</Link>
-            <Link to="/community/qa" className="border-[3px] border-billboard-ink rounded px-4 py-2.5 font-semibold text-sm bg-billboard-yellow hover:-translate-y-0.5 transition">Ask a question →</Link>
+            <Link to="/community/qa?ask=1" className="border-[3px] border-billboard-ink rounded px-4 py-2.5 font-semibold text-sm bg-billboard-yellow hover:-translate-y-0.5 transition">Ask a question →</Link>
           </div>
         </div>
       </section>
@@ -75,7 +93,9 @@ export default function Community() {
           <h2 className="font-display text-xl">Events</h2>
           <Link to="/community/events" className="font-mono text-xs font-semibold uppercase text-billboard-inkSoft hover:text-billboard-ink">See all →</Link>
         </div>
-        {events.length === 0 ? (
+        {loading ? (
+          <div className="skeleton-shimmer h-24 border-[3px] border-billboard-ink rounded" />
+        ) : events.length === 0 ? (
           <div className="border-[3px] border-dashed border-billboard-ink rounded p-8 text-center text-billboard-inkSoft text-sm">Nothing scheduled yet — check back soon.</div>
         ) : (
           <div className="grid sm:grid-cols-3 gap-4">
@@ -96,7 +116,9 @@ export default function Community() {
             <h2 className="font-display text-xl">Announcements</h2>
             <Link to="/community/announcements" className="font-mono text-xs font-semibold uppercase text-billboard-inkSoft hover:text-billboard-ink">See all →</Link>
           </div>
-          {announcements.length === 0 ? (
+          {loading ? (
+            <div className="skeleton-shimmer h-24 border-[3px] border-billboard-ink rounded" />
+          ) : announcements.length === 0 ? (
             <div className="border-[3px] border-dashed border-billboard-ink rounded p-8 text-center text-billboard-inkSoft text-sm">Nothing posted yet — check back soon.</div>
           ) : (
             <div className="space-y-3">
@@ -108,6 +130,19 @@ export default function Community() {
               ))}
             </div>
           )}
+        </div>
+      </section>
+
+      {/* Bottom CTA */}
+      <section className="bg-billboard-green text-white border-t-[3px] border-billboard-ink py-16 text-center">
+        <div className="max-w-2xl mx-auto px-5">
+          <h2 className="font-display text-2xl md:text-3xl mb-4">Still have a question?</h2>
+          <p className="text-white/85 mb-6 max-w-lg mx-auto">
+            Ask it in the Q&amp;A — real questions from businesses and publishers, answered by the team and posted for everyone who comes next.
+          </p>
+          <Link to="/community/qa?ask=1" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold px-6 py-3 rounded hover:-translate-y-0.5 transition">
+            Ask a question in the Q&amp;A →
+          </Link>
         </div>
       </section>
     </div>

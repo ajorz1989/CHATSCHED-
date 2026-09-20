@@ -1574,23 +1574,6 @@ products, confirm the breakdown bar updates, walk one through New →
 Contacted → In Discussion → Active, and confirm the CSV export respects
 the product filter.
 
-## Press (`/press`)
-No migration, no database — static content plus two live reads reused
-from elsewhere (approved publisher count, the same
-`get_marketplace_transparency_stats()` RPC `/transparency` already calls),
-same "real numbers or say there isn't enough data" stance as `/about` and
-`/transparency` — a press page is exactly the place a stale or fabricated
-number would do the most damage if a journalist quoted it.
-
-Brand assets section links directly to the real, existing files
-(`/favicon.svg`, `/icons/icon-512.png`) rather than inventing a logo suite
-that doesn't exist yet — there's no separate full wordmark file in this
-repo, just the billboard glyph used as the favicon/app icon, so that's
-what's offered. Colour palette and typefaces are pulled straight from
-`tailwind.config.js`. Deliberately no "as featured in" / press-mentions
-section — there's no real press coverage to list yet, and a page like
-this is the wrong place to imply otherwise.
-
 ## Security (`/security`)
 No migration, no database — static content, but every claim on it is
 grounded in something that's actually implemented elsewhere in this
@@ -1630,7 +1613,7 @@ mount, not kept in sync — the URL is just the entry point.
 
 ## Accessibility (`/accessibility`)
 No migration, no database — static content, same "only claim what's
-verifiably true" stance as Security and Press. Every item in "What's in
+verifiably true" stance as Security. Every item in "What's in
 place" is something I actually found in the codebase, not boilerplate:
 `lang="en"` on the document, `prefers-reduced-motion` respected in
 `Skeleton.tsx`/`useReveal.ts`/`Home.tsx`, ARIA labels/roles present

@@ -246,6 +246,17 @@ export interface Profile {
   email_verified: boolean;
   phone_verified: boolean;
   business_verified: boolean;
+  // Phase 107 — SARS-compliant tax invoice fields
+  // (schema_phase107_sars_invoice_fields.sql). Optional: null means the
+  // field hasn't been filled in yet, and the invoice PDF
+  // (src/lib/invoice.ts) omits a line it doesn't have data for rather than
+  // showing a placeholder. vat_number null means "not a registered VAT
+  // vendor" and is stated as such on the invoice, not just silently left
+  // out.
+  address_line1: string | null;
+  address_line2: string | null;
+  postal_code: string | null;
+  vat_number: string | null;
 }
 
 export type RequestStatus = "pending" | "contacted" | "confirmed" | "declined" | "completed";
@@ -341,10 +352,41 @@ export interface ContactMessage {
   created_at: string;
 }
 
+export type CareerStatus = "draft" | "active" | "paused" | "closed";
+
+export type CareerRemoteType = "onsite" | "hybrid" | "remote";
+export type CareerEmploymentType = "full_time" | "part_time" | "contract" | "freelance" | "internship";
+export type CareerSalaryPeriod = "hour" | "month" | "year" | "project" | "unspecified";
+
+export interface Career {
+  id: string;
+  slug: string;
+  job_title: string;
+  department: string;
+  location: string;
+  remote_type: CareerRemoteType;
+  employment_type: CareerEmploymentType;
+  salary_min: number | null;
+  salary_max: number | null;
+  salary_currency: string;
+  salary_period: CareerSalaryPeriod;
+  short_summary: string;
+  description: string;
+  responsibilities: string[];
+  requirements: string[];
+  nice_to_have: string[];
+  status: CareerStatus;
+  application_deadline: string | null;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
 export type CareerApplicationStatus = "new" | "reviewing" | "interview" | "offer" | "hired" | "rejected";
 
 export interface CareerApplication {
   id: string;
+  career_id: string | null;
   name: string;
   email: string;
   role: string;
@@ -641,7 +683,7 @@ export interface ContentApproval {
   published_at: string | null;
 }
 
-// ─── Phase 54 — Structured deliverables ────────────────────────────────
+// ─── Phase 54 — Structured deliverables ──────────────────────────
 // One row per promised line item ("1 Instagram Reel", "1 promo code"),
 // each independently tracked through its own 5-state lifecycle. See
 // schema_phase54_deliverables.sql for the full state machine — exactly
@@ -668,7 +710,7 @@ export interface Deliverable {
   created_at: string;
 }
 
-// ─── Phase 59 — Agency Core, part 1: leads + client CRM ────────────────
+// ─── Phase 59 — Agency Core, part 1: leads + client CRM ──────────────
 // Admin-only, both tables — see schema_phase59_agency_crm.sql. No
 // business/publisher-facing type ever reads these.
 
@@ -778,7 +820,7 @@ export interface LinkableRequest {
   agency_campaign_id: string | null;
 }
 
-// ─── Phase 67 — Relationship history ────────────────────────────────────
+// ─── Phase 67 — Relationship history ───────────────────────
 // Return shapes of my_publisher_relationships() / my_business_relationships()
 // — see schema_phase67_relationship_history.sql. Self-scoped, not
 // admin-only — a business/publisher reading their own paid history.
@@ -810,7 +852,7 @@ export interface BusinessRelationship {
   last_campaign_at: string | null;
 }
 
-// ─── Phase 61 — client-facing managed-campaign view ────────────────────
+// ─── Phase 61 — client-facing managed-campaign view ──────────────
 // Return shapes of the get_my_managed_campaign* RPCs
 // (schema_phase61_managed_campaign_client_view.sql) — narrower,
 // business-safe projections of AgencyCampaign/AgencyCampaignTotals
@@ -956,4 +998,3 @@ export interface ToolFaq {
   answer: string;
   sort_order: number;
 }
-

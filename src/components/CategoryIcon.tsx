@@ -1,5 +1,10 @@
-type IconName = "food" | "fitness" | "beauty" | "home" | "family" | "auto" | "fashion" | "tech"
-  | "lifestyle" | "news" | "community" | "retail" | "property" | "pets" | "events" | "social";
+// Bug fix: added 4 new icon names (sports, transport, township, business) to
+// the IconName union to match the new CATEGORIES entries in constants.ts.
+// Previously any icon name not in this union caused a TypeScript build error.
+type IconName =
+  | "food" | "fitness" | "beauty" | "home" | "family" | "auto" | "fashion" | "tech"
+  | "lifestyle" | "news" | "community" | "retail" | "property" | "pets" | "events" | "social"
+  | "sports" | "transport" | "township" | "business";
 
 const common = {
   fill: "none",
@@ -139,6 +144,52 @@ export default function CategoryIcon({ name, className = "w-7 h-7" }: { name: Ic
           <line x1="17" y1="4" x2="15" y2="20" />
           <line x1="4" y1="9" x2="20" y2="9" />
           <line x1="4" y1="15" x2="20" y2="15" />
+        </svg>
+      );
+    // ── New icons added for channel-aligned categories ──────────────────────
+    case "sports":
+      // Trophy cup — represents sports teams, leagues and recreation
+      return (
+        <svg viewBox="0 0 24 24" className={className} {...common}>
+          <path d="M8 3h8v7a4 4 0 0 1-8 0V3z" />
+          <path d="M5 4H3a2 2 0 0 0 0 4h2" />
+          <path d="M19 4h2a2 2 0 0 0 0 4h-2" />
+          <line x1="12" y1="14" x2="12" y2="18" />
+          <path d="M8 18h8" />
+          <path d="M7 21h10" />
+        </svg>
+      );
+    case "transport":
+      // Minibus/taxi van — represents commuter & transport-route audiences
+      return (
+        <svg viewBox="0 0 24 24" className={className} {...common}>
+          <rect x="2" y="7" width="20" height="11" rx="2" />
+          <path d="M2 10h20" />
+          <circle cx="7" cy="20" r="1.5" />
+          <circle cx="17" cy="20" r="1.5" />
+          <path d="M2 13h4M10 13h4" />
+          <path d="M6 7V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2" />
+        </svg>
+      );
+    case "township":
+      // Market stall/spaza — represents township traders and informal retail
+      return (
+        <svg viewBox="0 0 24 24" className={className} {...common}>
+          <path d="M3 9l1-5h16l1 5" />
+          <path d="M3 9h18v2a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V9z" />
+          <line x1="12" y1="14" x2="12" y2="21" />
+          <line x1="8" y1="21" x2="16" y2="21" />
+          <path d="M6 9v5M18 9v5" />
+        </svg>
+      );
+    case "business":
+      // Briefcase — represents business associations and professional networks
+      return (
+        <svg viewBox="0 0 24 24" className={className} {...common}>
+          <rect x="2" y="8" width="20" height="13" rx="2" />
+          <path d="M8 8V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+          <line x1="2" y1="14" x2="22" y2="14" />
+          <line x1="12" y1="14" x2="12" y2="17" />
         </svg>
       );
   }

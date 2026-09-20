@@ -61,7 +61,6 @@ const PublisherSuccessArticle = lazy(() => import("./pages/PublisherSuccessArtic
 const Transparency = lazy(() => import("./pages/Transparency"));
 // Advertise + Investors merged into CollaborateWithUs — old URLs redirect below
 const CollaborateWithUs = lazy(() => import("./pages/CollaborateWithUs"));
-const Press = lazy(() => import("./pages/Press"));
 const Security = lazy(() => import("./pages/Security"));
 const Help = lazy(() => import("./pages/Help"));
 const Accessibility = lazy(() => import("./pages/Accessibility"));
@@ -114,7 +113,7 @@ const AdminTools = lazy(() => import("./pages/AdminTools"));
 const AdminVisualIdentity = lazy(() => import("./pages/AdminVisualIdentity"));
 const Tools = lazy(() => import("./pages/Tools"));
 const ToolDetail = lazy(() => import("./pages/ToolDetail"));
-const WorkWithUs = lazy(() => import("./pages/WorkWithUs"));
+// WorkWithUs merged into Careers — /work-with-us redirects below
 const Partners = lazy(() => import("./pages/Partners"));
 const PartnersApply = lazy(() => import("./pages/PartnersApply"));
 const Mission = lazy(() => import("./pages/Mission"));
@@ -130,116 +129,116 @@ function RoutedContent() {
   return (
     <div key={location.pathname} className="animate-[page-fade-in_150ms_ease-out]">
       <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/browse" element={<Browse />} />
-                    <Route path="/map" element={
-                      <Suspense fallback={<div className="max-w-6xl mx-auto px-5 py-16"><SkeletonBlock className="h-[480px]" /></div>}>
-                        <MapView />
-                      </Suspense>
-                    } />
-                    <Route path="/browse/:id" element={<PublisherProfile />} />
-                    {/* Browse and Search merged into one page — old links still resolve */}
-                    <Route path="/search" element={<Navigate to="/browse" replace />} />
-                    <Route path="/compare" element={<ComparePublishers />} />
-                    <Route path="/lists" element={<SavedLists />} />
-                    <Route path="/categories" element={<Categories />} />
-                    <Route path="/suburbs" element={<Suburbs />} />
-                    <Route path="/audience-finder" element={<AudienceFinder />} />
-                    {/* "AI Match" tab renamed to Audience Finder — old links still resolve */}
-                    <Route path="/match" element={<Navigate to="/audience-finder" replace />} />
-                    <Route path="/pricing" element={<Pricing />} />
-                    <Route path="/fees" element={<Fees />} />
-                    <Route path="/fees/calculator" element={<Navigate to="/fees" replace />} />
-                    <Route path="/how-it-works" element={<HowItWorks />} />
-                    <Route path="/how-payment-works" element={<HowPaymentWorks />} />
-                    <Route path="/for-businesses" element={<ForBusinesses />} />
-                    <Route path="/build-my-campaign" element={<BuildMyCampaign />} />
-                    <Route path="/for-publishers" element={<ForPublishers />} />
-                    <Route path="/case-studies" element={<CaseStudies />} />
-                    <Route path="/trust" element={<TrustCentre />} />
-                    <Route path="/faq" element={<Faq />} />
-                    <Route path="/trust/creator-standards" element={<CreatorStandards />} />
-                    <Route path="/trust/business-standards" element={<BusinessStandards />} />
-                    <Route path="/trust/safety" element={<Safety />} />
-                    <Route path="/trust/fraud-prevention" element={<FraudPrevention />} />
-                    {/* verification/disputes already live in depth on /trust itself (see TrustCentre.tsx's
-                        id="verification"/id="disputes" section anchors) — redirect rather than duplicate. */}
-                    <Route path="/trust/verification" element={<Navigate to="/trust#verification" replace />} />
-                    <Route path="/trust/disputes" element={<Navigate to="/trust#disputes" replace />} />
-                    {/* payments and platform-compliance already have their own full pages — same reasoning. */}
-                    <Route path="/trust/payments" element={<Navigate to="/how-payment-works" replace />} />
-                    <Route path="/trust/platform-compliance" element={<Navigate to="/compliance" replace />} />
-                    <Route path="/compliance" element={<Compliance />} />
-                    <Route path="/platform-rules" element={<PlatformRules />} />
-                    <Route path="/about" element={<About />} />
-                    <Route path="/contact" element={<Contact />} />
-                    <Route path="/blog" element={<Blog />} />
-                    <Route path="/blog/:slug" element={<BlogPost />} />
-                    <Route path="/business-success" element={<BusinessSuccess />} />
-                    <Route path="/business-success/:slug" element={<BusinessSuccessArticle />} />
-                    <Route path="/publisher-success" element={<PublisherSuccess />} />
-                    <Route path="/publisher-success/:slug" element={<PublisherSuccessArticle />} />
-                    <Route path="/transparency" element={<Transparency />} />
-                    {/* Advertise + Investors merged — old URLs redirect to the unified page */}
-                    <Route path="/collaborate" element={<CollaborateWithUs />} />
-                    <Route path="/advertise" element={<Navigate to="/collaborate" replace />} />
-                    <Route path="/investors" element={<Navigate to="/collaborate" replace />} />
-                    <Route path="/press" element={<Press />} />
-                    <Route path="/security" element={<Security />} />
-                    <Route path="/help" element={<Help />} />
-                    <Route path="/accessibility" element={<Accessibility />} />
-                    <Route path="/glossary" element={<Glossary />} />
-                    <Route path="/roadmap" element={<Roadmap />} />
-                    <Route path="/budget-calculator" element={<BudgetCalculator />} />
-                    <Route path="/earnings-estimator" element={<EarningsEstimator />} />
-                    <Route path="/reach-checker" element={<ReachChecker />} />
-                    <Route path="/channel-quiz" element={<ChannelQuiz />} />
-                    <Route path="/community" element={<Community />} />
-                    <Route path="/community/qa" element={<CommunityQa />} />
-                    <Route path="/community/announcements" element={<CommunityAnnouncements />} />
-                    <Route path="/community/events" element={<CommunityEvents />} />
-                    <Route path="/privacy" element={<Privacy />} />
-                    <Route path="/terms" element={<Terms />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/forgot-password" element={<ForgotPassword />} />
-                    <Route path="/reset-password" element={<ResetPassword />} />
-                    <Route path="/mfa-setup" element={<MfaSetup />} />
-                    <Route path="/mfa-verify" element={<MfaVerify />} />
-                    <Route path="/account" element={<AccountSettings />} />
-                    <Route path="/activation-fee-info" element={<RequireAuth role="business"><ActivationFeeInfo /></RequireAuth>} />
-                    <Route path="/apply" element={<RequireAuth role="publisher"><PublisherApply /></RequireAuth>} />
-                    <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
-                    <Route path="/messages" element={<RequireAuth><Messages /></RequireAuth>} />
-                    <Route path="/dashboard/earnings" element={<RequireAuth role="publisher"><EarningsDashboard /></RequireAuth>} />
-                    <Route path="/business/publishers" element={<RequireAuth role="business"><BusinessPublisherRelationships /></RequireAuth>} />
-                    <Route path="/publisher/relationships" element={<RequireAuth role="publisher"><PublisherRelationships /></RequireAuth>} />
-                    <Route path="/opportunities" element={<OpportunityGate business={<BusinessOpportunities />} publisher={<OpportunityFeed />} />} />
-                    <Route path="/opportunities/preview" element={<OpportunityPreview />} />
-                    <Route path="/business/opportunities" element={<Navigate to="/opportunities" replace />} />
-                    <Route path="/publisher/opportunities" element={<Navigate to="/opportunities" replace />} />
-                    <Route path="/admin" element={<RequireAuth role="admin"><Admin /></RequireAuth>} />
-                    <Route path="/payment/return" element={<RequireAuth><PaymentResult status="return" /></RequireAuth>} />
-                    <Route path="/payment/cancel" element={<RequireAuth><PaymentResult status="cancel" /></RequireAuth>} />
-                    <Route path="/channels" element={<ChannelHub />} />
-                    <Route path="/network" element={<MediaNetwork />} />
-                    <Route path="/channels/:slug" element={<ChannelPage />} />
-                    <Route path="/t/:slug" element={<TrackRedirect />} />
-                    <Route path="/media-kit" element={<MediaKit />} />
-                    <Route path="/saved-searches" element={<SavedSearches />} />
-                    <Route path="/campaigns/:id/compliance" element={<RequireAuth><CampaignCompliance /></RequireAuth>} />
-                    <Route path="/campaigns/:id" element={<RequireAuth><CampaignWorkspace /></RequireAuth>} />
-                    <Route path="/careers" element={<Careers />} />
-                    <Route path="/admin/careers" element={<RequireAuth role="admin"><AdminCareers /></RequireAuth>} />
-                    <Route path="/admin/tools" element={<RequireAuth role="admin"><AdminTools /></RequireAuth>} />
-                    <Route path="/admin/visual-identity" element={<RequireAuth role="admin"><AdminVisualIdentity /></RequireAuth>} />
-                    <Route path="/tools" element={<Tools />} />
-                    <Route path="/tools/:slug" element={<ToolDetail />} />
-                    <Route path="/work-with-us" element={<WorkWithUs />} />
-                    <Route path="/partners" element={<Partners />} />
-                    <Route path="/partners/apply" element={<PartnersApply />} />
-                    <Route path="/mission" element={<Mission />} />
-                    <Route path="*" element={<NotFound />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/browse" element={<Browse />} />
+        <Route path="/map" element={
+          <Suspense fallback={<div className="max-w-6xl mx-auto px-5 py-16"><SkeletonBlock className="h-[480px]" /></div>}>
+            <MapView />
+          </Suspense>
+        } />
+        <Route path="/browse/:id" element={<PublisherProfile />} />
+        {/* Browse and Search merged into one page — old links still resolve */}
+        <Route path="/search" element={<Navigate to="/browse" replace />} />
+        <Route path="/compare" element={<ComparePublishers />} />
+        <Route path="/lists" element={<SavedLists />} />
+        <Route path="/categories" element={<Categories />} />
+        <Route path="/suburbs" element={<Suburbs />} />
+        <Route path="/audience-finder" element={<AudienceFinder />} />
+        {/* "AI Match" tab renamed to Audience Finder — old links still resolve */}
+        <Route path="/match" element={<Navigate to="/audience-finder" replace />} />
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/fees" element={<Fees />} />
+        <Route path="/fees/calculator" element={<Navigate to="/fees" replace />} />
+        <Route path="/how-it-works" element={<HowItWorks />} />
+        <Route path="/how-payment-works" element={<HowPaymentWorks />} />
+        <Route path="/for-businesses" element={<ForBusinesses />} />
+        <Route path="/build-my-campaign" element={<BuildMyCampaign />} />
+        <Route path="/for-publishers" element={<ForPublishers />} />
+        <Route path="/case-studies" element={<CaseStudies />} />
+        <Route path="/trust" element={<TrustCentre />} />
+        <Route path="/faq" element={<Faq />} />
+        <Route path="/trust/creator-standards" element={<CreatorStandards />} />
+        <Route path="/trust/business-standards" element={<BusinessStandards />} />
+        <Route path="/trust/safety" element={<Safety />} />
+        <Route path="/trust/fraud-prevention" element={<FraudPrevention />} />
+        {/* verification/disputes already live in depth on /trust itself (see TrustCentre.tsx's
+            id="verification"/id="disputes" section anchors) — redirect rather than duplicate. */}
+        <Route path="/trust/verification" element={<Navigate to="/trust#verification" replace />} />
+        <Route path="/trust/disputes" element={<Navigate to="/trust#disputes" replace />} />
+        {/* payments and platform-compliance already have their own full pages — same reasoning. */}
+        <Route path="/trust/payments" element={<Navigate to="/how-payment-works" replace />} />
+        <Route path="/trust/platform-compliance" element={<Navigate to="/compliance" replace />} />
+        <Route path="/compliance" element={<Compliance />} />
+        <Route path="/platform-rules" element={<PlatformRules />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/blog" element={<Blog />} />
+        <Route path="/blog/:slug" element={<BlogPost />} />
+        <Route path="/business-success" element={<BusinessSuccess />} />
+        <Route path="/business-success/:slug" element={<BusinessSuccessArticle />} />
+        <Route path="/publisher-success" element={<PublisherSuccess />} />
+        <Route path="/publisher-success/:slug" element={<PublisherSuccessArticle />} />
+        <Route path="/transparency" element={<Transparency />} />
+        {/* Advertise + Investors merged — old URLs redirect to the unified page */}
+        <Route path="/collaborate" element={<CollaborateWithUs />} />
+        <Route path="/advertise" element={<Navigate to="/collaborate" replace />} />
+        <Route path="/investors" element={<Navigate to="/collaborate" replace />} />
+        <Route path="/security" element={<Security />} />
+        <Route path="/help" element={<Help />} />
+        <Route path="/accessibility" element={<Accessibility />} />
+        <Route path="/glossary" element={<Glossary />} />
+        <Route path="/roadmap" element={<Roadmap />} />
+        <Route path="/budget-calculator" element={<BudgetCalculator />} />
+        <Route path="/earnings-estimator" element={<EarningsEstimator />} />
+        <Route path="/reach-checker" element={<ReachChecker />} />
+        <Route path="/channel-quiz" element={<ChannelQuiz />} />
+        <Route path="/community" element={<Community />} />
+        <Route path="/community/qa" element={<CommunityQa />} />
+        <Route path="/community/announcements" element={<CommunityAnnouncements />} />
+        <Route path="/community/events" element={<CommunityEvents />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/mfa-setup" element={<MfaSetup />} />
+        <Route path="/mfa-verify" element={<MfaVerify />} />
+        <Route path="/account" element={<AccountSettings />} />
+        <Route path="/activation-fee-info" element={<RequireAuth role="business"><ActivationFeeInfo /></RequireAuth>} />
+        <Route path="/apply" element={<RequireAuth role="publisher"><PublisherApply /></RequireAuth>} />
+        <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
+        <Route path="/messages" element={<RequireAuth><Messages /></RequireAuth>} />
+        <Route path="/dashboard/earnings" element={<RequireAuth role="publisher"><EarningsDashboard /></RequireAuth>} />
+        <Route path="/business/publishers" element={<RequireAuth role="business"><BusinessPublisherRelationships /></RequireAuth>} />
+        <Route path="/publisher/relationships" element={<RequireAuth role="publisher"><PublisherRelationships /></RequireAuth>} />
+        <Route path="/opportunities" element={<OpportunityGate business={<BusinessOpportunities />} publisher={<OpportunityFeed />} />} />
+        <Route path="/opportunities/preview" element={<OpportunityPreview />} />
+        <Route path="/business/opportunities" element={<Navigate to="/opportunities" replace />} />
+        <Route path="/publisher/opportunities" element={<Navigate to="/opportunities" replace />} />
+        <Route path="/admin" element={<RequireAuth role="admin"><Admin /></RequireAuth>} />
+        <Route path="/payment/return" element={<RequireAuth><PaymentResult status="return" /></RequireAuth>} />
+        <Route path="/payment/cancel" element={<RequireAuth><PaymentResult status="cancel" /></RequireAuth>} />
+        <Route path="/channels" element={<ChannelHub />} />
+        <Route path="/network" element={<MediaNetwork />} />
+        <Route path="/channels/:slug" element={<ChannelPage />} />
+        <Route path="/t/:slug" element={<TrackRedirect />} />
+        <Route path="/media-kit" element={<MediaKit />} />
+        <Route path="/saved-searches" element={<SavedSearches />} />
+        <Route path="/campaigns/:id/compliance" element={<RequireAuth><CampaignCompliance /></RequireAuth>} />
+        <Route path="/campaigns/:id" element={<RequireAuth><CampaignWorkspace /></RequireAuth>} />
+        <Route path="/careers" element={<Careers />} />
+        {/* WorkWithUs merged into Careers — redirect so old links and bookmarks still work */}
+        <Route path="/work-with-us" element={<Navigate to="/careers" replace />} />
+        <Route path="/admin/careers" element={<RequireAuth role="admin"><AdminCareers /></RequireAuth>} />
+        <Route path="/admin/tools" element={<RequireAuth role="admin"><AdminTools /></RequireAuth>} />
+        <Route path="/admin/visual-identity" element={<RequireAuth role="admin"><AdminVisualIdentity /></RequireAuth>} />
+        <Route path="/tools" element={<Tools />} />
+        <Route path="/tools/:slug" element={<ToolDetail />} />
+        <Route path="/partners" element={<Partners />} />
+        <Route path="/partners/apply" element={<PartnersApply />} />
+        <Route path="/mission" element={<Mission />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   );

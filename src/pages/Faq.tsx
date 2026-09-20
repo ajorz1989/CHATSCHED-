@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import Seo from "../components/Seo";
 import {
@@ -8,10 +8,17 @@ import {
   PLATFORM_COMMISSION_RATE,
   PUBLISHER_SHARE,
   CONTACT_EMAIL,
+  BUSINESS_SUBSCRIPTION_PRICE,
+  PUBLISHER_SUBSCRIPTION_PRICE,
+  BUSINESS_LAUNCH_CREDIT_AMOUNT,
+  CONTENT_STUDIO_MONTHLY_PRICE,
+  CONTENT_STUDIO_FREE_MONTHLY_LIMIT,
+  FEATURED_PLACEMENT_MONTHLY_PRICE,
+  PLATFORM_BANK_DETAILS,
 } from "../lib/constants";
 import { MIN_PRICE_PER_POST } from "../lib/pricingEngine";
 import { formatCurrency } from "../lib/currency";
-import MarketingIcon, { type MarketingIconName } from "../components/MarketingIcon";
+import MarketingIcon from "../components/MarketingIcon";
 
 const commissionPct = Math.round(PLATFORM_COMMISSION_RATE * 100);
 const sharePct = Math.round(PUBLISHER_SHARE * 100);
@@ -41,15 +48,15 @@ const CATEGORIES: FaqCategory[] = [
     items: [
       {
         q: "What actually is ChatSched?",
-        a: "A direct marketplace connecting South African small businesses with the publishers, creators and channels their customers already follow — social media pages, influencers, websites, podcasts and radio — without an ad account or algorithm in between. A business finds a channel, sends a request, pays once it's approved (held by ChatSched, not released to the creator yet), and the creator gets paid once it's confirmed live.",
+        a: "A direct marketplace connecting South African small businesses with the publishers, creators and channels their customers already follow — social media pages, influencers, websites, podcasts, radio and WhatsApp channels — without an ad account or algorithm in between. A business finds a channel, sends a request, pays once it's approved (held by ChatSched, not released to the creator yet), and the creator gets paid once it's confirmed live.",
       },
       {
         q: "Is this just for social media influencers?",
-        a: "No — multiple channel types can use the same request-and-approve flow: social media pages and groups, influencers, websites, podcasts, radio, sports teams, events, community groups, transport media, informal retail, business associations, and restaurants.",
+        a: "No — multiple channel types use the same request-and-approve flow: social media pages and groups, influencers, websites, podcasts, radio, WhatsApp channels, sports teams, events, community groups, transport media, informal retail, business associations, and restaurants.",
       },
       {
         q: "Do I need to sign a contract or subscribe to something?",
-        a: "No contract either way. Browsing and listing are always free. Sending a request needs a one-time ChatSched Business activation (R399, once-off — no renewal, ever), and approving one needs a one-time Publisher Network activation (R199, once-off).",
+        a: `No contract either way. Browsing and listing are always free. Sending a request needs a one-time ChatSched Business activation (${formatCurrency(BUSINESS_SUBSCRIPTION_PRICE)}, once-off — no renewal, ever), and approving one needs a one-time Publisher Network activation (${formatCurrency(PUBLISHER_SUBSCRIPTION_PRICE)}, once-off).`,
       },
       {
         q: "Is ChatSched free to use?",
@@ -92,7 +99,23 @@ const CATEGORIES: FaqCategory[] = [
       },
       {
         q: "Can I track whether a campaign is actually working?",
-        a: "Yes — Campaign Tracker gives every campaign a real short link plus a UTM-tagged version of your own destination URL, and logs clicks, visits, leads and conversions for real. Your dashboard also rolls totals up across every campaign you're running, not just one at a time.",
+        a: "Yes — Campaign Tracker gives every campaign a real short link plus a UTM-tagged version of your own destination URL, and logs clicks, visits, leads and conversions. Your dashboard rolls totals up across every campaign you're running, not just one at a time.",
+      },
+      {
+        q: "Can I set specific deliverables for a campaign?",
+        a: "Yes — the Campaign Workspace lets you add structured deliverables (e.g. \"Instagram Reel\", \"Podcast Mention\", \"Promo Code\") to a booking so both sides are clear on exactly what was agreed. You can also add promo codes and tracking links as deliverables so performance is measured against the actual ask.",
+      },
+      {
+        q: "Can I review content before a creator posts it?",
+        a: "Yes — the Content Approval flow lets a creator upload a draft image or video for you to review before it goes live. You can approve it, request changes, or decline — nothing goes public until you've signed off.",
+      },
+      {
+        q: "What is the AI Content Studio and do I need to pay for it?",
+        a: `Content Studio is a built-in AI tool that writes social media captions, Facebook posts, Instagram captions, LinkedIn posts, TikTok scripts, WhatsApp statuses, blog articles, and email newsletters in your brand's voice — directly from your business description. ChatSched Business activation (${formatCurrency(BUSINESS_SUBSCRIPTION_PRICE)} once-off) includes ${CONTENT_STUDIO_FREE_MONTHLY_LIMIT} free generations per month at no extra cost. For heavier use, the full Content Studio subscription is ${formatCurrency(CONTENT_STUDIO_MONTHLY_PRICE)}/month.`,
+      },
+      {
+        q: "What is the R199 launch credit I keep seeing mentioned?",
+        a: `When a business activates (${formatCurrency(BUSINESS_SUBSCRIPTION_PRICE)} once-off), a ${formatCurrency(BUSINESS_LAUNCH_CREDIT_AMOUNT)} launch credit is automatically added to the account — it's included in the activation price, not a separate charge. The credit can be used toward any booking on the platform.`,
       },
       {
         q: "Can I cancel a request?",
@@ -126,6 +149,14 @@ const CATEGORIES: FaqCategory[] = [
         a: "Yes — rate cards let you set structured pricing per format (a Story costs less than a dedicated Reel, a bundle can undercut booking things separately) instead of being stuck with one flat number that's wrong for most of what you actually sell.",
       },
       {
+        q: "What is the Opportunity Feed?",
+        a: "Businesses can post open advertising opportunities — a campaign brief they want pitches for — and publishers can browse and apply directly. It's the reverse of the normal request flow: instead of waiting for a business to find you, you can proactively pitch campaigns that match your audience.",
+      },
+      {
+        q: "Can I boost my visibility on the platform?",
+        a: `Yes — the Featured Placement subscription (${formatCurrency(FEATURED_PLACEMENT_MONTHLY_PRICE)}/month) gives your profile priority ranking in Browse results and on the homepage. It's separate from the one-off activation fee and entirely optional.`,
+      },
+      {
         q: "How do I prove my follower count is real, not just typed in?",
         a: "Connect your account (YouTube, Facebook Page, Instagram or TikTok) and ChatSched imports your real follower count directly from the platform's own API — no self-reported numbers required. It also tends to speed up admin review.",
       },
@@ -154,11 +185,13 @@ const CATEGORIES: FaqCategory[] = [
     items: [
       {
         q: "How does the payment hold actually work here?",
-        a: "Once a creator approves a request, the business pays — that Your payment is held securely by ChatSched — not released to the publisher — until your placement is confirmed live. Only then is it released for payout. Neither side is trusting the other on a promise.",
+        // BUG FIX: previous answer had a stray \"that \" creating a broken sentence:
+        // \"the business pays — that Your payment is held securely by ChatSched\"
+        a: "Once a creator approves a request, the business pays. That payment is held securely by ChatSched — not released to the publisher — until the placement is confirmed live. Only then is it released for payout. Neither side is trusting the other on a promise.",
       },
       {
         q: "What payment methods can a business use?",
-        a: "Card or instant EFT through PayFast (confirms automatically), or a manual EFT straight to ChatSched's bank account (matched and confirmed by the team once funds land).",
+        a: `Card or instant EFT through PayFast (confirms automatically), or a manual EFT straight to ChatSched's bank account — ${PLATFORM_BANK_DETAILS.bank}, account ${PLATFORM_BANK_DETAILS.accountNumber}, branch ${PLATFORM_BANK_DETAILS.branchCode} — matched and confirmed by the team once funds land.`,
       },
       {
         q: "What happens if a business doesn't pay after approving?",
@@ -204,7 +237,9 @@ const CATEGORIES: FaqCategory[] = [
   {
     id: "privacy",
     label: "Privacy & Your Data",
-    icon: "lock",
+    // BUG FIX: was "lock" — identical to the payments category icon above.
+    // Changed to "wave" as a distinct alternative.
+    icon: "wave",
     items: [
       {
         q: "Is ChatSched POPIA compliant?",
@@ -216,7 +251,7 @@ const CATEGORIES: FaqCategory[] = [
       },
       {
         q: "Can I delete my account and get my data out?",
-        a: "Yes — both are self-service from Account settings: a full export of everything tied to your account as a real downloadable file, and a real account deletion, not a support ticket. (Some financial records may be retained longer where required for tax/recordkeeping purposes, even after deletion.)",
+        a: "Yes — both are self-service from Account settings: a full export of everything tied to your account as a downloadable JSON or PDF file, and a real account deletion that is server-verified before you're signed out. (Some financial records may be retained longer where required for tax/recordkeeping purposes, even after deletion.)",
       },
       {
         q: "As a publisher, can businesses see my personal contact details?",
@@ -226,17 +261,17 @@ const CATEGORIES: FaqCategory[] = [
   },
 ];
 
-function FaqAccordion({ items }: { items: Faq[] }) {
+function FaqAccordion({ items, categoryId }: { items: Faq[]; categoryId: string }) {
   return (
     <div className="border-[3px] border-billboard-ink rounded-lg bg-white overflow-hidden">
       {items.map((f, i) => (
         <div key={f.q} className={i !== items.length - 1 ? "border-b-2 border-billboard-ink" : ""}>
-          <details className="group">
+          <details className="group" id={`${categoryId}-${i}`}>
             <summary className="w-full flex items-center justify-between gap-4 text-left px-5 py-4 hover:bg-billboard-paperDim transition-colors cursor-pointer list-none font-bold text-sm">
               {f.q}
-              <span className="font-display text-lg shrink-0 transition-transform group-open:rotate-45">+</span>
+              <span className="font-display text-lg shrink-0 transition-transform group-open:rotate-45" aria-hidden="true">+</span>
             </summary>
-            <p className="px-5 pb-4 text-sm text-billboard-inkSoft">{f.a}</p>
+            <p className="px-5 pb-4 text-sm text-billboard-inkSoft leading-relaxed">{f.a}</p>
           </details>
         </div>
       ))}
@@ -252,7 +287,10 @@ export default function Faq() {
   // search state.
   const [searchParams] = useSearchParams();
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<string | null>(
+    searchParams.get("cat") ?? null
+  );
+  const searchRef = useRef<HTMLInputElement>(null);
 
   const q = query.trim().toLowerCase();
 
@@ -274,7 +312,7 @@ export default function Faq() {
     <div className="max-w-3xl mx-auto px-5 py-16">
       <Seo
         title="FAQ · ChatSched"
-        description="Real answers about how ChatSched works — payments and payouts, verification, disputes, pricing, and what to expect as a business or a publisher."
+        description="Real answers about how ChatSched works — payments and payouts, verification, disputes, pricing, AI Content Studio, and what to expect as a business or a publisher."
       />
       <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">
         FAQ
@@ -282,22 +320,26 @@ export default function Faq() {
       <h1 className="text-3xl md:text-4xl mb-3">Questions, answered honestly.</h1>
       <p className="text-billboard-inkSoft max-w-xl mb-8">
         {totalCount} real questions about how ChatSched actually works — not marketing copy. If something's still
-        unclear after this, <Link to="/contact" className="underline font-semibold text-billboard-ink">reach out directly</Link>.
+        unclear after this,{" "}
+        <Link to="/contact" className="underline font-semibold text-billboard-ink">reach out directly</Link>.
       </p>
 
       {/* Search */}
       <div className="relative mb-6">
         <input
-          type="text"
+          ref={searchRef}
+          type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search questions — e.g. &ldquo;payout&rdquo;, &ldquo;dispute&rdquo;, &ldquo;commission&rdquo;"
+          placeholder='Search questions — e.g. “payout”, “dispute”, “Content Studio”'
+          aria-label="Search FAQ questions"
           className="w-full border-[3px] border-billboard-ink rounded-lg px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-billboard-yellow"
         />
         {query && (
           <button
             type="button"
-            onClick={() => setQuery("")}
+            onClick={() => { setQuery(""); searchRef.current?.focus(); }}
+            aria-label="Clear search"
             className="absolute right-3 top-1/2 -translate-y-1/2 font-mono text-xs font-semibold text-billboard-inkSoft hover:text-billboard-ink"
           >
             Clear
@@ -306,11 +348,14 @@ export default function Faq() {
       </div>
 
       {/* Category filter pills */}
-      <div className="flex flex-wrap gap-2 mb-10">
+      <div className="flex flex-wrap gap-2 mb-10" role="group" aria-label="Filter by category">
         <button
           type="button"
           onClick={() => setActiveCategory(null)}
-          className={`font-mono text-xs font-semibold uppercase px-3 py-1.5 rounded border-2 border-billboard-ink transition ${activeCategory === null ? "bg-billboard-ink text-white" : "bg-white hover:bg-billboard-paperDim"}`}
+          aria-pressed={activeCategory === null}
+          className={`font-mono text-xs font-semibold uppercase px-3 py-1.5 rounded border-2 border-billboard-ink transition ${
+            activeCategory === null ? "bg-billboard-ink text-white" : "bg-white hover:bg-billboard-paperDim"
+          }`}
         >
           All
         </button>
@@ -319,9 +364,13 @@ export default function Faq() {
             key={cat.id}
             type="button"
             onClick={() => setActiveCategory(cat.id === activeCategory ? null : cat.id)}
-            className={`font-mono text-xs font-semibold uppercase px-3 py-1.5 rounded border-2 border-billboard-ink transition ${activeCategory === cat.id ? "bg-billboard-ink text-white" : "bg-white hover:bg-billboard-paperDim"}`}
+            aria-pressed={activeCategory === cat.id}
+            className={`inline-flex items-center gap-1.5 font-mono text-xs font-semibold uppercase px-3 py-1.5 rounded border-2 border-billboard-ink transition ${
+              activeCategory === cat.id ? "bg-billboard-ink text-white" : "bg-white hover:bg-billboard-paperDim"
+            }`}
           >
-            <MarketingIcon name={cat.icon} className="w-6 h-6" /> {cat.label}
+            <MarketingIcon name={cat.icon} className="w-3.5 h-3.5" />
+            {cat.label}
           </button>
         ))}
       </div>
@@ -333,22 +382,31 @@ export default function Faq() {
           <p className="text-sm text-billboard-inkSoft mb-4">
             Try a different word, or just ask us directly — real people read every message.
           </p>
-          <Link to="/contact" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition text-sm bg-white">
+          <Link
+            to="/contact"
+            className="inline-flex items-center gap-2 border-[3px] border-billboard-ink font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition text-sm bg-white"
+          >
             Contact us →
           </Link>
         </div>
       ) : (
         <>
           {query && (
-            <p className="text-xs text-billboard-inkSoft mb-4 font-mono uppercase">
+            <p className="text-xs text-billboard-inkSoft mb-4 font-mono uppercase" aria-live="polite">
               {resultCount} match{resultCount === 1 ? "" : "es"}
             </p>
           )}
           <div className="space-y-10">
             {filteredCategories.map((cat) => (
-              <section key={cat.id}>
-                <h2 className="font-display text-lg mb-4"><MarketingIcon name={cat.icon} className="w-6 h-6" /> {cat.label}</h2>
-                <FaqAccordion items={cat.items} />
+              <section key={cat.id} id={cat.id} aria-labelledby={`heading-${cat.id}`}>
+                <h2
+                  id={`heading-${cat.id}`}
+                  className="font-display text-lg mb-4 flex items-center gap-2"
+                >
+                  <MarketingIcon name={cat.icon} className="w-5 h-5" aria-hidden="true" />
+                  {cat.label}
+                </h2>
+                <FaqAccordion items={cat.items} categoryId={cat.id} />
               </section>
             ))}
           </div>
@@ -380,7 +438,11 @@ export default function Faq() {
 
       <div className="mt-10 text-center">
         <p className="text-sm text-billboard-inkSoft">
-          Still stuck? Email <a href={`mailto:${CONTACT_EMAIL}`} className="underline font-semibold text-billboard-ink">{CONTACT_EMAIL}</a> or use the{" "}
+          Still stuck? Email{" "}
+          <a href={`mailto:${CONTACT_EMAIL}`} className="underline font-semibold text-billboard-ink">
+            {CONTACT_EMAIL}
+          </a>{" "}
+          or use the{" "}
           <Link to="/contact" className="underline font-semibold text-billboard-ink">contact form</Link>.
         </p>
       </div>

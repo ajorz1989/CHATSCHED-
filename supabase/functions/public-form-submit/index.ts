@@ -140,12 +140,10 @@ const FORM_CONFIGS: Record<string, FormConfig> = {
       name: { required: true },
       email: { required: true },
       role: { required: true },
+      career_id: { required: false },
       // cv_path/cv_filename point at a file already uploaded to the
       // career-cvs storage bucket by the time this is called (Careers.tsx
-      // uploads first, then submits). That bucket's own anon insert
-      // policy (career_cvs_insert_public, schema_phase46) is a related
-      // abuse surface this task did not touch — flagged in the write-up,
-      // not fixed here.
+      // uploads first, then submits).
       cv_path: { required: true },
       cv_filename: { required: true },
       portfolio_url: { required: false },
@@ -157,7 +155,8 @@ const FORM_CONFIGS: Record<string, FormConfig> = {
     perIpLimit: 6, perIpWindowMinutes: 60,
     perEmailLimit: 3, perEmailWindowMinutes: 1440,
     buildRow: (f) => ({
-      name: f.name, email: f.email, role: f.role, cv_path: f.cv_path, cv_filename: f.cv_filename,
+      name: f.name, email: f.email, role: f.role, career_id: f.career_id || null,
+      cv_path: f.cv_path, cv_filename: f.cv_filename,
       portfolio_url: f.portfolio_url || null, linkedin_url: f.linkedin_url || null,
       location: f.location, cover_letter: f.cover_letter,
     }),

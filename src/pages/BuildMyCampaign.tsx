@@ -731,6 +731,7 @@ export default function BuildMyCampaign() {
       </header>
 
       <div className="bg-white border-b-2 border-billboard-ink/15 sticky top-0 z-20 shadow-sm">
+      <div className="max-w-4xl mx-auto px-5 pt-8">\n        <div className="border-2 border-billboard-ink/15 rounded-lg px-4 py-3 bg-billboard-paperDim flex flex-wrap items-center justify-between gap-3">\n          <p className="text-xs text-billboard-inkSoft">See how businesses use ChatSched to coordinate social, broadcast, community, event, sports and venue distribution.</p>\n          <Link to="/case-studies" className="text-xs font-bold underline shrink-0">View case studies →</Link>\n        </div>\n      </div>\n\n      <div className="bg-white border-b-2 border-billboard-ink/15 sticky top-0 z-20 shadow-sm">
         <div className="max-w-4xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between overflow-x-auto gap-2">
             {[

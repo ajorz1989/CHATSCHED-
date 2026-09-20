@@ -43,11 +43,18 @@ function buildRows(applications: CareerApplication[]): CsvRow[] {
 export default function AdminCareers() {
   const [applications, setApplications] = useState<CareerApplication[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   async function loadAll() {
     setLoading(true);
-    const { data } = await supabase.from("career_applications").select("*").order("created_at", { ascending: false });
-    setApplications((data ?? []) as CareerApplication[]);
+    setError(null);
+    const { data, error: loadError } = await supabase.from("career_applications").select("*").order("created_at", { ascending: false });
+    if (loadError) {
+      setApplications([]);
+      setError(formatSupabaseError(loadError, "Couldn't load career applications"));
+    } else {
+      setApplications((data ?? []) as CareerApplication[]);
+    }
     setLoading(false);
   }
 
@@ -58,19 +65,45 @@ export default function AdminCareers() {
   if (!isSupabaseConfigured) return <SetupNotice />;
 
   async function updateStatus(id: string, status: CareerApplicationStatus) {
+    const previous = applications.find((a) => a.id === id)?.status;
+    setError(null);
     setApplications((prev) => prev.map((a) => (a.id === id ? { ...a, status } : a)));
-    await supabase.from("career_applications").update({ status, reviewed_at: new Date().toISOString() }).eq("id", id);
+    const { error: updateError } = await supabase.from("career_applications").update({ status, reviewed_at: new Date().toISOString() }).eq("id", id);
+    if (updateError) {
+      if (previous) setApplications((prev) => prev.map((a) => (a.id === id ? { ...a, status: previous } : a)));
+      setError(formatSupabaseError(updateError, "Couldn't update the application status"));
+    }
   }
 
   async function updateNotes(id: string, admin_notes: string) {
+    const previous = applications.find((a) => a.id === id)?.admin_notes ?? null;
+    setError(null);
     setApplications((prev) => prev.map((a) => (a.id === id ? { ...a, admin_notes } : a)));
-    await supabase.from("career_applications").update({ admin_notes: admin_notes || null }).eq("id", id);
+    const { error: updateError } = await supabase.from("career_applications").update({ admin_notes: admin_notes || null }).eq("id", id);
+    if (updateError) {
+      setApplications((prev) => prev.map((a) => (a.id === id ? { ...a, admin_notes: previous } : a)));
+      setError(formatSupabaseError(updateError, "Couldn't save the application notes"));
+    }
   }
 
   async function updateInterviewDate(id: string, interview_date: string) {
-    const iso = interview_date ? new Date(interview_date).toISOString() : null;
+    const previous = applications.find((a) => a.id === id)?.interview_date ?? null;
+    let iso: string | null = null;
+    if (interview_date) {
+      const parsed = new Date(interview_date);
+      if (Number.isNaN(parsed.getTime())) {
+        setError("That interview date is invalid.");
+        return;
+      }
+      iso = parsed.toISOString();
+    }
+    setError(null);
     setApplications((prev) => prev.map((a) => (a.id === id ? { ...a, interview_date: iso } : a)));
-    await supabase.from("career_applications").update({ interview_date: iso }).eq("id", id);
+    const { error: updateError } = await supabase.from("career_applications").update({ interview_date: iso }).eq("id", id);
+    if (updateError) {
+      setApplications((prev) => prev.map((a) => (a.id === id ? { ...a, interview_date: previous } : a)));
+      setError(formatSupabaseError(updateError, "Couldn't save the interview date"));
+    }
   }
 
   const counts = STATUSES.reduce<Record<string, number>>((acc, s) => {
@@ -89,6 +122,10 @@ export default function AdminCareers() {
         </Link>
       </div>
       <p className="text-billboard-inkSoft mb-8">{applications.length} total — {STATUSES.map((s) => `${counts[s] ?? 0} ${STATUS_LABEL[s].toLowerCase()}`).join(" · ")}</p>
+
+      {error && (
+        <div className="mb-4 rounded-lg border-2 border-billboard-red bg-billboard-red/5 px-4 py-3 text-sm text-billboard-red" role="alert">{error}</div>
+      )}
 
       {loading ? (
         <SkeletonRows count={4} />

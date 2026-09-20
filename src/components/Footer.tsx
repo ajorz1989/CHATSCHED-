@@ -16,6 +16,8 @@ export default function Footer() {
     <footer className="bg-billboard-ink text-billboard-paperDim pt-14 pb-8">
       <div className="max-w-6xl mx-auto px-5">
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8 pb-12 border-b border-[#3A342B]">
+
+          {/* Brand + tagline */}
           <div className="col-span-2 sm:col-span-3 lg:col-span-1 pr-4">
             <div className="flex items-center gap-2 font-display text-lg text-billboard-paper mb-2">
               <svg width="24" height="20" viewBox="0 0 26 22" fill="none">
@@ -29,6 +31,7 @@ export default function Footer() {
             <LanguageSwitcher compact />
           </div>
 
+          {/* Platform */}
           <div>
             <h4 className={HEADING_CLASS}>Platform</h4>
             <Link to="/browse" className={LINK_CLASS}>Browse advertising</Link>
@@ -40,18 +43,26 @@ export default function Footer() {
             <Link to="/for-publishers" className={LINK_CLASS}>For publishers</Link>
           </div>
 
+          {/* Explore — Blog link renamed from Resources; Collaborate With Us added */}
           <div>
             <h4 className={HEADING_CLASS}>Explore</h4>
             <Link to="/categories" className={LINK_CLASS}>Categories</Link>
             <Link to="/suburbs" className={LINK_CLASS}>Locations</Link>
             <Link to="/audience-finder" className={LINK_CLASS}>Audience Finder</Link>
             <Link to="/compare" className={LINK_CLASS}>Compare placements</Link>
-            <Link to="/case-studies" className={LINK_CLASS}>Examples</Link>
-            <Link to="/blog" className={LINK_CLASS}>Resources</Link>
+            <Link to="/case-studies" className={LINK_CLASS}>Case Studies</Link>
+            <Link to="/blog" className={LINK_CLASS}>Blog</Link>
+            <Link to="/collaborate" className={LINK_CLASS}>Collaborate with us</Link>
           </div>
 
+          {/* Trust & Help */}
           <div>
+<<<<<<< HEAD
+            <h4 className={HEADING_CLASS}>Trust &amp; Help</h4>
+=======
             <h4 className={HEADING_CLASS}>Trust & Help</h4>
+            <Link to="/about" className={LINK_CLASS}>About ChatSched</Link>
+>>>>>>> origin/about-page-merge
             <Link to="/how-it-works" className={LINK_CLASS}>How it works</Link>
             <Link to="/trust" className={LINK_CLASS}>{t("footer.trustCentre")}</Link>
             <Link to="/faq" className={LINK_CLASS}>FAQ</Link>
@@ -60,6 +71,7 @@ export default function Footer() {
             <Link to="/contact" className={LINK_CLASS}>{t("footer.contact")}</Link>
           </div>
 
+          {/* Contact */}
           <div>
             <h4 className={HEADING_CLASS}>Contact</h4>
             <a href={`mailto:${CONTACT_EMAIL}`} className={LINK_CLASS}>{CONTACT_EMAIL}</a>
@@ -71,6 +83,29 @@ export default function Footer() {
           </div>
         </div>
 
+        {/* Newsletter strip */}
+        <div className="py-8 border-b border-[#3A342B]">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+            <div className="flex-1">
+              <p className="font-semibold text-billboard-paper text-sm mb-0.5">Stay in the loop</p>
+              <p className="text-xs text-[#8A8272]">ChatSched insights, straight to your inbox. No spam.</p>
+            </div>
+            <a
+              href="mailto:info@chatsched.com?subject=Newsletter subscription&body=Please add me to the ChatSched newsletter."
+              className="inline-flex items-center gap-2 border-2 border-billboard-yellow text-billboard-yellow font-semibold text-sm px-4 py-2.5 rounded hover:bg-billboard-yellow hover:text-billboard-ink transition shrink-0"
+            >
+              Subscribe via email
+            </a>
+            <a
+              href="mailto:info@chatsched.com"
+              className="font-mono text-xs text-[#8A8272] hover:text-billboard-yellow transition shrink-0"
+            >
+              info@chatsched.com
+            </a>
+          </div>
+        </div>
+
+        {/* Bottom bar */}
         <div className="pt-5 text-xs text-[#8A8272] flex flex-wrap justify-between gap-2">
           <span>{t("footer.copyright")}</span>
           <span className="flex flex-wrap gap-x-4 gap-y-1">
