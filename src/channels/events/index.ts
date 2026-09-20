@@ -1,5 +1,5 @@
 /**
- * Events & Tournaments Channel Module — NOT YET LIVE
+ * Events & Tournaments Channel Module
  *
  * Feature flag: VITE_CHANNEL_EVENTS_ENABLED (default off — same reasoning
  * as the sports channel: ships inactive until real verified organisers
@@ -24,11 +24,17 @@ const eventsModule: ChannelModule = {
     tagline: "Sponsor the moment, not just the medium.",
     description:
       "Sponsor South African events, conferences, and tournaments — title sponsorship, programme placement, stage branding, ticket or registration sponsorship. Event audiences are attentive and self-selected around a shared interest, which most ad formats can't match.",
-    emoji: "🎫",
+    emoji: "\uD83C\uDFAB",
     category: "events",
     isLive: true,
     bookingFlow: "request",
     minBudgetZAR: 1000,
+    // Events & Tournaments organisers need more time to plan programme
+    // production, signage and logistics — 30 days rather than the platform
+    // default (7 days) to approve or decline a sponsorship request.
+    // This overrides CREATOR_APPROVAL_WINDOW_DAYS from constants.ts for
+    // this channel only. All other channels use the global 7-day default.
+    approvalWindowDays: 30,
     pricingModels: [
       {
         unit: "per_event",
@@ -78,7 +84,7 @@ const eventsModule: ChannelModule = {
     ],
     exampleUseCases: [
       "Local business sponsoring a small-business networking event's programme",
-      "Fintech brand as headline sponsor of a industry conference",
+      "Fintech brand as headline sponsor of an industry conference",
       "Insurer sponsoring a community fun run's registration and ticket page",
     ],
     advertisingMethods: [
