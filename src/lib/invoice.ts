@@ -1,4 +1,4 @@
-import { PLATFORM_COMMISSION_RATE, CONTACT_EMAIL, CONTACT_ADDRESS_LINES } from "./constants";
+import { PLATFORM_COMMISSION_RATE, CONTACT_EMAIL, CONTACT_ADDRESS_LINES, PLATFORM_VAT_NUMBER, PLATFORM_COMPANY_REGISTRATION } from "./constants";
 import { formatCurrency as formatCurrencyShared } from "./currency";
 
 // Generates a clean, self-contained PDF entirely client-side — no server
@@ -7,6 +7,16 @@ import { formatCurrency as formatCurrencyShared } from "./currency";
 // the same underlying payment). Two calls into the same builder so the two
 // documents always agree on figures, they just present the money split
 // from opposite sides of it.
+//
+// SARS (South African Revenue Service) tax-invoice requirements, applied
+// here: a document must show the supplier's name, address and VAT number
+// (if registered), the recipient's name and address (and VAT number if
+// registered, for supplies over R5,000), a unique serial number, issue
+// date, description, and the VAT treatment of the amount charged. Where
+// neither party is a registered VAT vendor — the common case for this
+// platform today — the document states that plainly ("No VAT charged")
+// rather than silently omitting the topic, since a document that looks
+// like an invoice but is ambiguous about VAT is itself a compliance risk.
 
 const INK = "#1A1712";
 const INK_SOFT = "#6B6250";
@@ -21,6 +31,10 @@ const MARGIN = 20;
 interface InvoicePartyLine {
   heading: string;
   lines: string[];
+  /** SARS tax-invoice field — shown as "VAT No: ..." under the address if this party is a registered VAT vendor. Omit/undefined if not registered. */
+  vatNumber?: string | null;
+  /** Company registration number (CIPC), shown alongside the VAT number when present. */
+  companyRegistration?: string | null;
 }
 
 export interface InvoiceInput {
@@ -44,6 +58,17 @@ function rand(n: number): string {
   return formatCurrencyShared(n, { cents: true });
 }
 
+// Whichever party's own VAT number is set decides the document's VAT
+// treatment: if either the supplier or the recipient charges VAT the
+// document must say so explicitly. In practice today that's only ever
+// PLATFORM_VAT_NUMBER (ChatSched's own, see constants.ts) since customer/
+// publisher VAT registration doesn't change what ChatSched itself charges —
+// but the check is written generally so it stays correct if that ever
+// changes.
+function vatIsCharged(input: InvoiceInput): boolean {
+  return Boolean(PLATFORM_VAT_NUMBER || input.from.vatNumber);
+}
+
 export async function buildAndDownloadInvoice(input: InvoiceInput) {
   // Loaded on demand — jsPDF (and its optional image-export dependencies)
   // is only needed by the handful of users who actually click "Download
@@ -51,6 +76,7 @@ export async function buildAndDownloadInvoice(input: InvoiceInput) {
   // first load.
   const { jsPDF } = await import("jspdf");
   const doc = new jsPDF({ unit: "mm", format: "a4" });
+  const chargesVat = vatIsCharged(input);
 
   // Top accent band — a thin brand-color rule rather than a plain white
   // page, so the document reads as an official ChatSched document at a
@@ -71,10 +97,17 @@ export async function buildAndDownloadInvoice(input: InvoiceInput) {
   y += 6;
   doc.text("Managed Advertising + Marketplace + Publisher Network", MARGIN, y);
 
+  // SARS-compliant title: "TAX INVOICE" only when VAT is actually charged.
+  // Calling a document a tax invoice when no VAT applies (or vice versa)
+  // is itself the kind of ambiguity SARS's tax invoice rules exist to rule
+  // out, so the label follows chargesVat rather than always saying "INVOICE".
+  const docTitle = input.showCommissionSplit
+    ? "PAYOUT STATEMENT"
+    : chargesVat ? "TAX INVOICE" : "INVOICE";
   doc.setFont("helvetica", "bold");
   doc.setFontSize(14);
   doc.setTextColor(INK);
-  doc.text(input.showCommissionSplit ? "PAYOUT STATEMENT" : "INVOICE", PAGE_WIDTH - MARGIN, 22, { align: "right" });
+  doc.text(docTitle, PAGE_WIDTH - MARGIN, 22, { align: "right" });
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
   doc.setTextColor(INK_SOFT);
@@ -86,7 +119,12 @@ export async function buildAndDownloadInvoice(input: InvoiceInput) {
   doc.setLineWidth(0.6);
   doc.line(MARGIN, y, PAGE_WIDTH - MARGIN, y);
 
-  // Bill to / From
+  // Bill to / From — each party's full address block plus, where
+  // applicable, VAT number and company registration. A SARS tax invoice
+  // needs a real address for both parties, not just a name and phone
+  // number, so `lines` here is expected to carry the full postal address
+  // (street, suburb, city, province, postal code) rather than just a
+  // contact detail.
   y += 10;
   const colWidth = (PAGE_WIDTH - MARGIN * 2) / 2;
   [{ x: MARGIN, party: input.from }, { x: MARGIN + colWidth, party: input.billTo }].forEach(({ x, party }) => {
@@ -102,11 +140,24 @@ export async function buildAndDownloadInvoice(input: InvoiceInput) {
       doc.text(line, x, ly);
       ly += 5.2;
     });
+    if (party.vatNumber || party.companyRegistration) {
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8.5);
+      doc.setTextColor(INK_SOFT);
+      ly += 1;
+      if (party.vatNumber) {
+        doc.text(`VAT No: ${party.vatNumber}`, x, ly);
+        ly += 4.5;
+      }
+      if (party.companyRegistration) {
+        doc.text(`Reg No: ${party.companyRegistration}`, x, ly);
+      }
+    }
   });
 
   // Line-items table — a fully bordered box rather than bare top/bottom
   // rules, so it reads as a distinct table rather than loose text columns.
-  y += 34;
+  y += 38;
   const tableTop = y;
   const tableWidth = PAGE_WIDTH - MARGIN * 2;
   doc.setFillColor(TABLE_HEADER_BG, TABLE_HEADER_BG - 5, TABLE_HEADER_BG - 18);
@@ -166,6 +217,35 @@ export async function buildAndDownloadInvoice(input: InvoiceInput) {
     doc.text("Your payout", totalsBoxX, totalsY + 1.5);
     doc.text(rand(net), PAGE_WIDTH - MARGIN, totalsY + 1.5, { align: "right" });
     totalsY += 12;
+  } else if (chargesVat) {
+    // VAT-inclusive breakdown, only shown once ChatSched actually has a
+    // VAT number — grossAmount is treated as VAT-inclusive (South African
+    // pricing convention) and backed out at the standard 15% rate.
+    const vatRate = 0.15;
+    const exclVat = input.grossAmount / (1 + vatRate);
+    const vatAmount = input.grossAmount - exclVat;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9.5);
+    doc.setTextColor(INK_SOFT);
+    doc.text("Subtotal (excl. VAT)", totalsBoxX, totalsY);
+    doc.text(rand(exclVat), PAGE_WIDTH - MARGIN, totalsY, { align: "right" });
+    totalsY += 6.5;
+    doc.text("VAT (15%)", totalsBoxX, totalsY);
+    doc.text(rand(vatAmount), PAGE_WIDTH - MARGIN, totalsY, { align: "right" });
+    totalsY += 5;
+    doc.setDrawColor(INK);
+    doc.setLineWidth(0.4);
+    doc.line(totalsBoxX, totalsY, PAGE_WIDTH - MARGIN, totalsY);
+    totalsY += 8;
+    doc.setFillColor(INK);
+    doc.rect(totalsBoxX - 4, totalsY - 6, totalsBoxWidth + 4, 11, "F");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(13);
+    doc.setTextColor("#FFFFFF");
+    doc.text("Total (incl. VAT)", totalsBoxX, totalsY + 1.5);
+    doc.text(rand(input.grossAmount), PAGE_WIDTH - MARGIN, totalsY + 1.5, { align: "right" });
+    totalsY += 12;
   } else {
     doc.setFillColor(INK);
     doc.rect(totalsBoxX - 4, totalsY - 6, totalsBoxWidth + 4, 11, "F");
@@ -175,9 +255,19 @@ export async function buildAndDownloadInvoice(input: InvoiceInput) {
     doc.text("Total paid", totalsBoxX, totalsY + 1.5);
     doc.text(rand(input.grossAmount), PAGE_WIDTH - MARGIN, totalsY + 1.5, { align: "right" });
     totalsY += 12;
+    // SARS-facing VAT statement — explicit rather than a silent omission,
+    // since a document that looks like a tax invoice but says nothing
+    // about VAT is itself ambiguous. Only shown on the business copy
+    // (not the publisher payout statement, which isn't a supply of goods
+    // or services to the publisher in the same sense).
+    doc.setFont("helvetica", "italic");
+    doc.setFontSize(7.5);
+    doc.setTextColor(INK_SOFT);
+    doc.text("No VAT has been charged — ChatSched is not currently a registered VAT vendor.", PAGE_WIDTH - MARGIN, totalsY, { align: "right" });
+    totalsY += 6;
   }
 
-  y = totalsY + 8;
+  y = totalsY + 6;
   doc.setFont("helvetica", "bold");
   doc.setFontSize(8.5);
   doc.setTextColor(INK_SOFT);
@@ -208,4 +298,16 @@ export async function buildAndDownloadInvoice(input: InvoiceInput) {
   doc.rect(0, PAGE_HEIGHT - 3, PAGE_WIDTH, 3, "F");
 
   doc.save(`${input.fileName}.pdf`);
+}
+
+// Convenience for call sites building the "From: ChatSched" party — pulls
+// in the platform's own VAT/registration numbers (constants.ts) so every
+// invoice call site doesn't need to import and pass them individually.
+export function chatSchedInvoiceParty(): InvoicePartyLine {
+  return {
+    heading: "From",
+    lines: ["ChatSched", ...CONTACT_ADDRESS_LINES],
+    vatNumber: PLATFORM_VAT_NUMBER,
+    companyRegistration: PLATFORM_COMPANY_REGISTRATION,
+  };
 }
