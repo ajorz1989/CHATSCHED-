@@ -20,88 +20,6 @@
     "paidOut": "Kukhokhelwe abashicileli",
     "provinces": "Izifundazwe zaseNingizimu Afrika"
   },
-  "audienceSplit": {
-    "heading": "Noma ohlangothini luphi okukulo, kwakhelwe wena.",
-    "businessBadge": "Ibhizinisi / Umkhangisi",
-    "businessTitle": "Finyelela izilaleli osekade ziwathemba amakhasimende akho",
-    "businessBody": "I-R399, ikhokhwa kanye kuphela, ikunikeza ukufinyelela emakethe, imikhankaso ephethwe, kanye nesikweletu sokuqalisa esingu-R199 esifakiwe. Ayibuyi. Ukubhuka kumahhala — ukuthumela isicelo kudinga leyo nkokhelo eyodwa.",
-    "businessCta": "Hlola amabhizinisi →",
-    "publisherBadge": "Umshicileli / Umdidiyeli",
-    "publisherTitle": "Zuza kubalaleli osubakhile",
-    "publisherBody": "I-R199, ikhokhwa kanye kuphela, ukufinyelela okugcwele kwiNethiwekhi Yabashicileli — vuma izicelo, misa intengo yakho, amathuba, imali eholiwe kanye nokuhlaziywa. Ayibuyi. Iphrofayela eyisisekelo ihlala imahhala.",
-    "publisherCta": "Hlola abashicileli →"
-  },
-  "layers": {
-    "badge": "IMODELI YE-CHATSCHED",
-    "title": "Noma ufuna ukukhangisa kanjani, ikhona indlela.",
-    "subtitle": "Izendlalelo ezintathu. I-platform eyodwa ngemuva kwazo. Umkhankaso wakho uhlala ulandelwa kusukela esicelweni kuya ebufakazini.",
-    "agencyBadge": "I-AGENCY",
-    "agencyTitle": "Ukukhangisa Okuphethwe",
-    "agencyBody": "Sitshele inhloso, izilaleli nesabelomali. Siyahlela futhi siphathe umkhankaso nawe.",
-    "agencyCta": "Yakha Umkhankaso Wami",
-    "marketplaceBadge": "IMAKETHE",
-    "marketplaceTitle": "Ukukhangisa Ozenzela Wena",
-    "marketplaceBody": "Thola izikhala zangempela, qhathanisa bese ukhetha lapho ofuna ukukhangisa khona.",
-    "marketplaceCta": "Bheka Ukukhangisa",
-    "networkBadge": "INETHIWEKHI",
-    "networkTitle": "Inethiwekhi Yabashicileli",
-    "networkBody": "Usunazo izilaleli? Guqula ikhasi, iwebhusayithi, i-podcast, umsakazo noma elinye ithuba libe ukunikezwa kokukhangisa.",
-    "networkCta": "Joyina Njengomshicileli"
-  },
-  "featured": {
-    "badge": "Ebhodini",
-    "title": "Amanye amakhasi asesebhodini.",
-    "subtitle": "Amakhasi namaqembu ambalwa asesebenza ku-ChatSched — amanye ayajoyina njalo ngeviki.",
-    "emptyTitle": "Abakabi khona abashicileli",
-    "emptyDescription": "Engeza owokuqala kusuka kwipaneli yokuphatha ukugcwalisa lokhu.",
-    "viewAll": "Bheka bonke abashicileli →"
-  },
-  "channelsSection": {
-    "badge": "Amashaneli amasha, asebenza manje",
-    "title": "Amanye amabhodi okubeka ibhizinisi lakho kuwo.",
-    "subtitle": "Izindlela ezine ezintsha zokufinyelela izilaleli zaseNingizimu Afrika ngaphandle kwamakhasi omphakathi — indlela efanayo eqondile futhi ecacile."
-  },
-  "valueProp": {
-    "badge": "Kungani ungagijimisi nje izikhangiso zomphakathi?",
-    "title1": "Ayikho imali yezikhangiso echithwa kuma-algorithm.",
-    "title2": "100% iqondiswe kubantu asebebathembile ikhasi.",
-    "body": "Amaplatifomu ezikhangiso zomphakathi afaka isabelomali sakho ekuqhudelaneni nebhokisi emnyama futhi athembele ekutheni umuntu ofanele ahambe ngesikhathi esifanele. I-ChatSched ikubeka ngqo phambi kwezilaleli umdidiyeli wendawo wangempela osewakhile — akukho ukuqhudelana, akukho i-algorithm, akukho ukuqagela."
-  },
-  "howItWorks": {
-    "badge": "Ukusebenza kwayo",
-    "title": "Noma ohlangothini luphi okukulo, kuyinqubo efanayo elula.",
-    "cta": "Bona umfanekiso ophelele →",
-    "scene1Chip": "Thola",
-    "scene1Title": "Thola ibhodi lakho, noma ubhalise ikhasi lakho",
-    "scene1BrowseLabel": "Bheka",
-    "scene2Chip": "Isicelo",
-    "scene2Title": "Thumela isicelo, noma uthole esinye ukuze usibuyekeze",
-    "scene2Status": "Isicelo sokuboniswa sithunyelwe",
-    "scene2Pending": "Kulindile",
-    "scene3Chip": "Iyasebenza",
-    "scene3Title": "Isiyaqala ukusebenza — uthola ubufakazi, noma ubonwe",
-    "scene3Status": "Ukuboniswa kuyasebenza — ubufakazi buniketiwe",
-    "categories": [
-      "Ezokuxhumana Zomphakathi",
-      "Umphembeleli",
-      "I-podcast",
-      "Umsakazo",
-      "Iwebhusayithi"
-    ]
-  },
-  "payment": {
-    "badge": "Indlela yenkokhelo",
-    "title": "Imali igcinwa ngokuphephile kuze kube yilapho ukuboniswa sekusebenza.",
-    "step1": "Ibhizinisi liyacela, umdidiyeli uyavuma — noma kuvaleke ngokuzenzakalelayo ngemuva kwezinsuku ezi-{{days}} ngaphandle kwempendulo.",
-    "step2": "Ibhizinisi likhokhela ngaphambili (ikhadi noma i-EFT) — igcinwa lapho kuze kube yilapho umdidiyeli eshicilela futhi ayenze ukuthi isebenze.",
-    "step3": "Umdidiyeli ukhokhelwa phakathi kwamahora angu-{{hours}} ngemva kokuqala ukusebenza — {{share}}% kumdidiyeli, imali yephlatifomu emisiwe engu-{{commission}}%.",
-    "cta": "Bona uhlelo lwesikhathi lwenkokhelo olugcwele →"
-  },
-  "caseStudies": {
-    "badge": "Izibonelo ezibonisayo",
-    "title": "Awuqinisekile ukuthi ukubhukha kubukeka kanjani ngempela? Sizokuhambisa kokuthathu.",
-    "cta": "Bona izinyathelo →"
-  },
   "heroMockup": {
     "liveNow": "IZIKHANGISO EZIKHONA",
     "marketplaceLabel": "Ukuboniswa kokukhangisa",
@@ -111,40 +29,6 @@
     "status": "Isimo",
     "ready": "KULUNGILE",
     "footer": "Khetha ukuboniswa. I-ChatSched igcina isicelo, inkokhelo nobufakazi ndawonye."
-  },
-  "quickStart": {
-    "badge": "Ukuqala Ngokushesha",
-    "title": "Khetha inhloso nesabelomali. Sizoqhuba kusukela lapho.",
-    "subtitle": "Ngena ngqo emkhankasweni ogcwalisiwe kusengaphambili — ungashintsha noma yini ngaphambi kokuthumela.",
-    "goalLabel": "Iyini inhloso?",
-    "budgetLabel": "Sithini isabelomali?",
-    "cta": "Qalisa Umkhankaso Wami →"
-  },
-  "toolsTeaser": {
-    "badge": "Izinga 4 — Amathuluzi",
-    "title": "Ipulatifomu eyodwa. Izindlela eziningi zokukhula.",
-    "subtitle": "Thola ukukhangisa. Qhuba imikhankaso. Sebenzisa amathuluzi ebhizinisi asebenzayo.",
-    "cta": "Hlola Amathuluzi e-ChatSched →",
-    "emptyTitle": "Amathuluzi asendleleni.",
-    "emptyDescription": "Amathuluzi okuqala e-ChatSched ayashicilelwa — buya maduze."
-  },
-  "featureChips": {
-    "local": {
-      "title": "Kwasendaweni",
-      "body": "Khomba ngokwendawo, izethameli nesiteshi."
-    },
-    "tracked": {
-      "title": "Kuyalandeleka",
-      "body": "Gcina izicelo, izimvume nobufakazi bomkhankaso endaweni eyodwa."
-    },
-    "transparent": {
-      "title": "Kusobala",
-      "body": "Bona ukubekwa, intengo nemali yesikhulumi ngaphambi kokuzibophezela."
-    },
-    "noAdAccount": {
-      "title": "Akudingeki i-akhawunti yokukhangisa",
-      "body": "Zenzele wena noma uvumele i-ChatSched yakhe umkhankaso."
-    }
   },
   "twoWays": {
     "badge": "Izindlela ezimbili zokukhangisa",
@@ -163,7 +47,7 @@
     "badge": "KUNGANI UNGASEBENZISI IZIKHANGISO ZOMPHAKATHI KUPHELA?",
     "title": "Ayikho i-algorithm. Ayikho i-akhawunti yezikhangiso. Ayikho impi yokubhida.",
     "subtitle": "Ama-platform endabuko akuthengisa ukufinyelela endalini. I-ChatSched ikuvumela ukhethe izikhala zangempela futhi igcine inqubo endaweni eyodwa.",
-    "platforms": "",
+    "platforms": "Okugathaniswayo",
     "traditional": "Ama-platform endabuko",
     "chatsched": "ChatSched",
     "closer": "Khetha lapho umyalezo wakho uvela khona — bese ugcina ubufakazi.",

@@ -65,7 +65,6 @@ const Security = lazy(() => import("./pages/Security"));
 const Help = lazy(() => import("./pages/Help"));
 const Accessibility = lazy(() => import("./pages/Accessibility"));
 const Glossary = lazy(() => import("./pages/Glossary"));
-const Roadmap = lazy(() => import("./pages/Roadmap"));
 const BudgetCalculator = lazy(() => import("./pages/BudgetCalculator"));
 const EarningsEstimator = lazy(() => import("./pages/EarningsEstimator"));
 const ReachChecker = lazy(() => import("./pages/ReachChecker"));
@@ -100,6 +99,9 @@ const Admin = lazy(() => import("./pages/Admin"));
 const PaymentResult = lazy(() => import("./pages/PaymentResult"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const ChannelHub = lazy(() => import("./pages/ChannelHub"));
+// Channel Comparison Hub — /channels/compare. Declared before /channels/:slug
+// below so "compare" is never swallowed by the :slug param.
+const ChannelComparison = lazy(() => import("./pages/ChannelComparison"));
 const MediaNetwork = lazy(() => import("./pages/MediaNetwork"));
 const ChannelPage = lazy(() => import("./pages/ChannelPage"));
 const TrackRedirect = lazy(() => import("./pages/TrackRedirect"));
@@ -116,7 +118,6 @@ const ToolDetail = lazy(() => import("./pages/ToolDetail"));
 // WorkWithUs merged into Careers — /work-with-us redirects below
 const Partners = lazy(() => import("./pages/Partners"));
 const PartnersApply = lazy(() => import("./pages/PartnersApply"));
-const Mission = lazy(() => import("./pages/Mission"));
 
 // react-leaflet + leaflet pull in a real chunk of JS+CSS for a map only a
 // fraction of visitors will open — kept as its own case (rather than
@@ -187,7 +188,6 @@ function RoutedContent() {
         <Route path="/help" element={<Help />} />
         <Route path="/accessibility" element={<Accessibility />} />
         <Route path="/glossary" element={<Glossary />} />
-        <Route path="/roadmap" element={<Roadmap />} />
         <Route path="/budget-calculator" element={<BudgetCalculator />} />
         <Route path="/earnings-estimator" element={<EarningsEstimator />} />
         <Route path="/reach-checker" element={<ReachChecker />} />
@@ -220,6 +220,7 @@ function RoutedContent() {
         <Route path="/payment/return" element={<RequireAuth><PaymentResult status="return" /></RequireAuth>} />
         <Route path="/payment/cancel" element={<RequireAuth><PaymentResult status="cancel" /></RequireAuth>} />
         <Route path="/channels" element={<ChannelHub />} />
+        <Route path="/channels/compare" element={<ChannelComparison />} />
         <Route path="/network" element={<MediaNetwork />} />
         <Route path="/channels/:slug" element={<ChannelPage />} />
         <Route path="/t/:slug" element={<TrackRedirect />} />
@@ -237,7 +238,10 @@ function RoutedContent() {
         <Route path="/tools/:slug" element={<ToolDetail />} />
         <Route path="/partners" element={<Partners />} />
         <Route path="/partners/apply" element={<PartnersApply />} />
-        <Route path="/mission" element={<Mission />} />
+        {/* Mission + Roadmap merged into About — old URLs redirect to the
+            matching section anchors so bookmarks and any inbound links survive. */}
+        <Route path="/mission" element={<Navigate to="/about#mission" replace />} />
+        <Route path="/roadmap" element={<Navigate to="/about#roadmap" replace />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>

@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import Seo from "../components/Seo";
 import ChannelIcon from "../components/ChannelIcon";
 import { getAllChannels } from "../lib/channelRegistry";
+import { isChannelEnabled } from "../lib/featureFlags";
 import {
   CREATOR_APPROVAL_WINDOW_DAYS,
   CREATOR_PAYOUT_WINDOW_HOURS,
@@ -45,6 +46,12 @@ const FAQS = [
 ];
 
 export default function ForPublishers() {
+  // Split by the same feature flag the Channel Hub and Browse use, so this
+  // page can never promise a channel that has no supply behind it.
+  const allChannels = getAllChannels();
+  const liveChannels = allChannels.filter((m) => isChannelEnabled(m.definition.slug));
+  const openingSoonChannels = allChannels.filter((m) => !isChannelEnabled(m.definition.slug));
+
   return (
     <div>
       <Seo
@@ -135,18 +142,59 @@ export default function ForPublishers() {
       {/* CHANNELS */}
       <section className="py-16 bg-billboard-paperDim border-y-[3px] border-billboard-ink">
         <div className="max-w-5xl mx-auto px-5">
-          <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">Five ways to get booked</span>
+          <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">
+            {liveChannels.length} channels earning right now
+          </span>
           <h2 className="text-3xl md:text-4xl mb-3 max-w-xl">Whatever you've built, there's a channel for it.</h2>
-          <p className="text-billboard-inkSoft max-w-xl mb-10">Social page, influencer following, a website with steady traffic, a podcast, or a radio slot — apply under whichever fits.</p>
+          <p className="text-billboard-inkSoft max-w-xl mb-10">
+            A social page, an influencer following, a website with steady traffic, a podcast or a radio slot — apply
+            under whichever fits. The {liveChannels.length} channels marked <strong>Open now</strong> are taking paid
+            bookings today; the rest are being onboarded and you can get in first.
+          </p>
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {getAllChannels().map((m) => (
+            {liveChannels.map((m) => (
               <div key={m.definition.slug} className="border-[3px] border-billboard-ink rounded p-5 bg-white transition hover:-translate-y-1 hover:shadow-blockSm">
-                <div className="mb-3"><ChannelIcon slug={m.definition.slug} /></div>
+                <div className="flex items-start justify-between gap-2 mb-3">
+                  <ChannelIcon slug={m.definition.slug} />
+                  <span className="font-mono text-[10px] font-bold uppercase border-2 border-billboard-greenDeep text-billboard-greenDeep px-1.5 py-0.5 rounded">
+                    Open now
+                  </span>
+                </div>
                 <h3 className="font-bold text-sm mb-1">{m.definition.name}</h3>
                 <p className="text-xs text-billboard-inkSoft">{m.definition.tagline}</p>
+                <Link to={`/register?role=publisher&channel=${m.definition.slug}`} className="inline-block mt-3 text-xs font-bold underline">
+                  List this channel →
+                </Link>
               </div>
             ))}
           </div>
+
+          {openingSoonChannels.length > 0 && (
+            <div className="mt-10 border-t-2 border-billboard-ink/15 pt-8">
+              <h3 className="font-display text-xl mb-2">Opening next — get in before the rush</h3>
+              <p className="text-billboard-inkSoft text-sm max-w-xl mb-5">
+                These channels are registered and being onboarded. Apply now and you're listed the day they open,
+                with no competition in your area yet.
+              </p>
+              <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {openingSoonChannels.map((m) => (
+                  <div key={m.definition.slug} className="border-2 border-billboard-inkSoft/40 rounded p-5 bg-billboard-paperDim">
+                    <div className="flex items-start justify-between gap-2 mb-3">
+                      <ChannelIcon slug={m.definition.slug} />
+                      <span className="font-mono text-[10px] font-bold uppercase text-billboard-inkSoft border border-billboard-inkSoft/40 px-1.5 py-0.5 rounded">
+                        Opening soon
+                      </span>
+                    </div>
+                    <h4 className="font-bold text-sm mb-1">{m.definition.name}</h4>
+                    <p className="text-xs text-billboard-inkSoft">{m.definition.tagline}</p>
+                    <Link to={`/register?role=publisher&channel=${m.definition.slug}`} className="inline-block mt-3 text-xs font-bold underline">
+                      Apply early →
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </section>
 

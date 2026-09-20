@@ -18,7 +18,10 @@
     "account": "I-akhawunti",
     "logOut": "Phuma",
     "logIn": "Ngena",
-    "getStarted": "Qala Manje"
+    "getStarted": "Qala Manje",
+    "more": "More",
+    "compareChannels": "Compare channels",
+    "caseStudies": "Case studies"
   },
   "footer": {
     "tagline": "Amabhizinisi amancane. Izilaleli zangempela. Amanani alungile.",

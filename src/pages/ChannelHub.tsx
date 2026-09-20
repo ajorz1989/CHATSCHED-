@@ -156,12 +156,15 @@ function StatsBar() {
 
 export default function ChannelHub() {
   const groups = getChannelsByCategory();
+  // Derived, never hardcoded — the copy used to say "Five channels" while
+  // the registry held 13, and this page's own stats bar counted them live.
+  const openCount = getAllChannels().filter((m) => isChannelEnabled(m.definition.slug)).length;
 
   return (
     <>
       <Seo
-        title="Advertising Channels — ChatSched"
-        description="Every advertising channel available on ChatSched — social media, influencer campaigns, website advertising, podcast sponsorships, and radio."
+        title="Advertising channels — what's open, what's coming | ChatSched"
+        description="Every advertising channel on ChatSched: social pages, creators, websites, podcasts and radio are bookable now. Township, taxi, sports, event and venue-screen inventory opens as real supply is verified."
       />
 
       <div className="max-w-6xl mx-auto px-5 py-16">
@@ -170,10 +173,20 @@ export default function ChannelHub() {
           <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-ink text-billboard-ink px-3 py-1.5 rounded mb-4">
             Channel directory
           </span>
-          <h1 className="text-4xl mb-3">Every board your customers already look at.</h1>
+          <h1 className="text-4xl mb-3">Every place your customers already look.</h1>
           <p className="text-billboard-inkSoft text-lg max-w-2xl">
-            Browse the advertising inventory available through ChatSched. Social media, influencer campaigns, websites, podcasts and radio are open today; other channel types are shown as they move from development into active supply.
+            {openCount} channels are taking paid bookings right now. The rest are registered and being onboarded —
+            they're shown as <strong>Coming soon</strong> so you always know whether there's real inventory behind a
+            channel before you plan around it.
           </p>
+          <div className="flex flex-wrap gap-3 mt-6">
+            <Link to="/channels/compare" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition">
+              Compare channels side by side →
+            </Link>
+            <Link to="/browse" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink font-bold px-5 py-2.5 rounded hover:bg-billboard-paperDim transition">
+              Browse live ad space →
+            </Link>
+          </div>
         </div>
 
         {/* Stats */}
@@ -188,23 +201,23 @@ export default function ChannelHub() {
 
         {/* Bottom CTA */}
         <div className="mt-16 border-[3px] border-billboard-ink rounded p-8 bg-billboard-paperDim text-center">
-          <h2 className="font-display text-2xl mb-2">Ready to advertise?</h2>
+          <h2 className="font-display text-2xl mb-2">Not sure which channel to pick?</h2>
           <p className="text-billboard-inkSoft mb-6 max-w-lg mx-auto">
-            Browse our publisher directory and run your first social media campaign today.
-            More channels open as the network grows.
+            Compare them on price, booking time and results — or tell us the goal and budget and we'll build the
+            campaign for you.
           </p>
           <div className="flex flex-wrap gap-3 justify-center">
             <Link
-              to="/browse"
+              to="/build-my-campaign"
               className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold px-6 py-3 rounded hover:bg-billboard-yellowDeep transition hover:-translate-y-0.5"
             >
-              Explore live inventory →
+              Build my campaign →
             </Link>
             <Link
-              to="/audience-finder"
+              to="/channels/compare"
               className="inline-flex items-center gap-2 border-[3px] border-billboard-ink font-bold px-6 py-3 rounded hover:bg-billboard-paperDim transition"
             >
-              Audience Finder
+              Compare channels
             </Link>
           </div>
         </div>

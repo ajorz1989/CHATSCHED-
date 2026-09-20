@@ -18,7 +18,10 @@
     "account": "Rekening",
     "logOut": "Meld af",
     "logIn": "Meld aan",
-    "getStarted": "Begin Nou"
+    "getStarted": "Begin Nou",
+    "more": "More",
+    "compareChannels": "Compare channels",
+    "caseStudies": "Case studies"
   },
   "footer": {
     "tagline": "Klein besighede. Regte gehore. Regverdige pryse.",

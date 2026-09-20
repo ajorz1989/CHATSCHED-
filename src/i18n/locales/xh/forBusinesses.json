@@ -34,7 +34,6 @@
     "escrowLink": "Bona umzila opheleleyo we-escrow kunye nokuhlawulwa →"
   },
   "channels": {
-    "badge": "Iindlela ezintlanu, umjelo omnye",
     "title": "Bhukisha naphi na apho abathengi bakho bakhona.",
     "subtitle": "Indlela nganye engezantsi isebenza ngomjelo ofanayo olula wesicelo-negunyaziso — khetha ezo zifanelekileyo."
   },
@@ -44,8 +43,8 @@
     "subtitle": "Xa sele ubhalisile, ezi zixhobo zihlala kwibhodi lakho kunye nezicelo zakho.",
     "items": [
       {
-        "name": "Match",
-        "body": "Chaza ishishini lakho ngolwimi olucacileyo — fumana uluhlu olucwangcisiweyo lwabapapashi abafanelekileyo ngokwenene."
+        "name": "Audience Finder",
+        "body": "Describe your business in plain language — get a ranked list of publishers who actually fit."
       },
       {
         "name": "Isicwangciso Sokufikelela",
@@ -66,6 +65,14 @@
       {
         "name": "Umbali-Manani we-ROI",
         "body": "Faka uhlahlo-lwabiwo mali, fumane ukufikelela okuqikelelweyo nombuyekezo phambi kokuba uzibophelele."
+      },
+      {
+        "name": "Caption Writer",
+        "body": "Describe the promotion once, get channel-ready captions back — no rewriting for every placement."
+      },
+      {
+        "name": "Media Kit",
+        "body": "Build the one-page kit a publisher or partner needs to say yes in a single look."
       }
     ]
   },

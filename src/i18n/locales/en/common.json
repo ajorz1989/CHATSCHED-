@@ -1,8 +1,8 @@
 {
   "nav": {
     "agency": "Build a Campaign",
-    "browse": "Browse",
-    "forPublishers": "For Publishers",
+    "browse": "Browse Ad Space",
+    "forPublishers": "Publishers",
     "suburbs": "Suburbs",
     "channels": "Channels",
     "tools": "Tools",
@@ -18,7 +18,10 @@
     "account": "Account",
     "logOut": "Log out",
     "logIn": "Log in",
-    "getStarted": "Get Started"
+    "getStarted": "Get Started Free",
+    "more": "More",
+    "compareChannels": "Compare channels",
+    "caseStudies": "Case studies"
   },
   "footer": {
     "tagline": "Reach local customers. Monetise local audiences.",

@@ -29,11 +29,12 @@
   <url><loc>https://chatsched.com/how-payment-works</loc><priority>0.7</priority></url>
   <url><loc>https://chatsched.com/for-businesses</loc><priority>0.7</priority></url>
   <url><loc>https://chatsched.com/for-publishers</loc><priority>0.7</priority></url>
-  <url><loc>https://chatsched.com/advertise</loc><priority>0.7</priority></url>
+  <url><loc>https://chatsched.com/collaborate</loc><priority>0.6</priority></url>
   <url><loc>https://chatsched.com/about</loc><priority>0.6</priority></url>
   <url><loc>https://chatsched.com/categories</loc><priority>0.6</priority></url>
   <url><loc>https://chatsched.com/suburbs</loc><priority>0.6</priority></url>
   <url><loc>https://chatsched.com/channels</loc><priority>0.6</priority></url>
+  <url><loc>https://chatsched.com/channels/compare</loc><priority>0.7</priority></url>
   <url><loc>https://chatsched.com/network</loc><priority>0.6</priority></url>
   <url><loc>https://chatsched.com/faq</loc><priority>0.6</priority></url>
   <url><loc>https://chatsched.com/fees</loc><priority>0.6</priority></url>
@@ -50,7 +51,6 @@
   <url><loc>https://chatsched.com/compare</loc><priority>0.5</priority></url>
   <url><loc>https://chatsched.com/map</loc><priority>0.5</priority></url>
   <url><loc>https://chatsched.com/fees/calculator</loc><priority>0.5</priority></url>
-  <url><loc>https://chatsched.com/mission</loc><priority>0.5</priority></url>
   <url><loc>https://chatsched.com/transparency</loc><priority>0.5</priority></url>
   <url><loc>https://chatsched.com/trust</loc><priority>0.5</priority></url>
   <url><loc>https://chatsched.com/work-with-us</loc><priority>0.5</priority></url>
@@ -73,8 +73,6 @@
   <url><loc>https://chatsched.com/trust/verification</loc><priority>0.4</priority></url>
   <url><loc>https://chatsched.com/glossary</loc><priority>0.4</priority></url>
   <url><loc>https://chatsched.com/media-kit</loc><priority>0.4</priority></url>
-  <url><loc>https://chatsched.com/investors</loc><priority>0.4</priority></url>
-  <url><loc>https://chatsched.com/roadmap</loc><priority>0.4</priority></url>
   <url><loc>https://chatsched.com/compliance</loc><priority>0.4</priority></url>
   <url><loc>https://chatsched.com/partners/apply</loc><priority>0.4</priority></url>
   <url><loc>https://chatsched.com/platform-rules</loc><priority>0.3</priority></url>

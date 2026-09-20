@@ -137,7 +137,7 @@ export default function AdminAJCreations() {
               key={selected}
               adminMode
               forcedChannel={selected}
-              onAdminCreated={(publisherId, channelSlug) => {
+              onAdminCreated={(_publisherId, channelSlug) => {
                 setCompletedChannels((prev) => {
                   const next = new Set(prev);
                   next.add(channelSlug);

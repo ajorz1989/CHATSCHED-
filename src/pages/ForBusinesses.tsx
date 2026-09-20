@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import Seo from "../components/Seo";
 import ChannelIcon from "../components/ChannelIcon";
 import { getAllChannels } from "../lib/channelRegistry";
+import { isChannelEnabled } from "../lib/featureFlags";
 import {
   CREATOR_APPROVAL_WINDOW_DAYS,
   BUSINESS_PAYMENT_WINDOW_DAYS,
@@ -25,6 +26,12 @@ export default function ForBusinesses() {
   const tools = t("tools.items", { returnObjects: true }) as ToolItem[];
   const comparisonRows = t("comparison.rows", { returnObjects: true }) as ComparisonRow[];
   const faqs = t("faq.items", { returnObjects: true }) as FaqItem[];
+
+  // Split by the same feature flag ChannelHub/Browse/ForPublishers use, so
+  // this page can never promise a channel that has no supply behind it.
+  const allChannels = getAllChannels();
+  const enabledChannels = allChannels.filter((m) => isChannelEnabled(m.definition.slug));
+  const openingSoon = allChannels.filter((m) => !isChannelEnabled(m.definition.slug));
 
   return (
     <div>
@@ -102,24 +109,67 @@ export default function ForBusinesses() {
       {/* CHANNELS */}
       <section className="py-16 bg-billboard-paperDim border-y-[3px] border-billboard-ink">
         <div className="max-w-5xl mx-auto px-5">
-          {/* Bug fix: was border-billboard-red text-billboard-red */}
+          {/* Bug fix: was border-billboard-red text-billboard-red.
+              The badge used to hardcode "Five channels, one flow" above a grid
+              that renders every registered channel — the number had already
+              drifted twice (12 vs 13). Both are now derived from the same
+              registry, so the two can't disagree again. */}
           <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-ink text-billboard-ink px-3 py-1.5 rounded mb-3">
-            {t("channels.badge")}
+            {enabledChannels.length} open now · {openingSoon.length} opening soon
           </span>
           <h2 className="text-3xl md:text-4xl mb-3 max-w-xl">{t("channels.title")}</h2>
-          <p className="text-billboard-inkSoft max-w-xl mb-10">{t("channels.subtitle")}</p>
+          <p className="text-billboard-inkSoft max-w-xl mb-6">{t("channels.subtitle")}</p>
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {getAllChannels().map((m) => (
+            {enabledChannels.map((m) => (
               <Link
                 key={m.definition.slug}
-                to={`/channels/${m.definition.slug}`}
+                to={m.definition.slug === "social-media" ? "/browse" : `/channels/${m.definition.slug}`}
                 className="block border-[3px] border-billboard-ink rounded p-5 bg-white transition hover:-translate-y-1 hover:shadow-blockSm"
               >
-                <div className="mb-3"><ChannelIcon slug={m.definition.slug} /></div>
+                <div className="flex items-start justify-between gap-2 mb-3">
+                  <ChannelIcon slug={m.definition.slug} />
+                  <span className="font-mono text-[10px] font-bold uppercase border-2 border-billboard-greenDeep text-billboard-greenDeep px-1.5 py-0.5 rounded">
+                    Book now
+                  </span>
+                </div>
                 <h3 className="font-bold text-sm mb-1">{m.definition.name}</h3>
                 <p className="text-xs text-billboard-inkSoft">{m.definition.tagline}</p>
               </Link>
             ))}
+          </div>
+
+          {/* Honest roadmap row — registered channels with real copy behind
+              them, shown so a business can see what's coming without being
+              sold inventory that doesn't exist yet. */}
+          {openingSoon.length > 0 && (
+            <div className="mt-8">
+              <Link
+                to="/channels"
+                className="font-mono text-[10px] uppercase font-bold text-billboard-inkSoft hover:text-billboard-ink transition-colors"
+              >
+                Opening soon ({openingSoon.length}) — see all channels →
+              </Link>
+              <div className="flex flex-wrap gap-2 mt-3">
+                {openingSoon.map((m) => (
+                  <Link
+                    key={m.definition.slug}
+                    to={`/channels/${m.definition.slug}`}
+                    className="inline-flex items-center gap-1.5 border-2 border-billboard-inkSoft/40 text-billboard-inkSoft text-xs font-semibold px-3 py-1.5 rounded hover:border-billboard-inkSoft transition"
+                  >
+                    <ChannelIcon slug={m.definition.slug} size="sm" /> {m.definition.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="mt-8">
+            <Link
+              to="/channels/compare"
+              className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition"
+            >
+              Compare channels side by side →
+            </Link>
           </div>
         </div>
       </section>

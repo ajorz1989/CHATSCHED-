@@ -34,7 +34,6 @@
     "escrowLink": "Bona umzila ophelele we-escrow nokukhokhwa →"
   },
   "channels": {
-    "badge": "Amashaneli amahlanu, uhambo olulodwa",
     "title": "Bhuka noma yikuphi lapho amakhasimende akho ekhona.",
     "subtitle": "Ishaneli ngalinye ngezansi lisebenza ngohambo olufanayo olulula lwesicelo-nokuvuma — khetha lawo afanele."
   },
@@ -44,8 +43,8 @@
     "subtitle": "Uma usubhalisile, lawa mathuluzi ahlala ebhodini lakho ehambisana nezicelo zakho.",
     "items": [
       {
-        "name": "Match",
-        "body": "Chaza ibhizinisi lakho ngolimi olucacile — thola uhlu oluhleliwe lwabashicileli abafanele ngempela."
+        "name": "Audience Finder",
+        "body": "Describe your business in plain language — get a ranked list of publishers who actually fit."
       },
       {
         "name": "Umhleli Wokufinyelela",
@@ -66,6 +65,14 @@
       {
         "name": "Isibali-ROI",
         "body": "Faka isabelomali, uthole ukufinyelela okulinganiselwe nembuyiselo ngaphambi kokuzibophezela."
+      },
+      {
+        "name": "Caption Writer",
+        "body": "Describe the promotion once, get channel-ready captions back — no rewriting for every placement."
+      },
+      {
+        "name": "Media Kit",
+        "body": "Build the one-page kit a publisher or partner needs to say yes in a single look."
       }
     ]
   },

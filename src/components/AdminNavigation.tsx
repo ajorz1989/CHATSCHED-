@@ -15,7 +15,11 @@ import {
   Users,
   Wrench,
 } from "lucide-react";
-import type { AdminTab } from "../pages/Admin";
+// AdminTab is declared here, not in Admin.tsx, because Admin.tsx (and
+// AdminCareers/AdminTools etc.) import this component — importing the
+// type back the other way made the two modules depend on each other.
+// Admin.tsx re-exports this type so existing importers keep working.
+export type AdminTab = "requests" | "applications" | "publishers" | "businesses" | "messages" | "analytics" | "payouts" | "channel_requests" | "reports" | "disputes" | "security" | "compliance" | "safety" | "leads" | "clients" | "campaigns" | "audit_log" | "opportunities" | "work_with_us" | "partners" | "advertise" | "community" | "careers" | "aj_creations";
 
 type NavItem = {
   key?: AdminTab;

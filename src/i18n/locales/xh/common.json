@@ -18,7 +18,10 @@
     "account": "Iakhawunti",
     "logOut": "Phuma",
     "logIn": "Ngena",
-    "getStarted": "Qala Ngoku"
+    "getStarted": "Qala Ngoku",
+    "more": "More",
+    "compareChannels": "Compare channels",
+    "caseStudies": "Case studies"
   },
   "footer": {
     "tagline": "Amashishini amancinci. Abaphulaphuli bokwenyani. Amaxabiso alunge.",

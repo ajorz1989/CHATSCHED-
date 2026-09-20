@@ -7,7 +7,6 @@
  * redirects here (see App.tsx) so old links and bookmarks keep working.
  */
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import type { ComponentType } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { usePublishers } from "../hooks/usePublishers";
 import { getEnabledChannels } from "../lib/channelRegistry";
@@ -26,15 +25,6 @@ import RecentlyViewedStrip from "../components/RecentlyViewedStrip";
 import { CloseIcon } from "../components/UiIcons";
 import ChannelIcon from "../components/ChannelIcon";
 import { PLATFORM_ICONS } from "../components/PlatformIcons";
-import { SocialMediaChannelIcon, InfluencerChannelIcon, WebsiteChannelIcon, PodcastChannelIcon, RadioChannelIcon } from "../components/ChannelIcons";
-
-const BROWSE_CHANNEL_ICONS: Record<string, ComponentType<{ className?: string }>> = {
-  "social-media": SocialMediaChannelIcon,
-  influencer: InfluencerChannelIcon,
-  website: WebsiteChannelIcon,
-  podcast: PodcastChannelIcon,
-  radio: RadioChannelIcon,
-};
 
 const AGE_OPTIONS = [
   { value: "", label: "Any age group" },
@@ -199,7 +189,6 @@ function FilterFields({
             All channels
           </label>
           {channels.map(({ definition: ch }) => {
-            const Icon = BROWSE_CHANNEL_ICONS[ch.slug];
             return (
               <label key={ch.slug} className="flex items-center gap-2 text-sm cursor-pointer select-none">
                 <input type="radio" name="channel" checked={filters.channel === ch.slug} onChange={() => update({ channel: ch.slug })} className="accent-billboard-green w-4 h-4" />

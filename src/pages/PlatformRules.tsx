@@ -36,6 +36,13 @@ export default function PlatformRules() {
 
   return (
     <div>
+      {/* Seo was imported but never rendered — a high-intent compliance page
+          indexed under a blank title, so every search result for "Instagram
+          ad rules South Africa" style queries showed the raw URL. Added. */}
+      <Seo
+        title="Platform Rules · Instagram, Facebook, TikTok & LinkedIn ad requirements | ChatSched"
+        description="What each social platform expects from a sponsored post — disclosure wording, restricted categories, and proof requirements — so your South African campaign doesn't get pulled after it goes live."
+      />
       {/* Dark hero — consistent with Security and other trust pages */}
       <section className="bg-billboard-ink text-billboard-paper border-b-[3px] border-billboard-yellow py-16">
         <div className="max-w-3xl mx-auto px-5">

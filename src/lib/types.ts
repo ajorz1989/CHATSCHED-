@@ -133,7 +133,8 @@ export interface Category {
   slug: string;
   name: string;
   icon: "food" | "fitness" | "beauty" | "home" | "family" | "auto" | "fashion" | "tech"
-    | "lifestyle" | "news" | "community" | "retail" | "property" | "pets" | "events" | "social";
+    | "lifestyle" | "news" | "community" | "retail" | "property" | "pets" | "events" | "social"
+    | "sports" | "transport" | "township" | "business";
 }
 
 export type UserRole = "business" | "admin" | "publisher";

@@ -9,7 +9,8 @@ import { useReveal } from "../hooks/useReveal";
 import LiveChannelTabs from "../components/LiveChannelTabs";
 import RecentlyViewedStrip from "../components/RecentlyViewedStrip";
 import Seo from "../components/Seo";
-import { PLATFORM_COMMISSION_RATE, PUBLISHER_SHARE } from "../lib/constants";
+import { PLATFORM_COMMISSION_RATE, PUBLISHER_SHARE, BUSINESS_SUBSCRIPTION_PRICE, PUBLISHER_SUBSCRIPTION_PRICE } from "../lib/constants";
+import { formatCurrency } from "../lib/currency";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
 import ToolIcon from "../components/ToolIcon";
 import type { Tool } from "../lib/types";
@@ -100,13 +101,6 @@ function LocalSection() {
   return <section className="py-16 bg-white border-b-[3px] border-billboard-ink"><div className="max-w-6xl mx-auto px-5" ref={reveal.ref}><div className={reveal.className}><span className="eyebrow">{t("local.badge")}</span><h2 className="text-3xl md:text-5xl mb-3 max-w-3xl">{t("local.title")}</h2><p className="text-billboard-inkSoft max-w-2xl mb-9">{t("local.subtitle")}</p><div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">{items.map(i=><div key={i} className="border-[3px] border-billboard-ink rounded-lg p-5 bg-billboard-paperDim hover:-translate-y-1 hover:shadow-blockSm transition"><h3 className="font-display text-lg mb-2">{t(`local.items.${i}.title`)}</h3><p className="text-sm text-billboard-inkSoft">{t(`local.items.${i}.body`)}</p></div>)}</div><div className="mt-8"><Link to="/audience-finder" className="brand-button dark">{t("local.cta")}</Link></div></div></div></section>;
 }
 
-function LayersSection() {
-  const { t } = useTranslation("home");
-  const reveal = useReveal<HTMLDivElement>();
-  const layers = [["agency","/build-my-campaign"],["marketplace","/browse"],["network","/for-publishers"]] as const;
-  return <section className="py-16 bg-billboard-paperDim border-b-[3px] border-billboard-ink"><div className="max-w-6xl mx-auto px-5" ref={reveal.ref}><div className={reveal.className}><span className="eyebrow">{t("layers.badge")}</span><h2 className="text-3xl md:text-4xl mb-3 max-w-2xl">{t("layers.title")}</h2><p className="text-billboard-inkSoft max-w-2xl mb-9">{t("layers.subtitle")}</p><div className="grid md:grid-cols-3 gap-5">{layers.map(([key,to],i)=><div key={key} className="border-[3px] border-billboard-ink rounded-lg p-6 bg-white flex flex-col shadow-blockSm"><span className="font-mono text-xs font-bold uppercase mb-4">0{i+1} · {t(`layers.${key}Badge`)}</span><h3 className="font-display text-xl mb-2">{t(`layers.${key}Title`)}</h3><p className="text-sm text-billboard-inkSoft mb-6 flex-1">{t(`layers.${key}Body`)}</p><Link to={to} className="font-bold text-sm">{t(`layers.${key}Cta`)} →</Link></div>)}</div></div></div></section>;
-}
-
 function HowSection() {
   const { t } = useTranslation("home");
   return <section className="py-16 bg-billboard-ink text-billboard-paper border-b-[3px] border-billboard-ink"><div className="max-w-6xl mx-auto px-5"><span className="eyebrow light">{t("how.badge")}</span><h2 className="text-3xl md:text-4xl mb-9 max-w-2xl">{t("how.title")}</h2><div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">{[1,2,3,4,5,6].map(n=><div key={n} className="border-2 border-white/20 rounded-lg p-5 bg-white/5"><span className="font-display text-3xl text-billboard-yellow">0{n}</span><h3 className="font-display text-lg mt-3 mb-1">{t(`how.steps.${n}.title`)}</h3><p className="text-sm text-billboard-paperDim">{t(`how.steps.${n}.body`)}</p></div>)}</div><p className="font-display text-xl mt-9 text-billboard-yellow">{t("how.closer")}</p><Link to="/how-it-works" className="brand-button light mt-6">{t("how.cta")}</Link></div></section>;
@@ -127,7 +121,7 @@ function ToolsSection() {
 
 function PricingSection() {
   const { t } = useTranslation("home");
-  return <section className="py-16 bg-billboard-yellow border-b-[3px] border-billboard-ink"><div className="max-w-6xl mx-auto px-5"><div className="max-w-3xl mb-9"><span className="eyebrow">{t("pricing.badge")}</span><h2 className="text-3xl md:text-5xl mb-3">{t("pricing.title")}</h2><p className="text-billboard-inkSoft">{t("pricing.subtitle")}</p></div><div className="grid md:grid-cols-2 gap-5"><div className="border-[3px] border-billboard-ink rounded-lg p-7 bg-white shadow-block"><div className="font-mono text-xs font-bold uppercase">{t("pricing.businessLabel")}</div><div className="font-display text-4xl mt-2">R399</div><p className="font-bold mb-2">{t("pricing.onceOff")}</p><p className="text-sm text-billboard-inkSoft mb-5">{t("pricing.businessBody")}</p><Link to="/register?role=business" className="brand-button dark">{t("pricing.businessCta")}</Link></div><div className="border-[3px] border-billboard-ink rounded-lg p-7 bg-billboard-paper shadow-block"><div className="font-mono text-xs font-bold uppercase">{t("pricing.publisherLabel")}</div><div className="font-display text-4xl mt-2">R199</div><p className="font-bold mb-2">{t("pricing.onceOff")}</p><p className="text-sm text-billboard-inkSoft mb-5">{t("pricing.publisherBody")}</p><Link to="/register?role=publisher" className="brand-button">{t("pricing.publisherCta")}</Link></div></div><p className="font-mono text-xs font-bold uppercase mt-7 max-w-2xl">{t("pricing.commission", { commission: Math.round(PLATFORM_COMMISSION_RATE*100), share: Math.round(PUBLISHER_SHARE*100) })}</p></div></section>;
+  return <section className="py-16 bg-billboard-yellow border-b-[3px] border-billboard-ink"><div className="max-w-6xl mx-auto px-5"><div className="max-w-3xl mb-9"><span className="eyebrow">{t("pricing.badge")}</span><h2 className="text-3xl md:text-5xl mb-3">{t("pricing.title")}</h2><p className="text-billboard-inkSoft">{t("pricing.subtitle")}</p></div><div className="grid md:grid-cols-2 gap-5"><div className="border-[3px] border-billboard-ink rounded-lg p-7 bg-white shadow-block"><div className="font-mono text-xs font-bold uppercase">{t("pricing.businessLabel")}</div><div className="font-display text-4xl mt-2">{formatCurrency(BUSINESS_SUBSCRIPTION_PRICE)}</div><p className="font-bold mb-2">{t("pricing.onceOff")}</p><p className="text-sm text-billboard-inkSoft mb-5">{t("pricing.businessBody")}</p><Link to="/register?role=business" className="brand-button dark">{t("pricing.businessCta")}</Link></div><div className="border-[3px] border-billboard-ink rounded-lg p-7 bg-billboard-paper shadow-block"><div className="font-mono text-xs font-bold uppercase">{t("pricing.publisherLabel")}</div><div className="font-display text-4xl mt-2">{formatCurrency(PUBLISHER_SUBSCRIPTION_PRICE)}</div><p className="font-bold mb-2">{t("pricing.onceOff")}</p><p className="text-sm text-billboard-inkSoft mb-5">{t("pricing.publisherBody")}</p><Link to="/register?role=publisher" className="brand-button">{t("pricing.publisherCta")}</Link></div></div><p className="font-mono text-xs font-bold uppercase mt-7 max-w-2xl">{t("pricing.commission", { commission: Math.round(PLATFORM_COMMISSION_RATE*100), share: Math.round(PUBLISHER_SHARE*100) })}</p></div></section>;
 }
 
 function PublisherCta() {
@@ -149,7 +143,6 @@ export default function Home() {
     <MarketplaceSection publishers={publishers} loading={loading}/>
     <ChannelsSection/>
     <LocalSection/>
-    <LayersSection/>
     <HowSection/>
     <TrustSection/>
     <ToolsSection/>

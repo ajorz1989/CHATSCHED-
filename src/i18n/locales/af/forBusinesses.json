@@ -34,7 +34,6 @@
     "escrowLink": "Sien die volledige trust- en uitbetalingstydlyn →"
   },
   "channels": {
-    "badge": "Vyf kanale, een vloei",
     "title": "Bespreek waar jou kliënte ook al is.",
     "subtitle": "Elke kanaal hieronder loop deur dieselfde eenvoudige versoek-en-goedkeur-vloei — kies die wat pas."
   },
@@ -44,8 +43,8 @@
     "subtitle": "Sodra jy geregistreer is, leef hierdie gereedskap reg in jou paneelbord langs jou versoeke.",
     "items": [
       {
-        "name": "Match",
-        "body": "Beskryf jou besigheid in gewone taal — kry 'n gerangskikte lys van uitgewers wat werklik pas."
+        "name": "Audience Finder",
+        "body": "Describe your business in plain language — get a ranked list of publishers who actually fit."
       },
       {
         "name": "Bereik-beplanner",
@@ -66,6 +65,14 @@
       {
         "name": "OBB-Berekenaar",
         "body": "Sit 'n begroting in, kry 'n geskatte bereik en opbrengs voor jy verbind."
+      },
+      {
+        "name": "Caption Writer",
+        "body": "Describe the promotion once, get channel-ready captions back — no rewriting for every placement."
+      },
+      {
+        "name": "Media Kit",
+        "body": "Build the one-page kit a publisher or partner needs to say yes in a single look."
       }
     ]
   },

@@ -42,7 +42,9 @@ import type { Publisher, PublisherRequest, ContactMessage, RequestStatus, Platfo
 // view's own request shape rather than reopening the shared type.
 type AdminRequestRow = PublisherRequest & { business: (Pick<Profile, "full_name" | "company_name" | "phone">) | null };
 
-export type AdminTab = "requests" | "applications" | "publishers" | "businesses" | "messages" | "analytics" | "payouts" | "channel_requests" | "reports" | "disputes" | "security" | "compliance" | "safety" | "leads" | "clients" | "campaigns" | "audit_log" | "opportunities" | "work_with_us" | "partners" | "advertise" | "community" | "careers" | "aj_creations";
+// Re-exported for the admin sub-pages that import AdminTab from here.
+// The union itself now lives in AdminNavigation.tsx (see its own comment).
+export type { AdminTab };
 const STATUSES: RequestStatus[] = ["pending", "contacted", "confirmed", "declined", "completed"];
 const WWU_STATUSES: WorkWithUsStatus[] = ["new", "contacted", "archived"];
 const WWU_STATUS_LABEL: Record<WorkWithUsStatus, string> = { new: "New", contacted: "Contacted", archived: "Archived" };
