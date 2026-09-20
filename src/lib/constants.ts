@@ -243,6 +243,16 @@ export const CONTACT_EMAIL = "info@chatsched.com";
 export const CONTACT_WEBSITE = "chatsched.com";
 export const CONTACT_ADDRESS_LINES = ["Century Boulevard, Century City Dr", "Century City", "Cape Town, 7441", "South Africa"];
 
+// SARS (South African Revenue Service) tax-invoice fields for ChatSched
+// itself — the supplier side of every invoice src/lib/invoice.ts generates.
+// Left null until ChatSched is an actual registered VAT vendor: inventing a
+// number here would be a compliance problem, not just a copy issue. While
+// null, the invoice states plainly that no VAT is charged rather than
+// showing a blank or omitting the line silently. Once registered, set the
+// real values here and every invoice picks them up automatically.
+export const PLATFORM_VAT_NUMBER: string | null = null;
+export const PLATFORM_COMPANY_REGISTRATION: string | null = null;
+
 export function whatsappLink(message?: string): string {
   const base = `https://wa.me/${WHATSAPP_NUMBER}`;
   return message ? `${base}?text=${encodeURIComponent(message)}` : base;
