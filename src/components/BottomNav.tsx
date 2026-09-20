@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../hooks/useAuth";
 import { useNotifications } from "../hooks/useNotifications";
 import NotificationList from "./NotificationList";
@@ -50,24 +51,38 @@ const tabCls = ({ isActive }: { isActive: boolean }) =>
 
 export default function BottomNav() {
   const { user, profile } = useAuth();
+  const { t } = useTranslation("common");
   const { notifications, unreadCount, loaded, loadList, markAsRead, markAllAsRead } = useNotifications();
   const [sheetOpen, setSheetOpen] = useState(false);
-  const sheetRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
-  const dashboardTo = !user ? "/login" : profile?.role === "admin" ? "/admin" : "/dashboard";
-  const dashboardLabel = !user ? "Log in" : profile?.role === "admin" ? "Admin" : "Dashboard";
+  // Bug fix: sheetRef was declared but never read — removed
+
+  // Bug fix: labels were hardcoded English strings, not going through t()
+  const dashboardTo = !user
+    ? "/login"
+    : profile?.role === "admin"
+    ? "/admin"
+    : "/dashboard";
+  const dashboardLabel = !user
+    ? t("nav.logIn")
+    : profile?.role === "admin"
+    ? t("nav.admin")
+    : t("nav.dashboard");
 
   useEffect(() => {
     if (sheetOpen && !loaded) loadList();
   }, [sheetOpen, loaded, loadList]);
 
-  // Lock body scroll while the sheet is open, same as any modal.
+  // Bug fix: body scroll lock now always cleans up, even if the component
+  // unmounts while the sheet is open (previously overflow:hidden was left
+  // on the body in that case).
   useEffect(() => {
-    if (sheetOpen) {
-      document.body.style.overflow = "hidden";
-      return () => { document.body.style.overflow = ""; };
-    }
+    if (!sheetOpen) return;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [sheetOpen]);
 
   function handleBellTap() {
@@ -93,19 +108,20 @@ export default function BottomNav() {
       >
         <NavLink to="/" end className={tabCls}>
           <HomeIcon />
-          Home
+          {t("nav.home")}
         </NavLink>
         <NavLink to="/browse" className={tabCls}>
           <BrowseIcon />
-          Browse
+          {t("nav.browse")}
         </NavLink>
         <NavLink to={dashboardTo} className={tabCls}>
           <DashboardIcon />
           {dashboardLabel}
         </NavLink>
         <button
+          type="button"
           onClick={handleBellTap}
-          aria-label="Notifications"
+          aria-label={t("nav.notifications")}
           className={`flex flex-col items-center justify-center gap-0.5 flex-1 h-full text-[10px] font-semibold transition-colors ${
             sheetOpen ? "text-billboard-greenDeep" : "text-billboard-inkSoft"
           }`}
@@ -118,7 +134,7 @@ export default function BottomNav() {
               </span>
             )}
           </span>
-          Alerts
+          {t("nav.alerts")}
         </button>
       </nav>
 
@@ -130,7 +146,6 @@ export default function BottomNav() {
             aria-hidden="true"
           />
           <div
-            ref={sheetRef}
             className="relative w-full max-h-[75vh] bg-white border-t-[3px] border-billboard-ink rounded-t-2xl overflow-hidden flex flex-col"
             style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
           >
