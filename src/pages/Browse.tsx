@@ -15,6 +15,7 @@ import { formatCurrency } from "../lib/currency";
 import { CATEGORIES, PROVINCES, PLATFORMS, LANGUAGES, SA_CITIES_SUBURBS } from "../lib/constants";
 import { MIN_PRICE_PER_POST } from "../lib/pricingEngine";
 import { makeDefaults, matchesFilters, applySort, activeCount, getMatchReason, type Filters } from "../lib/browseFilters";
+import { CHANNEL_METADATA_FILTERS } from "../lib/channelMetadataFilters";
 import { filtersToSearchParams, searchParamsToFilters } from "../lib/searchParamsCodec";
 import type { Platform } from "../lib/types";
 import PublisherCard from "../components/PublisherCard";
@@ -66,7 +67,7 @@ function buildFilterChips(f: Filters, channels: ReturnType<typeof getEnabledChan
   if (f.query) chips.push({ key: "query", label: `"${f.query}"`, onRemove: () => update({ query: "" }) });
   if (f.channel) {
     const ch = channels.find(c => c.definition.slug === f.channel)?.definition;
-    chips.push({ key: "channel", label: ch ? <span className="inline-flex items-center gap-1.5"><ChannelIcon slug={ch.slug} size="sm" />{ch.name}</span> : f.channel, onRemove: () => update({ channel: "" }) });
+    chips.push({ key: "channel", label: ch ? <span className="inline-flex items-center gap-1.5"><ChannelIcon slug={ch.slug} size="sm" />{ch.name}</span> : f.channel, onRemove: () => update({ channel: "", channelFilterValues: {} }) });
   }
   if (f.category) chips.push({ key: "category", label: f.category, onRemove: () => update({ category: "" }) });
   if (f.province) chips.push({ key: "province", label: f.province, onRemove: () => update({ province: "" }) });
@@ -90,6 +91,25 @@ function buildFilterChips(f: Filters, channels: ReturnType<typeof getEnabledChan
     chips.push({ key: "gender", label: opt?.label ?? f.gender, onRemove: () => update({ gender: "" }) });
   }
   if (f.hasRateCard) chips.push({ key: "rateCard", label: "Published rate card", onRemove: () => update({ hasRateCard: false }) });
+  // One chip per active channel-specific filter, labelled with the field's
+  // own display label (e.g. "Competition level: Professional") so it reads
+  // the same as every other chip rather than showing the raw field key.
+  if (f.channel) {
+    const fields = CHANNEL_METADATA_FILTERS[f.channel] ?? [];
+    Object.entries(f.channelFilterValues).forEach(([key, value]) => {
+      if (!value) return;
+      const field = fields.find(fl => fl.key === key);
+      if (!field) return;
+      const displayValue = field.kind === "select" ? (field.options?.find(o => o.value === value)?.label ?? value)
+        : field.kind === "boolean" ? "Yes"
+        : `${value}+`;
+      chips.push({
+        key: `cf-${key}`,
+        label: `${field.label}: ${displayValue}`,
+        onRemove: () => update({ channelFilterValues: { ...f.channelFilterValues, [key]: "" } }),
+      });
+    });
+  }
   return chips;
 }
 
@@ -140,6 +160,78 @@ function FilterIcon() {
   );
 }
 
+/**
+ * Renders the fields configured for the currently-selected channel (see
+ * channelMetadataFilters.ts). Only ever mounted when filters.channel is
+ * set to one specific channel — the parent ("Channel details") block
+ * below returns null otherwise, so this never has to handle an
+ * unconfigured/empty state on its own.
+ */
+function ChannelDetailFilters({ channel, values, update }: {
+  channel: NonNullable<Filters["channel"]>;
+  values: Record<string, string>;
+  update: (patch: Partial<Filters>) => void;
+}) {
+  const fields = CHANNEL_METADATA_FILTERS[channel];
+  if (!fields || fields.length === 0) return null;
+
+  function setField(key: string, value: string) {
+    update({ channelFilterValues: { ...values, [key]: value } });
+  }
+
+  return (
+    <div className="border-[3px] border-billboard-ink rounded p-5 bg-billboard-paperDim">
+      <h3 className="font-bold text-sm mb-1">Channel details</h3>
+      <p className="text-xs text-billboard-inkSoft mb-3">Specific to this channel type.</p>
+      <div className="space-y-3">
+        {fields.map(field => (
+          <div key={field.key}>
+            <label className="block text-xs font-semibold uppercase tracking-wide mb-1">{field.label}</label>
+            {field.kind === "select" && (
+              <select
+                value={values[field.key] ?? ""}
+                onChange={e => setField(field.key, e.target.value)}
+                className="w-full border-2 border-billboard-ink rounded px-2.5 py-2 bg-white text-sm"
+              >
+                <option value="">Any</option>
+                {field.options?.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            )}
+            {field.kind === "boolean" && (
+              <label className="flex items-center gap-2 text-sm cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={values[field.key] === "true"}
+                  onChange={e => setField(field.key, e.target.checked ? "true" : "")}
+                  className="accent-billboard-green w-4 h-4"
+                />
+                Yes, required
+              </label>
+            )}
+            {field.kind === "min_number" && (
+              <input
+                type="number"
+                min={0}
+                value={values[field.key] ?? ""}
+                onChange={e => setField(field.key, e.target.value)}
+                placeholder={field.unit ? `Min. ${field.unit}` : "Min."}
+                className="w-full border-2 border-billboard-ink rounded px-2.5 py-2 bg-white text-sm"
+              />
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * The entire filter form — used both in the always-visible desktop sidebar
+ * and inside the mobile bottom sheet, so there's exactly one place that
+ * knows how to render a filter field. Kept as a real module-level
+ * component (not an inline function inside Browse) so it isn't redefined
+ * on every keystroke, which would remount it and drop input focus.
+ */
 function FilterFields({
   filters, update, channels, togglePlatform, toggleLanguage,
   showAudience, onToggleAudience, showQuality, onToggleQuality,
@@ -171,17 +263,38 @@ function FilterFields({
         <h3 className="font-bold text-sm mb-3">Channel</h3>
         <div className="space-y-1.5">
           <label className="flex items-center gap-2 text-sm cursor-pointer select-none">
-            <input type="radio" name="channel" checked={filters.channel === ""} onChange={() => update({ channel: "" })} className="accent-billboard-green w-4 h-4" />
+            {/* Clearing the channel also clears channelFilterValues — those
+                field keys are meaningless once no single channel is
+                selected, and leaving them set would silently do nothing
+                (matchesFilters only checks them when filters.channel is
+                truthy) while still counting toward activeCount, which
+                would be a confusing "phantom" active-filter count. */}
+            <input type="radio" name="channel" checked={filters.channel === ""} onChange={() => update({ channel: "", channelFilterValues: {} })} className="accent-billboard-green w-4 h-4" />
             All channels
           </label>
           {channels.map(({ definition: ch }) => (
             <label key={ch.slug} className="flex items-center gap-2 text-sm cursor-pointer select-none">
-              <input type="radio" name="channel" checked={filters.channel === ch.slug} onChange={() => update({ channel: ch.slug })} className="accent-billboard-green w-4 h-4" />
+              {/* Switching to a different channel also resets
+                  channelFilterValues — field keys are channel-specific
+                  ("competitionLevel" only exists for sports), so carrying
+                  them across a channel switch would silently apply a
+                  filter with no matching field on the new channel. */}
+              <input type="radio" name="channel" checked={filters.channel === ch.slug} onChange={() => update({ channel: ch.slug, channelFilterValues: {} })} className="accent-billboard-green w-4 h-4" />
               <ChannelIcon slug={ch.slug} size="sm" /> <span>{ch.name}</span>
             </label>
           ))}
         </div>
       </div>
+
+      {/* Channel-specific structured filters (channel_metadata, phase 74) —
+          only rendered once a single channel is selected, since the fields
+          ("competitionLevel", "hasDigitalMenu", etc.) have no meaning across
+          channels. Returns null itself if the selected channel has no
+          configured fields, so no empty box appears for a channel without
+          any. */}
+      {filters.channel && (
+        <ChannelDetailFilters channel={filters.channel} values={filters.channelFilterValues} update={update} />
+      )}
 
       <div className="border-[3px] border-billboard-ink rounded p-5 bg-billboard-paperDim">
         <h3 className="font-bold text-sm mb-4">Location &amp; Category</h3>
@@ -390,7 +503,7 @@ export default function Browse() {
     <div className="max-w-6xl mx-auto px-5 py-16">
       <Seo
         title="Browse Publishers · ChatSched"
-        description="Search South African publishers and creators by channel, suburb, category, platform, engagement, reach, language, demographics, rate card and price."
+        description="Search South African publishers and creators by channel, suburb, category, platform, engagement, reach, language, demographics, rate card, channel-specific details and price."
       />
 
       <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
@@ -434,7 +547,7 @@ export default function Browse() {
               <button
                 key={ch.slug}
                 type="button"
-                onClick={() => update({ channel: selected ? "" : ch.slug })}
+                onClick={() => update({ channel: selected ? "" : ch.slug, channelFilterValues: {} })}
                 aria-pressed={selected}
                 className={`inline-flex items-center gap-2 shrink-0 border-2 rounded-full px-3 py-2 text-xs font-semibold transition ${
                   selected
