@@ -1,8 +1,7 @@
 /**
- * In-Venue Screens & Displays Channel Module — NOT YET LIVE
+ * In-Venue Screens & Displays Channel Module — LIVE
  *
- * Feature flag: VITE_CHANNEL_IN_VENUE_SCREENS_ENABLED (default off — same
- * posture as the 7 reverted channels documented in featureFlags.ts).
+ * Feature flag: VITE_CHANNEL_IN_VENUE_SCREENS_ENABLED (live by default; env var is an emergency kill switch).
  * Deliberately left out of DEFAULT_ON: this one ships with a genuinely
  * manual creative-delivery workflow (see the "Phase 1" note below) rather
  * than a fully self-serve one, and should only go live once that's proven
