@@ -1,6 +1,7 @@
 import type { Platform, Publisher } from "./types";
 import type { ChannelSlug } from "./channelTypes";
 import { formatCurrency } from "./currency";
+import { matchesChannelMetadataFilters } from "./channelMetadataFilters";
 
 /**
  * Shared with Browse.tsx (the source this was extracted from) and
@@ -33,6 +34,13 @@ export interface Filters {
   // that data doesn't live on the Publisher row itself — passed as the
   // third, optional argument to matchesFilters below.
   hasRateCard: boolean;
+  // Channel-specific structured filters (channel_metadata, phase 74) —
+  // keyed by the field's channelOnboardingSchemas.ts name (e.g.
+  // "competitionLevel", "hasDigitalMenu"). Only meaningful, and only ever
+  // shown in the UI, when `channel` above is set to one specific channel
+  // — see channelMetadataFilters.ts for which fields exist per channel
+  // and how each kind (select/boolean/min_number) is matched.
+  channelFilterValues: Record<string, string>;
   sortBy: string;
 }
 
@@ -43,6 +51,7 @@ export function makeDefaults(initial: Partial<Filters>): Filters {
     minFollowers: "", maxFollowers: "", minMonthlyReach: "", minEngagement: "",
     maxPrice: 5000, languages: [], ageDemographic: "", gender: "",
     hasRateCard: false,
+    channelFilterValues: {},
     sortBy: "score",
     ...initial,
   };
@@ -98,6 +107,11 @@ export function matchesFilters(p: Publisher, f: Filters, rateCardPublisherIds?: 
   if (!matchesAge(p, f.ageDemographic)) return false;
   if (!matchesGender(p, f.gender)) return false;
   if (f.hasRateCard && !(rateCardPublisherIds?.has(p.id))) return false;
+  // Only checked when a single channel is selected — the field keys
+  // ("competitionLevel", "hasDigitalMenu", etc.) are channel-specific and
+  // meaningless otherwise, and matchesChannelMetadataFilters itself
+  // no-ops for a channel with no configured filters.
+  if (f.channel && !matchesChannelMetadataFilters(p, f.channel, f.channelFilterValues)) return false;
   return true;
 }
 
@@ -168,6 +182,7 @@ export function activeCount(f: Filters): number {
     f.minFollowers, f.maxFollowers, f.minMonthlyReach, f.minEngagement,
     f.maxPrice < 5000, f.languages.length, f.ageDemographic, f.gender,
     f.hasRateCard,
+    Object.values(f.channelFilterValues).filter((v) => v !== "").length,
   ].filter(Boolean).length;
 }
 
@@ -192,5 +207,7 @@ export function summarizeFilters(f: Filters): string {
   if (f.maxPrice < 5000) parts.push(`Under ${formatCurrency(f.maxPrice)}`);
   if (f.languages.length) parts.push(f.languages.join(" + "));
   if (f.hasRateCard) parts.push("Published rate card");
+  const activeChannelFilters = Object.values(f.channelFilterValues).filter((v) => v !== "").length;
+  if (activeChannelFilters > 0) parts.push(`${activeChannelFilters} channel detail${activeChannelFilters !== 1 ? "s" : ""}`);
   return parts.length ? parts.join(" · ") : "Every publisher in the directory";
 }
