@@ -730,6 +730,7 @@ export default function BuildMyCampaign() {
         </div>
       </header>
 
+      <div className="bg-white border-b-2 border-billboard-ink/15 sticky top-0 z-20 shadow-sm">
         <div className="max-w-4xl mx-auto px-5 pt-8">
           <div className="border-2 border-billboard-ink/15 rounded-lg px-4 py-3 bg-billboard-paperDim flex flex-wrap items-center justify-between gap-3">
             <p className="text-xs text-billboard-inkSoft">
@@ -790,22 +791,6 @@ export default function BuildMyCampaign() {
               );
             })}
           </div>
-        </div>
-      </div>
-                  : isDone
-                    ? "bg-billboard-green text-white"
-                    : "bg-billboard-paperDim text-billboard-inkSoft")
-              }
-            >
-              {isDone ? "✓" : step.num}
-            </span>
-            <span>{step.label}</span>
-          </button>
-        );
-      })}
-    </div>
-  </div>
-</div>
         </div>
       </div>
 
