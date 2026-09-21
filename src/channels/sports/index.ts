@@ -1,9 +1,8 @@
 /**
  * Sports Teams & Leagues Channel Module — LIVE
  *
- * Feature flag: VITE_CHANNEL_SPORTS_ENABLED (default off — set to "true"
- * once real, verified team/league owners exist to list; see
- * schema_phase74_universal_channels.sql for why it ships inactive).
+ * Feature flag: VITE_CHANNEL_SPORTS_ENABLED (live by default; no launch-state
+ * environment override — availability is controlled centrally).
  *
  * Connects advertisers with sports teams, leagues, and clubs for
  * sponsorship placements — scouting reports, matchday graphics, jersey
