@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import Seo from "../components/Seo";
 import ChannelIcon from "../components/ChannelIcon";
 import { getAllChannels } from "../lib/channelRegistry";
+import { isChannelEnabled } from "../lib/featureFlags";
 import {
   CREATOR_APPROVAL_WINDOW_DAYS,
   BUSINESS_PAYMENT_WINDOW_DAYS,
@@ -116,7 +117,16 @@ export default function ForBusinesses() {
                 className="block border-[3px] border-billboard-ink rounded p-5 bg-white transition hover:-translate-y-1 hover:shadow-blockSm"
               >
                 <div className="mb-3"><ChannelIcon slug={m.definition.slug} /></div>
-                <h3 className="font-bold text-sm mb-1">{m.definition.name}</h3>
+                <div className="flex items-start justify-between gap-2">
+                  <h3 className="font-bold text-sm mb-1">{m.definition.name}</h3>
+                  <span className={`shrink-0 border px-1.5 py-0.5 rounded-full font-mono text-[9px] font-bold uppercase tracking-wide ${
+                    isChannelEnabled(m.definition.slug)
+                      ? "border-billboard-greenDeep/40 text-billboard-greenDeep bg-billboard-green/10"
+                      : "border-billboard-inkSoft/40 text-billboard-inkSoft bg-billboard-paperDim"
+                  }`}>
+                    {isChannelEnabled(m.definition.slug) ? "Live" : "Coming soon"}
+                  </span>
+                </div>
                 <p className="text-xs text-billboard-inkSoft">{m.definition.tagline}</p>
               </Link>
             ))}
