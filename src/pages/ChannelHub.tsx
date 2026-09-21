@@ -172,7 +172,7 @@ export default function ChannelHub() {
           </span>
           <h1 className="text-4xl mb-3">Every board your customers already look at.</h1>
           <p className="text-billboard-inkSoft text-lg max-w-2xl">
-            Browse the advertising inventory available through ChatSched. Social media, influencer campaigns, websites, podcasts and radio are open today; other channel types are shown as they move from development into active supply.
+            Browse the advertising inventory available through ChatSched. The live channel count updates automatically from the marketplace registry. Only Minibus Taxi &amp; Transport Media and Spaza Shops &amp; Township Traders remain in development.
           </p>
         </div>
 
@@ -190,8 +190,7 @@ export default function ChannelHub() {
         <div className="mt-16 border-[3px] border-billboard-ink rounded p-8 bg-billboard-paperDim text-center">
           <h2 className="font-display text-2xl mb-2">Ready to advertise?</h2>
           <p className="text-billboard-inkSoft mb-6 max-w-lg mx-auto">
-            Browse our publisher directory and run your first social media campaign today.
-            More channels open as the network grows.
+            Browse the live publisher inventory available now and choose the channel that fits your audience. Eleven channel types are live today; only the two development channels remain outside the live marketplace.
           </p>
           <div className="flex flex-wrap gap-3 justify-center">
             <Link
