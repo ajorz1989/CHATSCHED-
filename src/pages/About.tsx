@@ -52,7 +52,8 @@ const COMPARISON = [
 
 // Roadmap content, carried over from the standalone Roadmap page.
 const NOW = [
-  "12 live advertising channels — social media, influencer, website, podcast, radio, sports, events, community, transport, informal retail, associations, and restaurants",
+  "11 live advertising channels — social media, influencer, website, podcast, radio, sports, events, community, associations, restaurants, and in-venue screens",
+  "The two development channels are Minibus Taxi & Transport Media and Spaza Shops & Township Traders.",
   "Held payments, with a publisher paid out within 48 hours of going live",
   "Manual publisher verification and automated authenticity checks on every listing",
   "Self-serve applications for both businesses and publishers, with no minimum spend or contract",
