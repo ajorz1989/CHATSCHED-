@@ -229,8 +229,29 @@
       "suburbs": {
         "title": "Right down to your neighbourhood",
         "body": "Build a more local campaign around suburbs and specific audience locations."
+      },
+      "design": {
+        "title": "Local context, not guesswork",
+        "body": "Choose advertising around where people live, work and spend time — then match the channel to the kind of attention your message needs."
+      },
+      "activeChannels": {
+        "title": "Different channels. One local principle.",
+        "body": "From social pages and creators to radio, websites, podcasts, sports, events, communities, business networks, restaurants and in-venue screens, the idea stays simple: reach people where attention already exists."
       }
     }
+  },
+  "opportunities": {
+    "badge": "OPPORTUNITIES",
+    "title": "Turn advertising needs into real opportunities.",
+    "subtitle": "Businesses can publish targeted briefs. Publishers can discover relevant opportunities and pitch without exposing private contact details. ChatSched keeps the conversation, proposals and workflow on-platform.",
+    "primaryCta": "Explore Opportunities →",
+    "publisherCta": "See it from the Publisher side →",
+    "businessBadge": "FOR BUSINESSES",
+    "businessTitle": "Post what you need.",
+    "businessBody": "Need a school partnership, event sponsor, newsletter placement, venue display, influencer product placement or radio/podcast spot? Publish the brief and reach verified supply.",
+    "publisherBadge": "FOR PUBLISHERS",
+    "publisherTitle": "Find briefs that fit.",
+    "publisherBody": "Discover opportunities that match your channel, audience and location — then respond through ChatSched."
   },
   "how": {
     "badge": "FROM REQUEST TO PROOF",
