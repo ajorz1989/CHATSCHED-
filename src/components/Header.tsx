@@ -15,9 +15,9 @@ const navCls = ({ isActive }: { isActive: boolean }) =>
 
 const NAV_LINKS = [
   { to: "/browse", key: "nav.browse" },
-  { to: "/build-my-campaign", key: "nav.buildCampaign" },
+  { to: "/build-my-campaign", key: "nav.agency" },
   { to: "/channels", key: "nav.channels" },
-  { to: "/tools", key: "nav.tools" },
+  { to: "/opportunities", key: "nav.opportunities" },
   { to: "/for-publishers", key: "nav.forPublishers" },
   { to: "/pricing", key: "nav.pricing" },
 ] as const;
