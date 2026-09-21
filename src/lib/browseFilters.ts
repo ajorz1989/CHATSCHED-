@@ -34,6 +34,12 @@ export interface Filters {
   // that data doesn't live on the Publisher row itself — passed as the
   // third, optional argument to matchesFilters below.
   hasRateCard: boolean;
+  // Whether this publisher has an intro video (intro_video_url) or at
+  // least one portfolio image (portfolio_images) — schema_phase27_portfolio.sql.
+  // Unlike hasRateCard/channelFilterValues, this needs no external data:
+  // both fields already live directly on the Publisher row returned by
+  // usePublishers, so matchesFilters below checks them inline.
+  hasMedia: boolean;
   // Channel-specific structured filters (channel_metadata, phase 74) —
   // keyed by the field's channelOnboardingSchemas.ts name (e.g.
   // "competitionLevel", "hasDigitalMenu"). Only meaningful, and only ever
@@ -51,6 +57,7 @@ export function makeDefaults(initial: Partial<Filters>): Filters {
     minFollowers: "", maxFollowers: "", minMonthlyReach: "", minEngagement: "",
     maxPrice: 5000, languages: [], ageDemographic: "", gender: "",
     hasRateCard: false,
+    hasMedia: false,
     channelFilterValues: {},
     sortBy: "score",
     ...initial,
@@ -74,6 +81,11 @@ export function matchesAge(p: Publisher, age: string): boolean {
   if (age === "45-54") return /45.{0,3}54|mature/.test(txt);
   if (age === "55+") return /55\+|senior|retirement/.test(txt);
   return true;
+}
+
+/** True if this publisher has an intro video or at least one portfolio image. */
+export function hasPortfolioOrVideo(p: Publisher): boolean {
+  return Boolean(p.intro_video_url) || (p.portfolio_images?.length ?? 0) > 0;
 }
 
 /**
@@ -107,6 +119,7 @@ export function matchesFilters(p: Publisher, f: Filters, rateCardPublisherIds?: 
   if (!matchesAge(p, f.ageDemographic)) return false;
   if (!matchesGender(p, f.gender)) return false;
   if (f.hasRateCard && !(rateCardPublisherIds?.has(p.id))) return false;
+  if (f.hasMedia && !hasPortfolioOrVideo(p)) return false;
   // Only checked when a single channel is selected — the field keys
   // ("competitionLevel", "hasDigitalMenu", etc.) are channel-specific and
   // meaningless otherwise, and matchesChannelMetadataFilters itself
@@ -181,7 +194,7 @@ export function activeCount(f: Filters): number {
     f.platforms.length, f.verifiedOnly, f.minRating,
     f.minFollowers, f.maxFollowers, f.minMonthlyReach, f.minEngagement,
     f.maxPrice < 5000, f.languages.length, f.ageDemographic, f.gender,
-    f.hasRateCard,
+    f.hasRateCard, f.hasMedia,
     Object.values(f.channelFilterValues).filter((v) => v !== "").length,
   ].filter(Boolean).length;
 }
@@ -207,6 +220,7 @@ export function summarizeFilters(f: Filters): string {
   if (f.maxPrice < 5000) parts.push(`Under ${formatCurrency(f.maxPrice)}`);
   if (f.languages.length) parts.push(f.languages.join(" + "));
   if (f.hasRateCard) parts.push("Published rate card");
+  if (f.hasMedia) parts.push("Has portfolio/video");
   const activeChannelFilters = Object.values(f.channelFilterValues).filter((v) => v !== "").length;
   if (activeChannelFilters > 0) parts.push(`${activeChannelFilters} channel detail${activeChannelFilters !== 1 ? "s" : ""}`);
   return parts.length ? parts.join(" · ") : "Every publisher in the directory";
