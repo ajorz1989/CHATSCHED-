@@ -1,4 +1,4 @@
--- Phase 107 — SARS-friendly tax invoice fields
+-- Phase 108 — SARS-friendly tax invoice fields
 --
 -- Adds the physical business address fields the invoice PDF (src/lib/invoice.ts)
 -- needs to show a recipient address, plus an optional VAT number — required by
@@ -17,6 +17,10 @@
 -- every optional profile field (phone, industry, website, etc.), and a
 -- business/publisher isn't required to have entered these to keep using the
 -- platform — the invoice PDF simply omits a line it doesn't have data for.
+--
+-- Renumbered from phase 107 to 108: that number was also used by
+-- schema_phase107_live_channels_except_two.sql, which made run order
+-- between the two ambiguous under run-all-migrations.sh's numeric sort.
 
 alter table public.profiles
   add column if not exists address_line1 text,
