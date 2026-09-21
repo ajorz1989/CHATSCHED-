@@ -91,6 +91,7 @@ function buildFilterChips(f: Filters, channels: ReturnType<typeof getEnabledChan
     chips.push({ key: "gender", label: opt?.label ?? f.gender, onRemove: () => update({ gender: "" }) });
   }
   if (f.hasRateCard) chips.push({ key: "rateCard", label: "Published rate card", onRemove: () => update({ hasRateCard: false }) });
+  if (f.hasMedia) chips.push({ key: "media", label: "Has portfolio/video", onRemove: () => update({ hasMedia: false }) });
   // One chip per active channel-specific filter, labelled with the field's
   // own display label (e.g. "Competition level: Professional") so it reads
   // the same as every other chip rather than showing the raw field key.
@@ -411,7 +412,7 @@ function FilterFields({
           label="Quality &amp; Trust"
           open={showQuality}
           onToggle={onToggleQuality}
-          count={(filters.verifiedOnly ? 1 : 0) + (filters.minRating > 0 ? 1 : 0) + (filters.hasRateCard ? 1 : 0) || undefined}
+          count={(filters.verifiedOnly ? 1 : 0) + (filters.minRating > 0 ? 1 : 0) + (filters.hasRateCard ? 1 : 0) + (filters.hasMedia ? 1 : 0) || undefined}
         />
         {showQuality && (
           <div className="p-5 bg-billboard-paperDim border-t-2 border-billboard-ink space-y-4">
@@ -425,6 +426,13 @@ function FilterFields({
             </label>
             <p className="text-xs text-billboard-inkSoft -mt-2">
               Shows publishers who've broken pricing down by format (Story, Reel, bundle, etc.) instead of one flat number — a sign of a publisher who's thought through how they'd actually work with you.
+            </p>
+            <label className="flex items-center gap-2 cursor-pointer select-none">
+              <input type="checkbox" checked={filters.hasMedia} onChange={e => update({ hasMedia: e.target.checked })} className="accent-billboard-green w-4 h-4" />
+              <span className="text-sm font-semibold">Has portfolio or intro video</span>
+            </label>
+            <p className="text-xs text-billboard-inkSoft -mt-2">
+              Shows publishers with an intro video or at least one portfolio image on their profile — real proof of the kind of content they make, not just numbers.
             </p>
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wide mb-2">Minimum rating</label>
@@ -503,7 +511,7 @@ export default function Browse() {
     <div className="max-w-6xl mx-auto px-5 py-16">
       <Seo
         title="Browse Publishers · ChatSched"
-        description="Search South African publishers and creators by channel, suburb, category, platform, engagement, reach, language, demographics, rate card, channel-specific details and price."
+        description="Search South African publishers and creators by channel, suburb, category, platform, engagement, reach, language, demographics, rate card, portfolio/video, channel-specific details and price."
       />
 
       <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
