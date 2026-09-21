@@ -26,6 +26,13 @@ export interface Filters {
   languages: string[];
   ageDemographic: string;
   gender: string;
+  // Whether this publisher has published a structured rate card
+  // (publisher_rate_cards, schema_phase38_rate_cards.sql) instead of
+  // just a single flat price_per_post. Matching against this needs an
+  // external Set of publisher IDs (see usePublisherRateCards.ts) since
+  // that data doesn't live on the Publisher row itself — passed as the
+  // third, optional argument to matchesFilters below.
+  hasRateCard: boolean;
   sortBy: string;
 }
 
@@ -35,6 +42,7 @@ export function makeDefaults(initial: Partial<Filters>): Filters {
     platforms: [], verifiedOnly: false, minRating: 0,
     minFollowers: "", maxFollowers: "", minMonthlyReach: "", minEngagement: "",
     maxPrice: 5000, languages: [], ageDemographic: "", gender: "",
+    hasRateCard: false,
     sortBy: "score",
     ...initial,
   };
@@ -59,8 +67,18 @@ export function matchesAge(p: Publisher, age: string): boolean {
   return true;
 }
 
-/** The full match predicate Browse.tsx filters against — including the fuzzy keyword/age/gender fields. Saved-search alerts (server-side) only use the structured subset of this — see schema_phase33_saved_searches.sql's comment for why. */
-export function matchesFilters(p: Publisher, f: Filters): boolean {
+/**
+ * The full match predicate Browse.tsx filters against — including the
+ * fuzzy keyword/age/gender fields. Saved-search alerts (server-side)
+ * only use the structured subset of this — see
+ * schema_phase33_saved_searches.sql's comment for why.
+ *
+ * rateCardPublisherIds is optional and only consulted when
+ * f.hasRateCard is set, so every existing call site that doesn't care
+ * about rate cards (SavedSearches.tsx's match-count preview, for one)
+ * keeps working with no changes.
+ */
+export function matchesFilters(p: Publisher, f: Filters, rateCardPublisherIds?: Set<string>): boolean {
   const q = f.query.toLowerCase();
   if (q && ![p.name, p.bio, p.audience, p.city].some((t) => t.toLowerCase().includes(q))) return false;
   if (f.channel && p.channel_slug !== f.channel) return false;
@@ -79,6 +97,7 @@ export function matchesFilters(p: Publisher, f: Filters): boolean {
   if (f.languages.length && !f.languages.some((l) => p.languages.includes(l))) return false;
   if (!matchesAge(p, f.ageDemographic)) return false;
   if (!matchesGender(p, f.gender)) return false;
+  if (f.hasRateCard && !(rateCardPublisherIds?.has(p.id))) return false;
   return true;
 }
 
@@ -148,6 +167,7 @@ export function activeCount(f: Filters): number {
     f.platforms.length, f.verifiedOnly, f.minRating,
     f.minFollowers, f.maxFollowers, f.minMonthlyReach, f.minEngagement,
     f.maxPrice < 5000, f.languages.length, f.ageDemographic, f.gender,
+    f.hasRateCard,
   ].filter(Boolean).length;
 }
 
@@ -171,5 +191,6 @@ export function summarizeFilters(f: Filters): string {
   if (f.minEngagement) parts.push(`${f.minEngagement}%+ engagement`);
   if (f.maxPrice < 5000) parts.push(`Under ${formatCurrency(f.maxPrice)}`);
   if (f.languages.length) parts.push(f.languages.join(" + "));
+  if (f.hasRateCard) parts.push("Published rate card");
   return parts.length ? parts.join(" · ") : "Every publisher in the directory";
 }
