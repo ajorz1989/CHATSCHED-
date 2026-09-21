@@ -1,8 +1,7 @@
 /**
- * Local Associations & Business Networks Channel Module — NOT YET LIVE
+ * Local Associations & Business Networks Channel Module — LIVE
  *
- * Feature flag: VITE_CHANNEL_ASSOCIATIONS_ENABLED (default off — same
- * posture as every channel added since Phase 74).
+ * Feature flag: VITE_CHANNEL_ASSOCIATIONS_ENABLED (live by default; env var is an emergency kill switch).
  *
  * From the original expansion doc's Section 17. Connects advertisers with
  * chambers of commerce, industry bodies, business networking groups, and
