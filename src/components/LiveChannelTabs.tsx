@@ -52,9 +52,6 @@ export default function LiveChannelTabs() {
       >
         <ChannelIcon slug={ch.slug} size="lg" />
         <div>
-          <div className="inline-flex items-center gap-1.5 border border-billboard-greenDeep/40 bg-billboard-green/10 text-billboard-greenDeep font-mono text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded mb-3">
-            Live now
-          </div>
           <p className="text-xl md:text-2xl font-display leading-snug mb-4">{ch.tagline}</p>
           <p className="text-sm text-billboard-inkSoft leading-relaxed mb-5">{ch.description}</p>
           <ul className="grid sm:grid-cols-2 gap-2 mb-5">
