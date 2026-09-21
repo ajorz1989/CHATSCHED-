@@ -31,7 +31,7 @@ const informalRetailModule: ChannelModule = {
       "Advertise through spaza shops and township traders — till-point cards, window posters, till-slip sponsorship, and WhatsApp broadcast-list sponsorship reaching the daily retail touchpoint for townships and informal settlements. Lower minimum spend than any other channel, by design: this is the tier that opens ChatSched to campaigns without a marketing budget behind them.",
     emoji: "🏪",
     category: "informal-retail",
-    isLive: true,
+    isLive: false,
     bookingFlow: "request",
     minBudgetZAR: 150,
     pricingModels: [
