@@ -100,6 +100,15 @@ export function getMatchReason(p: Publisher): string | null {
   return null;
 }
 
+// isCurrentlyFeatured mirrors PublisherCard.tsx's own local copy exactly
+// (a Featured Placement subscriber whose featured_until hasn't lapsed) —
+// kept as its own small function here rather than importing from a
+// component, since browseFilters.ts is a lib module that PublisherCard
+// (a component) shouldn't need to depend on for a one-line check.
+function isCurrentlyFeatured(p: Publisher): boolean {
+  return p.featured && (!p.featured_until || new Date(p.featured_until) > new Date());
+}
+
 export function applySort(list: Publisher[], sortBy: string): Publisher[] {
   const s = [...list];
   switch (sortBy) {
@@ -109,6 +118,26 @@ export function applySort(list: Publisher[], sortBy: string): Publisher[] {
     case "rating_desc": return s.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
     case "engagement_desc": return s.sort((a, b) => b.engagement - a.engagement);
     case "reach_desc": return s.sort((a, b) => (b.monthly_reach ?? 0) - (a.monthly_reach ?? 0));
+    // Featured Placement subscribers first, then by their existing score —
+    // otherwise "Featured first" would just be a same-tier shuffle among
+    // featured publishers with no secondary ordering.
+    case "featured_desc":
+      return s.sort((a, b) => {
+        const fa = isCurrentlyFeatured(a) ? 1 : 0;
+        const fb = isCurrentlyFeatured(b) ? 1 : 0;
+        if (fb !== fa) return fb - fa;
+        return b.publisher_score - a.publisher_score;
+      });
+    // Fastest response first. Publishers with no response history yet
+    // (avg_response_hours === null) sort after everyone with a real
+    // number — being untested isn't the same as being fast, and
+    // shouldn't rank above someone with a proven track record.
+    case "response_asc":
+      return s.sort((a, b) => {
+        const ra = a.avg_response_hours ?? Infinity;
+        const rb = b.avg_response_hours ?? Infinity;
+        return ra - rb;
+      });
     default: return s.sort((a, b) => b.publisher_score - a.publisher_score);
   }
 }
