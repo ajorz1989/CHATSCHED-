@@ -731,55 +731,69 @@ export default function BuildMyCampaign() {
       </header>
 
       <div className="bg-white border-b-2 border-billboard-ink/15 sticky top-0 z-20 shadow-sm">
-      <div className="max-w-4xl mx-auto px-5 pt-8">\n        <div className="border-2 border-billboard-ink/15 rounded-lg px-4 py-3 bg-billboard-paperDim flex flex-wrap items-center justify-between gap-3">\n          <p className="text-xs text-billboard-inkSoft">See how businesses use ChatSched to coordinate social, broadcast, community, event, sports and venue distribution.</p>\n          <Link to="/case-studies" className="text-xs font-bold underline shrink-0">View case studies →</Link>\n        </div>\n      </div>\n\n      <div className="bg-white border-b-2 border-billboard-ink/15 sticky top-0 z-20 shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 py-3">
-          <div className="flex items-center justify-between overflow-x-auto gap-2">
-            {[
-              { num: 1, label: "Goal" },
-              { num: 2, label: "Where" },
-              { num: 3, label: "Customers" },
-              { num: 4, label: "Budget" },
-              { num: 5, label: "Timing" },
-              { num: 6, label: "Brand" },
-              { num: 7, label: "Submit Campaign" },
-            ].map((step) => {
-              const isCurrent = currentStep === step.num;
-              const isDone = currentStep > step.num;
-              const canVisit = step.num <= currentStep;
+     <div className="bg-white border-b-2 border-billboard-ink/15 sticky top-0 z-20 shadow-sm">
+  <div className="max-w-4xl mx-auto px-5 pt-8">
+    <div className="border-2 border-billboard-ink/15 rounded-lg px-4 py-3 bg-billboard-paperDim flex flex-wrap items-center justify-between gap-3">
+      <p className="text-xs text-billboard-inkSoft">
+        See how businesses use ChatSched to coordinate social, broadcast, community, event,
+        sports and venue distribution.
+      </p>
+      <Link to="/case-studies" className="text-xs font-bold underline shrink-0">
+        View case studies →
+      </Link>
+    </div>
+  </div>
 
-              return (
-                <button
-                  key={step.num}
-                  type="button"
-                  disabled={!canVisit}
-                  onClick={() => setCurrentStep(step.num as WizardStep)}
-                  className={
-                    "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition " +
-                    (isCurrent
-                      ? "bg-billboard-ink text-white shadow-block-sm"
-                      : isDone
-                        ? "bg-billboard-green/20 text-billboard-greenDeep font-bold"
-                        : "text-billboard-inkSoft") +
-                    (!canVisit ? " opacity-50 cursor-not-allowed" : "")
-                  }
-                >
-                  <span
-                    className={
-                      "w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-mono " +
-                      (isCurrent
-                        ? "bg-billboard-yellow text-billboard-ink font-bold"
-                        : isDone
-                          ? "bg-billboard-green text-white"
-                          : "bg-billboard-paperDim text-billboard-inkSoft")
-                    }
-                  >
-                    {isDone ? "✓" : step.num}
-                  </span>
-                  <span>{step.label}</span>
-                </button>
-              );
-            })}
-          </div>
+  <div className="max-w-4xl mx-auto px-4 py-3">
+    <div className="flex items-center justify-between overflow-x-auto gap-2">
+      {[
+        { num: 1, label: "Goal" },
+        { num: 2, label: "Where" },
+        { num: 3, label: "Customers" },
+        { num: 4, label: "Budget" },
+        { num: 5, label: "Timing" },
+        { num: 6, label: "Brand" },
+        { num: 7, label: "Submit Campaign" },
+      ].map((step) => {
+        const isCurrent = currentStep === step.num;
+        const isDone = currentStep > step.num;
+        const canVisit = step.num <= currentStep;
+
+        return (
+          <button
+            key={step.num}
+            type="button"
+            disabled={!canVisit}
+            onClick={() => setCurrentStep(step.num as WizardStep)}
+            className={
+              "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition " +
+              (isCurrent
+                ? "bg-billboard-ink text-white shadow-block-sm"
+                : isDone
+                  ? "bg-billboard-green/20 text-billboard-greenDeep font-bold"
+                  : "text-billboard-inkSoft") +
+              (!canVisit ? " opacity-50 cursor-not-allowed" : "")
+            }
+          >
+            <span
+              className={
+                "w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-mono " +
+                (isCurrent
+                  ? "bg-billboard-yellow text-billboard-ink font-bold"
+                  : isDone
+                    ? "bg-billboard-green text-white"
+                    : "bg-billboard-paperDim text-billboard-inkSoft")
+              }
+            >
+              {isDone ? "✓" : step.num}
+            </span>
+            <span>{step.label}</span>
+          </button>
+        );
+      })}
+    </div>
+  </div>
+</div>
         </div>
       </div>
 
