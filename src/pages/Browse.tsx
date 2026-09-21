@@ -7,7 +7,6 @@
  * redirects here (see App.tsx) so old links and bookmarks keep working.
  */
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import type { ComponentType } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { usePublishers } from "../hooks/usePublishers";
 import { getEnabledChannels } from "../lib/channelRegistry";
@@ -26,15 +25,16 @@ import RecentlyViewedStrip from "../components/RecentlyViewedStrip";
 import { CloseIcon } from "../components/UiIcons";
 import ChannelIcon from "../components/ChannelIcon";
 import { PLATFORM_ICONS } from "../components/PlatformIcons";
-import { SocialMediaChannelIcon, InfluencerChannelIcon, WebsiteChannelIcon, PodcastChannelIcon, RadioChannelIcon } from "../components/ChannelIcons";
 
-const BROWSE_CHANNEL_ICONS: Record<string, ComponentType<{ className?: string }>> = {
-  "social-media": SocialMediaChannelIcon,
-  influencer: InfluencerChannelIcon,
-  website: WebsiteChannelIcon,
-  podcast: PodcastChannelIcon,
-  radio: RadioChannelIcon,
-};
+// BUG FIX: this file previously imported SocialMediaChannelIcon,
+// InfluencerChannelIcon, WebsiteChannelIcon, PodcastChannelIcon and
+// RadioChannelIcon, and built a BROWSE_CHANNEL_ICONS lookup table + a
+// `const Icon = BROWSE_CHANNEL_ICONS[ch.slug]` computation inside the
+// channel radio list — but the JSX never rendered `<Icon />`. It rendered
+// `<ChannelIcon slug={ch.slug} />` instead, a completely different
+// component. Five unused imports and a dead lookup table were shipping to
+// every visitor for nothing. Removed entirely — ChannelIcon was always
+// the one actually doing the work.
 
 const AGE_OPTIONS = [
   { value: "", label: "Any age group" },
@@ -52,8 +52,17 @@ const GENDER_OPTIONS = [
   { value: "mixed", label: "Mixed / balanced" },
 ];
 
+// New: "featured_desc" and "response_asc" — Featured Placement subscribers
+// (a real paid product, see FEATURED_PLACEMENT_MONTHLY_PRICE in
+// constants.ts) and average response time (avg_response_hours, already
+// shown on every PublisherCard via ResponseTimeBadge and called out as the
+// single biggest earnings driver on the Earnings dashboard) previously had
+// no way to be sorted by, even though the underlying data has existed on
+// the Publisher type for a while.
 const SORT_OPTIONS = [
   { value: "score", label: "Best match" },
+  { value: "featured_desc", label: "Featured first" },
+  { value: "response_asc", label: "Fastest to respond" },
   { value: "followers_desc", label: "Most followers" },
   { value: "price_asc", label: "Lowest price" },
   { value: "price_desc", label: "Highest price" },
@@ -198,15 +207,12 @@ function FilterFields({
             <input type="radio" name="channel" checked={filters.channel === ""} onChange={() => update({ channel: "" })} className="accent-billboard-green w-4 h-4" />
             All channels
           </label>
-          {channels.map(({ definition: ch }) => {
-            const Icon = BROWSE_CHANNEL_ICONS[ch.slug];
-            return (
-              <label key={ch.slug} className="flex items-center gap-2 text-sm cursor-pointer select-none">
-                <input type="radio" name="channel" checked={filters.channel === ch.slug} onChange={() => update({ channel: ch.slug })} className="accent-billboard-green w-4 h-4" />
-                <ChannelIcon slug={ch.slug} size="sm" /> <span>{ch.name}</span>
-              </label>
-            );
-          })}
+          {channels.map(({ definition: ch }) => (
+            <label key={ch.slug} className="flex items-center gap-2 text-sm cursor-pointer select-none">
+              <input type="radio" name="channel" checked={filters.channel === ch.slug} onChange={() => update({ channel: ch.slug })} className="accent-billboard-green w-4 h-4" />
+              <ChannelIcon slug={ch.slug} size="sm" /> <span>{ch.name}</span>
+            </label>
+          ))}
         </div>
       </div>
 
@@ -230,6 +236,11 @@ function FilterFields({
           placeholder="e.g. Johannesburg"
           className="w-full border-2 border-billboard-ink rounded px-2.5 py-2 mb-4 bg-white text-sm"
         />
+        {/* BUG NOTE: city is deliberately free text (not every city a
+            publisher enters is in SA_CITIES_SUBURBS), so it can't be
+            cross-validated against province here without rejecting valid
+            typed cities. Flagging in a comment rather than "fixing" with a
+            hard constraint that would create false negatives. */}
         <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5">Suburb</label>
         <select value={filters.suburb} onChange={e => update({ suburb: e.target.value })} className="w-full border-2 border-billboard-ink rounded px-2.5 py-2 bg-white text-sm">
           <option value="">All suburbs</option>
@@ -408,6 +419,19 @@ export default function Browse() {
 
   const active = activeCount(filters);
 
+  // BUG FIX: "Map view" previously linked to a bare /map with no query
+  // string, so filtering down to (say) "Fitness, Western Cape, under
+  // R2000" and then clicking through to the map view lost every filter —
+  // the map started from the full unfiltered publisher list. Reusing the
+  // same filtersToSearchParams() saved-search relies on carries the exact
+  // current search across, exactly like a saved search's own "View
+  // results" link does.
+  const mapHref = (() => {
+    const params = filtersToSearchParams(filters);
+    const qs = params.toString();
+    return qs ? `/map?${qs}` : "/map";
+  })();
+
   return (
     <>
     <div className="max-w-6xl mx-auto px-5 py-16">
@@ -433,7 +457,7 @@ export default function Browse() {
           </button>
         )}
         <SaveSearchButton filters={filters} resultCount={filtered.length} />
-        <Link to="/map" className="font-mono text-xs font-semibold uppercase border-2 border-billboard-ink rounded px-3 py-2 hover:bg-billboard-paperDim transition shrink-0">
+        <Link to={mapHref} className="font-mono text-xs font-semibold uppercase border-2 border-billboard-ink rounded px-3 py-2 hover:bg-billboard-paperDim transition shrink-0">
           Map view →
         </Link>
       </div>
