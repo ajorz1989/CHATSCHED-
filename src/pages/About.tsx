@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Seo from "../components/Seo";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
+import { getAllChannels } from "../lib/channelRegistry";
+import { isChannelEnabled } from "../lib/featureFlags";
 
 // Consolidated principles list. Previously About.tsx and Mission.tsx each
 // declared their own `PRINCIPLES` array (a naming collision waiting to
@@ -28,20 +30,11 @@ const BELIEFS = [
   "The best technology gets out of the way — it shouldn't add a layer between a business and the audience it's trying to reach.",
 ];
 
-const CHANNELS = [
-  { name: "Social Media", body: "Pages and groups with real, engaged local followings." },
-  { name: "Influencers", body: "Creators with an audience that trusts their recommendation." },
-  { name: "Websites", body: "Local sites with steady, relevant traffic." },
-  { name: "Podcasts", body: "Shows with listeners who stick around for the whole episode." },
-  { name: "Radio", body: "Local stations reaching a broad, local audience." },
-  { name: "Sports Teams & Leagues", body: "Reach a team's fans through the club itself, not a proxy." },
-  { name: "Events & Tournaments", body: "Sponsor the moment, not just the medium." },
-  { name: "Community Groups", body: "Reach a community through someone it already trusts." },
-  { name: "Minibus Taxi & Transport Media", body: "The route your customers already take, every day." },
-  { name: "Spaza Shops & Township Traders", body: "The shop on the corner your customers already trust." },
-  { name: "Local Associations & Business Networks", body: "Reach decision-makers through the network they already belong to." },
-  { name: "Restaurants & Cafés", body: "The table your customers already sit at." },
-];
+const CHANNELS = getAllChannels().map(({ definition: ch }) => ({
+  slug: ch.slug,
+  name: ch.name,
+  body: ch.tagline,
+}));
 
 const COMPARISON = [
   { us: "You know exactly who's featuring you and why they fit your customers.", them: "Your ad competes for attention inside an anonymous feed algorithm." },
@@ -144,14 +137,23 @@ export default function About() {
         </div>
       </section>
 
-      {/* Platform story: the twelve channels */}
+      {/* Platform story: the channel types */}
       <section className="max-w-4xl mx-auto px-5 py-16">
         <h2 className="font-display text-xl mb-2">One marketplace, local reach across multiple channel types</h2>
-        <p className="text-billboard-inkSoft text-sm mb-8 max-w-xl">Businesses submit a request, the publisher reviews it, and the creator schedules and executes the placement — the same simple flow across every channel.</p>
+        <p className="text-billboard-inkSoft text-sm mb-8 max-w-xl">Businesses submit a request, the publisher reviews it, and the creator schedules and executes the placement — the same simple flow across every channel. <strong>{CHANNELS.filter((c) => isChannelEnabled(c.slug)).length} channel types are live today.</strong> Only the two development channels remain outside the live marketplace.</p>
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
           {CHANNELS.map((c) => (
             <div key={c.name} className="border-[3px] border-billboard-ink rounded p-4 bg-white transition hover:-translate-y-1 hover:shadow-blockSm">
-              <h3 className="font-bold text-sm mb-1">{c.name}</h3>
+              <div className="flex items-start justify-between gap-2 mb-1">
+                <h3 className="font-bold text-sm">{c.name}</h3>
+                <span className={`shrink-0 border px-1.5 py-0.5 rounded-full font-mono text-[9px] font-bold uppercase tracking-wide ${
+                  isChannelEnabled(c.slug)
+                    ? "border-billboard-greenDeep/40 text-billboard-greenDeep bg-billboard-green/10"
+                    : "border-billboard-inkSoft/40 text-billboard-inkSoft bg-billboard-paperDim"
+                }`}>
+                  {isChannelEnabled(c.slug) ? "Live" : "Coming soon"}
+                </span>
+              </div>
               <p className="text-xs text-billboard-inkSoft">{c.body}</p>
             </div>
           ))}
