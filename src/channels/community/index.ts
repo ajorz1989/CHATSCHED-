@@ -1,8 +1,7 @@
 /**
- * Community Groups Channel Module — NOT YET LIVE
+ * Community Groups Channel Module — LIVE
  *
- * Feature flag: VITE_CHANNEL_COMMUNITY_ENABLED (default off — same
- * reasoning as sports/events, see schema_phase74_universal_channels.sql).
+ * Feature flag: VITE_CHANNEL_COMMUNITY_ENABLED (live by default; env var is an emergency kill switch).
  *
  * Connects advertisers with neighbourhood, hobby, professional, and other
  * approved community groups for sponsored announcements and newsletters.
