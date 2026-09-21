@@ -5,7 +5,7 @@ import { isSupabaseConfigured } from "../lib/supabase";
 import SetupNotice from "../components/SetupNotice";
 import Seo from "../components/Seo";
 import { useHoneypot } from "../hooks/useHoneypot";
-import { getAllChannels } from "../lib/channelRegistry";
+import { getPublisherOnboardingChannels, isPublisherOnboardingChannel } from "../lib/channelRegistry";
 import type { ChannelSlug } from "../lib/channelTypes";
 import ChannelIcon from "../components/ChannelIcon";
 
@@ -24,14 +24,18 @@ export default function Register() {
   // unset until they pick one. Only shown/required in the publisher path —
   // a business account isn't tied to any one channel.
   const [selectedChannel, setSelectedChannel] = useState<ChannelSlug | null>(
-    (channelParam as ChannelSlug | null) ?? null,
+    channelParam && isPublisherOnboardingChannel(channelParam)
+      ? (channelParam as ChannelSlug)
+      : null,
   );
 
   // Carry a channel-page "Apply as a creator" click through to PublisherApply
   // once the user logs in — see that page's header comment for why this
   // can't just be a query param the whole way through.
   useEffect(() => {
-    if (channelParam) sessionStorage.setItem(APPLY_CHANNEL_STORAGE_KEY, channelParam);
+    if (channelParam && isPublisherOnboardingChannel(channelParam)) {
+      sessionStorage.setItem(APPLY_CHANNEL_STORAGE_KEY, channelParam);
+    }
   }, [channelParam]);
   const [fullName, setFullName] = useState("");
   const [companyName, setCompanyName] = useState("");
@@ -153,9 +157,9 @@ export default function Register() {
           </ul>
           <p className="font-semibold text-billboard-ink mb-8">You're not just listing a page — you're building your own media network.</p>
           <div className="mb-8">
-            <label className="block text-sm font-semibold mb-2">Which channel are you applying for?</label>
+            <label className="block text-sm font-semibold mb-2">Which live channel are you applying for?</label>
             <div className="grid grid-cols-3 gap-2">
-              {getAllChannels().map((ch) => (
+              {getPublisherOnboardingChannels().map((ch) => (
                 <button
                   key={ch.definition.slug}
                   type="button"
