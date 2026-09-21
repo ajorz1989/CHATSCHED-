@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import Seo from "../components/Seo";
 import ChannelIcon from "../components/ChannelIcon";
-import { getAllChannels } from "../lib/channelRegistry";
+import { getAllChannels, getEnabledChannels } from "../lib/channelRegistry";
+import { isChannelEnabled } from "../lib/featureFlags";
 import {
   CREATOR_APPROVAL_WINDOW_DAYS,
   CREATOR_PAYOUT_WINDOW_HOURS,
@@ -45,6 +46,8 @@ const FAQS = [
 ];
 
 export default function ForPublishers() {
+  const liveChannelCount = getEnabledChannels().length;
+
   return (
     <div>
       <Seo
@@ -135,14 +138,21 @@ export default function ForPublishers() {
       {/* CHANNELS */}
       <section className="py-16 bg-billboard-paperDim border-y-[3px] border-billboard-ink">
         <div className="max-w-5xl mx-auto px-5">
-          <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">Five ways to get booked</span>
+          <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">{liveChannelCount} live channels to get booked</span>
           <h2 className="text-3xl md:text-4xl mb-3 max-w-xl">Whatever you've built, there's a channel for it.</h2>
-          <p className="text-billboard-inkSoft max-w-xl mb-10">Social page, influencer following, a website with steady traffic, a podcast, or a radio slot — apply under whichever fits.</p>
+          <p className="text-billboard-inkSoft max-w-xl mb-10">Apply under the live channel that best matches your audience or advertising asset. Every live channel uses the same ChatSched request-and-approval workflow.</p>
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
             {getAllChannels().map((m) => (
               <div key={m.definition.slug} className="border-[3px] border-billboard-ink rounded p-5 bg-white transition hover:-translate-y-1 hover:shadow-blockSm">
                 <div className="mb-3"><ChannelIcon slug={m.definition.slug} /></div>
-                <h3 className="font-bold text-sm mb-1">{m.definition.name}</h3>
+                <div className="flex items-start justify-between gap-2">
+                  <h3 className="font-bold text-sm mb-1">{m.definition.name}</h3>
+                  {!isChannelEnabled(m.definition.slug) && (
+                    <span className="shrink-0 border border-billboard-inkSoft/40 text-billboard-inkSoft font-mono text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-full">
+                      Coming soon
+                    </span>
+                  )}
+                </div>
                 <p className="text-xs text-billboard-inkSoft">{m.definition.tagline}</p>
               </div>
             ))}
