@@ -52,14 +52,14 @@ function ComingSoonDetail({ ch }: { ch: ChannelDefinition }) {
         <div>
           <div className="font-bold mb-1">This channel is in development</div>
           <p className="text-sm text-billboard-inkSoft">
-            We're building out the {ch.name} booking flow, and we're actively looking for real{" "}
-            {ch.name.toLowerCase()} publishers to open it with — if that's you,{" "}
-            <Link to={`/register?role=publisher&channel=${ch.slug}`} className="underline hover:text-billboard-ink">
-              apply now
-            </Link>{" "}
-            and you'll be ready to go live the moment it opens. Advertisers: in the meantime,{" "}
+            We're building out the {ch.name} channel. It isn't open for bookings or publisher onboarding yet.{" "}
+            If you want to supply this channel,{" "}
+            <a href={whatsappLink(`I want to join the ${ch.name} publisher waitlist`)} target="_blank" rel="noopener noreferrer" className="underline hover:text-billboard-ink">
+              join the waitlist
+            </a>{" "}
+            and we'll contact you when onboarding opens. Advertisers can{" "}
             <Link to="/browse" className="underline hover:text-billboard-ink">
-              browse our live social media publishers
+              browse our live inventory
             </Link>{" "}
             or{" "}
             <a href={whatsappLink()} target="_blank" rel="noopener noreferrer" className="underline hover:text-billboard-ink">
@@ -70,16 +70,7 @@ function ComingSoonDetail({ ch }: { ch: ChannelDefinition }) {
         </div>
       </div>
 
-      {/* 12-Channel Audit fix D6 — a brand-new channel launching with zero
-          publishers yet is a real cold-start problem for both sides of
-          the marketplace; this callout solves it for the publisher side
-          specifically, which is the harder side to seed first.
-          NOTE (merge flag): the notice banner above now also links
-          publishers to /register?role=publisher — that link was added
-          independently of this audit fix. Both are kept for now since
-          this callout adds incentive framing ("no competition yet") the
-          plain apply link doesn't, but a product call on whether this is
-          now redundant messaging would be reasonable. */}
+      {/* Development-channel waitlist callout — these channels are intentionally not part of public onboarding yet. */}}
       <div className="border-[3px] border-billboard-ink bg-billboard-green/10 rounded p-5 flex gap-4 items-start">
         <span className="text-2xl shrink-0">🌱</span>
         <div>
@@ -390,12 +381,14 @@ export default function ChannelPage() {
             </div>
           ) : (
             <div className="flex flex-wrap gap-3 items-center">
-              <Link
-                to={`/register?role=publisher&channel=${ch.slug}`}
-                className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold px-6 py-3 rounded hover:bg-billboard-yellowDeep transition hover:-translate-y-0.5"
+              <a
+                href={whatsappLink(`I want to join the ${ch.name} publisher waitlist`)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold px-6 py-3 rounded hover:bg-billboard-yellowDeep transition"
               >
-                Apply as a creator →
-              </Link>
+                Join the waitlist →
+              </a>
               <a
                 href={whatsappLink(`I'm interested in the ${ch.name} channel`)}
                 target="_blank"
