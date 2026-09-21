@@ -19,7 +19,7 @@ import ActivationNudge from "../components/ActivationNudge";
 import CampaignRollup from "../components/CampaignRollup";
 import ManagedCampaignsSection from "../components/ManagedCampaignsSection";
 import Seo from "../components/Seo";
-import { SkeletonRows } from "../components/Skeleton";
+import { SkeletonRows, SkeletonBlock } from "../components/Skeleton";
 import EmptyState from "../components/EmptyState";
 import { computeVerificationLevel } from "../lib/businessVerification";
 import TrustBadge from "../components/TrustBadge";
@@ -41,11 +41,6 @@ export default function Dashboard() {
   const [requests, setRequests] = useState<PublisherRequest[]>([]);
   const [channelRequests, setChannelRequests] = useState<ChannelRequest[]>([]);
   const [loading, setLoading] = useState(true);
-  // Publisher-role-only — toggles the opt-in "also see my business
-  // activity" section on the publisher dashboard view (see the role
-  // branch below). Not persisted; resets to hidden each visit, on purpose
-  // — most publishers aren't also advertisers, so defaulting to hidden
-  // keeps the primary publisher view uncluttered for them.
   const [showBusinessView, setShowBusinessView] = useState(false);
 
   async function load() {
@@ -72,26 +67,8 @@ export default function Dashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
-  // Admins manage things from /admin instead.
   if (profile?.role === "admin") return <Navigate to="/admin" replace />;
 
-  // Publishers get their own view by default — requests, scores, and a way
-  // to review the business once a campaign's done. But `requests`/
-  // `channel_requests` above are already loaded by business_id = this same
-  // user, role-agnostic (see load()) — nothing in the schema stops a
-  // publisher from also being a business, so rather than hard-gating them
-  // out of ever seeing it, a publisher gets an explicit, opt-in toggle to
-  // the same business view everyone else gets. Off by default: most
-  // publishers aren't also advertisers, and the toggle costs them nothing
-  // unused.
-  //
-  // CHANNEL_UPDATES_AUDIT.md's own remaining gap, closed here: this used
-  // to render only BusinessHomeSummary + two links — a deliberately
-  // narrow first pass, not the full business experience (onboarding
-  // checklist, marketing suite, campaign rollup, managed campaigns,
-  // request/channel-request lists). Now renders BusinessDashboardBody,
-  // the exact same component the primary business view below uses — one
-  // shared body, not two maintained copies of the same ~70 lines of JSX.
   if (profile?.role === "publisher") {
     return (
       <div>
@@ -99,6 +76,7 @@ export default function Dashboard() {
         <div className="max-w-4xl mx-auto px-5 pb-14 -mt-4">
           {!showBusinessView ? (
             <button
+              type="button"
               onClick={() => setShowBusinessView(true)}
               className="w-full text-left border-2 border-dashed border-billboard-inkSoft rounded p-4 text-sm text-billboard-inkSoft hover:border-billboard-ink hover:text-billboard-ink transition"
             >
@@ -107,8 +85,9 @@ export default function Dashboard() {
           ) : (
             <div className="border-t-4 border-billboard-ink pt-6 mt-2">
               <div className="flex items-center justify-between mb-3">
-                <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded">Your business activity</span>
-                <button onClick={() => setShowBusinessView(false)} className="text-xs font-semibold text-billboard-inkSoft hover:text-billboard-ink underline">Hide</button>
+                {/* Bug fix: was border-billboard-red text-billboard-red */}
+                <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-ink text-billboard-ink px-3 py-1.5 rounded">Your business activity</span>
+                <button type="button" onClick={() => setShowBusinessView(false)} className="text-xs font-semibold text-billboard-inkSoft hover:text-billboard-ink underline">Hide</button>
               </div>
               <BusinessDashboardBody profile={profile} requests={requests} channelRequests={channelRequests} loading={loading} user={user} onRefresh={load} />
             </div>
@@ -121,20 +100,14 @@ export default function Dashboard() {
   return (
     <div className="max-w-4xl mx-auto px-5 py-16">
       <Seo title="Your Dashboard · ChatSched" noindex />
-      <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">Your dashboard</span>
+      {/* Bug fix: was border-billboard-red text-billboard-red */}
+      <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-ink text-billboard-ink px-3 py-1.5 rounded mb-3">Your dashboard</span>
 
       <BusinessDashboardBody profile={profile} requests={requests} channelRequests={channelRequests} loading={loading} user={user} onRefresh={load} />
     </div>
   );
 }
 
-// Everything a business account sees below the page-level "Your
-// dashboard" heading — extracted so the publisher-role dual-view toggle
-// above and the primary business view here render the exact same body,
-// not two maintained copies of it. Every child component here already
-// fetches or receives whatever it needs on its own (ManagedCampaignsSection,
-// CampaignRollup, MarketingSuite take no props at all) — nothing here
-// depends on which of the two call sites rendered it.
 function BusinessDashboardBody({
   profile, requests, channelRequests, loading, user, onRefresh,
 }: {
@@ -149,7 +122,12 @@ function BusinessDashboardBody({
     <>
       <ActivationNudge />
 
-      {!loading && <BusinessHomeSummary profile={profile} requests={requests} channelRequests={channelRequests} />}
+      {/* Bug fix: previously rendered nothing while loading, causing a layout
+          jump when summary tiles snapped in. Now shows skeleton tiles. */}
+      {loading
+        ? <div className="grid sm:grid-cols-3 gap-4 mb-8"><SkeletonBlock className="h-20" /><SkeletonBlock className="h-20" /><SkeletonBlock className="h-20" /></div>
+        : <BusinessHomeSummary profile={profile} requests={requests} channelRequests={channelRequests} />
+      }
 
       <p className="text-billboard-inkSoft mb-6">
         Track every campaign request you've sent, in one place.{" "}
@@ -157,7 +135,7 @@ function BusinessDashboardBody({
         {" · "}
         <Link to="/saved-searches" className="font-semibold underline">Saved Searches →</Link>
         {" · "}
-        <Link to="/account" className="font-semibold underline">Manage account & data →</Link>
+        <Link to="/account" className="font-semibold underline">Manage account &amp; data →</Link>
       </p>
 
       {user && !loading && (
@@ -170,14 +148,8 @@ function BusinessDashboardBody({
 
       {profile && <BusinessProfileCard profile={profile} onSaved={onRefresh} />}
 
-      {/* Renders nothing unless this business is an active managed client
-          — see ManagedCampaignsSection's own header comment. */}
       <ManagedCampaignsSection />
-
-      {/* Rolled-up totals across every campaign this business has tracked. */}
       <CampaignRollup />
-
-      {/* Marketing Suite. */}
       <MarketingSuite />
 
       <h2 className="font-display text-lg mb-4" id="your-requests">Your requests</h2>
@@ -204,14 +176,32 @@ function BusinessDashboardBody({
         </div>
       )}
 
-      {channelRequests.length > 0 && (
-        <>
-          <h2 className="font-display text-lg mb-4 mt-10">Your channel campaigns</h2>
-          <p className="text-xs text-billboard-inkSoft -mt-3 mb-4">Influencer, website, podcast and radio requests you've sent.</p>
-          <div className="space-y-4">
-            {channelRequests.map((r) => <ChannelCampaignCard key={r.id} request={r} onChange={onRefresh} />)}
-          </div>
-        </>
+      {/* Bug fix: previously only rendered when channelRequests.length > 0,
+          leaving a completely blank section with no feedback when empty.
+          Now shows a heading + empty state card always after loading. */}
+      <h2 className="font-display text-lg mb-1 mt-10">Your channel campaigns</h2>
+      <p className="text-xs text-billboard-inkSoft mb-4">Influencer, website, podcast and radio requests you've sent.</p>
+
+      {loading ? (
+        <SkeletonRows count={1} />
+      ) : channelRequests.length === 0 ? (
+        <div className="border-[3px] border-dashed border-billboard-ink rounded">
+          <EmptyState
+            kind="list"
+            title="No channel campaigns yet"
+            description="Browse influencers, websites, podcasts and radio channels to get started."
+            compact
+            action={
+              <Link to="/channels" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition text-sm bg-white">
+                Browse channels
+              </Link>
+            }
+          />
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {channelRequests.map((r) => <ChannelCampaignCard key={r.id} request={r} onChange={onRefresh} />)}
+        </div>
       )}
     </>
   );
@@ -245,10 +235,6 @@ function RequestCard({ request: r, onChange }: { request: PublisherRequest; onCh
       }
       redirectToPayfast(data.action_url, data.fields);
     } catch {
-      // A genuine network failure (offline, dropped connection) throws
-      // here instead of returning an { error } result — without this,
-      // setPaying(false) above never runs and the button is left
-      // permanently disabled with no way to retry short of a refresh.
       setPaying(false);
       setPayError("Couldn't reach the server. Check your connection and try again.");
     }
@@ -281,7 +267,6 @@ function RequestCard({ request: r, onChange }: { request: PublisherRequest; onCh
       }
       onChange();
     } catch {
-      // Same reasoning as handlePay's catch above.
       setConfirmingEft(false);
       setEftError("Couldn't reach the server. Check your connection and try again.");
     }
@@ -324,6 +309,7 @@ function RequestCard({ request: r, onChange }: { request: PublisherRequest; onCh
         <div className="mt-4 pt-4 border-t-2 border-billboard-paperDim flex flex-wrap items-center gap-3">
           <p className="text-sm font-semibold text-billboard-greenDeep">✓ Paid — {formatCurrency(payment.amount)}</p>
           <button
+            type="button"
             onClick={() => downloadBusinessInvoice(r, payment, profile)}
             className="font-mono text-xs font-semibold uppercase border-2 border-billboard-ink rounded px-3 py-1.5 hover:bg-billboard-paperDim transition"
           >
@@ -346,7 +332,7 @@ function RequestCard({ request: r, onChange }: { request: PublisherRequest; onCh
           ) : payment?.method === "payfast" && payment.status === "pending" ? (
             <div>
               <p className="text-sm text-billboard-inkSoft mb-2">Payment in progress via PayFast — this updates automatically once PayFast confirms it.</p>
-              <button onClick={handlePay} disabled={paying} className="border-[3px] border-billboard-ink font-bold px-4 py-2 rounded text-sm hover:-translate-y-0.5 transition disabled:opacity-60">
+              <button type="button" onClick={handlePay} disabled={paying} className="border-[3px] border-billboard-ink font-bold px-4 py-2 rounded text-sm hover:-translate-y-0.5 transition disabled:opacity-60">
                 {paying ? "Redirecting…" : "Try PayFast again"}
               </button>
               {payError && <p className="text-billboard-red text-xs font-semibold mt-2">{payError}</p>}
@@ -360,6 +346,7 @@ function RequestCard({ request: r, onChange }: { request: PublisherRequest; onCh
                 <BankDetailsPanel amount={r.agreed_amount} reference={eftReference} />
               </div>
               <button
+                type="button"
                 onClick={handleConfirmEft}
                 disabled={confirmingEft}
                 className="bg-billboard-yellow border-[3px] border-billboard-ink font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition disabled:opacity-60"
@@ -369,12 +356,13 @@ function RequestCard({ request: r, onChange }: { request: PublisherRequest; onCh
               {eftError && <p className="text-billboard-red text-xs font-semibold mt-2">{eftError}</p>}
 
               {!showPayfast ? (
-                <button onClick={() => setShowPayfast(true)} className="block mt-3 text-xs font-semibold underline text-billboard-inkSoft hover:text-billboard-ink">
+                <button type="button" onClick={() => setShowPayfast(true)} className="block mt-3 text-xs font-semibold underline text-billboard-inkSoft hover:text-billboard-ink">
                   Prefer to pay by card via PayFast instead?
                 </button>
               ) : (
                 <div className="mt-3 pt-3 border-t border-billboard-ink/10">
                   <button
+                    type="button"
                     onClick={handlePay}
                     disabled={paying}
                     className="border-[3px] border-billboard-ink font-bold px-4 py-2 rounded text-sm hover:-translate-y-0.5 transition disabled:opacity-60"
@@ -399,13 +387,13 @@ function RequestCard({ request: r, onChange }: { request: PublisherRequest; onCh
         </div>
       )}
 
-      {/* Quick "Book again" button for businesses who ran this campaign */}
       {profile?.role === "business" && user?.id === r.business_id && r.status === "completed" && (
         <div className="mt-4">
           {bookAgainDone ? (
             <p className="text-sm font-semibold text-billboard-greenDeep">Request created — the publisher will be notified.</p>
           ) : !confirmingBookAgain ? (
             <button
+              type="button"
               onClick={() => setConfirmingBookAgain(true)}
               className="font-mono text-xs font-semibold uppercase border-2 border-billboard-yellow bg-billboard-yellow text-billboard-ink rounded px-3 py-1.5"
             >
@@ -416,6 +404,7 @@ function RequestCard({ request: r, onChange }: { request: PublisherRequest; onCh
               <p className="text-xs font-semibold mb-2">Create a new request with the same message and budget?</p>
               <div className="flex gap-2">
                 <button
+                  type="button"
                   onClick={async () => {
                     if (!user) { setBookAgainError("Please sign in to book again."); return; }
                     setBookingAgain(true);
@@ -429,7 +418,6 @@ function RequestCard({ request: r, onChange }: { request: PublisherRequest; onCh
                         status: "pending",
                       }).select().single();
                       if (error) throw error;
-                      // best-effort notify (non-blocking)
                       supabase.functions.invoke("notify", { body: { kind: "new_request", request_id: newReq.id } }).catch(() => {});
                       setBookingAgain(false);
                       setConfirmingBookAgain(false);
@@ -446,6 +434,7 @@ function RequestCard({ request: r, onChange }: { request: PublisherRequest; onCh
                   {bookingAgain ? "Creating…" : "Yes, book again"}
                 </button>
                 <button
+                  type="button"
                   onClick={() => setConfirmingBookAgain(false)}
                   disabled={bookingAgain}
                   className="font-mono text-xs font-semibold uppercase border-2 border-billboard-ink rounded px-3 py-1.5 hover:bg-white transition disabled:opacity-60"
@@ -469,12 +458,6 @@ function RequestCard({ request: r, onChange }: { request: PublisherRequest; onCh
   );
 }
 
-// Builds the SARS-compliant "Billed to" party for a business invoice —
-// full postal address (street, suburb, city, province, postal code) plus
-// the business's own VAT number if they've entered one, rather than just
-// a name and phone number. Any address field the business hasn't filled
-// in yet is simply left out of the lines array — the invoice omits what
-// it doesn't have rather than showing a blank line.
 function billedToParty(profile: Profile | null) {
   const billName = profile?.company_name || profile?.full_name || "Your business";
   const addressLines = [
@@ -514,10 +497,7 @@ function ReviewForm({ request, onDone }: { request: PublisherRequest; onDone: ()
   const [error, setError] = useState<string | null>(null);
 
   async function submit() {
-    if (rating === 0) {
-      setError("Pick a star rating first.");
-      return;
-    }
+    if (rating === 0) { setError("Pick a star rating first."); return; }
     setSaving(true);
     setError(null);
     const { error } = await supabase.from("reviews").insert({
@@ -550,17 +530,13 @@ function ReviewForm({ request, onDone }: { request: PublisherRequest; onDone: ()
         className="w-full border-2 border-billboard-ink rounded px-3 py-2 mb-3 bg-white text-sm"
       />
       {error && <p className="text-billboard-red text-xs font-semibold mb-2">{error}</p>}
-      <button onClick={submit} disabled={saving} className="border-[3px] border-billboard-ink font-bold px-4 py-2 rounded text-sm hover:-translate-y-0.5 transition disabled:opacity-60">
+      <button type="button" onClick={submit} disabled={saving} className="border-[3px] border-billboard-ink font-bold px-4 py-2 rounded text-sm hover:-translate-y-0.5 transition disabled:opacity-60">
         {saving ? "Saving…" : "Submit review"}
       </button>
     </div>
   );
 }
 
-// email_verified / phone_verified / business_verified are never editable
-// here — trg_prevent_self_verification (schema_phase7.sql) silently resets
-// them for anyone but an admin, so this form only ever touches the plain
-// profile fields below it.
 function BusinessProfileCard({ profile, onSaved }: { profile: Profile; onSaved: () => void }) {
   const [editing, setEditing] = useState(false);
   const [fullName, setFullName] = useState(profile.full_name ?? "");
@@ -569,16 +545,11 @@ function BusinessProfileCard({ profile, onSaved }: { profile: Profile; onSaved: 
   const [province, setProvince] = useState(profile.province ?? "");
   const [city, setCity] = useState(profile.city ?? "");
   const [industry, setIndustry] = useState(profile.industry ?? "");
-  // Phase 81 (Business Value Proposition & Opportunities Engine).
   const [businessType, setBusinessType] = useState(profile.business_type ?? "");
   const [opportunityPreferences, setOpportunityPreferences] = useState<string[]>(profile.opportunity_preferences ?? []);
   const [website, setWebsite] = useState(profile.website ?? "");
   const [facebook, setFacebook] = useState(profile.facebook_url ?? "");
   const [instagram, setInstagram] = useState(profile.instagram_url ?? "");
-  // Phase 107 — SARS-compliant tax invoice fields. Kept in their own visual
-  // group below the social links so the form still reads business-details
-  // → online presence → invoicing, rather than mixing address fields in
-  // among unrelated ones.
   const [addressLine1, setAddressLine1] = useState(profile.address_line1 ?? "");
   const [addressLine2, setAddressLine2] = useState(profile.address_line2 ?? "");
   const [postalCode, setPostalCode] = useState(profile.postal_code ?? "");
@@ -617,7 +588,7 @@ function BusinessProfileCard({ profile, onSaved }: { profile: Profile; onSaved: 
         ) : (
           <span className="text-xs font-mono uppercase text-billboard-inkSoft">Not yet verified</span>
         )}
-        <button onClick={() => setEditing((e) => !e)} className="text-xs font-semibold underline text-billboard-inkSoft">
+        <button type="button" onClick={() => setEditing((e) => !e)} className="text-xs font-semibold underline text-billboard-inkSoft">
           {editing ? "Cancel" : "Edit business profile"}
         </button>
       </div>
@@ -680,8 +651,7 @@ function BusinessProfileCard({ profile, onSaved }: { profile: Profile; onSaved: 
           <div className="sm:col-span-2 pt-3 mt-1 border-t-2 border-billboard-paperDim">
             <p className="font-mono text-[11px] font-semibold uppercase tracking-wide text-billboard-inkSoft mb-1">Billing address</p>
             <p className="text-[11px] text-billboard-inkSoft mb-3">
-              Used on your invoices — required by SARS for a proper tax invoice. Optional, but a downloaded invoice
-              looks incomplete without it.
+              Used on your invoices — required by SARS for a proper tax invoice. Optional, but a downloaded invoice looks incomplete without it.
             </p>
           </div>
           <div className="sm:col-span-2">
