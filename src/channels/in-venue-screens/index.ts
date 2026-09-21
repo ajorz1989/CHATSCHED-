@@ -2,10 +2,8 @@
  * In-Venue Screens & Displays Channel Module — LIVE
  *
  * Feature flag: VITE_CHANNEL_IN_VENUE_SCREENS_ENABLED (live by default; env var is an emergency kill switch).
- * Deliberately left out of DEFAULT_ON: this one ships with a genuinely
- * manual creative-delivery workflow (see the "Phase 1" note below) rather
- * than a fully self-serve one, and should only go live once that's proven
- * with real venues.
+ * This channel is live with a manual creative-delivery workflow (see the
+ * "Phase 1" note below) rather than a fully self-serve one.
  *
  * Nightclubs, bars, restaurants, gyms, and laundromats already own a
  * genuine advertising asset — a screen, TV, or projector already running
