@@ -16,10 +16,11 @@ import type { ChannelSlug } from "./channelTypes";
  */
 const NUMERIC_KEYS = ["minRating", "maxPrice"] as const;
 const ARRAY_KEYS = ["platforms", "languages"] as const;
-// hasRateCard added alongside verifiedOnly — same boolean round-trip
-// treatment, so "Published rate card" survives a saved search's "View
-// results" link and the Map view handoff the same way verifiedOnly does.
-const BOOLEAN_KEYS = ["verifiedOnly", "hasRateCard"] as const;
+// hasRateCard/hasMedia added alongside verifiedOnly — same boolean
+// round-trip treatment, so "Published rate card" and "Has portfolio/
+// video" survive a saved search's "View results" link and the Map view
+// handoff the same way verifiedOnly does.
+const BOOLEAN_KEYS = ["verifiedOnly", "hasRateCard", "hasMedia"] as const;
 const STRING_KEYS = [
   "query", "channel", "category", "province", "city", "suburb",
   "minFollowers", "maxFollowers", "minMonthlyReach", "minEngagement",
