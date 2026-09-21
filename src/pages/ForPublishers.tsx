@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import Seo from "../components/Seo";
 import ChannelIcon from "../components/ChannelIcon";
 import { getAllChannels, getEnabledChannels } from "../lib/channelRegistry";
+import EarningsEstimator from "./EarningsEstimator";
 import { isChannelEnabled } from "../lib/featureFlags";
 import {
   CREATOR_APPROVAL_WINDOW_DAYS,
@@ -201,6 +202,17 @@ export default function ForPublishers() {
         </div>
       </section>
 
+      {/* EARNINGS ESTIMATOR */}
+      <section className="py-16 bg-white border-b-[3px] border-billboard-ink">
+        <div className="max-w-6xl mx-auto px-5">
+          <div className="max-w-3xl mx-auto text-center mb-2">
+            <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-yellowDeep text-billboard-ink px-3 py-1.5 rounded mb-3">Publisher earnings</span>
+            <p className="text-billboard-inkSoft text-sm">Use the same Suggested Price model that powers the publisher pricing guidance.</p>
+          </div>
+          <EarningsEstimator embedded />
+        </div>
+      </section>
+
       {/* OPPORTUNITIES EXPLAINER — a genuinely different mental model from
           the request-and-approve flow described in STEPS above (pitch for
           an open brief vs. wait for a business to find your profile), so
@@ -215,7 +227,7 @@ export default function ForPublishers() {
             partnership, a product launch, a seasonal push — across any channel, and any eligible publisher can pitch
             for it. It's a second, parallel path to get booked, not a replacement for the first.
           </p>
-          <Link to="/opportunities/preview" className="inline-flex items-center gap-2 font-semibold underline text-billboard-ink hover:text-billboard-greenDeep">
+          <Link to="/opportunities" className="inline-flex items-center gap-2 font-semibold underline text-billboard-ink hover:text-billboard-greenDeep">
             See what's open right now →
           </Link>
         </div>
