@@ -59,6 +59,21 @@ export function getEnabledChannels(): ChannelModule[] {
   return CHANNEL_REGISTRY.filter((m) => isChannelEnabled(m.definition.slug));
 }
 
+/** Channels intentionally kept in development and excluded from publisher onboarding. */
+const PUBLISHER_ONBOARDING_EXCLUDED: ChannelSlug[] = ["transport", "informal-retail"];
+
+/** Returns live channels that can currently be selected during publisher onboarding. */
+export function getPublisherOnboardingChannels(): ChannelModule[] {
+  return getEnabledChannels().filter(
+    (m) => !PUBLISHER_ONBOARDING_EXCLUDED.includes(m.definition.slug),
+  );
+}
+
+/** Safely checks whether a channel is eligible for the public publisher onboarding flow. */
+export function isPublisherOnboardingChannel(slug: string): boolean {
+  return getPublisherOnboardingChannels().some((m) => m.definition.slug === slug);
+}
+
 /** Looks up a channel module by slug. Returns undefined if not registered. */
 export function getChannelBySlug(slug: string): ChannelModule | undefined {
   return CHANNEL_REGISTRY.find((m) => m.definition.slug === slug);
