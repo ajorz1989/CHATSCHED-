@@ -10,8 +10,8 @@ import {
   CREATOR_PAYOUT_WINDOW_HOURS,
 } from "../lib/constants";
 
-// Step numbers are cosmetic (a "01 \u2192 04" mini-display, not natural
-// language) so they stay in code rather than in forBusinesses.json \u2014
+// Step numbers are cosmetic (a "01 → 04" mini-display, not natural
+// language) so they stay in code rather than in forBusinesses.json —
 // the step title/body text is what's translated.
 const STEP_NUMBERS = ["01", "02", "03", "04"];
 
@@ -156,14 +156,14 @@ export default function ForBusinesses() {
               to="/case-studies"
               className="inline-flex items-center gap-2 shrink-0 border-[3px] border-billboard-ink bg-billboard-yellow font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition"
             >
-              Read case studies \u2192
+              Read case studies →
             </Link>
           </div>
         </div>
       </section>
 
       {/* MARKETING SUITE TEASER */}
-      {/* Bug fix: was border-b-[3px] border-billboard-ink on a bg-billboard-ink section \u2014 border was invisible */}
+      {/* Bug fix: was border-b-[3px] border-billboard-ink on a bg-billboard-ink section — border was invisible */}
       <section className="py-16 bg-billboard-ink text-billboard-paper border-b-[3px] border-billboard-yellow">
         <div className="max-w-5xl mx-auto px-5">
           <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-yellow text-billboard-yellow px-3 py-1.5 rounded mb-3">
