@@ -18,8 +18,6 @@ export const CATEGORIES: Category[] = [
   { slug: "pets", name: "Pets & Animals", icon: "pets" },
   { slug: "events", name: "Events & Entertainment", icon: "events" },
   { slug: "social-followers", name: "Social Followers", icon: "social" },
-  // New categories aligned to the channel hub's live and upcoming channels.
-  // Icons are new named values added to CategoryIcon.tsx in the same PR.
   { slug: "sports-recreation", name: "Sports & Recreation", icon: "sports" },
   { slug: "transport-commute", name: "Transport & Commute", icon: "transport" },
   { slug: "township-trade", name: "Township & Informal Trade", icon: "township" },
@@ -34,12 +32,9 @@ export const PROVINCES = [
 export const PLATFORMS: Platform[] = ["Facebook Page", "Facebook Group", "Instagram", "TikTok", "WhatsApp Channel", "X", "LinkedIn", "YouTube"];
 
 export const PLACEMENT_TYPES = [
-  "Story Post",
-  "Main Feed / Page Post",
+  "Story Post", "Main Feed / Page Post",
   "Short-form Video (Reels / TikTok / Shorts)",
-  "Dedicated Video",
-  "Carousel Post",
-  "Bio Link / Link-in-Bio Placement",
+  "Dedicated Video", "Carousel Post", "Bio Link / Link-in-Bio Placement",
 ] as const;
 
 export type PlacementType = (typeof PLACEMENT_TYPES)[number];
@@ -57,9 +52,7 @@ export const RECOMMENDED_PLACEMENT_TYPES_BY_PLATFORM: Record<Platform, Placement
 
 export function recommendedPlacementTypes(platforms: Platform[]): PlacementType[] {
   const set = new Set<PlacementType>();
-  for (const p of platforms) {
-    for (const t of RECOMMENDED_PLACEMENT_TYPES_BY_PLATFORM[p] ?? []) set.add(t);
-  }
+  for (const p of platforms) for (const t of RECOMMENDED_PLACEMENT_TYPES_BY_PLATFORM[p] ?? []) set.add(t);
   return [...set];
 }
 
@@ -71,131 +64,29 @@ export const LANGUAGES = [
 export interface CitySuburbs { city: string; province: string; suburbs: string[] }
 
 export const SA_CITIES_SUBURBS: CitySuburbs[] = [
-  {
-    city: "Cape Town", province: "Western Cape",
-    suburbs: [
-      "City Bowl", "Sea Point", "Green Point", "Camps Bay", "Woodstock",
-      "Observatory", "Claremont", "Rondebosch", "Newlands", "Constantia",
-      "Century City", "Table View", "Milnerton", "Bellville", "Durbanville",
-      "Parow", "Goodwood", "Muizenberg", "Somerset West", "Mitchells Plain",
-    ],
-  },
-  {
-    city: "Johannesburg", province: "Gauteng",
-    suburbs: [
-      "Sandton", "Rosebank", "Randburg", "Fourways", "Midrand",
-      "Melville", "Parktown", "Bryanston", "Soweto", "Bedfordview",
-      "Northcliff", "Greenside", "Linden", "Houghton", "Parkview",
-      "Emmarentia", "Bassonia", "Glenvista", "Lenasia", "Braamfontein",
-    ],
-  },
-  {
-    city: "Pretoria", province: "Gauteng",
-    suburbs: [
-      "Centurion", "Hatfield", "Brooklyn", "Menlyn", "Waterkloof",
-      "Lynnwood", "Arcadia", "Sunnyside", "Montana", "Silverton",
-      "Garsfontein", "Faerie Glen", "Moreleta Park", "Equestria", "Mamelodi",
-      "Soshanguve", "Akasia", "Groenkloof", "Mooikloof", "Menlo Park",
-    ],
-  },
-  {
-    city: "Durban", province: "KwaZulu-Natal",
-    suburbs: [
-      "Umhlanga", "Durban North", "Berea", "Glenwood", "Westville",
-      "Pinetown", "Hillcrest", "Kloof", "Amanzimtoti", "La Lucia",
-      "Morningside", "Musgrave", "Chatsworth", "Phoenix", "Umlazi",
-      "Bluff", "Queensburgh", "Umbilo", "Overport", "Mount Edgecombe",
-    ],
-  },
-  {
-    city: "Pietermaritzburg", province: "KwaZulu-Natal",
-    suburbs: [
-      "Ashburton", "Athlone", "Bellevue", "Bisley", "Blackridge",
-      "Boughton", "Clarendon", "Edendale", "Epworth", "Hayfields",
-      "Imbali", "Lynnfield Park", "Pelham", "Prestbury", "Scottsville",
-      "Sweetwaters", "Wembley", "Westgate", "Winterskloof", "Northdale",
-    ],
-  },
-  {
-    city: "Gqeberha", province: "Eastern Cape",
-    suburbs: [
-      "Summerstrand", "Mill Park", "Walmer", "Humewood", "Lorraine",
-      "Fairview", "Bluewater Bay", "Lovemore Heights", "Sunridge Park", "Fernglen",
-      "Mount Croix", "Newton Park", "Greenacres", "Algoa Park", "Motherwell",
-      "Central", "Kabega Park", "Charlo", "Sydenham", "Framesby",
-    ],
-  },
-  {
-    city: "East London", province: "Eastern Cape",
-    suburbs: [
-      "Gonubie", "Vincent", "Beacon Bay", "Berea", "Nahoon",
-      "Quigney", "Selborne", "Southernwood", "Stirling", "Amalinda",
-      "Cambridge", "Bonnie Doone", "Bunker's Hill", "Baysville", "West Bank",
-      "Sunnyridge", "Bonza Bay", "Winterstrand", "Braelyn", "Dorchester",
-    ],
-  },
-  {
-    city: "Bloemfontein", province: "Free State",
-    suburbs: [
-      "Heidedal", "Bainsvlei", "Brandwag", "Fauna", "Fichardt Park",
-      "Fleurdal", "Pellissier", "Uitsig", "Universitas", "Westdene",
-      "Wilgehof", "Willows", "Langenhoven Park", "Arboretum", "Bayswater",
-      "Dan Pienaar", "Heuwelsig", "Naval Hill", "Waverley", "Hospitaalpark",
-    ],
-  },
-  {
-    city: "Polokwane", province: "Limpopo",
-    suburbs: [
-      "Westenburg", "Nirvana", "Bendor", "Welgelegen", "Moregloed",
-      "Annadale", "Ivydale", "Flora Park", "Fauna Park", "Penina Park",
-      "Ivy Park", "Ster Park", "Dalmada", "Broadlands", "Woodlands",
-      "Thornhill", "Seshego", "Mahlasedi Park", "Ladine", "Capricorn Park",
-    ],
-  },
-  {
-    city: "Mbombela", province: "Mpumalanga",
-    suburbs: [
-      "West Acres", "Sonheuwel", "Steiltes", "Riverside Park", "Bateleur Estate",
-      "Drum Rock", "Karino", "The Rest", "Stonehenge", "Valencia Park",
-      "Nelspruit Central", "Nelsville", "Kamagugu", "Kanyamazane", "Matumi Valley",
-      "Nelpark", "White River", "Kabokweni", "Matsulu", "Mataffin",
-    ],
-  },
-  {
-    city: "Kimberley", province: "Northern Cape",
-    suburbs: [
-      "New Park", "Hadison Park", "Belgravia", "Rhodesdene", "Herlear",
-      "Hillcrest", "Royldene", "Monument Heights", "Carters Glen", "El Toro Park",
-      "Roodepan", "Riviera", "Beaconsfield", "Albertynshof", "Cassandra",
-      "Kimberley North", "Southridge", "Vergenoeg", "Galeshewe", "Kestellhof",
-    ],
-  },
-  {
-    city: "Rustenburg", province: "North West",
-    suburbs: [
-      "Cashan", "Geelhoutpark", "Kroondal", "Olifantsnek", "Oos-Einde",
-      "Protea Park", "Rustenburg Central", "Rustenburg North", "Safari Gardens", "Tlhabane",
-      "Waterkloof", "Waterval East", "Wigwam", "Safarituine", "Bo-dorp",
-      "Boitekong", "Freedom Park", "Karlienpark", "Meriting", "Zinniaville",
-    ],
-  },
+  { city: "Cape Town", province: "Western Cape", suburbs: ["City Bowl","Sea Point","Green Point","Camps Bay","Woodstock","Observatory","Claremont","Rondebosch","Newlands","Constantia","Century City","Table View","Milnerton","Bellville","Durbanville","Parow","Goodwood","Muizenberg","Somerset West","Mitchells Plain"] },
+  { city: "Johannesburg", province: "Gauteng", suburbs: ["Sandton","Rosebank","Randburg","Fourways","Midrand","Melville","Parktown","Bryanston","Soweto","Bedfordview","Northcliff","Greenside","Linden","Houghton","Parkview","Emmarentia","Bassonia","Glenvista","Lenasia","Braamfontein"] },
+  { city: "Pretoria", province: "Gauteng", suburbs: ["Centurion","Hatfield","Brooklyn","Menlyn","Waterkloof","Lynnwood","Arcadia","Sunnyside","Montana","Silverton","Garsfontein","Faerie Glen","Moreleta Park","Equestria","Mamelodi","Soshanguve","Akasia","Groenkloof","Mooikloof","Menlo Park"] },
+  { city: "Durban", province: "KwaZulu-Natal", suburbs: ["Umhlanga","Durban North","Berea","Glenwood","Westville","Pinetown","Hillcrest","Kloof","Amanzimtoti","La Lucia","Morningside","Musgrave","Chatsworth","Phoenix","Umlazi","Bluff","Queensburgh","Umbilo","Overport","Mount Edgecombe"] },
+  { city: "Pietermaritzburg", province: "KwaZulu-Natal", suburbs: ["Ashburton","Athlone","Bellevue","Bisley","Blackridge","Boughton","Clarendon","Edendale","Epworth","Hayfields","Imbali","Lynnfield Park","Pelham","Prestbury","Scottsville","Sweetwaters","Wembley","Westgate","Winterskloof","Northdale"] },
+  { city: "Gqeberha", province: "Eastern Cape", suburbs: ["Summerstrand","Mill Park","Walmer","Humewood","Lorraine","Fairview","Bluewater Bay","Lovemore Heights","Sunridge Park","Fernglen","Mount Croix","Newton Park","Greenacres","Algoa Park","Motherwell","Central","Kabega Park","Charlo","Sydenham","Framesby"] },
+  { city: "East London", province: "Eastern Cape", suburbs: ["Gonubie","Vincent","Beacon Bay","Berea","Nahoon","Quigney","Selborne","Southernwood","Stirling","Amalinda","Cambridge","Bonnie Doone","Bunker's Hill","Baysville","West Bank","Sunnyridge","Bonza Bay","Winterstrand","Braelyn","Dorchester"] },
+  { city: "Bloemfontein", province: "Free State", suburbs: ["Heidedal","Bainsvlei","Brandwag","Fauna","Fichardt Park","Fleurdal","Pellissier","Uitsig","Universitas","Westdene","Wilgehof","Willows","Langenhoven Park","Arboretum","Bayswater","Dan Pienaar","Heuwelsig","Naval Hill","Waverley","Hospitaalpark"] },
+  { city: "Polokwane", province: "Limpopo", suburbs: ["Westenburg","Nirvana","Bendor","Welgelegen","Moregloed","Annadale","Ivydale","Flora Park","Fauna Park","Penina Park","Ivy Park","Ster Park","Dalmada","Broadlands","Woodlands","Thornhill","Seshego","Mahlasedi Park","Ladine","Capricorn Park"] },
+  { city: "Mbombela", province: "Mpumalanga", suburbs: ["West Acres","Sonheuwel","Steiltes","Riverside Park","Bateleur Estate","Drum Rock","Karino","The Rest","Stonehenge","Valencia Park","Nelspruit Central","Nelsville","Kamagugu","Kanyamazane","Matumi Valley","Nelpark","White River","Kabokweni","Matsulu","Mataffin"] },
+  { city: "Kimberley", province: "Northern Cape", suburbs: ["New Park","Hadison Park","Belgravia","Rhodesdene","Herlear","Hillcrest","Royldene","Monument Heights","Carters Glen","El Toro Park","Roodepan","Riviera","Beaconsfield","Albertynshof","Cassandra","Kimberley North","Southridge","Vergenoeg","Galeshewe","Kestellhof"] },
+  { city: "Rustenburg", province: "North West", suburbs: ["Cashan","Geelhoutpark","Kroondal","Olifantsnek","Oos-Einde","Protea Park","Rustenburg Central","Rustenburg North","Safari Gardens","Tlhabane","Waterkloof","Waterval East","Wigwam","Safarituine","Bo-dorp","Boitekong","Freedom Park","Karlienpark","Meriting","Zinniaville"] },
 ];
 
 export const SA_SUBURBS_AUTOCOMPLETE = SA_CITIES_SUBURBS.flatMap((c) => c.suburbs);
 
 export const SA_CITY_COORDS: Record<string, [number, number]> = {
-  "Cape Town": [-33.9249, 18.4241],
-  "Johannesburg": [-26.2041, 28.0473],
-  "Pretoria": [-25.7479, 28.2293],
-  "Durban": [-29.8587, 31.0218],
-  "Pietermaritzburg": [-29.6006, 30.3794],
-  "Gqeberha": [-33.9608, 25.6022],
-  "East London": [-33.0153, 27.9116],
-  "Bloemfontein": [-29.0852, 26.1596],
-  "Polokwane": [-23.9045, 29.4689],
-  "Mbombela": [-25.4753, 30.9694],
-  "Kimberley": [-28.7282, 24.7499],
-  "Rustenburg": [-25.6672, 27.2424],
+  "Cape Town": [-33.9249, 18.4241], "Johannesburg": [-26.2041, 28.0473],
+  "Pretoria": [-25.7479, 28.2293], "Durban": [-29.8587, 31.0218],
+  "Pietermaritzburg": [-29.6006, 30.3794], "Gqeberha": [-33.9608, 25.6022],
+  "East London": [-33.0153, 27.9116], "Bloemfontein": [-29.0852, 26.1596],
+  "Polokwane": [-23.9045, 29.4689], "Mbombela": [-25.4753, 30.9694],
+  "Kimberley": [-28.7282, 24.7499], "Rustenburg": [-25.6672, 27.2424],
 };
 
 export const CAPE_TOWN_SUBURBS = SA_CITIES_SUBURBS[0].suburbs;
@@ -209,13 +100,6 @@ export const CONTACT_EMAIL = "info@chatsched.com";
 export const CONTACT_WEBSITE = "chatsched.com";
 export const CONTACT_ADDRESS_LINES = ["Century Boulevard, Century City Dr", "Century City", "Cape Town, 7441", "South Africa"];
 
-// SARS (South African Revenue Service) tax-invoice fields for ChatSched
-// itself — the supplier side of every invoice src/lib/invoice.ts generates.
-// Left null until ChatSched is an actual registered VAT vendor: inventing a
-// number here would be a compliance problem, not just a copy issue. While
-// null, the invoice states plainly that no VAT is charged rather than
-// showing a blank or omitting the line silently. Once registered, set the
-// real values here and every invoice picks them up automatically.
 export const PLATFORM_VAT_NUMBER: string | null = null;
 export const PLATFORM_COMPANY_REGISTRATION: string | null = null;
 
@@ -225,66 +109,41 @@ export function whatsappLink(message?: string): string {
 }
 
 export const PAYOUT_DUE_DAYS = 7;
-
 export const FEATURED_DURATION_DAYS = 14;
 
-// ── Channel request escrow timing (influencer / website / podcast / radio) ──
-// Mirrors the generated-column deadlines in schema_phase17 exactly — kept as
-// named constants here so the UI copy (disclaimers, countdowns) never drifts
-// from what the database actually enforces.
-//
-// IMPORTANT: Changing CREATOR_APPROVAL_WINDOW_DAYS here updates every UI
-// reference (ForPublishers, HowItWorks, countdowns, disclaimers) automatically
-// because all those files import this constant. However, the database enforces
-// this deadline via a generated column in schema_phase17. A matching migration
-// is required to change the enforced deadline at the database level too —
-// this constant change alone is not enough for full enforcement.
-export const CREATOR_APPROVAL_WINDOW_DAYS = 30;  // changed from 7 — publishers now have 30 days to approve or decline
-export const BUSINESS_PAYMENT_WINDOW_DAYS = 7;   // business must pay within this many days of creator approval
-export const CREATOR_PAYOUT_WINDOW_HOURS = 48;   // creator is paid within this many hours of the post going live
+// Number of SA provinces where ChatSched is active. Update here when coverage
+// changes — single source of truth for HomeMetrics and any other UI that
+// references the province count. Previously hardcoded as 9 in Home.tsx.
+export const ACTIVE_PROVINCES = 9;
+
+export const CREATOR_APPROVAL_WINDOW_DAYS = 30;
+export const BUSINESS_PAYMENT_WINDOW_DAYS = 7;
+export const CREATOR_PAYOUT_WINDOW_HOURS = 48;
 
 export const PLATFORM_BANK_DETAILS = {
-  accountHolder: "Chatsched",
-  bank: "Capitec Bank",
-  accountNumber: "1149592735",
-  branchCode: "470010",
-  accountType: "Business / Cheque",
+  accountHolder: "Chatsched", bank: "Capitec Bank",
+  accountNumber: "1149592735", branchCode: "470010", accountType: "Business / Cheque",
 };
 
 export const MAX_PORTFOLIO_IMAGES = 5;
 export const MAX_PORTFOLIO_IMAGE_BYTES = 3 * 1024 * 1024;
 export const ALLOWED_PORTFOLIO_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
-
 export const MAX_PROFILE_IMAGE_BYTES = 2 * 1024 * 1024;
 export const ALLOWED_PROFILE_IMAGE_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
 export const MIN_BIO_LENGTH = 40;
-
 export const CAREER_CV_MAX_BYTES = 5 * 1024 * 1024;
-export const ALLOWED_CV_MIME_TYPES = [
-  "application/pdf",
-  "application/msword",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-];
+export const ALLOWED_CV_MIME_TYPES = ["application/pdf","application/msword","application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
 export const CAREER_CV_BUCKET = "career-cvs";
 
 export const WORK_WITH_US_CATEGORIES: { value: WorkWithUsCategory; label: string }[] = [
-  { value: "developers", label: "Developers" },
-  { value: "designers", label: "Designers" },
-  { value: "sales", label: "Sales" },
-  { value: "marketing", label: "Marketing" },
-  { value: "creators", label: "Creators" },
-  { value: "community_managers", label: "Community Managers" },
+  { value: "developers", label: "Developers" }, { value: "designers", label: "Designers" },
+  { value: "sales", label: "Sales" }, { value: "marketing", label: "Marketing" },
+  { value: "creators", label: "Creators" }, { value: "community_managers", label: "Community Managers" },
   { value: "sales_representatives", label: "Sales Representatives" },
-  { value: "freelancers", label: "Freelancers" },
-  { value: "internships", label: "Internships" },
+  { value: "freelancers", label: "Freelancers" }, { value: "internships", label: "Internships" },
 ];
 export const WORK_WITH_US_ATTACHMENT_MAX_BYTES = 5 * 1024 * 1024;
-export const ALLOWED_WORK_WITH_US_ATTACHMENT_MIME_TYPES = [
-  "application/pdf",
-  "application/msword",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  "image/jpeg", "image/png", "image/webp",
-];
+export const ALLOWED_WORK_WITH_US_ATTACHMENT_MIME_TYPES = ["application/pdf","application/msword","application/vnd.openxmlformats-officedocument.wordprocessingml.document","image/jpeg","image/png","image/webp"];
 export const WORK_WITH_US_ATTACHMENT_BUCKET = "work-with-us-attachments";
 
 export const PARTNER_CATEGORIES: { value: PartnerCategory; label: string; blurb: string }[] = [
@@ -320,24 +179,16 @@ export const ADVERTISE_PRODUCTS: { value: AdvertiseProduct; label: string; blurb
 
 export const MAX_PROOF_SCREENSHOT_BYTES = 5 * 1024 * 1024;
 export const ALLOWED_PROOF_SCREENSHOT_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
-
 export const CONTENT_STUDIO_MONTHLY_PRICE = 99;
 export const CONTENT_STUDIO_DAILY_LIMIT = 15;
-
 export const PUBLISHER_SUBSCRIPTION_PRICE = 199;
 export const BUSINESS_SUBSCRIPTION_PRICE = 399;
 export const BUSINESS_LAUNCH_CREDIT_AMOUNT = 199;
 export const CONTENT_STUDIO_MONTHLY_LIMIT = 150;
-
 export const CONTENT_STUDIO_FREE_MONTHLY_LIMIT = 15;
 export const CONTENT_STUDIO_FREE_DAILY_LIMIT = 5;
 
-export interface ContentStudioFormat {
-  id: string;
-  label: string;
-  hint: string;
-}
-
+export interface ContentStudioFormat { id: string; label: string; hint: string; }
 export const CONTENT_STUDIO_FORMATS: ContentStudioFormat[] = [
   { id: "facebook", label: "Facebook Post", hint: "Feed post with a natural CTA" },
   { id: "instagram", label: "Instagram Caption", hint: "Caption + relevant hashtags" },
@@ -362,14 +213,10 @@ export const SWATCHES = [
 ];
 
 export const COMMUNITY_EVENT_TYPES: { value: CommunityEventType; label: string }[] = [
-  { value: "webinar", label: "Webinar" },
-  { value: "online", label: "Online event" },
-  { value: "in_person", label: "In person" },
+  { value: "webinar", label: "Webinar" }, { value: "online", label: "Online event" }, { value: "in_person", label: "In person" },
 ];
 export const COMMUNITY_QUESTION_CATEGORIES: { value: CommunityQuestionCategory; label: string }[] = [
-  { value: "publisher", label: "Publisher Community" },
-  { value: "business", label: "Business Community" },
-  { value: "marketing", label: "Marketing Discussions" },
+  { value: "publisher", label: "Publisher Community" }, { value: "business", label: "Business Community" }, { value: "marketing", label: "Marketing Discussions" },
 ];
 
 export const MAX_CONTENT_ASSET_IMAGE_BYTES = 5 * 1024 * 1024;
@@ -378,16 +225,9 @@ export const ALLOWED_CONTENT_ASSET_IMAGE_MIME_TYPES = ["image/jpeg", "image/png"
 export const ALLOWED_CONTENT_ASSET_VIDEO_MIME_TYPES = ["video/mp4", "video/quicktime"];
 
 export const DELIVERABLE_QUICK_ADD = [
-  "Instagram Reel",
-  "Instagram Story",
-  "Instagram Post",
-  "TikTok Video",
-  "YouTube Video",
-  "Website Placement",
-  "Podcast Mention",
-  "Radio Spot",
-  "Tracking Link",
-  "Promo Code",
+  "Instagram Reel","Instagram Story","Instagram Post","TikTok Video",
+  "YouTube Video","Website Placement","Podcast Mention","Radio Spot",
+  "Tracking Link","Promo Code",
 ] as const;
 
 export const TOOL_CATEGORIES: { value: import("./types").ToolCategory; label: string; blurb: string }[] = [
@@ -398,32 +238,19 @@ export const TOOL_CATEGORIES: { value: import("./types").ToolCategory; label: st
   { value: "measure", label: "Measure", blurb: "Analytics, ROI, reporting and performance." },
 ];
 
-export const TOOL_STATUSES: import("./types").ToolStatus[] = ["draft", "coming_soon", "active", "paused", "archived"];
+export const TOOL_STATUSES: import("./types").ToolStatus[] = ["draft","coming_soon","active","paused","archived"];
 export const TOOL_STATUS_LABEL: Record<import("./types").ToolStatus, string> = {
-  draft: "Draft",
-  coming_soon: "Coming Soon",
-  active: "Active",
-  paused: "Paused",
-  archived: "Archived",
+  draft: "Draft", coming_soon: "Coming Soon", active: "Active", paused: "Paused", archived: "Archived",
 };
-
-export const TOOL_TYPES: import("./types").ToolType[] = ["native", "integrated", "white_label", "service"];
+export const TOOL_TYPES: import("./types").ToolType[] = ["native","integrated","white_label","service"];
 export const TOOL_TYPE_LABEL: Record<import("./types").ToolType, string> = {
-  native: "Native ChatSched tool",
-  integrated: "Integrated (third-party)",
-  white_label: "White-label",
-  service: "Managed service",
+  native: "Native ChatSched tool", integrated: "Integrated (third-party)",
+  white_label: "White-label", service: "Managed service",
 };
-
-export const TOOL_PRICING_MODELS: import("./types").ToolPricingModel[] = ["free", "included", "paid_once", "paid_monthly", "paid_annual", "custom", "tbd"];
+export const TOOL_PRICING_MODELS: import("./types").ToolPricingModel[] = ["free","included","paid_once","paid_monthly","paid_annual","custom","tbd"];
 export const TOOL_PRICING_LABEL: Record<import("./types").ToolPricingModel, string> = {
-  free: "Free",
-  included: "Included with your plan",
-  paid_once: "Once-off",
-  paid_monthly: "Monthly",
-  paid_annual: "Annual",
-  custom: "Custom pricing",
-  tbd: "To be announced",
+  free: "Free", included: "Included with your plan", paid_once: "Once-off",
+  paid_monthly: "Monthly", paid_annual: "Annual", custom: "Custom pricing", tbd: "To be announced",
 };
 
 export function defaultToolCtaLabel(status: import("./types").ToolStatus, pricingModel: import("./types").ToolPricingModel): string {
