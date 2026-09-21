@@ -207,11 +207,11 @@ export default function ForBusinesses() {
                 }`}
               >
                 <div className="p-4 md:p-5 text-sm flex items-start gap-2.5 transition-colors hover:bg-billboard-green/5">
-                  <span className="text-billboard-green mt-0.5 shrink-0">\u2713</span>
+                  <span aria-hidden="true" className="text-billboard-green mt-0.5 shrink-0">{String.fromCharCode(0x2713)}</span>
                   <span>{row.us}</span>
                 </div>
                 <div className="p-4 md:p-5 text-sm flex items-start gap-2.5 border-l-2 border-billboard-ink/15 text-billboard-inkSoft transition-colors hover:bg-billboard-red/5">
-                  <span className="text-billboard-red mt-0.5 shrink-0">\u2715</span>
+                  <span aria-hidden="true" className="text-billboard-red mt-0.5 shrink-0">{String.fromCharCode(0x2715)}</span>
                   <span>{row.them}</span>
                 </div>
               </div>
