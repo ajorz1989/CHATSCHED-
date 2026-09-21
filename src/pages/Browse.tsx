@@ -416,6 +416,43 @@ export default function Browse() {
       </div>
 
       {active === 0 && <RecentlyViewedStrip />}
+
+      <section aria-labelledby="browse-live-channels" className="mb-6 border-[3px] border-billboard-ink rounded p-4 md:p-5 bg-white">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+          <div>
+            <h2 id="browse-live-channels" className="font-display text-lg">Live advertising channels</h2>
+            <p className="text-xs text-billboard-inkSoft mt-0.5">All channels shown here are open for marketplace discovery now.</p>
+          </div>
+          <span className="font-mono text-xs font-semibold uppercase tracking-wide text-billboard-greenDeep">
+            {channels.length} live
+          </span>
+        </div>
+        <div className="flex gap-2 overflow-x-auto pb-1" role="list" aria-label="Live advertising channels">
+          {channels.map(({ definition: ch }) => {
+            const selected = filters.channel === ch.slug;
+            return (
+              <button
+                key={ch.slug}
+                type="button"
+                onClick={() => update({ channel: selected ? "" : ch.slug })}
+                aria-pressed={selected}
+                className={`inline-flex items-center gap-2 shrink-0 border-2 rounded-full px-3 py-2 text-xs font-semibold transition ${
+                  selected
+                    ? "border-billboard-ink bg-billboard-ink text-billboard-paper"
+                    : "border-billboard-ink/30 bg-billboard-paperDim hover:border-billboard-ink hover:bg-white"
+                }`}
+              >
+                <ChannelIcon slug={ch.slug} size="sm" />
+                <span>{ch.name}</span>
+                <span className={`font-mono text-[10px] ${selected ? "text-billboard-paper/70" : "text-billboard-inkSoft"}`}>
+                  LIVE
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
       <div className="mb-6 border-2 border-billboard-yellow bg-billboard-yellow/10 rounded p-3.5 flex flex-wrap items-center justify-between gap-3 text-sm">
         <span><strong>{loading ? "—" : publishers.length}</strong> verified publisher{publishers.length === 1 ? "" : "s"} currently visible.</span>
         <Link to="/trust/fraud-prevention" className="font-semibold underline">How verification and fraud checks work →</Link>
