@@ -24,7 +24,7 @@ const transportModule: ChannelModule = {
       "Advertise on minibus taxis, at ranks, and on the routes South Africans actually travel every day — vehicle branding, interior stickers, rank screens, and QR-code deals reaching the country's biggest daily-transit audience.",
     emoji: "🚐",
     category: "transport",
-    isLive: true,
+    isLive: false,
     bookingFlow: "request",
     minBudgetZAR: 300,
     pricingModels: [
