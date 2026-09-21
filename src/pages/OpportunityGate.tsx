@@ -19,9 +19,9 @@ export default function OpportunityGate({ business, publisher }: { business: Rea
   }, [user, profile?.role]);
 
   if (loading || (profile?.role === "publisher" && publisherVerified === null)) return <SkeletonBlock className="h-64 max-w-3xl mx-auto mt-16" />;
-  if (!user || !profile) return <Navigate to={`/opportunities/preview?next=${encodeURIComponent(location.pathname)}`} replace />;
+  if (!user || !profile) return <Navigate to={`/opportunities?next=${encodeURIComponent(location.pathname)}`} replace />;
   if (profile.role === "business" && profile.business_verified) return <>{business}</>;
   if (profile.role === "publisher" && publisherVerified) return <>{publisher}</>;
   if (profile.role === "admin") return <Navigate to="/admin" replace />;
-  return <Navigate to={`/opportunities/preview?next=${encodeURIComponent(location.pathname)}`} replace />;
+  return <Navigate to={`/opportunities?next=${encodeURIComponent(location.pathname)}`} replace />;
 }
