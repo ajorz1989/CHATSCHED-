@@ -8,12 +8,13 @@
  *   - influencer / podcast / website / radio — launched. Default ON. Their
  *     env var is a kill switch: set it to "false" to pull one back into
  *     "coming soon" without a code deploy. Leaving it unset means live.
- *   - sports / events / community / transport / informal-retail /
- *     associations / restaurants — registered but not yet launched
- *     (reverted from a premature all-7-at-once launch with no real supply
- *     in any of them — "claude to fix 2" item 23). Default OFF, same as
- *     any not-yet-launched channel: set that one channel's env var to
- *     "true" once it actually has real publishers/listings, not before.
+ *   - sports / events / community / associations / restaurants /
+ *     in-venue-screens — live by default. Their env vars remain emergency
+ *     kill switches so an individual channel can be temporarily pulled
+ *     back without a code deploy if operations require it.
+ *   - transport / informal-retail — intentionally kept in development and
+ *     disabled from the public marketplace/onboarding until those channels
+ *     are ready to launch.
  *
  * Adding a new (not-yet-launched) channel:
  *   1. Add the slug to ChannelSlug in channelTypes.ts
@@ -36,24 +37,13 @@ const FLAG_ENV_KEYS: Record<ChannelSlug, string | null> = {
   "podcast":      "VITE_CHANNEL_PODCAST_ENABLED",
   "website":      "VITE_CHANNEL_WEBSITE_ENABLED",
   "radio":        "VITE_CHANNEL_RADIO_ENABLED",
-  // Registered in schema_phase74 — not yet launched (see DEFAULT_ON below
-  // for why, and "claude to fix 2" item 23). Env var is the on-switch for
-  // whenever real supply exists, not a kill switch — it's off unless
-  // explicitly turned on, same as any not-yet-launched channel.
-  "sports":       "VITE_CHANNEL_SPORTS_ENABLED",
-  "events":       "VITE_CHANNEL_EVENTS_ENABLED",
-  "community":    "VITE_CHANNEL_COMMUNITY_ENABLED",
-  // Registered in schema_phase75 — same not-yet-launched status as above.
+  "sports":           "VITE_CHANNEL_SPORTS_ENABLED",
+  "events":           "VITE_CHANNEL_EVENTS_ENABLED",
+  "community":        "VITE_CHANNEL_COMMUNITY_ENABLED",
   "transport":        "VITE_CHANNEL_TRANSPORT_ENABLED",
   "informal-retail":  "VITE_CHANNEL_INFORMAL_RETAIL_ENABLED",
-  // Registered in schema_phase76 — same not-yet-launched status as above.
   "associations":     "VITE_CHANNEL_ASSOCIATIONS_ENABLED",
-  // Registered in schema_phase77 — same not-yet-launched status as above.
   "restaurants":      "VITE_CHANNEL_RESTAURANTS_ENABLED",
-  // Not yet launched. Ships off, same posture as the 7 reverted channels
-  // above — this one's creative-delivery workflow is genuinely manual in
-  // Phase 1 (see the channel module's own comment), so it should only go
-  // live once that's proven with real venues, not by default.
   "in-venue-screens": "VITE_CHANNEL_IN_VENUE_SCREENS_ENABLED",
 };
 
@@ -63,8 +53,23 @@ const FLAG_ENV_KEYS: Record<ChannelSlug, string | null> = {
  * required. Everything else defaults OFF until explicitly turned on.
  */
 const DEFAULT_ON: ChannelSlug[] = [
-  "influencer", "podcast", "website", "radio",
+  "influencer",
+  "podcast",
+  "website",
+  "radio",
+  "sports",
+  "events",
+  "community",
+  "associations",
+  "restaurants",
+  "in-venue-screens",
 ];
+
+/** Channels intentionally kept in development and never enabled by env flags. */
+const DEVELOPMENT_CHANNELS = new Set<ChannelSlug>([
+  "transport",
+  "informal-retail",
+]);
 
 /**
  * Whether an active ChatSched Business / Publisher Network subscription is
@@ -104,6 +109,7 @@ export function isMessageSafetyPrescanEnabled(): boolean {
 
 /** Returns true if the channel is ready for public use. */
 export function isChannelEnabled(slug: ChannelSlug): boolean {
+  if (DEVELOPMENT_CHANNELS.has(slug)) return false;
   const key = FLAG_ENV_KEYS[slug];
   if (key === null) return true; // always-on channel
 
