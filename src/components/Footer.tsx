@@ -57,12 +57,8 @@ export default function Footer() {
 
           {/* Trust & Help */}
           <div>
-<<<<<<< HEAD
             <h4 className={HEADING_CLASS}>Trust &amp; Help</h4>
-=======
-            <h4 className={HEADING_CLASS}>Trust & Help</h4>
             <Link to="/about" className={LINK_CLASS}>About ChatSched</Link>
->>>>>>> origin/about-page-merge
             <Link to="/how-it-works" className={LINK_CLASS}>How it works</Link>
             <Link to="/trust" className={LINK_CLASS}>{t("footer.trustCentre")}</Link>
             <Link to="/faq" className={LINK_CLASS}>FAQ</Link>
@@ -92,7 +88,7 @@ export default function Footer() {
             </div>
             <a
               href="mailto:info@chatsched.com?subject=Newsletter subscription&body=Please add me to the ChatSched newsletter."
-              className="inline-flex items-center gap-2 border-2 border-billboard-yellow text-billboard-yellow font-semibold text-sm px-4 py-2.5 rounded hover:bg-billboard-yellow hover:text-billboard-ink transition shrink-0"
+              className="inline-flex items-center gap-2 border-2 border-billboard-yellow text-billboard-yellow font-semibold text-sm px-4 py-2.5 rounded hover:bg-billboard-yellow hover:text-billboard-ink transition"
             >
               Subscribe via email
             </a>
