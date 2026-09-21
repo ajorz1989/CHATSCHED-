@@ -67,7 +67,6 @@ const Accessibility = lazy(() => import("./pages/Accessibility"));
 const Glossary = lazy(() => import("./pages/Glossary"));
 const Roadmap = lazy(() => import("./pages/Roadmap"));
 const BudgetCalculator = lazy(() => import("./pages/BudgetCalculator"));
-const EarningsEstimator = lazy(() => import("./pages/EarningsEstimator"));
 const ReachChecker = lazy(() => import("./pages/ReachChecker"));
 const ChannelQuiz = lazy(() => import("./pages/ChannelQuiz"));
 const Community = lazy(() => import("./pages/Community"));
