@@ -1,9 +1,7 @@
 /**
  * Events & Tournaments Channel Module
  *
- * Feature flag: VITE_CHANNEL_EVENTS_ENABLED (default off — same reasoning
- * as the sports channel: ships inactive until real verified organisers
- * exist, see schema_phase74_universal_channels.sql).
+ * Feature flag: VITE_CHANNEL_EVENTS_ENABLED (live by default; env var is an emergency kill switch).
  *
  * Connects advertisers with event and tournament organisers for
  * sponsorship placements tied to a specific date rather than an ongoing
