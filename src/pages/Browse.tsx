@@ -9,6 +9,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { usePublishers } from "../hooks/usePublishers";
+import { usePublisherRateCards } from "../hooks/usePublisherRateCards";
 import { getEnabledChannels } from "../lib/channelRegistry";
 import { formatCurrency } from "../lib/currency";
 import { CATEGORIES, PROVINCES, PLATFORMS, LANGUAGES, SA_CITIES_SUBURBS } from "../lib/constants";
@@ -88,6 +89,7 @@ function buildFilterChips(f: Filters, channels: ReturnType<typeof getEnabledChan
     const opt = GENDER_OPTIONS.find(o => o.value === f.gender);
     chips.push({ key: "gender", label: opt?.label ?? f.gender, onRemove: () => update({ gender: "" }) });
   }
+  if (f.hasRateCard) chips.push({ key: "rateCard", label: "Published rate card", onRemove: () => update({ hasRateCard: false }) });
   return chips;
 }
 
@@ -296,7 +298,7 @@ function FilterFields({
           label="Quality &amp; Trust"
           open={showQuality}
           onToggle={onToggleQuality}
-          count={(filters.verifiedOnly ? 1 : 0) + (filters.minRating > 0 ? 1 : 0) || undefined}
+          count={(filters.verifiedOnly ? 1 : 0) + (filters.minRating > 0 ? 1 : 0) + (filters.hasRateCard ? 1 : 0) || undefined}
         />
         {showQuality && (
           <div className="p-5 bg-billboard-paperDim border-t-2 border-billboard-ink space-y-4">
@@ -304,6 +306,13 @@ function FilterFields({
               <input type="checkbox" checked={filters.verifiedOnly} onChange={e => update({ verifiedOnly: e.target.checked })} className="accent-billboard-green w-4 h-4" />
               <span className="text-sm font-semibold">Verified publishers only</span>
             </label>
+            <label className="flex items-center gap-2 cursor-pointer select-none">
+              <input type="checkbox" checked={filters.hasRateCard} onChange={e => update({ hasRateCard: e.target.checked })} className="accent-billboard-green w-4 h-4" />
+              <span className="text-sm font-semibold">Published rate card</span>
+            </label>
+            <p className="text-xs text-billboard-inkSoft -mt-2">
+              Shows publishers who've broken pricing down by format (Story, Reel, bundle, etc.) instead of one flat number — a sign of a publisher who's thought through how they'd actually work with you.
+            </p>
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wide mb-2">Minimum rating</label>
               <div className="flex items-center gap-1">
@@ -330,6 +339,7 @@ export default function Browse() {
   const [showQuality, setShowQuality] = useState(false);
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
   const { publishers, loading, error } = usePublishers();
+  const { rateCardPublisherIds } = usePublisherRateCards();
 
   const update = (patch: Partial<Filters>) => setFilters(prev => ({ ...prev, ...patch }));
 
@@ -363,9 +373,9 @@ export default function Browse() {
     update({ languages: filters.languages.includes(l) ? filters.languages.filter(x => x !== l) : [...filters.languages, l] });
 
   const filtered = useMemo(() => {
-    const result = publishers.filter(p => matchesFilters(p, filters));
+    const result = publishers.filter(p => matchesFilters(p, filters, rateCardPublisherIds));
     return applySort(result, filters.sortBy);
-  }, [publishers, filters]);
+  }, [publishers, filters, rateCardPublisherIds]);
 
   const active = activeCount(filters);
 
@@ -380,7 +390,7 @@ export default function Browse() {
     <div className="max-w-6xl mx-auto px-5 py-16">
       <Seo
         title="Browse Publishers · ChatSched"
-        description="Search South African publishers and creators by channel, suburb, category, platform, engagement, reach, language, demographics and price."
+        description="Search South African publishers and creators by channel, suburb, category, platform, engagement, reach, language, demographics, rate card and price."
       />
 
       <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
@@ -449,9 +459,6 @@ export default function Browse() {
             </div>
           </div>
 
-          {/* Bug fix: error state was plain text with no illustration or
-              refresh button. Now uses EmptyState so it's consistent with
-              every other error state in the app. */}
           {error ? (
             <div className="border-[3px] border-dashed border-billboard-ink rounded">
               <EmptyState
