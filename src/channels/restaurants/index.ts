@@ -1,8 +1,7 @@
 /**
- * Restaurants & Cafés Channel Module — NOT YET LIVE
+ * Restaurants & Cafés Channel Module — LIVE
  *
- * Feature flag: VITE_CHANNEL_RESTAURANTS_ENABLED (default off — same
- * posture as every channel added since Phase 74).
+ * Feature flag: VITE_CHANNEL_RESTAURANTS_ENABLED (live by default; env var is an emergency kill switch).
  *
  * From the original expansion doc's Section 12. Deliberately paired with
  * Informal Retail rather than picked independently: same shape of
