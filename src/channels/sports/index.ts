@@ -1,5 +1,5 @@
 /**
- * Sports Teams & Leagues Channel Module — NOT YET LIVE
+ * Sports Teams & Leagues Channel Module — LIVE
  *
  * Feature flag: VITE_CHANNEL_SPORTS_ENABLED (default off — set to "true"
  * once real, verified team/league owners exist to list; see
