@@ -26,16 +26,6 @@ import { CloseIcon } from "../components/UiIcons";
 import ChannelIcon from "../components/ChannelIcon";
 import { PLATFORM_ICONS } from "../components/PlatformIcons";
 
-// BUG FIX: this file previously imported SocialMediaChannelIcon,
-// InfluencerChannelIcon, WebsiteChannelIcon, PodcastChannelIcon and
-// RadioChannelIcon, and built a BROWSE_CHANNEL_ICONS lookup table + a
-// `const Icon = BROWSE_CHANNEL_ICONS[ch.slug]` computation inside the
-// channel radio list — but the JSX never rendered `<Icon />`. It rendered
-// `<ChannelIcon slug={ch.slug} />` instead, a completely different
-// component. Five unused imports and a dead lookup table were shipping to
-// every visitor for nothing. Removed entirely — ChannelIcon was always
-// the one actually doing the work.
-
 const AGE_OPTIONS = [
   { value: "", label: "Any age group" },
   { value: "18-24", label: "18–24 (Gen Z / Students)" },
@@ -52,13 +42,6 @@ const GENDER_OPTIONS = [
   { value: "mixed", label: "Mixed / balanced" },
 ];
 
-// New: "featured_desc" and "response_asc" — Featured Placement subscribers
-// (a real paid product, see FEATURED_PLACEMENT_MONTHLY_PRICE in
-// constants.ts) and average response time (avg_response_hours, already
-// shown on every PublisherCard via ResponseTimeBadge and called out as the
-// single biggest earnings driver on the Earnings dashboard) previously had
-// no way to be sorted by, even though the underlying data has existed on
-// the Publisher type for a while.
 const SORT_OPTIONS = [
   { value: "score", label: "Best match" },
   { value: "featured_desc", label: "Featured first" },
@@ -77,15 +60,6 @@ interface FilterChip {
   onRemove: () => void;
 }
 
-/**
- * One chip per *individually active* filter — including one per selected
- * platform/language, not one combined chip — so narrowing by suburb,
- * price, verified-only and a follower range (the exact scenario from the
- * audit) can be backed off one at a time instead of only via "Clear all".
- * Field list mirrors activeCount()/summarizeFilters() in browseFilters.ts;
- * lives here rather than there since it needs the channel/category display
- * lookups, which are a UI concern, not a filter-matching one.
- */
 function buildFilterChips(f: Filters, channels: ReturnType<typeof getEnabledChannels>, update: (patch: Partial<Filters>) => void): FilterChip[] {
   const chips: FilterChip[] = [];
   if (f.query) chips.push({ key: "query", label: `"${f.query}"`, onRemove: () => update({ query: "" }) });
@@ -164,13 +138,6 @@ function FilterIcon() {
   );
 }
 
-/**
- * The entire filter form — used both in the always-visible desktop sidebar
- * and inside the mobile bottom sheet, so there's exactly one place that
- * knows how to render a filter field. Kept as a real module-level
- * component (not an inline function inside Browse) so it isn't redefined
- * on every keystroke, which would remount it and drop input focus.
- */
 function FilterFields({
   filters, update, channels, togglePlatform, toggleLanguage,
   showAudience, onToggleAudience, showQuality, onToggleQuality,
@@ -187,7 +154,6 @@ function FilterFields({
 }) {
   return (
     <>
-      {/* Keyword */}
       <div className="border-[3px] border-billboard-ink rounded p-5 bg-billboard-paperDim">
         <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5">Keyword</label>
         <input
@@ -199,7 +165,6 @@ function FilterFields({
         />
       </div>
 
-      {/* Channel */}
       <div className="border-[3px] border-billboard-ink rounded p-5 bg-billboard-paperDim">
         <h3 className="font-bold text-sm mb-3">Channel</h3>
         <div className="space-y-1.5">
@@ -216,9 +181,8 @@ function FilterFields({
         </div>
       </div>
 
-      {/* Location & Category */}
       <div className="border-[3px] border-billboard-ink rounded p-5 bg-billboard-paperDim">
-        <h3 className="font-bold text-sm mb-4">Location & Category</h3>
+        <h3 className="font-bold text-sm mb-4">Location &amp; Category</h3>
         <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5">Category</label>
         <select value={filters.category} onChange={e => update({ category: e.target.value })} className="w-full border-2 border-billboard-ink rounded px-2.5 py-2 mb-4 bg-white text-sm">
           <option value="">All categories</option>
@@ -236,11 +200,6 @@ function FilterFields({
           placeholder="e.g. Johannesburg"
           className="w-full border-2 border-billboard-ink rounded px-2.5 py-2 mb-4 bg-white text-sm"
         />
-        {/* BUG NOTE: city is deliberately free text (not every city a
-            publisher enters is in SA_CITIES_SUBURBS), so it can't be
-            cross-validated against province here without rejecting valid
-            typed cities. Flagging in a comment rather than "fixing" with a
-            hard constraint that would create false negatives. */}
         <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5">Suburb</label>
         <select value={filters.suburb} onChange={e => update({ suburb: e.target.value })} className="w-full border-2 border-billboard-ink rounded px-2.5 py-2 bg-white text-sm">
           <option value="">All suburbs</option>
@@ -252,7 +211,6 @@ function FilterFields({
         </select>
       </div>
 
-      {/* Platform */}
       <div className="border-[3px] border-billboard-ink rounded p-5 bg-billboard-paperDim">
         <h3 className="font-bold text-sm mb-3">Platform</h3>
         <div className="space-y-2">
@@ -269,17 +227,15 @@ function FilterFields({
         </div>
       </div>
 
-      {/* Price */}
       <div className="border-[3px] border-billboard-ink rounded p-5 bg-billboard-paperDim">
         <h3 className="font-bold text-sm mb-3">Max price: <span className="font-mono">{formatCurrency(filters.maxPrice)}</span></h3>
         <input type="range" min={MIN_PRICE_PER_POST} max={5000} step={50} value={filters.maxPrice} onChange={e => update({ maxPrice: Number(e.target.value) })} className="w-full accent-billboard-green mb-2" />
         <div className="flex justify-between text-xs text-billboard-inkSoft font-mono"><span>{formatCurrency(MIN_PRICE_PER_POST)}</span><span>{formatCurrency(5000)}</span></div>
       </div>
 
-      {/* Audience & Reach — collapsible */}
       <div className="border-[3px] border-billboard-ink rounded overflow-hidden">
         <SectionToggle
-          label="Audience & Reach"
+          label="Audience &amp; Reach"
           open={showAudience}
           onToggle={onToggleAudience}
           count={[filters.minFollowers, filters.maxFollowers, filters.minMonthlyReach, filters.minEngagement, filters.languages.length, filters.ageDemographic, filters.gender].filter(Boolean).length || undefined}
@@ -335,10 +291,9 @@ function FilterFields({
         )}
       </div>
 
-      {/* Quality & Trust — collapsible */}
       <div className="border-[3px] border-billboard-ink rounded overflow-hidden">
         <SectionToggle
-          label="Quality & Trust"
+          label="Quality &amp; Trust"
           open={showQuality}
           onToggle={onToggleQuality}
           count={(filters.verifiedOnly ? 1 : 0) + (filters.minRating > 0 ? 1 : 0) || undefined}
@@ -352,9 +307,9 @@ function FilterFields({
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wide mb-2">Minimum rating</label>
               <div className="flex items-center gap-1">
-                <button onClick={() => update({ minRating: 0 })} className={`text-xs font-mono px-2 py-1 rounded border-2 transition ${filters.minRating === 0 ? "border-billboard-ink bg-billboard-ink text-white" : "border-billboard-inkSoft text-billboard-inkSoft"}`}>Any</button>
+                <button type="button" onClick={() => update({ minRating: 0 })} className={`text-xs font-mono px-2 py-1 rounded border-2 transition ${filters.minRating === 0 ? "border-billboard-ink bg-billboard-ink text-white" : "border-billboard-inkSoft text-billboard-inkSoft"}`}>Any</button>
                 {[1, 2, 3, 4, 5].map(n => (
-                  <button key={n} onClick={() => update({ minRating: n })} className={`text-lg leading-none transition ${n <= filters.minRating ? "text-billboard-yellow" : "text-billboard-paperDim"}`}>★</button>
+                  <button type="button" key={n} onClick={() => update({ minRating: n })} className={`text-lg leading-none transition ${n <= filters.minRating ? "text-billboard-yellow" : "text-billboard-paperDim"}`}>★</button>
                 ))}
               </div>
               {filters.minRating > 0 && <p className="text-xs text-billboard-inkSoft mt-1">{filters.minRating}+ stars</p>}
@@ -378,13 +333,13 @@ export default function Browse() {
 
   const update = (patch: Partial<Filters>) => setFilters(prev => ({ ...prev, ...patch }));
 
-  // Same body-scroll-lock as BottomNav's notification sheet, so the page
-  // behind it doesn't scroll while the filter sheet is open.
+  // Bug fix: previously the cleanup was inside `if (filterSheetOpen)` so
+  // overflow:hidden was never cleared if the component unmounted while the
+  // sheet was open. Now the effect always returns cleanup.
   useEffect(() => {
-    if (filterSheetOpen) {
-      document.body.style.overflow = "hidden";
-      return () => { document.body.style.overflow = ""; };
-    }
+    if (!filterSheetOpen) return;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
   }, [filterSheetOpen]);
 
   useEffect(() => {
@@ -396,11 +351,6 @@ export default function Browse() {
     return () => document.removeEventListener("keydown", onKey);
   }, [filterSheetOpen]);
 
-  // Keeps the URL in sync with every filter change — this is what makes a
-  // saved search's "View results" link, and the link in a saved-search
-  // email alert, actually restore the full search rather than the 4
-  // fields this used to sync. `replace: true` so filtering doesn't spam
-  // the back button with a history entry per keystroke.
   useEffect(() => {
     setSearchParams(filtersToSearchParams(filters), { replace: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -419,13 +369,6 @@ export default function Browse() {
 
   const active = activeCount(filters);
 
-  // BUG FIX: "Map view" previously linked to a bare /map with no query
-  // string, so filtering down to (say) "Fitness, Western Cape, under
-  // R2000" and then clicking through to the map view lost every filter —
-  // the map started from the full unfiltered publisher list. Reusing the
-  // same filtersToSearchParams() saved-search relies on carries the exact
-  // current search across, exactly like a saved search's own "View
-  // results" link does.
   const mapHref = (() => {
     const params = filtersToSearchParams(filters);
     const qs = params.toString();
@@ -442,7 +385,7 @@ export default function Browse() {
 
       <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
         <div>
-          <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">
+          <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-ink text-billboard-ink px-3 py-1.5 rounded mb-3">
             Browse
           </span>
           <h1 className="text-3xl md:text-4xl mb-2">Find where your customers already spend their attention.</h1>
@@ -452,7 +395,7 @@ export default function Browse() {
           </p>
         </div>
         {active > 0 && (
-          <button onClick={() => setFilters(makeDefaults({}))} className="text-sm font-semibold text-billboard-red underline">
+          <button type="button" onClick={() => setFilters(makeDefaults({}))} className="text-sm font-semibold text-billboard-inkSoft underline">
             Clear all ({active})
           </button>
         )}
@@ -469,7 +412,6 @@ export default function Browse() {
       </div>
 
       <div className="grid md:grid-cols-[280px_1fr] gap-10">
-        {/* ── Sidebar ── */}
         <aside className="hidden md:block space-y-4 sticky top-16 max-h-[calc(100vh-5rem)] overflow-y-auto pr-1">
           <FilterFields
             filters={filters}
@@ -484,7 +426,6 @@ export default function Browse() {
           />
         </aside>
 
-        {/* ── Results ── */}
         <div>
           <FilterChipRow chips={buildFilterChips(filters, channels, update)} />
           <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
@@ -493,6 +434,7 @@ export default function Browse() {
             </p>
             <div className="flex items-center gap-2">
               <button
+                type="button"
                 onClick={() => setFilterSheetOpen(true)}
                 className="md:hidden inline-flex items-center gap-1.5 border-2 border-billboard-ink rounded px-3 py-1.5 text-sm font-semibold bg-white"
               >
@@ -507,9 +449,25 @@ export default function Browse() {
             </div>
           </div>
 
+          {/* Bug fix: error state was plain text with no illustration or
+              refresh button. Now uses EmptyState so it's consistent with
+              every other error state in the app. */}
           {error ? (
-            <div className="border-[3px] border-dashed border-billboard-ink rounded p-10 text-center text-billboard-inkSoft">
-              Couldn't load publishers — try refreshing.
+            <div className="border-[3px] border-dashed border-billboard-ink rounded">
+              <EmptyState
+                kind="search"
+                title="Couldn’t load publishers"
+                description="Something went wrong loading the list. Try refreshing the page."
+                action={
+                  <button
+                    type="button"
+                    onClick={() => window.location.reload()}
+                    className="inline-flex items-center gap-2 border-[3px] border-billboard-ink font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition text-sm bg-billboard-yellow"
+                  >
+                    Refresh page
+                  </button>
+                }
+              />
             </div>
           ) : loading ? (
             <PublisherGridSkeleton count={6} />
@@ -520,7 +478,7 @@ export default function Browse() {
                 title="No publishers match those filters"
                 description="This list grows every week — try widening your filters or check back soon."
                 action={
-                  <button onClick={() => setFilters(makeDefaults({}))} className="inline-flex items-center gap-2 border-[3px] border-billboard-ink font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition text-sm bg-white">
+                  <button type="button" onClick={() => setFilters(makeDefaults({}))} className="inline-flex items-center gap-2 border-[3px] border-billboard-ink font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition text-sm bg-white">
                     Clear all filters
                   </button>
                 }
@@ -556,7 +514,7 @@ export default function Browse() {
           <div className="w-10 h-1 bg-billboard-ink/20 rounded-full mx-auto mt-2.5 mb-1" aria-hidden="true" />
           <div className="flex items-center justify-between px-5 py-3 border-b-2 border-billboard-paperDim shrink-0">
             <h2 id="filter-sheet-heading" className="font-display text-base">Filters</h2>
-            <button onClick={() => setFilterSheetOpen(false)} aria-label="Close filters" className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-billboard-paperDim"><CloseIcon className="w-4 h-4" /></button>
+            <button type="button" onClick={() => setFilterSheetOpen(false)} aria-label="Close filters" className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-billboard-paperDim"><CloseIcon className="w-4 h-4" /></button>
           </div>
           <div className="overflow-y-auto flex-1 p-5 space-y-4">
             <FilterFields
@@ -573,11 +531,12 @@ export default function Browse() {
           </div>
           <div className="shrink-0 border-t-2 border-billboard-ink p-4 flex items-center gap-3 bg-white">
             {active > 0 && (
-              <button onClick={() => setFilters(makeDefaults({}))} className="text-sm font-semibold text-billboard-red underline shrink-0">
+              <button type="button" onClick={() => setFilters(makeDefaults({}))} className="text-sm font-semibold text-billboard-inkSoft underline shrink-0">
                 Clear all
               </button>
             )}
             <button
+              type="button"
               onClick={() => setFilterSheetOpen(false)}
               className="flex-1 bg-billboard-green border-[3px] border-billboard-greenDeep text-white font-bold py-3 rounded hover:bg-billboard-greenDeep transition"
             >
