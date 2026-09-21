@@ -93,10 +93,46 @@ function ChannelsSection() {
   return <section className="py-16 bg-billboard-paperDim border-b-[3px] border-billboard-ink"><div className="max-w-6xl mx-auto px-5"><span className="eyebrow">{t("channels.badge")}</span><h2 className="text-3xl md:text-4xl mb-3 max-w-2xl">{t("channels.title")}</h2><p className="text-billboard-inkSoft max-w-2xl mb-9">{t("channels.subtitle")}</p><LiveChannelTabs/></div></section>;
 }
 
+function OpportunitiesSection() {
+  const { t } = useTranslation("home");
+  const reveal = useReveal<HTMLDivElement>();
+  return (
+    <section className="py-16 md:py-20 bg-billboard-ink text-billboard-paper border-b-[3px] border-billboard-yellow">
+      <div className="max-w-6xl mx-auto px-5" ref={reveal.ref}>
+        <div className={reveal.className}>
+          <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-10 items-center">
+            <div>
+              <span className="eyebrow light">{t("opportunities.badge")}</span>
+              <h2 className="font-display text-4xl md:text-6xl leading-[1.02] mb-5">{t("opportunities.title")}</h2>
+              <p className="text-billboard-paperDim text-lg max-w-2xl leading-relaxed mb-7">{t("opportunities.subtitle")}</p>
+              <div className="flex flex-wrap gap-3">
+                <Link to="/opportunities" className="brand-button yellow">{t("opportunities.primaryCta")}</Link>
+                <Link to="/for-publishers" className="brand-button light">{t("opportunities.publisherCta")}</Link>
+              </div>
+            </div>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div className="border-[3px] border-billboard-yellow rounded-lg p-6 bg-white/5">
+                <div className="font-mono text-[10px] uppercase tracking-wider text-billboard-yellow mb-2">{t("opportunities.businessBadge")}</div>
+                <h3 className="font-display text-xl mb-2">{t("opportunities.businessTitle")}</h3>
+                <p className="text-sm text-billboard-paperDim">{t("opportunities.businessBody")}</p>
+              </div>
+              <div className="border-[3px] border-white/30 rounded-lg p-6 bg-white/5">
+                <div className="font-mono text-[10px] uppercase tracking-wider text-billboard-yellow mb-2">{t("opportunities.publisherBadge")}</div>
+                <h3 className="font-display text-xl mb-2">{t("opportunities.publisherTitle")}</h3>
+                <p className="text-sm text-billboard-paperDim">{t("opportunities.publisherBody")}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function LocalSection() {
   const { t } = useTranslation("home");
   const reveal = useReveal<HTMLDivElement>();
-  const items = ["township", "transport", "associations", "suburbs"] as const;
+  const items = ["associations", "suburbs", "design", "activeChannels"] as const;
   return <section className="py-16 bg-white border-b-[3px] border-billboard-ink"><div className="max-w-6xl mx-auto px-5" ref={reveal.ref}><div className={reveal.className}><span className="eyebrow">{t("local.badge")}</span><h2 className="text-3xl md:text-5xl mb-3 max-w-3xl">{t("local.title")}</h2><p className="text-billboard-inkSoft max-w-2xl mb-9">{t("local.subtitle")}</p><div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">{items.map(i=><div key={i} className="border-[3px] border-billboard-ink rounded-lg p-5 bg-billboard-paperDim hover:-translate-y-1 hover:shadow-blockSm transition"><h3 className="font-display text-lg mb-2">{t(`local.items.${i}.title`)}</h3><p className="text-sm text-billboard-inkSoft">{t(`local.items.${i}.body`)}</p></div>)}</div><div className="mt-8"><Link to="/audience-finder" className="brand-button dark">{t("local.cta")}</Link></div></div></div></section>;
 }
 
@@ -148,6 +184,7 @@ export default function Home() {
     <ComparisonSection/>
     <MarketplaceSection publishers={publishers} loading={loading}/>
     <ChannelsSection/>
+    <OpportunitiesSection/>
     <LocalSection/>
     <LayersSection/>
     <HowSection/>
