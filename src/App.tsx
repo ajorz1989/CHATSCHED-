@@ -95,7 +95,7 @@ const PublisherRelationships = lazy(() => import("./pages/PublisherRelationships
 const BusinessOpportunities = lazy(() => import("./pages/BusinessOpportunities"));
 const OpportunityFeed = lazy(() => import("./pages/OpportunityFeed"));
 const OpportunityGate = lazy(() => import("./pages/OpportunityGate"));
-const OpportunityPreview = lazy(() => import("./pages/OpportunityPreview"));
+const Opportunities = lazy(() => import("./pages/Opportunities"));
 const Admin = lazy(() => import("./pages/Admin"));
 const PaymentResult = lazy(() => import("./pages/PaymentResult"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -189,7 +189,7 @@ function RoutedContent() {
         <Route path="/glossary" element={<Glossary />} />
         <Route path="/roadmap" element={<Roadmap />} />
         <Route path="/budget-calculator" element={<BudgetCalculator />} />
-        <Route path="/earnings-estimator" element={<EarningsEstimator />} />
+        <Route path="/earnings-estimator" element={<Navigate to="/for-publishers#earnings-estimator" replace />} />
         <Route path="/reach-checker" element={<ReachChecker />} />
         <Route path="/channel-quiz" element={<ChannelQuiz />} />
         <Route path="/community" element={<Community />} />
@@ -212,15 +212,17 @@ function RoutedContent() {
         <Route path="/dashboard/earnings" element={<RequireAuth role="publisher"><EarningsDashboard /></RequireAuth>} />
         <Route path="/business/publishers" element={<RequireAuth role="business"><BusinessPublisherRelationships /></RequireAuth>} />
         <Route path="/publisher/relationships" element={<RequireAuth role="publisher"><PublisherRelationships /></RequireAuth>} />
-        <Route path="/opportunities" element={<OpportunityGate business={<BusinessOpportunities />} publisher={<OpportunityFeed />} />} />
-        <Route path="/opportunities/preview" element={<OpportunityPreview />} />
-        <Route path="/business/opportunities" element={<Navigate to="/opportunities" replace />} />
-        <Route path="/publisher/opportunities" element={<Navigate to="/opportunities" replace />} />
+        <Route path="/opportunities" element={<Opportunities />} />
+        <Route path="/opportunities/feed" element={<OpportunityGate business={<BusinessOpportunities />} publisher={<OpportunityFeed />} />} />
+        <Route path="/opportunities/preview" element={<Navigate to="/opportunities" replace />} />
+        <Route path="/business/opportunities" element={<Navigate to="/opportunities/feed" replace />} />
+        <Route path="/publisher/opportunities" element={<Navigate to="/opportunities/feed" replace />} />
         <Route path="/admin" element={<RequireAuth role="admin"><Admin /></RequireAuth>} />
         <Route path="/payment/return" element={<RequireAuth><PaymentResult status="return" /></RequireAuth>} />
         <Route path="/payment/cancel" element={<RequireAuth><PaymentResult status="cancel" /></RequireAuth>} />
         <Route path="/channels" element={<ChannelHub />} />
-        <Route path="/network" element={<MediaNetwork />} />
+        <Route path="/network" element={<Navigate to="/channels" replace />} />
+        <Route path="/media-network" element={<MediaNetwork />} />
         <Route path="/channels/:slug" element={<ChannelPage />} />
         <Route path="/t/:slug" element={<TrackRedirect />} />
         <Route path="/media-kit" element={<MediaKit />} />
