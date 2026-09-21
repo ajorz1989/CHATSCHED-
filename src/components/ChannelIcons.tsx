@@ -1,8 +1,7 @@
 import { useId } from "react";
 
 /**
- * Modern gradient icons for the four live-launch channels (Influencer,
- * Website, Podcast, Radio) — a deliberately richer, more decorative
+ * Modern gradient icons for the live advertising channel UI — a deliberately richer, more decorative
  * treatment than the flat-stroke UiIcons/CategoryIcon family, reserved for
  * this one moment on the homepage where the brief calls for something
  * more eye-catching. Gradient stops stay within the existing billboard
