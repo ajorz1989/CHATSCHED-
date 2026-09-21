@@ -8,7 +8,7 @@ type TabKey = "business" | "publisher";
 const BUSINESS_STEPS = [
   { title: "Explore the right channel", body: "Browse available publishers and media inventory across social, influencer, website, podcast and radio by channel, audience, category and location." },
   { title: "Activate and send your brief", body: "Activate ChatSched Business when you're ready to request a booking, then describe the goal, placement, audience, budget and timing you need." },
-  { title: "Track the booking to delivery", body: "Follow the request through review, payment, scheduling and delivery. Depending on the channel, proof can include screenshots, links, audio evidence or photos." },
+  { title: "Track the booking to delivery", body: "Follow the request through review, payment, scheduling and delivery. Depending on the channel, proof can include screenshots, links, audio evidence or live delivery notes." },
 ];
 const OWNER_STEPS = [
   { title: "Create your publisher profile", body: "List your channel, audience, advertising methods, pricing and availability so businesses can understand what you offer." },
@@ -46,7 +46,7 @@ const FLOW_SCENARIOS: FlowScenario[] = [
     ],
     businessName: "Bean & Bay Coffee Club",
     tags: ["Social Media", "Johannesburg"],
-    quote: ""Feature our new autumn menu with a clear local call-to-action."",
+    quote: "Feature our new autumn menu with a clear local call-to-action.",
     audience: "Local food & lifestyle audience",
     adFormat: "Sponsored social post",
     timing: "Agreed posting window",
@@ -67,7 +67,7 @@ const FLOW_SCENARIOS: FlowScenario[] = [
     ],
     businessName: "Sandton Nail Studio",
     tags: ["Influencer", "Johannesburg"],
-    quote: ""Create a short-form review of our new gel-extension service, filmed in-studio."",
+    quote: "Create a short-form review of our new gel-extension service, filmed in-studio.",
     audience: "Beauty & lifestyle followers",
     adFormat: "Short-form sponsored video",
     timing: "Filming + agreed publish date",
@@ -88,7 +88,7 @@ const FLOW_SCENARIOS: FlowScenario[] = [
     ],
     businessName: "Gqeberha Hardware Co.",
     tags: ["Podcast", "Eastern Cape"],
-    quote: ""Run a short host-read mention of our Saturday in-store sale in this week's episode."",
+    quote: "Run a short host-read mention of our Saturday in-store sale in this week's episode.",
     audience: "Listeners around the show's topic and region",
     adFormat: "Host-read sponsor mention",
     timing: "Agreed episode / air date",
@@ -109,7 +109,7 @@ const FLOW_SCENARIOS: FlowScenario[] = [
     ],
     businessName: "Cape Home Solar",
     tags: ["Website", "Cape Town"],
-    quote: ""Place our home-energy offer where readers already browse local services."",
+    quote: "Place our home-energy offer where readers already browse local services.",
     audience: "Website visitors matching the site's niche",
     adFormat: "Banner or sponsored content placement",
     timing: "Agreed placement dates",
@@ -130,7 +130,7 @@ const FLOW_SCENARIOS: FlowScenario[] = [
     ],
     businessName: "Khaya Home Stores",
     tags: ["Radio", "Western Cape"],
-    quote: ""Promote our weekend sale with a 30-second community-radio spot."",
+    quote: "Promote our weekend sale with a 30-second community-radio spot.",
     audience: "Local listeners across the station's coverage area",
     adFormat: "30-second commercial or host-read",
     timing: "Confirmed schedule / air window",
@@ -146,16 +146,16 @@ const PROCESS_FAQS: Record<TabKey, { q: string; a: string }[]> = {
   business: [
     { q: "How do I know a channel's audience is real?", a: "We manually check every publisher before they're listed — real audience details, not just a follower count." },
     { q: "Do I need a contract?", a: "There is no long-term contract required to use the marketplace. You choose the bookings and campaigns you want to run, subject to the applicable activation and campaign terms." },
-    { q: "What happens after I submit a request?", a: "The publisher reviews the request and can approve, decline, or discuss it before anything is scheduled. Once the booking is accepted, payment and delivery follow the applicable channel flow." },
-    { q: "Which channels can I request?", a: "Available channels currently include social media, influencer, website, podcast and radio. More channel types are registered in the platform and can be launched as verified supply becomes available." },
-    { q: "Where can campaigns run?", a: "ChatSched is built for South African advertising, with channel and publisher availability varying by location. Filter by geography and audience when you browse." },
+    { q: "What happens after I submit a request?", a: "The publisher reviews the request and can approve, decline, or discuss it before anything is scheduled. Once the booking is accepted, payment and delivery details are tracked inside ChatSched." },
+    { q: "Which channels can I request?", a: "Available channels currently include social media, influencer, website, podcast and radio. More channel types are registered in the platform and can be launched over time." },
+    { q: "Where can campaigns run?", a: "ChatSched is built for South African advertising, with channel and publisher availability varying by location. Filter by geography and audience when you browse opportunities." },
   ],
   publisher: [
-    { q: "What does joining involve?", a: "Create your publisher profile, provide your channel details and complete the review process. Publisher Network activation is required for the paid opportunity and request-management features." },
+    { q: "What does joining involve?", a: "Create your publisher profile, provide your channel details and complete the review process. Publisher Network activation is required for the paid opportunities listed in the marketplace." },
     { q: "Can I decline a request?", a: "Yes — every request is yours to accept, decline, or discuss before anything is scheduled." },
     { q: "Do I control scheduling?", a: "Yes. Once you approve a request, you choose when it goes live and mark it done yourself." },
     { q: "Is there a minimum audience size to apply?", a: "We review every application on its own merits — reach out and we'll walk you through it." },
-    { q: "Where can I list my audience or inventory?", a: "ChatSched is designed for South African publishers and media owners. Your listing can describe its local, regional or national coverage, and businesses can filter by geography when browsing." },
+    { q: "Where can I list my audience or inventory?", a: "ChatSched is designed for South African publishers and media owners. Your listing can describe its local, regional or national coverage, and the inventory you want to sell." },
   ],
 };
 
@@ -184,7 +184,7 @@ function ChannelFlowMockup({ scenario }: { scenario: FlowScenario }) {
             type="button"
             aria-pressed={active === i}
             onClick={() => setActive(i)}
-            className={`px-4 py-4 text-left transition-colors ${i > 0 ? "md:border-l-[3px] border-t-[3px] md:border-t-0 border-billboard-ink" : ""} ${active === i ? accentClasses : "bg-billboard-paper hover:bg-billboard-paperDim"}`}
+            className={`px-4 py-4 text-left transition-colors ${i > 0 ? "md:border-l-[3px] border-t-[3px] md:border-t-0 border-billboard-ink" : ""} ${active === i ? accentClasses : "bg-billboard-paperDim"}`}
           >
             <div className="flex items-center justify-between gap-2">
               <span className={`font-mono text-[10px] font-bold ${active === i && scenario.channelAccent === "green" ? "text-white/80" : "text-billboard-inkSoft"}`}>{s.label}</span>
@@ -261,9 +261,9 @@ function ChannelFlowMockup({ scenario }: { scenario: FlowScenario }) {
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-2 mt-3 text-center">
-                <div className="border border-billboard-ink/15 rounded p-2 bg-white"><div className="font-mono text-[9px] uppercase text-billboard-inkSoft">Booking</div><div className="text-xs font-bold mt-0.5">Tracked</div></div>
-                <div className="border border-billboard-ink/15 rounded p-2 bg-white"><div className="font-mono text-[9px] uppercase text-billboard-inkSoft">Delivery</div><div className="text-xs font-bold mt-0.5">Logged</div></div>
-                <div className="border border-billboard-ink/15 rounded p-2 bg-white"><div className="font-mono text-[9px] uppercase text-billboard-inkSoft">Payout</div><div className="text-xs font-bold mt-0.5">Tracked</div></div>
+                <div className="border border-billboard-ink/15 rounded p-2 bg-white"><div className="font-mono text-[9px] uppercase text-billboard-inkSoft">Booking</div><div className="text-xs font-bold">Booked</div></div>
+                <div className="border border-billboard-ink/15 rounded p-2 bg-white"><div className="font-mono text-[9px] uppercase text-billboard-inkSoft">Delivery</div><div className="text-xs font-bold">Live</div></div>
+                <div className="border border-billboard-ink/15 rounded p-2 bg-white"><div className="font-mono text-[9px] uppercase text-billboard-inkSoft">Payout</div><div className="text-xs font-bold">Pending</div></div>
               </div>
             </div>
           )}
@@ -305,7 +305,7 @@ function FlowMockups() {
             type="button"
             aria-pressed={scenarioIndex === i}
             onClick={() => setScenarioIndex(i)}
-            className={`shrink-0 snap-start font-mono text-xs font-bold uppercase tracking-wide px-3.5 py-2 rounded-full border-2 transition ${scenarioIndex === i ? "border-billboard-ink bg-billboard-ink text-billboard-paper" : "border-billboard-ink/25 bg-white text-billboard-inkSoft hover:border-billboard-ink"}`}
+            className={`shrink-0 snap-start font-mono text-xs font-bold uppercase tracking-wide px-3.5 py-2 rounded-full border-2 transition ${scenarioIndex === i ? "border-billboard-ink bg-billboard-yellow" : "border-billboard-ink/40 bg-white"}`}
           >
             {label}
           </button>
@@ -380,11 +380,10 @@ export default function HowItWorks() {
         ))}
       </div>
 
-      {/* See it in action */}
       <section className="mb-16">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-5">
           <div className="max-w-2xl">
-            <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-greenDeep text-billboard-greenDeep px-3 py-1.5 rounded mb-3">Interactive examples</span>
+            <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-greenDeep text-billboard-greenDeep px-3 py-1.5 rounded mb-3">Interactive flow</span>
             <h2 className="font-display text-2xl md:text-3xl mb-2">See it in action</h2>
             <p className="text-sm text-billboard-inkSoft leading-relaxed">
               One platform, different media. Switch channels to see how the same core workflow adapts to a social post, creator content, podcast sponsorship, website placement or radio spot.
@@ -422,7 +421,7 @@ export default function HowItWorks() {
             <span className="font-mono text-[10px] uppercase tracking-wider font-bold">Choose your route</span>
             <h2 className="font-display text-2xl mt-1">Self-serve or let ChatSched coordinate it.</h2>
             <p className="text-sm text-billboard-inkSoft max-w-2xl mt-2 leading-relaxed">
-              Some bookings are straightforward enough to handle yourself. For a multi-channel campaign, you can send one brief and have a ChatSched campaign manager coordinate the media plan and publisher schedule.
+              Some bookings are straightforward enough to handle yourself. For a multi-channel campaign, you can send one brief and have a ChatSched campaign manager coordinate the media plan and publishers on your behalf.
             </p>
           </div>
           <div className="grid md:grid-cols-2 divide-y-[3px] md:divide-y-0 md:divide-x-[3px] divide-billboard-ink">
@@ -433,8 +432,8 @@ export default function HowItWorks() {
             </div>
             <div className="p-6">
               <h3 className="font-display text-xl mb-2">ChatSched Agency</h3>
-              <p className="text-sm text-billboard-inkSoft leading-relaxed mb-4">Send your campaign goal, audience, channels, budget and dates. A campaign manager reviews the brief and coordinates the next steps with you.</p>
-              <Link to="/build-my-campaign" className="inline-flex items-center gap-2 bg-billboard-ink text-white border-[3px] border-billboard-ink font-bold px-4 py-2.5 rounded text-sm hover:-translate-y-0.5 transition">Build a campaign →</Link>
+              <p className="text-sm text-billboard-inkSoft leading-relaxed mb-4">Send your campaign goal, audience, channels, budget and dates. A campaign manager reviews the brief and coordinates the media plan and publishers.</p>
+              <Link to="/build-my-campaign" className="inline-flex items-center gap-2 bg-billboard-ink text-white border-[3px] border-billboard-ink font-bold px-4 py-2.5 rounded text-sm hover:-translate-y-0.5 transition">Build my campaign →</Link>
             </div>
           </div>
         </div>
@@ -461,7 +460,6 @@ export default function HowItWorks() {
           </div>
         </div>
       </section>
-
 
       <div className="max-w-2xl mx-auto mb-16">
         <h2 className="font-display text-xl mb-2 text-center">Guided steps &amp; FAQ</h2>
