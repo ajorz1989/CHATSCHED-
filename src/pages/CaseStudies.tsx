@@ -1,13 +1,14 @@
 import { Link } from "react-router-dom";
 import Seo from "../components/Seo";
 import ChannelIcon from "../components/ChannelIcon";
+import type { ChannelSlug } from "../lib/channelTypes";
 import { getEnabledChannels } from "../lib/channelRegistry";
 
 type CaseStudy = {
   id: string;
   label: string;
   title: string;
-  channelSlugs: string[];
+  channelSlugs: ChannelSlug[];
   challenge: string;
   strategy: string;
   result: string;
