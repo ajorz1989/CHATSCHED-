@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useAuth } from "./useAuth";
 import { supabase } from "../lib/supabase";
 import type { Notification } from "../lib/types";
@@ -19,6 +19,10 @@ export function useNotifications() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loaded, setLoaded] = useState(false);
+  // Header and BottomNav both consume this hook. Give each mounted hook instance
+  // its own realtime topic so Supabase does not merge the subscriptions into one
+  // channel and reject callbacks added after that channel has subscribed.
+  const channelInstanceId = useRef(Math.random().toString(36).slice(2));
 
   const refreshUnreadCount = useCallback(async () => {
     if (!user) return;
@@ -52,7 +56,7 @@ export function useNotifications() {
     refreshUnreadCount();
 
     const channel = supabase
-      .channel(`notifications:${user.id}`)
+      .channel(`notifications:${user.id}:${channelInstanceId.current}`)
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "notifications", filter: `recipient_id=eq.${user.id}` },
