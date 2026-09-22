@@ -44,6 +44,7 @@ export default defineConfig({
       // that would need a very different, request-flow-aware caching
       // strategy this data doesn't fit.
       workbox: {
+        cleanupOutdatedCaches: true,
         globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2}'],
         navigateFallbackDenylist: [/^\/admin/],
       },
