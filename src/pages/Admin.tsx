@@ -23,7 +23,7 @@ import AdminCompliance from "./AdminCompliance";
 import AdminMessageSafety from "./AdminMessageSafety";
 import AdminCareersManager from "./AdminCareersManager";
 import AdminAJCreations from "./AdminAJCreations";
-import AdminTab from "../components/AdminNavigation";
+import AdminNavigation from "../components/AdminNavigation";
 import PayoutComplianceHint from "../components/PayoutComplianceHint";
 import { CATEGORIES, PROVINCES, PLATFORMS, SWATCHES, PUBLISHER_SHARE, PAYOUT_DUE_DAYS, FEATURED_DURATION_DAYS, WORK_WITH_US_CATEGORIES, WORK_WITH_US_ATTACHMENT_BUCKET, PARTNER_CATEGORIES, PARTNER_TYPES, ADVERTISE_PRODUCTS, COMMUNITY_EVENT_TYPES, COMMUNITY_QUESTION_CATEGORIES } from "../lib/constants";
 import { computeVerificationLevel } from "../lib/businessVerification";
