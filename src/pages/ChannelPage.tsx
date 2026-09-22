@@ -70,7 +70,7 @@ function ComingSoonDetail({ ch }: { ch: ChannelDefinition }) {
         </div>
       </div>
 
-      {/* Development-channel waitlist callout — these channels are intentionally not part of public onboarding yet. */}}
+        {/* Development-channel waitlist callout — these channels are intentionally not part of public onboarding yet. */}
       <div className="border-[3px] border-billboard-ink bg-billboard-green/10 rounded p-5 flex gap-4 items-start">
         <span className="text-2xl shrink-0">🌱</span>
         <div>
