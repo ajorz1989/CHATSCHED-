@@ -81,13 +81,27 @@ function ChannelCard({ module }: { module: ChannelModule }) {
                 View channel page →
               </Link>
             </>
-          ) : ch.isLive ? (
-            <Link
-              to={`/channels/${ch.slug}`}
-              className="block w-full text-center border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold text-sm px-4 py-2.5 rounded hover:bg-billboard-yellowDeep transition hover:-translate-y-0.5"
-            >
-              Explore inventory →
-            </Link>
+          ) : ch.isLive && ch.bookingFlow === "request" ? (
+            // Fix: request-flow channels (podcast, website, radio, etc.) previously
+            // showed a single "Explore inventory" button pointing at the channel's
+            // own detail page, with no separate way to jump straight to browsing
+            // that channel's creators. Now shows both, matching the directory
+            // channels above: primary = browse this channel's creators (pre-filtered
+            // /browse), secondary = view channel page (the detail page itself).
+            <>
+              <Link
+                to={`/browse?channel=${ch.slug}`}
+                className="block w-full text-center border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold text-sm px-4 py-2.5 rounded hover:bg-billboard-yellowDeep transition hover:-translate-y-0.5"
+              >
+                Explore inventory →
+              </Link>
+              <Link
+                to={`/channels/${ch.slug}`}
+                className="block w-full text-center border-[3px] border-billboard-ink text-billboard-ink font-semibold text-sm px-4 py-2 rounded hover:bg-billboard-paperDim transition"
+              >
+                View channel page →
+              </Link>
+            </>
           ) : (
             <Link
               to={`/channels/${ch.slug}`}
