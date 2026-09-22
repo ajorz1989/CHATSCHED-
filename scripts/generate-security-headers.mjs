@@ -20,7 +20,8 @@
 //
 // ── What's actually in this CSP, and why (verified against this specific
 //    codebase, not a generic template) ──
-// - script-src: 'self' for the app's own bundled JS, https://plausible.io
+// - script-src: 'self' for the app's own bundled JS, https://plausible.io, and
+//   https://static.cloudflareinsights.com for Cloudflare Web Analytics' injected beacon.
 //   because src/lib/analytics.ts injects a real <script src="https://
 //   plausible.io/js/script.manual.js"> tag when VITE_PLAUSIBLE_DOMAIN is
 //   set, and a sha256 hash (computed below) for the one inline script
@@ -135,7 +136,7 @@ const jsonLdHash = createHash("sha256").update(jsonLdMatch[1], "utf8").digest("b
 
 const csp = [
   `default-src 'self'`,
-  `script-src 'self' https://plausible.io 'sha256-${jsonLdHash}'`,
+  `script-src 'self' https://plausible.io https://static.cloudflareinsights.com 'sha256-${jsonLdHash}'`,
   `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
   `font-src 'self' https://fonts.gstatic.com`,
   `img-src 'self' data: blob: https://${supabaseHost}`,
