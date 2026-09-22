@@ -170,3 +170,6 @@ Every route except Home, Browse, and a publisher's profile page is code-split (`
 - Set up the scheduled request-expiry job (see "Scheduled request expiry" above) — without it, overdue channel requests just sit there until an admin happens to notice and close them by hand.
 - Deploy `delete-account` (see "Self-service account deletion & data export" above) and actually read its retention caveat — decide whether cascading away completed financial records on deletion is acceptable for your recordkeeping obligations before real businesses start closing accounts.
 - If you want "Connect your social account" live, register a developer app with whichever of YouTube/Meta/TikTok you want to support (see "Social account connect" above) — none of it works until real client IDs/secrets are set, and Meta/TikTok's app review isn't instant. It's not required for launch — the manual follower-count field still works fine without it.
+
+## Production build note
+The production branch is `main`; Cloudflare Pages should deploy the latest commit from this branch after each push.
