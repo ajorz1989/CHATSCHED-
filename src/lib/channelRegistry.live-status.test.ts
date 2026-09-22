@@ -20,7 +20,7 @@ describe("current channel launch state", () => {
     const enabled = getEnabledChannels().map((m) => m.definition.slug);
 
     expect(enabled).toHaveLength(11);
-    expect(enabled).toEqual(expect.arrayContaining(LIVE_CHANNELS));
+    expect(enabled).toEqual(expect.arrayContaining([...LIVE_CHANNELS]));
     expect(enabled).not.toContain("transport");
     expect(enabled).not.toContain("informal-retail");
   });
@@ -29,7 +29,7 @@ describe("current channel launch state", () => {
     const onboarding = getPublisherOnboardingChannels().map((m) => m.definition.slug);
 
     expect(onboarding).toHaveLength(11);
-    expect(onboarding).toEqual(expect.arrayContaining(LIVE_CHANNELS));
+    expect(onboarding).toEqual(expect.arrayContaining([...LIVE_CHANNELS]));
     expect(onboarding).not.toContain("transport");
     expect(onboarding).not.toContain("informal-retail");
   });
