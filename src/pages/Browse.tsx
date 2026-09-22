@@ -169,7 +169,7 @@ function FilterIcon() {
  * unconfigured/empty state on its own.
  */
 function ChannelDetailFilters({ channel, values, update }: {
-  channel: NonNullable<Filters["channel"]>;
+  channel: Exclude<Filters["channel"], "">;
   values: Record<string, string>;
   update: (patch: Partial<Filters>) => void;
 }) {
