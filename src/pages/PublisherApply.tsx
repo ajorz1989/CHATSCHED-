@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
@@ -421,6 +421,12 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
   const [proofFiles, setProofFiles] = useState<File[]>([]);
   const [uploadingProof, setUploadingProof] = useState(false);
   const requiresProof = VERIFICATION_REQUIRED_CHANNELS.includes(channelSlug);
+  // The error banner renders at the top of the wizard but the Review step is long,
+  // so a failed submit used to look like the button did nothing. Bring it into view.
+  const errorRef = useRef<HTMLParagraphElement | null>(null);
+  useEffect(() => {
+    if (error) errorRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [error]);
 
   // Development channels are intentionally excluded from the public onboarding
   // flow. Admin mode remains able to use the shared form for internal seeding.
@@ -456,8 +462,11 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
   const update = <K extends keyof FormState>(key: K, value: FormState[K]) =>
     setForm((f) => ({ ...f, [key]: value }));
 
-  const stepIndex = STEPS.indexOf(step);
-  const progressPct = step === "submitted" || step === "ineligible" ? 100 : ((stepIndex + 1) / STEPS.length) * 100;
+  // Low-barrier channels skip the Business step, so the bar and "Step x of y" label
+  // should not count it (previously the bar jumped 60% -> 100% for those channels).
+  const visibleSteps = STEPS.filter((s) => !(LOW_BARRIER_CHANNELS.includes(channelSlug) && s === "business"));
+  const stepIndex = visibleSteps.indexOf(step);
+  const progressPct = step === "submitted" || step === "ineligible" || stepIndex < 0 ? 100 : ((stepIndex + 1) / visibleSteps.length) * 100;
 
   function togglePlatform(p: Platform) {
     update("platforms", form.platforms.includes(p) ? form.platforms.filter((x) => x !== p) : [...form.platforms, p]);
@@ -476,6 +485,23 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
   // their own booking flow and no equivalent "post format" concept.
   const showPlacementTypes = channelSlug === "social-media";
   const recommendedTypes = recommendedPlacementTypes(form.platforms);
+
+  function continueFromDetails() {
+    // Admin listings skip the public eligibility gate, so catch the required profile
+    // fields here, on the step where they live, instead of at the final Publish click.
+    if (adminMode) {
+      if (!form.name.trim()) {
+        setError("Add a name for this listing before continuing.");
+        return;
+      }
+      if (!form.province || !form.city.trim()) {
+        setError("Choose a province and enter a city before continuing.");
+        return;
+      }
+    }
+    setError(null);
+    setStep("social");
+  }
 
   function checkEligibility() {
     // 12-Channel Audit fix B5 — the 3 authority-attestation checkboxes
@@ -637,7 +663,7 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-5 py-16">
+    <div className={`max-w-2xl mx-auto px-5 ${adminMode ? "py-8" : "py-16"}`}>
       <Seo title={`${isRequestFlow ? "Creator" : "Publisher"} Application · ChatSched`} noindex />
 
       {isRequestFlow && (
@@ -646,11 +672,23 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
         </span>
       )}
 
-      <div className="h-2 border-2 border-billboard-ink rounded mb-8 overflow-hidden">
-        <div className="h-full bg-billboard-green transition-all" style={{ width: `${progressPct}%` }} />
+      <div className="mb-8">
+        {stepIndex >= 0 && (
+          <p className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft mb-1.5">Step {stepIndex + 1} of {visibleSteps.length}</p>
+        )}
+        <div
+          className="h-2 border-2 border-billboard-ink rounded overflow-hidden"
+          role="progressbar"
+          aria-label="Application progress"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={Math.round(progressPct)}
+        >
+          <div className="h-full bg-billboard-green transition-all" style={{ width: `${progressPct}%` }} />
+        </div>
       </div>
 
-      {error && <p className="text-billboard-red text-sm font-semibold mb-4">{error}</p>}
+      {error && <p ref={errorRef} role="alert" className="text-billboard-red text-sm font-semibold mb-4 border-2 border-billboard-red/30 bg-billboard-red/10 rounded p-3">{error}</p>}
 
       {step === "eligibility" && (
         <div className="border-[3px] border-billboard-ink rounded p-6 space-y-4">
@@ -725,7 +763,7 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
           </div>
           <div className="flex justify-between pt-2">
             <button onClick={() => setStep("eligibility")} className={backClass}>Back</button>
-            <button onClick={() => setStep("social")} className={continueClass}>Continue</button>
+            <button onClick={continueFromDetails} className={continueClass}>Continue</button>
           </div>
         </div>
       )}
@@ -1605,7 +1643,7 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
             <button onClick={() => setStep(LOW_BARRIER_CHANNELS.includes(channelSlug) ? "social" : "business")} className={backClass}>Back</button>
             <button onClick={submitApplication} disabled={!form.acceptedTerms || (!adminMode && isRequestFlow && !form.acceptedPaymentTerms) || (!adminMode && checks.length > 0 && (!form.check1 || !form.check2 || !form.check3)) || (!adminMode && channelSlug === "informal-retail" && !form.retailMunicipalRegistrationConfirmed) || (!adminMode && channelSlug === "transport" && !form.transAuthorityConfirmed) || (!adminMode && channelSlug === "associations" && !form.assocAuthorityConfirmed) || submitting}
               className="bg-billboard-green border-[3px] border-billboard-ink font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition disabled:opacity-60">
-              {uploadingProof ? "Uploading proof…" : submitting ? "Submitting…" : "Submit application"}
+              {uploadingProof ? "Uploading proof…" : submitting ? (adminMode ? "Publishing…" : "Submitting…") : adminMode ? "Publish listing now" : "Submit application"}
             </button>
           </div>
         </div>
