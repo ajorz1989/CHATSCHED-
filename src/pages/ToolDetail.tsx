@@ -8,6 +8,7 @@ import ToolIcon from "../components/ToolIcon";
 import NotFound from "./NotFound";
 import { TOOL_CATEGORIES } from "../lib/constants";
 import { formatCurrency } from "../lib/currency";
+import { formatSupabaseError } from "../lib/supabaseErrors";
 import type { Tool, ToolFeature, ToolBenefit, ToolFaq } from "../lib/types";
 
 const HOW_IT_WORKS = [
@@ -33,12 +34,19 @@ export default function ToolDetail() {
   const [features, setFeatures] = useState<ToolFeature[]>([]);
   const [benefits, setBenefits] = useState<ToolBenefit[]>([]);
   const [faqs, setFaqs] = useState<ToolFaq[]>([]);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isSupabaseConfigured || !slug) return;
     setTool(undefined);
+    setLoadError(null);
     (async () => {
-      const { data } = await supabase.from("tools").select("*").eq("slug", slug).maybeSingle();
+      const { data, error } = await supabase.from("tools").select("*").eq("slug", slug).maybeSingle();
+      if (error) {
+        setLoadError(formatSupabaseError(error, "Couldn’t load this tool"));
+        setTool(null);
+        return;
+      }
       setTool((data as Tool) ?? null);
       if (data) {
         const [f, b, q] = await Promise.all([
@@ -64,24 +72,37 @@ export default function ToolDetail() {
     );
   }
 
-  if (tool === null) return <NotFound />;
+  if (tool === null) {
+    if (loadError) {
+      return (
+        <div className="max-w-3xl mx-auto px-4 sm:px-5 py-16">
+          <div className="border-[3px] border-billboard-red text-billboard-red rounded p-6 text-sm">{loadError}</div>
+          <Link to="/tools" className="inline-block mt-5 font-semibold underline">← Back to ChatSched Tools</Link>
+        </div>
+      );
+    }
+    return <NotFound />;
+  }
 
   const comingSoon = tool.status === "coming_soon";
+  const ctaPath = tool.requires_auth && tool.cta_url?.startsWith("/")
+    ? "/login?next=" + encodeURIComponent(tool.cta_url)
+    : tool.cta_url;
   const categoryLabel = TOOL_CATEGORIES.find((c) => c.value === tool.category)?.label ?? tool.category;
 
   return (
     <>
       <Seo title={`${tool.name} · ChatSched Tools`} description={tool.short_description} />
 
-      <div className="max-w-3xl mx-auto px-5 py-16">
+      <div className="max-w-3xl mx-auto px-4 sm:px-5 py-12 sm:py-16 min-w-0">
         <Link to="/tools" className="font-mono text-xs font-semibold uppercase text-billboard-inkSoft hover:text-billboard-ink transition inline-block mb-6">
           ← All tools
         </Link>
 
         {/* Hero */}
-        <div className="flex items-start gap-4 mb-4">
+        <div className="flex items-start gap-3 sm:gap-4 mb-4 min-w-0">
           <ToolIcon name={tool.icon} size="lg" />
-          <div>
+          <div className="min-w-0">
             <span className="inline-block font-mono text-[11px] font-semibold uppercase border border-billboard-ink/30 text-billboard-inkSoft px-2 py-0.5 rounded mb-2">
               {categoryLabel}{tool.badge ? ` · ${tool.badge}` : ""}
             </span>
@@ -98,11 +119,11 @@ export default function ToolDetail() {
             </span>
           ) : tool.cta_url ? (
             tool.cta_url.startsWith("http") ? (
-              <a href={tool.cta_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold px-6 py-3 rounded hover:bg-billboard-yellowDeep transition hover:-translate-y-0.5">
+              <a href={ctaPath} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold px-6 py-3 rounded hover:bg-billboard-yellowDeep transition hover:-translate-y-0.5">
                 {tool.cta_label} →
               </a>
             ) : (
-              <Link to={tool.cta_url} className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold px-6 py-3 rounded hover:bg-billboard-yellowDeep transition hover:-translate-y-0.5">
+              <Link to={ctaPath} className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold px-6 py-3 rounded hover:bg-billboard-yellowDeep transition hover:-translate-y-0.5">
                 {tool.cta_label} →
               </Link>
             )
@@ -201,11 +222,11 @@ export default function ToolDetail() {
         )}
 
         {/* Final CTA */}
-        {!comingSoon && tool.cta_url && (
-          <div className="border-[3px] border-billboard-ink rounded p-8 text-center">
+        {!comingSoon && ctaPath && (
+          <div className="border-[3px] border-billboard-ink rounded p-6 sm:p-8 text-center">
             <h2 className="font-display text-2xl mb-4">Get started with {tool.name}.</h2>
-            {tool.cta_url.startsWith("http") ? (
-              <a href={tool.cta_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold px-6 py-3 rounded hover:bg-billboard-yellowDeep transition hover:-translate-y-0.5">
+            {ctaPath.startsWith("http") ? (
+              <a href={ctaPath} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold px-6 py-3 rounded hover:bg-billboard-yellowDeep transition hover:-translate-y-0.5">
                 {tool.cta_label} →
               </a>
             ) : (
