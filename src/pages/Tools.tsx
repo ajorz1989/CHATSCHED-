@@ -7,6 +7,7 @@ import { SkeletonRows } from "../components/Skeleton";
 import ToolIcon from "../components/ToolIcon";
 import { TOOL_CATEGORIES } from "../lib/constants";
 import { formatCurrency } from "../lib/currency";
+import { formatSupabaseError } from "../lib/supabaseErrors";
 import type { Tool, ToolCategory } from "../lib/types";
 
 /**
@@ -103,12 +104,14 @@ export default function Tools() {
   const [tools, setTools] = useState<Tool[]>([]);
   const [loading, setLoading] = useState(true);
   const [categoryFilter, setCategoryFilter] = useState<"all" | ToolCategory>("all");
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isSupabaseConfigured) return;
     (async () => {
-      const { data } = await supabase.from("tools").select("*").order("sort_order", { ascending: true });
-      setTools((data ?? []) as Tool[]);
+      const { data, error } = await supabase.from("tools").select("*").order("sort_order", { ascending: true });
+      if (error) setLoadError(formatSupabaseError(error, "Couldn’t load ChatSched Tools"));
+      else setTools((data ?? []) as Tool[]);
       setLoading(false);
     })();
   }, []);
@@ -127,7 +130,7 @@ export default function Tools() {
         description="Practical tools for getting leads, handling customers, taking bookings, creating campaigns and growing your advertising — all from ChatSched."
       />
 
-      <div className="max-w-6xl mx-auto px-5 py-16">
+      <div className="max-w-6xl mx-auto px-4 sm:px-5 py-12 sm:py-16 min-w-0">
         <div className="mb-10">
           <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-ink text-billboard-ink px-3 py-1.5 rounded mb-4">
             ChatSched Tools
@@ -148,6 +151,8 @@ export default function Tools() {
 
         {loading ? (
           <SkeletonRows count={4} />
+        ) : loadError ? (
+          <div className="border-[3px] border-billboard-red text-billboard-red rounded p-6 text-sm">{loadError}</div>
         ) : (
           <>
             {featured.length > 0 && (
