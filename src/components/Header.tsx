@@ -124,7 +124,7 @@ export default function Header() {
             </>
           ) : (
             <>
-              {/* Bug fix: Sign In was hidden on mobile — now always visible as a text link */}
+              {/* Keep authentication actions in the mobile drawer so the top bar stays compact. */}
               <Link
                 to="/login"
                 className="hidden sm:inline text-sm font-semibold hover:text-billboard-greenDeep transition-colors"

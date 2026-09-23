@@ -46,7 +46,7 @@ function HeroMockup() {
         <div className="h-full flex flex-col justify-center gap-3">
           <div className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft">{t("heroMockup.marketplaceLabel")}</div>
           <div className="border-2 border-billboard-ink rounded p-3 bg-white">
-            <div className="flex items-start justify-between gap-2 mb-2 min-w-0"><strong className="min-w-0 break-words"></strong><span className="font-mono text-[10px] font-bold bg-billboard-yellow border-2 border-billboard-ink rounded-full px-2 py-0.5">{t("heroMockup.verified")}</span></div>
+            <div className="flex items-start justify-between gap-2 mb-2 min-w-0"><strong className="min-w-0 break-words">{t("heroMockup.placementTitle")}</strong><span className="font-mono text-[10px] font-bold bg-billboard-yellow border-2 border-billboard-ink rounded-full px-2 py-0.5">{t("heroMockup.verified")}</span></div>
             <div className="flex flex-wrap gap-1.5 font-mono text-[10px] text-billboard-inkSoft"><span>Instagram</span><span>•</span><span>42K audience</span><span>•</span><span>Cape Town</span></div>
           </div>
           <div className="grid grid-cols-2 gap-2">
