@@ -290,7 +290,7 @@ export default function Careers() {
   function jumpToApplication(tab: Tab) {
     setActiveTab(tab);
     window.setTimeout(() => {
-      document.getElementById("career-application-form")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      document.getElementById("career-application-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 0);
   }
 
@@ -497,7 +497,7 @@ export default function Careers() {
       </section>
 
       {/* ───────────────────────── TABS ───────────────────────── */}
-      <section className="max-w-2xl mx-auto px-5 pb-24">
+      <section id="career-application-section" className="max-w-2xl mx-auto px-5 pb-24">
         {/* Tab switcher */}
         <div className="flex gap-2 mb-8 border-b-[3px] border-billboard-ink pb-4">
           {([
