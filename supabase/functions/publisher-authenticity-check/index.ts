@@ -91,7 +91,25 @@ Respond with ONLY a JSON object, no markdown fences, no other text, in this exac
       console.error("publisher-authenticity-check: Cloudflare Workers AI reported failure", aiData.errors);
       return json({ error: "The check is temporarily unavailable — try again shortly." }, 502);
     }
-    const rawText: string = aiData.result?.response ?? "";
+
+    // Workers AI normally returns result.response as a plain string, but some
+    // model/runtime combinations wrap it differently (e.g. a nested
+    // { response: "..." } object, or another shape entirely). Handle those
+    // defensively instead of crashing on `.replace is not a function`, and log
+    // the raw shape so a genuinely new format is easy to diagnose from here.
+    const respVal: unknown = aiData.result?.response;
+    let rawText: string;
+    if (typeof respVal === "string") {
+      rawText = respVal;
+    } else if (respVal && typeof respVal === "object" && typeof (respVal as Record<string, unknown>).response === "string") {
+      rawText = (respVal as Record<string, string>).response;
+    } else if (respVal != null) {
+      console.error("publisher-authenticity-check: unexpected AI response shape", JSON.stringify(aiData));
+      rawText = JSON.stringify(respVal);
+    } else {
+      console.error("publisher-authenticity-check: empty AI response", JSON.stringify(aiData));
+      rawText = "";
+    }
     const cleaned = rawText.replace(/```json|```/g, "").trim();
 
     let result: { risk: "low" | "medium" | "high"; notes: string };
