@@ -87,7 +87,7 @@ export default function ToolDetail() {
   const comingSoon = tool.status === "coming_soon";
   const ctaPath = tool.requires_auth && tool.cta_url?.startsWith("/")
     ? "/login?next=" + encodeURIComponent(tool.cta_url)
-    : tool.cta_url;
+    : tool.cta_url ?? undefined;
   const categoryLabel = TOOL_CATEGORIES.find((c) => c.value === tool.category)?.label ?? tool.category;
 
   return (
@@ -117,13 +117,13 @@ export default function ToolDetail() {
             <span className="inline-flex items-center gap-2 border-[3px] border-billboard-inkSoft/40 text-billboard-inkSoft font-bold px-6 py-3 rounded">
               Coming soon
             </span>
-          ) : tool.cta_url ? (
-            tool.cta_url.startsWith("http") ? (
-              <a href={ctaPath} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold px-6 py-3 rounded hover:bg-billboard-yellowDeep transition hover:-translate-y-0.5">
+          ) : ctaPath ? (
+            ctaPath.startsWith("http") ? (
+              <a href={ctaPath} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold px-6 py-3 rounded hover:bg-billboard-yellow/80 transition">
                 {tool.cta_label} →
               </a>
             ) : (
-              <Link to={ctaPath} className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold px-6 py-3 rounded hover:bg-billboard-yellowDeep transition hover:-translate-y-0.5">
+              <Link to={ctaPath} className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold px-6 py-3 rounded hover:bg-billboard-yellow/80 transition">
                 {tool.cta_label} →
               </Link>
             )
@@ -226,11 +226,11 @@ export default function ToolDetail() {
           <div className="border-[3px] border-billboard-ink rounded p-6 sm:p-8 text-center">
             <h2 className="font-display text-2xl mb-4">Get started with {tool.name}.</h2>
             {ctaPath.startsWith("http") ? (
-              <a href={ctaPath} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold px-6 py-3 rounded hover:bg-billboard-yellowDeep transition hover:-translate-y-0.5">
+              <a href={ctaPath} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold px-6 py-3 rounded hover:bg-billboard-yellow/80 transition">
                 {tool.cta_label} →
               </a>
             ) : (
-              <Link to={ctaPath} className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold px-6 py-3 rounded hover:bg-billboard-yellowDeep transition hover:-translate-y-0.5">
+              <Link to={ctaPath} className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold px-6 py-3 rounded hover:bg-billboard-yellow/80 transition">
                 {tool.cta_label} →
               </Link>
             )}
