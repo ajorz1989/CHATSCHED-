@@ -41,12 +41,12 @@ function HeroMockup() {
   const { t } = useTranslation("home");
   return (
     <div className="relative w-full max-w-[430px]">
-      <div className="relative aspect-[16/12] bg-billboard-paper border-[3px] border-billboard-ink rounded shadow-block -rotate-[1deg] overflow-hidden p-5">
+      <div className="relative w-full aspect-[16/12] bg-billboard-paper border-[3px] border-billboard-ink rounded shadow-block -rotate-[1deg] overflow-hidden p-4 sm:p-5">
         <span className="absolute top-3 right-3 bg-billboard-red text-white font-mono text-[10px] font-bold px-2.5 py-1 rounded border-2 border-billboard-ink rotate-2">{t("heroMockup.liveNow")}</span>
         <div className="h-full flex flex-col justify-center gap-3">
           <div className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft">{t("heroMockup.marketplaceLabel")}</div>
           <div className="border-2 border-billboard-ink rounded p-3 bg-white">
-            <div className="flex items-center justify-between gap-3 mb-2"><strong>{t("heroMockup.placementTitle")}</strong><span className="font-mono text-[10px] font-bold bg-billboard-yellow border-2 border-billboard-ink rounded-full px-2 py-0.5">{t("heroMockup.verified")}</span></div>
+            <div className="flex items-start justify-between gap-2 mb-2 min-w-0"><strong className="min-w-0 break-words"></strong><span className="font-mono text-[10px] font-bold bg-billboard-yellow border-2 border-billboard-ink rounded-full px-2 py-0.5">{t("heroMockup.verified")}</span></div>
             <div className="flex flex-wrap gap-1.5 font-mono text-[10px] text-billboard-inkSoft"><span>Instagram</span><span>•</span><span>42K audience</span><span>•</span><span>Cape Town</span></div>
           </div>
           <div className="grid grid-cols-2 gap-2">
@@ -63,7 +63,7 @@ function HeroMockup() {
 function TwoWaysSection() {
   const { t } = useTranslation("home");
   const reveal = useReveal<HTMLDivElement>();
-  return <section className="py-16 bg-white border-b-[3px] border-billboard-ink"><div className="max-w-6xl mx-auto px-5" ref={reveal.ref}><div className={reveal.className}>
+  return <section className="py-16 bg-white border-b-[3px] border-billboard-ink"><div className="max-w-6xl mx-auto px-4 sm:px-5 min-w-0" ref={reveal.ref}><div className={reveal.className}>
     <span className="eyebrow">{t("twoWays.badge")}</span><h2 className="text-3xl md:text-4xl mb-3 max-w-2xl">{t("twoWays.title")}</h2><p className="text-billboard-inkSoft max-w-2xl mb-9">{t("twoWays.subtitle")}</p>
     <div className="grid md:grid-cols-2 gap-5">
       <div className="border-[3px] border-billboard-ink rounded-lg p-7 bg-billboard-yellow shadow-blockSm"><span className="font-mono text-xs font-bold uppercase">01 · {t("twoWays.agencyBadge")}</span><h3 className="font-display text-2xl mt-3 mb-2">{t("twoWays.agencyTitle")}</h3><p className="text-sm text-billboard-inkSoft mb-5">{t("twoWays.agencyBody")}</p><Link to="/build-my-campaign" className="brand-button dark">{t("twoWays.agencyCta")}</Link></div>
@@ -100,7 +100,7 @@ function OpportunitiesSection() {
     <section className="py-16 md:py-20 bg-billboard-ink text-billboard-paper border-b-[3px] border-billboard-yellow">
       <div className="max-w-6xl mx-auto px-5" ref={reveal.ref}>
         <div className={reveal.className}>
-          <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-10 items-center">
+          <div className="grid lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] gap-8 sm:gap-10 items-center">
             <div>
               <span className="eyebrow light">{t("opportunities.badge")}</span>
               <h2 className="font-display text-4xl md:text-6xl leading-[1.02] mb-5">{t("opportunities.title")}</h2>
@@ -178,7 +178,7 @@ export default function Home() {
   useEffect(() => { const raf=requestAnimationFrame(()=>requestAnimationFrame(()=>setLoaded(true))); return ()=>cancelAnimationFrame(raf); }, []);
   return <>
     <Seo title={t("seo.title")} description={t("seo.description")} />
-    <section className="bg-billboard-yellow border-b-[3px] border-billboard-ink overflow-hidden py-16 md:py-24"><div className="max-w-6xl mx-auto px-5 grid md:grid-cols-[1.08fr_0.92fr] gap-12 items-center"><div><span className={`eyebrow dark-bg transition-all duration-500 ${loaded?"opacity-100":"opacity-0"}`}>{t("hero.badge")}</span><h1 className={`text-5xl md:text-7xl leading-[.98] mb-5 transition-all duration-700 ${loaded?"opacity-100 translate-y-0":"opacity-0 translate-y-4"}`}>{t("hero.title1")}<br/>{t("hero.title2")}</h1><p className="text-lg md:text-xl text-billboard-inkSoft max-w-[50ch] mb-7">{t("hero.subtitle")}</p><div className="flex flex-col sm:flex-row flex-wrap gap-3"><Link to="/build-my-campaign" className="brand-button dark">{t("hero.ctaBuildCampaign")}</Link><Link to="/browse" className="brand-button">{t("hero.ctaBrowseMarketplace")}</Link></div><div className="flex flex-wrap gap-x-5 gap-y-2 mt-5 font-mono text-[10px] font-bold uppercase"><span>✓ {t("hero.noAccount")}</span><span>✓ {t("hero.secure")}</span><span>✓ {t("hero.tracked")}</span></div></div><div className={`flex justify-center transition-all duration-700 ${loaded?"opacity-100 scale-100":"opacity-0 scale-95"}`}><HeroMockup/></div></div></section>
+    <section className="bg-billboard-yellow border-b-[3px] border-billboard-ink overflow-hidden py-12 sm:py-16 md:py-24"><div className="max-w-6xl mx-auto px-4 sm:px-5 grid md:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] gap-8 sm:gap-12 items-center"><div className="min-w-0"><span className={`eyebrow dark-bg transition-all duration-500 ${loaded?"opacity-100":"opacity-0"}`}>{t("hero.badge")}</span><h1 className={`text-4xl sm:text-5xl md:text-7xl leading-[.98] mb-5 transition-all duration-700 ${loaded?"opacity-100 translate-y-0":"opacity-0 translate-y-4"}`}>{t("hero.title1")}<br/>{t("hero.title2")}</h1><p className="text-lg md:text-xl text-billboard-inkSoft max-w-[50ch] mb-7">{t("hero.subtitle")}</p><div className="flex flex-col sm:flex-row flex-wrap gap-3"><Link to="/build-my-campaign" className="brand-button dark">{t("hero.ctaBuildCampaign")}</Link><Link to="/browse" className="brand-button">{t("hero.ctaBrowseMarketplace")}</Link></div><div className="flex flex-wrap gap-x-5 gap-y-2 mt-5 font-mono text-[10px] font-bold uppercase"><span>✓ {t("hero.noAccount")}</span><span>✓ {t("hero.secure")}</span><span>✓ {t("hero.tracked")}</span></div></div><div className={`min-w-0 flex justify-center transition-all duration-700 ${loaded?"opacity-100 scale-100":"opacity-0 scale-95"}`}><HeroMockup/></div></div></section>
     <HomeMetrics/>
     <TwoWaysSection/>
     <ComparisonSection/>

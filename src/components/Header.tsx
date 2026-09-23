@@ -34,20 +34,20 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-billboard-paper border-b-[3px] border-billboard-ink">
-      <div className="max-w-6xl mx-auto flex items-center justify-between px-5 py-3.5 gap-4">
+      <div className="max-w-6xl w-full mx-auto min-w-0 flex items-center justify-between px-3 sm:px-5 py-3.5 gap-2 sm:gap-4">
 
         {/* Logo */}
         <Link
           to="/"
           onClick={closeMenu}
-          className="flex items-center gap-2 font-display text-lg shrink-0"
+          className="flex items-center gap-1.5 sm:gap-2 font-display text-[15px] sm:text-lg shrink-0 min-w-0"
         >
           <svg width="26" height="22" viewBox="0 0 26 22" fill="none">
             <rect x="1" y="1" width="24" height="14" stroke="currentColor" strokeWidth="2" />
             <line x1="8" y1="15" x2="8" y2="21" stroke="currentColor" strokeWidth="2" />
             <line x1="18" y1="15" x2="18" y2="21" stroke="currentColor" strokeWidth="2" />
           </svg>
-          CHATSCHED
+          <span className="truncate">CHATSCHED</span>
         </Link>
 
         {/* Primary nav — desktop only */}
@@ -60,9 +60,9 @@ export default function Header() {
         </nav>
 
         {/* Actions */}
-        <div className="flex items-center gap-2.5 shrink-0">
-          <SiteSearch />
-          <LanguageSwitcher />
+        <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+          <div className="hidden sm:block"><SiteSearch /></div>
+          <div className="hidden sm:block"><LanguageSwitcher /></div>
 
           {/* Compare badge — only when publishers are queued */}
           {compareCount > 0 && (
@@ -95,7 +95,7 @@ export default function Header() {
           {/* Auth links */}
           {user ? (
             <>
-              <NotificationBell />
+              <span className="hidden sm:inline-flex"><NotificationBell /></span>
               <Link
                 to="/messages"
                 className="hidden sm:inline text-sm font-semibold hover:text-billboard-greenDeep transition-colors"
@@ -127,13 +127,13 @@ export default function Header() {
               {/* Bug fix: Sign In was hidden on mobile — now always visible as a text link */}
               <Link
                 to="/login"
-                className="text-sm font-semibold hover:text-billboard-greenDeep transition-colors"
+                className="hidden sm:inline text-sm font-semibold hover:text-billboard-greenDeep transition-colors"
               >
                 {t("nav.logIn")}
               </Link>
               <Link
                 to="/register"
-                className="inline-flex items-center gap-2 border-[3px] border-billboard-greenDeep bg-billboard-green text-white font-bold text-sm px-4 py-2.5 rounded hover:bg-billboard-greenDeep transition hover:-translate-x-0.5 hover:-translate-y-0.5"
+                className="inline-flex items-center gap-1.5 sm:gap-2 border-[3px] border-billboard-greenDeep bg-billboard-green text-white font-bold text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-2.5 rounded hover:bg-billboard-greenDeep transition hover:-translate-x-0.5 hover:-translate-y-0.5"
               >
                 {t("nav.getStarted")}
               </Link>
@@ -198,7 +198,23 @@ export default function Header() {
               ))}
 
               {/* Divider */}
-              <li className="pt-2" aria-hidden="true" />
+              <li className="pt-2 mt-2 border-t border-billboard-ink/10" aria-hidden="true" />
+              <li>
+                <div className="flex flex-wrap items-center gap-3 py-2.5">
+                  <SiteSearch />
+                  <LanguageSwitcher />
+                  <NavLink
+                    to="/lists"
+                    onClick={closeMenu}
+                    className="text-sm font-semibold hover:text-billboard-greenDeep transition-colors"
+                  >
+                    {t("nav.lists")}
+                  </NavLink>
+                  {user && (
+                    <InstallAppButton className="inline-flex items-center gap-1.5 text-sm font-semibold text-billboard-inkSoft hover:text-billboard-ink transition-colors" />
+                  )}
+                </div>
+              </li>
 
               {user ? (
                 <>

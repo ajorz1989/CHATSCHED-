@@ -6,10 +6,38 @@
 
 html {
   scroll-behavior: smooth;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 body {
   @apply font-body text-billboard-ink bg-billboard-paper antialiased;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+  overflow-wrap: anywhere;
+}
+
+#root {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+img,
+video,
+canvas,
+iframe {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  max-width: 100%;
 }
 
 h1, h2, h3 {
@@ -76,7 +104,7 @@ select:focus-visible {
 .eyebrow { display:inline-block; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:10px; line-height:1.2; font-weight:700; letter-spacing:.08em; text-transform:uppercase; border:2px solid #F5B700; color:#1A1712; padding:6px 10px; border-radius:6px; margin-bottom:12px; }
 .eyebrow.light { border-color:#F5B700; color:#F5B700; }
 .eyebrow.dark-bg { background:#FAF9F5; border-color:#1A1712; }
-.brand-button { display:inline-flex; align-items:center; justify-content:center; gap:8px; border:3px solid #1A1712; background:#FAF9F5; color:#1A1712; font-weight:700; padding:11px 18px; border-radius:6px; transition:transform .15s ease,box-shadow .15s ease; }
+.brand-button { display:inline-flex; align-items:center; justify-content:center; gap:8px; border:3px solid #1A1712; background:#FAF9F5; color:#1A1712; font-weight:700; padding:11px 18px; border-radius:6px; transition:transform .15s ease,box-shadow .15s ease; max-width:100%; text-align:center; white-space:normal; overflow-wrap:anywhere; }
 .brand-button:hover { transform:translate(-2px,-2px); box-shadow:5px 5px 0 #1A1712; }
 .brand-button.dark { background:#1A1712; color:#FAF9F5; }
 .brand-button.yellow { background:#F5B700; color:#1A1712; }

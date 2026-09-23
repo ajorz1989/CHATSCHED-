@@ -6,7 +6,7 @@ import LanguageSwitcher from "./LanguageSwitcher";
 
 const WHATSAPP_LINK = whatsappLink("Hi, I'd like to know more");
 
-const LINK_CLASS = "block text-sm mb-2 hover:text-billboard-yellow transition-colors";
+const LINK_CLASS = "block text-sm mb-2 hover:text-billboard-yellow transition-colors break-words";
 const HEADING_CLASS = "font-mono text-xs uppercase tracking-wider text-[#8A8272] mb-3";
 
 export default function Footer() {
