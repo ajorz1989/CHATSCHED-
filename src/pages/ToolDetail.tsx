@@ -230,7 +230,7 @@ export default function ToolDetail() {
                 {tool.cta_label} →
               </a>
             ) : (
-              <Link to={tool.cta_url} className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold px-6 py-3 rounded hover:bg-billboard-yellowDeep transition hover:-translate-y-0.5">
+              <Link to={ctaPath} className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold px-6 py-3 rounded hover:bg-billboard-yellowDeep transition hover:-translate-y-0.5">
                 {tool.cta_label} →
               </Link>
             )}
