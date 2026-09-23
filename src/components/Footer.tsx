@@ -15,7 +15,7 @@ export default function Footer() {
   return (
     <footer className="bg-billboard-ink text-billboard-paperDim pt-14 pb-8">
       <div className="max-w-6xl mx-auto px-5">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8 pb-12 border-b border-[#3A342B]">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-8 pb-12 border-b border-[#3A342B]">
 
           {/* Brand + tagline */}
           <div className="col-span-2 sm:col-span-3 lg:col-span-1 pr-4">
@@ -67,14 +67,19 @@ export default function Footer() {
             <Link to="/contact" className={LINK_CLASS}>{t("footer.contact")}</Link>
           </div>
 
+          {/* Company */}
+          <div>
+            <h4 className={HEADING_CLASS}>Company</h4>
+            <Link to="/careers" className={LINK_CLASS}>Careers</Link>
+            <Link to="/partners" className={LINK_CLASS}>Partners</Link>
+          </div>
+
           {/* Contact */}
           <div>
             <h4 className={HEADING_CLASS}>Contact</h4>
             <a href={`mailto:${CONTACT_EMAIL}`} className={LINK_CLASS}>{CONTACT_EMAIL}</a>
             <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className={LINK_CLASS}>{WHATSAPP_NUMBER_DISPLAY}</a>
             <p className="text-sm leading-relaxed mb-3">{CONTACT_ADDRESS_LINES.join(", ")}</p>
-            <Link to="/careers" className={LINK_CLASS}>Careers</Link>
-            <Link to="/partners" className={LINK_CLASS}>Partners</Link>
             <InstallAppButton className="inline-flex items-center gap-1.5 text-xs font-semibold text-billboard-paperDim hover:text-billboard-yellow transition-colors" />
           </div>
         </div>
