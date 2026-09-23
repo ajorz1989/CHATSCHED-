@@ -1,7 +1,5 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Seo from "../components/Seo";
-import { supabase, isSupabaseConfigured } from "../lib/supabase";
 import { getAllChannels } from "../lib/channelRegistry";
 import { isChannelEnabled } from "../lib/featureFlags";
 
@@ -70,44 +68,6 @@ const NEXT = [
 ];
 
 export default function About() {
-  // "Proof before promises" above is a principle; this section is what
-  // makes it checkable — real counts, pulled from the same publicly
-  // readable data Browse and each publisher profile already show (RLS:
-  // reviews_select_public, and the same approved-publishers count Browse
-  // uses), not a claim anyone has to take on faith. When there's nothing
-  // real yet, it says so plainly instead of showing an empty "0" that
-  // reads as broken.
-  //
-  // Bug fix: the original queries never checked for `error`, so a failed
-  // fetch silently fell back to `count ?? 0` and rendered the "no
-  // campaigns yet" empty state even when the request simply failed rather
-  // than genuinely returning zero rows. Both queries below now bail out
-  // on error and leave the state as `null`, which renders nothing instead
-  // of a false "zero".
-  const [reviewCount, setReviewCount] = useState<number | null>(null);
-  const [avgRating, setAvgRating] = useState<number | null>(null);
-  const [publisherCount, setPublisherCount] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (!isSupabaseConfigured) return;
-    supabase.from("reviews").select("rating", { count: "exact" }).then(({ data, count, error }) => {
-      if (error) return;
-      setReviewCount(count ?? 0);
-      if (data && data.length > 0) {
-        const avg = data.reduce((sum, r) => sum + (r.rating ?? 0), 0) / data.length;
-        setAvgRating(Math.round(avg * 10) / 10);
-      }
-    });
-    // publishers_public (schema_phase82) — this count query used to rely
-    // on publishers_select_approved_or_own_or_admin's approved branch,
-    // which no longer exists on the base table; the view is approved-only
-    // already, so the .eq("status", "approved") filter is dropped too.
-    supabase.from("publishers_public").select("id", { count: "exact", head: true }).then(({ count, error }) => {
-      if (error) return;
-      setPublisherCount(count ?? 0);
-    });
-  }, []);
-
   return (
     <div>
       <Seo
@@ -267,32 +227,6 @@ export default function About() {
           ))}
         </div>
 
-        <p className="text-billboard-inkSoft text-sm mt-10">This roadmap reflects direction, not a shipping schedule — priorities shift as real usage shows what actually matters.</p>
-      </section>
-
-      {/* Real numbers, updated live */}
-      <section className="max-w-3xl mx-auto px-5 py-16">
-        <h2 className="font-display text-xl mb-3">Real numbers, updated live — not a projection.</h2>
-        {reviewCount === null ? null : reviewCount === 0 ? (
-          <p className="text-billboard-inkSoft border-l-4 border-billboard-yellow pl-5">
-            No completed campaigns yet — we're that early. This section fills in with real numbers as real businesses and publishers come through, not before.
-          </p>
-        ) : (
-          <div className="grid sm:grid-cols-3 gap-4">
-            <div className="border-[3px] border-billboard-ink rounded p-5 bg-white">
-              <p className="text-2xl font-bold">{publisherCount ?? "—"}</p>
-              <p className="text-xs text-billboard-inkSoft mt-1">Approved publishers</p>
-            </div>
-            <div className="border-[3px] border-billboard-ink rounded p-5 bg-white">
-              <p className="text-2xl font-bold">{reviewCount}</p>
-              <p className="text-xs text-billboard-inkSoft mt-1">Reviews from real campaigns</p>
-            </div>
-            <div className="border-[3px] border-billboard-ink rounded p-5 bg-white">
-              <p className="text-2xl font-bold">{avgRating ? `★ ${avgRating}` : "—"}</p>
-              <p className="text-xs text-billboard-inkSoft mt-1">Average rating</p>
-            </div>
-          </div>
-        )}
       </section>
 
       {/* Where we are right now + closing CTAs */}
