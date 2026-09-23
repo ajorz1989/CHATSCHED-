@@ -457,6 +457,7 @@ export default function AdminTools() {
           onFaqsChange={setFaqs}
           onCancel={closeEditor}
           onSave={save}
+          childContentReady={childContentReady}
         />
       )}
 
@@ -517,6 +518,7 @@ function ToolEditor({
   onFaqsChange,
   onCancel,
   onSave,
+  childContentReady,
 }: {
   isNew: boolean;
   form: ToolFormState;
@@ -531,13 +533,19 @@ function ToolEditor({
   onFaqsChange: (v: Faq[]) => void;
   onCancel: () => void;
   onSave: () => void;
+  childContentReady: boolean;
 }) {
   const inputClass = "w-full border-2 border-billboard-ink rounded px-3 py-2 text-sm";
   const labelClass = "text-[11px] font-mono uppercase text-billboard-inkSoft block mb-1";
 
   return (
     <div className="border-[3px] border-billboard-ink rounded p-5 mb-8 bg-billboard-paperDim">
-      <h2 className="font-display text-lg mb-4">{isNew ? "New tool" : `Editing: ${form.name || form.slug}`}</h2>
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+        <h2 className="font-display text-lg">{isNew ? "New tool" : `Editing: ${form.name || form.slug}`}</h2>
+        <span className="font-mono text-[10px] uppercase tracking-wide border border-billboard-ink/20 rounded px-2 py-1 text-billboard-inkSoft">
+          {childContentReady ? "Supporting content ready" : "Loading supporting content…"}
+        </span>
+      </div>
       {error && <div className="border-2 border-billboard-red text-billboard-red rounded p-3 mb-4 text-sm">{error}</div>}
 
       {/* Basic information */}
