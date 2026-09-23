@@ -287,6 +287,13 @@ export default function Careers() {
     setWwuSent(true);
   }
 
+  function jumpToApplication(tab: Tab) {
+    setActiveTab(tab);
+    window.setTimeout(() => {
+      document.getElementById("career-application-form")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 0);
+  }
+
   // ── Shared field class
   const fieldCls = "w-full border-2 border-billboard-ink rounded px-3 py-2.5 focus:outline-none focus:border-billboard-inkSoft transition text-sm";
 
@@ -312,14 +319,14 @@ export default function Careers() {
           <div className="flex flex-wrap gap-3">
             <button
               type="button"
-              onClick={() => setActiveTab("fulltime")}
+              onClick={() => jumpToApplication("fulltime")}
               className="bg-billboard-ink text-billboard-paper font-bold px-5 py-2.5 rounded border-[3px] border-billboard-ink hover:-translate-y-0.5 transition text-sm"
             >
               Apply for a role
             </button>
             <button
               type="button"
-              onClick={() => setActiveTab("workwithus")}
+              onClick={() => jumpToApplication("workwithus")}
               className="bg-white font-bold px-5 py-2.5 rounded border-[3px] border-billboard-ink hover:-translate-y-0.5 transition text-sm"
             >
               Freelance / collaborate
