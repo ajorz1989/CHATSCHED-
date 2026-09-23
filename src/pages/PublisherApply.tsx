@@ -683,13 +683,12 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
           <h1 className="text-2xl mb-1">Where are you based?</h1>
           <div>
             <label className={labelClass}>{isRequestFlow ? `${ch.name} name` : "Page/account name"}</label>
-            <input value={form.name} onChange={(e) => update("name", e.target.value)} className={inputClass} />
+            <input autoFocus={adminMode} value={form.name} onChange={(e) => update("name", e.target.value)} className={inputClass} />
           </div>
           {adminMode && (
             <div className="border-2 border-billboard-yellow bg-billboard-yellow/10 rounded p-3">
               <label className={labelClass}>{metricLabel}</label>
               <input
-                autoFocus
                 type="number"
                 min={0}
                 value={form.followers}
