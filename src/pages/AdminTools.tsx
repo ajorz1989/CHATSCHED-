@@ -149,6 +149,8 @@ export default function AdminTools() {
   const [faqs, setFaqs] = useState<Faq[]>([]);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [childContentReady, setChildContentReady] = useState(true);
   const [actingSlug, setActingSlug] = useState<string | null>(null);
 
   async function load() {
@@ -181,42 +183,68 @@ export default function AdminTools() {
   async function openEdit(tool: Tool) {
     setForm(toFormState(tool));
     setSaveError(null);
+    setActionError(null);
+    setChildContentReady(false);
     setEditingSlug(tool.slug);
     const [f, b, q] = await Promise.all([
       supabase.from("tool_features").select("title, description").eq("tool_slug", tool.slug).order("sort_order", { ascending: true }),
       supabase.from("tool_benefits").select("title, description").eq("tool_slug", tool.slug).order("sort_order", { ascending: true }),
       supabase.from("tool_faqs").select("question, answer").eq("tool_slug", tool.slug).order("sort_order", { ascending: true }),
     ]);
+    const childErrors = [f.error, b.error, q.error].filter(Boolean);
+    if (childErrors.length > 0) {
+      setSaveError("Could not load this tool’s supporting content. Close and reopen the editor before saving.");
+      setFeatures([]);
+      setBenefits([]);
+      setFaqs([]);
+      setChildContentReady(false);
+      return;
+    }
     setFeatures((f.data ?? []) as Bullet[]);
     setBenefits((b.data ?? []) as Bullet[]);
     setFaqs((q.data ?? []) as Faq[]);
+    setChildContentReady(true);
   }
 
   function closeEditor() {
+    if (saving) return;
     setEditingSlug(null);
     setSaveError(null);
+    setActionError(null);
+    setChildContentReady(true);
   }
 
   function updateField<K extends keyof ToolFormState>(key: K, value: ToolFormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
-  async function replaceChildRows(slug: string) {
-    // Simplest-correct approach for small, admin-authored lists: delete
-    // and re-insert on every save rather than diffing row-by-row. Cheap
-    // (a handful of rows per tool) and avoids tracking per-row ids
-    // through the plain-text editor below.
-    await supabase.from("tool_features").delete().eq("tool_slug", slug);
-    await supabase.from("tool_benefits").delete().eq("tool_slug", slug);
-    await supabase.from("tool_faqs").delete().eq("tool_slug", slug);
+  async function replaceChildRows(slug: string): Promise<string | null> {
+    // The child lists are small, so replacement is intentionally simple, but
+    // every mutation is checked so a rejected write is visible to the admin.
+    const featureDelete = await supabase.from("tool_features").delete().eq("tool_slug", slug);
+    if (featureDelete.error) return formatSupabaseError(featureDelete.error, "Could not replace tool features");
+    const benefitDelete = await supabase.from("tool_benefits").delete().eq("tool_slug", slug);
+    if (benefitDelete.error) return formatSupabaseError(benefitDelete.error, "Could not replace tool benefits");
+    const faqDelete = await supabase.from("tool_faqs").delete().eq("tool_slug", slug);
+    if (faqDelete.error) return formatSupabaseError(faqDelete.error, "Could not replace tool FAQs");
 
     const featureRows = features.filter((f) => f.title.trim()).map((f, i) => ({ tool_slug: slug, title: f.title.trim(), description: f.description.trim(), sort_order: i }));
     const benefitRows = benefits.filter((b) => b.title.trim()).map((b, i) => ({ tool_slug: slug, title: b.title.trim(), description: b.description.trim(), sort_order: i }));
     const faqRows = faqs.filter((q) => q.question.trim()).map((q, i) => ({ tool_slug: slug, question: q.question.trim(), answer: q.answer.trim(), sort_order: i }));
 
-    if (featureRows.length) await supabase.from("tool_features").insert(featureRows);
-    if (benefitRows.length) await supabase.from("tool_benefits").insert(benefitRows);
-    if (faqRows.length) await supabase.from("tool_faqs").insert(faqRows);
+    if (featureRows.length) {
+      const result = await supabase.from("tool_features").insert(featureRows);
+      if (result.error) return formatSupabaseError(result.error, "Could not save tool features");
+    }
+    if (benefitRows.length) {
+      const result = await supabase.from("tool_benefits").insert(benefitRows);
+      if (result.error) return formatSupabaseError(result.error, "Could not save tool benefits");
+    }
+    if (faqRows.length) {
+      const result = await supabase.from("tool_faqs").insert(faqRows);
+      if (result.error) return formatSupabaseError(result.error, "Could not save tool FAQs");
+    }
+    return null;
   }
 
   async function save() {
@@ -230,8 +258,27 @@ export default function AdminTools() {
       return;
     }
 
+    if (!childContentReady) {
+      setSaveError("Supporting content has not finished loading. Close and reopen the editor, then try again.");
+      return;
+    }
+
+    for (const [label, value] of [
+      ["Setup price", form.setup_price],
+      ["Monthly price", form.monthly_price],
+      ["Annual price", form.annual_price],
+    ] as const) {
+      if (value.trim() === "") continue;
+      const parsed = Number(value);
+      if (!Number.isFinite(parsed) || parsed < 0) {
+        setSaveError(label + " must be a valid non-negative number.");
+        return;
+      }
+    }
+
     setSaving(true);
     setSaveError(null);
+    setActionError(null);
 
     const isNew = editingSlug === "__new__";
     const row = {
@@ -257,7 +304,9 @@ export default function AdminTools() {
       target_customer: form.target_customer.trim() || null,
       provider_name: form.provider_name.trim() || null,
       updated_at: new Date().toISOString(),
-      ...(isNew && form.status === "active" ? { published_at: new Date().toISOString() } : {}),
+      published_at: form.status === "active"
+        ? (isNew ? new Date().toISOString() : (tools.find((t) => t.slug === slug)?.published_at ?? new Date().toISOString()))
+        : null,
     };
 
     const { error } = isNew
@@ -270,7 +319,12 @@ export default function AdminTools() {
       return;
     }
 
-    await replaceChildRows(slug);
+    const childError = await replaceChildRows(slug);
+    if (childError) {
+      setSaving(false);
+      setSaveError(childError);
+      return;
+    }
     await logAdminAction(isNew ? "tool_create" : "tool_update", "tools", slug, { status: form.status });
     setSaving(false);
     closeEditor();
@@ -279,9 +333,15 @@ export default function AdminTools() {
 
   async function quickSetStatus(tool: Tool, status: ToolStatus) {
     setActingSlug(tool.slug);
+    setActionError(null);
     const patch: Record<string, unknown> = { status, updated_at: new Date().toISOString() };
     if (status === "active" && !tool.published_at) patch.published_at = new Date().toISOString();
-    await supabase.from("tools").update(patch).eq("slug", tool.slug);
+    const { error } = await supabase.from("tools").update(patch).eq("slug", tool.slug);
+    if (error) {
+      setActionError(formatSupabaseError(error, "Could not change " + tool.name + " status"));
+      setActingSlug(null);
+      return;
+    }
     await logAdminAction("tool_status_change", "tools", tool.slug, { from: tool.status, to: status });
     setActingSlug(null);
     load();
@@ -299,16 +359,34 @@ export default function AdminTools() {
     const { published_at: _publishedAt, created_at: _createdAt, updated_at: _updatedAt, ...rest } = tool;
     void _publishedAt; void _createdAt; void _updatedAt;
     const { error } = await supabase.from("tools").insert({ ...rest, slug: newSlug, name: `${tool.name} (Copy)`, status: "draft", featured: false, published_at: null });
-    if (!error) {
+    if (error) {
+      setActionError(formatSupabaseError(error, "Could not duplicate " + tool.name));
+      setActingSlug(null);
+      return;
+    }
+    {
       const [f, b, q] = await Promise.all([
         supabase.from("tool_features").select("title, description, sort_order").eq("tool_slug", tool.slug),
         supabase.from("tool_benefits").select("title, description, sort_order").eq("tool_slug", tool.slug),
         supabase.from("tool_faqs").select("question, answer, sort_order").eq("tool_slug", tool.slug),
       ]);
-      if (f.data?.length) await supabase.from("tool_features").insert(f.data.map((r) => ({ ...r, tool_slug: newSlug })));
-      if (b.data?.length) await supabase.from("tool_benefits").insert(b.data.map((r) => ({ ...r, tool_slug: newSlug })));
-      if (q.data?.length) await supabase.from("tool_faqs").insert(q.data.map((r) => ({ ...r, tool_slug: newSlug })));
-      await logAdminAction("tool_duplicate", "tools", newSlug, { from: tool.slug });
+      if (f.error || b.error || q.error) {
+        setActionError("Could not load all supporting content for " + tool.name + ". The duplicate was created without copying every child row.");
+      } else {
+        if (f.data?.length) {
+          const result = await supabase.from("tool_features").insert(f.data.map((r) => ({ ...r, tool_slug: newSlug })));
+          if (result.error) setActionError(formatSupabaseError(result.error, "Could not copy tool features"));
+        }
+        if (b.data?.length) {
+          const result = await supabase.from("tool_benefits").insert(b.data.map((r) => ({ ...r, tool_slug: newSlug })));
+          if (result.error) setActionError(formatSupabaseError(result.error, "Could not copy tool benefits"));
+        }
+        if (q.data?.length) {
+          const result = await supabase.from("tool_faqs").insert(q.data.map((r) => ({ ...r, tool_slug: newSlug })));
+          if (result.error) setActionError(formatSupabaseError(result.error, "Could not copy tool FAQs"));
+        }
+        await logAdminAction("tool_duplicate", "tools", newSlug, { from: tool.slug });
+      }
     }
     setActingSlug(null);
     load();
@@ -324,12 +402,12 @@ export default function AdminTools() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-5 py-16">
+    <div className="max-w-6xl mx-auto px-4 sm:px-5 py-12 sm:py-16 min-w-0">
       <Seo title="Tools Admin · ChatSched" noindex />
       <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">Admin</span>
       <div className="flex flex-wrap items-end justify-between gap-3 mb-2">
         <h1 className="text-3xl md:text-4xl">ChatSched Tools.</h1>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Link to="/admin" className="font-mono text-xs font-semibold uppercase border-2 border-billboard-ink rounded px-3 py-2 hover:-translate-y-0.5 transition shrink-0">
             ← Main admin
           </Link>
@@ -339,6 +417,7 @@ export default function AdminTools() {
       <p className="text-billboard-inkSoft mb-8">Only Active tools appear on the public /tools page. Coming Soon can show in a separate section. Draft and Archived are never public — enforced by RLS, not just this UI.</p>
 
       {loadError && <div className="border-2 border-billboard-red text-billboard-red rounded p-4 mb-6 text-sm">{loadError}</div>}
+      {actionError && <div className="border-2 border-billboard-red text-billboard-red rounded p-4 mb-6 text-sm">{actionError}</div>}
 
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
         {([["total", "Total"], ["active", "Active"], ["draft", "Draft"], ["coming_soon", "Coming Soon"], ["featured", "Featured"]] as const).map(([key, label]) => (
@@ -460,7 +539,7 @@ function ToolEditor({
       {error && <div className="border-2 border-billboard-red text-billboard-red rounded p-3 mb-4 text-sm">{error}</div>}
 
       {/* Basic information */}
-      <fieldset className="mb-5">
+      <fieldset className="mb-5 min-w-0">
         <legend className="font-mono text-xs font-bold uppercase tracking-wide mb-2">Basic information</legend>
         <div className="grid sm:grid-cols-2 gap-3">
           <div>
@@ -575,7 +654,7 @@ function ToolEditor({
       </fieldset>
 
       {/* CTA */}
-      <fieldset className="mb-6">
+      <fieldset className="mb-6 min-w-0">
         <legend className="font-mono text-xs font-bold uppercase tracking-wide mb-2">Call to action</legend>
         <div className="grid sm:grid-cols-2 gap-3">
           <div>
@@ -593,8 +672,8 @@ function ToolEditor({
         </label>
       </fieldset>
 
-      <div className="flex gap-2">
-        <Button variant="primary" size="sm" onClick={onSave} disabled={saving}>{saving ? "Saving…" : "Save tool"}</Button>
+      <div className="flex flex-wrap gap-2">
+        <Button variant="primary" size="sm" onClick={onSave} disabled={saving || !childContentReady}>{saving ? "Saving…" : "Save tool"}</Button>
         <Button variant="outline" size="sm" onClick={onCancel} disabled={saving}>Cancel</Button>
       </div>
     </div>
@@ -606,9 +685,9 @@ function BulletEditor({ label, items, onChange }: { label: string; items: Bullet
     <div className="mb-4">
       <p className="text-[11px] font-mono uppercase text-billboard-inkSoft mb-2">{label}</p>
       {items.map((item, i) => (
-        <div key={i} className="flex gap-2 mb-2">
-          <input className="flex-1 border-2 border-billboard-ink rounded px-2 py-1.5 text-sm" placeholder="Title" value={item.title} onChange={(e) => onChange(items.map((it, j) => (j === i ? { ...it, title: e.target.value } : it)))} />
-          <input className="flex-[2] border-2 border-billboard-ink rounded px-2 py-1.5 text-sm" placeholder="Description (optional)" value={item.description} onChange={(e) => onChange(items.map((it, j) => (j === i ? { ...it, description: e.target.value } : it)))} />
+        <div key={i} className="grid sm:grid-cols-[1fr_2fr_auto] gap-2 mb-2">
+          <input className="w-full min-w-0 border-2 border-billboard-ink rounded px-2 py-1.5 text-sm" placeholder="Title" value={item.title} onChange={(e) => onChange(items.map((it, j) => (j === i ? { ...it, title: e.target.value } : it)))} />
+          <input className="w-full min-w-0 border-2 border-billboard-ink rounded px-2 py-1.5 text-sm" placeholder="Description (optional)" value={item.description} onChange={(e) => onChange(items.map((it, j) => (j === i ? { ...it, description: e.target.value } : it)))} />
           <button type="button" onClick={() => onChange(items.filter((_, j) => j !== i))} className="text-billboard-red text-xs font-mono px-2">✕</button>
         </div>
       ))}
@@ -624,9 +703,9 @@ function FaqEditor({ items, onChange }: { items: Faq[]; onChange: (v: Faq[]) => 
     <div>
       <p className="text-[11px] font-mono uppercase text-billboard-inkSoft mb-2">FAQ</p>
       {items.map((item, i) => (
-        <div key={i} className="flex gap-2 mb-2">
-          <input className="flex-1 border-2 border-billboard-ink rounded px-2 py-1.5 text-sm" placeholder="Question" value={item.question} onChange={(e) => onChange(items.map((it, j) => (j === i ? { ...it, question: e.target.value } : it)))} />
-          <input className="flex-[2] border-2 border-billboard-ink rounded px-2 py-1.5 text-sm" placeholder="Answer" value={item.answer} onChange={(e) => onChange(items.map((it, j) => (j === i ? { ...it, answer: e.target.value } : it)))} />
+        <div key={i} className="grid sm:grid-cols-[1fr_2fr_auto] gap-2 mb-2">
+          <input className="w-full min-w-0 border-2 border-billboard-ink rounded px-2 py-1.5 text-sm" placeholder="Question" value={item.question} onChange={(e) => onChange(items.map((it, j) => (j === i ? { ...it, question: e.target.value } : it)))} />
+          <input className="w-full min-w-0 border-2 border-billboard-ink rounded px-2 py-1.5 text-sm" placeholder="Answer" value={item.answer} onChange={(e) => onChange(items.map((it, j) => (j === i ? { ...it, answer: e.target.value } : it)))} />
           <button type="button" onClick={() => onChange(items.filter((_, j) => j !== i))} className="text-billboard-red text-xs font-mono px-2">✕</button>
         </div>
       ))}
