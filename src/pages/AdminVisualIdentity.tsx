@@ -164,7 +164,7 @@ function AdminVisualIdentityInner() {
   const meta = useMemo(() => (preview === "current" ? null : CONCEPT_COPY[preview]), [preview]);
 
   return (
-    <div className="max-w-6xl mx-auto px-5 py-16">
+    <div className="max-w-6xl mx-auto px-4 sm:px-5 py-12 sm:py-16 min-w-0">
       <Seo title="Visual Identity Studio · Admin · ChatSched" noindex />
       <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">
         Admin
@@ -172,7 +172,7 @@ function AdminVisualIdentityInner() {
       <p className="font-mono text-2xs font-semibold uppercase tracking-widest text-billboard-greenDeep mb-2">
         Visual identity studio
       </p>
-      <h1 className="text-3xl md:text-4xl max-w-3xl mb-4">How a publisher should look on ChatSched.</h1>
+      <h1 className="text-3xl sm:text-4xl md:text-5xl max-w-3xl mb-4">How a publisher should look on ChatSched.</h1>
       <p className="text-billboard-inkSoft max-w-2xl mb-10">
         A design-review sandbox: three branded directions for the avatar + cover system, previewed against sample
         publishers, alongside today's baseline. This page previews only — it does not read or write real publisher
@@ -220,7 +220,7 @@ function AdminVisualIdentityInner() {
       </section>
 
       {/* 02 — Strategy */}
-      <section className="bg-billboard-paperDim border-y-[3px] border-billboard-ink py-16 -mx-5 px-5 mb-16">
+      <section className="bg-billboard-paperDim border-y-[3px] border-billboard-ink py-12 sm:py-16 -mx-4 sm:-mx-5 px-4 sm:px-5 mb-16">
         <p className="font-mono text-2xs font-semibold uppercase tracking-widest text-billboard-greenDeep mb-2">02 · Strategy</p>
         <h2 className="text-2xl mb-6 max-w-2xl">Custom avatars vs. brand graphics</h2>
         <div className="grid md:grid-cols-2 gap-6">
@@ -265,7 +265,7 @@ function AdminVisualIdentityInner() {
           ))}
         </div>
 
-        <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-8 mb-10">
+        <div className="grid lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] gap-6 sm:gap-8 mb-10">
           <div>
             {meta ? (
               <>
@@ -306,7 +306,7 @@ function AdminVisualIdentityInner() {
         </div>
 
         <h4 className="font-bold mb-4">Browse grid in this system</h4>
-        <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-5 mb-8">
+        <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 mb-8">
           {SAMPLE_PUBLISHERS.map((p) => (
             <div key={`${preview}-${p.id}`} className="border-[3px] border-billboard-ink rounded bg-white overflow-hidden">
               <VisualCover publisher={p} size="card" system={preview} />
@@ -347,7 +347,7 @@ function AdminVisualIdentityInner() {
       </section>
 
       {/* 04 — Outcomes */}
-      <section className="bg-billboard-ink text-billboard-paper -mx-5 px-5 py-16 mb-16">
+      <section className="bg-billboard-ink text-billboard-paper -mx-4 sm:-mx-5 px-4 sm:px-5 py-12 sm:py-16 mb-16">
         <p className="font-mono text-2xs font-semibold uppercase tracking-widest text-billboard-yellow mb-2">04 · Outcomes</p>
         <h2 className="text-2xl mb-6">Open, locked, or hybrid</h2>
         <div className="overflow-x-auto max-w-full">
