@@ -40,6 +40,10 @@ textarea {
   max-width: 100%;
 }
 
+fieldset {
+  min-width: 0;
+}
+
 h1, h2, h3 {
   @apply font-display tracking-tight;
 }
