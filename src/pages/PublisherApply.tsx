@@ -383,10 +383,11 @@ export interface PublisherApplyProps {
    */
   adminMode?: boolean;
   forcedChannel?: ChannelSlug;
+  startStep?: Step;
   onAdminCreated?: (publisherId: string, channelSlug: ChannelSlug) => void;
 }
 
-export default function PublisherApply({ adminMode = false, forcedChannel, onAdminCreated }: PublisherApplyProps) {
+export default function PublisherApply({ adminMode = false, forcedChannel, startStep, onAdminCreated }: PublisherApplyProps) {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -407,7 +408,8 @@ export default function PublisherApply({ adminMode = false, forcedChannel, onAdm
   const metricLabel = isRequestFlow && ch.eligibility ? ch.eligibility.metricLabel : "Follower count";
   const checks = isRequestFlow && ch.eligibility ? ch.eligibility.checks : DEFAULT_CHECKS;
 
-  const [step, setStep] = useState<Step>("eligibility");
+  // Admin creation opens directly on the editable profile step; public applications retain the eligibility gate.
+  const [step, setStep] = useState<Step>(() => adminMode ? (startStep ?? "details") : "eligibility");
   const [form, setForm] = useState<FormState>(initialState);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -562,7 +564,6 @@ export default function PublisherApply({ adminMode = false, forcedChannel, onAdm
         console.warn("AJ: Creations audit log failed (non-fatal)", auditError);
       }
       supabase.functions.invoke("notify-saved-search-matches", { body: { publisher_id: inserted.id } }).catch(() => {});
-      onAdminCreated?.(inserted.id, channelSlug);
     }
 
     // 12-Channel Audit fix A1/B1 — upload proof AFTER the publishers row
@@ -591,6 +592,7 @@ export default function PublisherApply({ adminMode = false, forcedChannel, onAdm
     setSubmitting(false);
     if (typeof window !== "undefined") sessionStorage.removeItem(APPLY_CHANNEL_STORAGE_KEY);
     setStep("submitted");
+    if (adminMode) onAdminCreated?.(inserted.id, channelSlug);
   }
 
   if (step === "ineligible") {
@@ -683,6 +685,21 @@ export default function PublisherApply({ adminMode = false, forcedChannel, onAdm
             <label className={labelClass}>{isRequestFlow ? `${ch.name} name` : "Page/account name"}</label>
             <input value={form.name} onChange={(e) => update("name", e.target.value)} className={inputClass} />
           </div>
+          {adminMode && (
+            <div className="border-2 border-billboard-yellow bg-billboard-yellow/10 rounded p-3">
+              <label className={labelClass}>{metricLabel}</label>
+              <input
+                autoFocus
+                type="number"
+                min={0}
+                value={form.followers}
+                onChange={(e) => update("followers", e.target.value)}
+                placeholder={isRequestFlow ? `Enter ${metricLabel.toLowerCase()}` : "Enter follower count"}
+                className={inputClass}
+              />
+              <p className="text-xs text-billboard-inkSoft mt-1.5">Admin listing metric used for marketplace matching and publisher scoring.</p>
+            </div>
+          )}
           <div>
             <label className={labelClass}>Province</label>
             <select value={form.province} onChange={(e) => update("province", e.target.value)} className={inputClass}>
