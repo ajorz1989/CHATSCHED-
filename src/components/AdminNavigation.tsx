@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   BarChart3,
   BriefcaseBusiness,
@@ -199,13 +200,13 @@ export default function AdminNavigation({
 
                       if (item.href) {
                         return (
-                          <a
+                          <Link
                             key={item.label}
-                            href={item.href}
+                            to={item.href}
                             className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs text-white/65 hover:text-white hover:bg-white/[0.05] transition"
                           >
                             {content}
-                          </a>
+                          </Link>
                         );
                       }
 
