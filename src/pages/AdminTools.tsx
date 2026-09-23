@@ -172,11 +172,13 @@ export default function AdminTools() {
   if (!isSupabaseConfigured) return <SetupNotice />;
 
   function openCreate() {
-    setForm(BLANK_FORM);
+    setForm({ ...BLANK_FORM });
     setFeatures([]);
     setBenefits([]);
     setFaqs([]);
     setSaveError(null);
+    setActionError(null);
+    setChildContentReady(true);
     setEditingSlug("__new__");
   }
 
