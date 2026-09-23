@@ -127,7 +127,7 @@ export default function AdminAJCreations() {
           <div className="border-t border-white/10 bg-white">
             <div className="p-3 md:p-5 bg-billboard-yellow/10 border-b border-billboard-yellow/30 flex flex-wrap items-center justify-between gap-3 text-billboard-ink">
               <div className="text-xs leading-relaxed max-w-3xl">
-                <strong>Admin publish mode:</strong> public eligibility and manual review are bypassed. The completed listing is saved as approved + verified and carries an <code>aj_creations</code> source marker for auditability.
+                <strong>Admin publish mode:</strong> the fields below are fully editable. Public eligibility and manual review are bypassed. The completed listing is saved as approved + verified and carries an <code>aj_creations</code> source marker for auditability.
               </div>
               <Link to={`/channels/${selectedModule.definition.slug}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 border-2 border-billboard-ink rounded px-3 py-2 text-xs font-bold bg-white shrink-0">
                 View channel <ExternalLink size={13} />
@@ -137,6 +137,7 @@ export default function AdminAJCreations() {
               key={selected}
               adminMode
               forcedChannel={selected}
+              startStep="details"
               onAdminCreated={() => {
                 setCompletedChannels((prev) => {
                   const next = new Set(prev);
