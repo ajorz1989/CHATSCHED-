@@ -388,9 +388,21 @@ async function handlePayNowActivationItn(admin: any, data: Record<string, string
         } else if (targetProfile.role !== activationType) {
           note = `The payment target account has role "${targetProfile.role}", not "${activationType}".`;
         } else {
-          matchedUserId = targetProfile.id;
+          const { data: authUser } = payerEmail
+            ? await admin.auth.admin.getUserById(targetProfile.id)
+            : { data: { user: null } };
+          const accountEmail = (authUser?.user?.email ?? "").toLowerCase().trim();
 
-          if (isBusiness) {
+          // The custom account ID is only a routing hint because it is
+          // visible in the browser. Never activate an account unless the
+          // payer identity returned by PayFast also matches the account's
+          // authenticated email.
+          if (!payerEmail || !accountEmail || accountEmail !== payerEmail.toLowerCase()) {
+            note = "PayFast payer email does not match the ChatSched account email, so automatic activation was blocked.";
+          } else {
+            matchedUserId = targetProfile.id;
+
+            if (isBusiness) {
             const { data: subscription } = await admin
               .from("business_subscriptions")
               .select("*")
