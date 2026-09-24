@@ -34,7 +34,7 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-billboard-paper border-b-[3px] border-billboard-ink">
-      <div className="max-w-6xl w-full mx-auto min-w-0 flex items-center justify-between px-3 sm:px-5 py-3.5 gap-2 sm:gap-4">
+      <div className="max-w-[1400px] w-full mx-auto min-w-0 flex items-center justify-between px-3 sm:px-5 py-3.5 gap-2 sm:gap-4">
 
         {/* Logo */}
         <Link
@@ -51,9 +51,9 @@ export default function Header() {
         </Link>
 
         {/* Primary nav — desktop only */}
-        <nav className="hidden lg:flex items-center gap-5 font-semibold text-sm">
+        <nav className="hidden lg:flex items-center gap-4 font-semibold text-sm whitespace-nowrap shrink-0">
           {NAV_LINKS.map(({ to, key }) => (
-            <NavLink key={to} to={to} className={navCls}>
+            <NavLink key={to} to={to} className={`${navCls} whitespace-nowrap`}>
               {t(key)}
             </NavLink>
           ))}
