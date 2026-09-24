@@ -315,8 +315,7 @@
     "businessBody": "Access campaign building, managed advertising and the marketplace.",
     "publisherBody": "Unlock your publisher profile and advertising network features.",
     "businessCta": "Get Started →",
-    "publisherCta": "Join as a Publisher →",
-    "commission": "Completed bookings use one transparent {{commission}}% platform commission; {{share}}% goes to the publisher."
+    "publisherCta": "Join as a Publisher →"
   },
   "publisherCta": {
     "badge": "FOR PUBLISHERS & CREATORS",
