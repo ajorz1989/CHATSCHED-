@@ -15,6 +15,7 @@ import { BUSINESS_SUBSCRIPTION_PRICE, BUSINESS_LAUNCH_CREDIT_AMOUNT } from "../l
 import { formatCurrency } from "../lib/currency";
 import Seo from "../components/Seo";
 import { SkeletonBlock } from "../components/Skeleton";
+import PayFastActivationButton from "../components/PayFastActivationButton";
 import type { BusinessSubscription } from "../lib/types";
 
 interface CreditRow {
@@ -207,21 +208,30 @@ export default function ActivationFeeInfo() {
             </p>
           ) : (
             <>
-            <div className="flex flex-wrap gap-3">
-              <button
-                onClick={activate}
-                disabled={activating || eftSubmitting}
-                className="bg-billboard-yellow border-[3px] border-billboard-ink font-bold px-6 py-3 rounded hover:-translate-y-0.5 transition disabled:opacity-60"
-              >
-                {activating ? "Opening PayFast…" : `Pay Online — ${formatCurrency(BUSINESS_SUBSCRIPTION_PRICE)} once-off`}
-              </button>
-              <button
-                onClick={() => { setError(null); document.getElementById("eft-fallback")?.scrollIntoView({ behavior: "smooth", block: "center" }); }}
-                disabled={activating || eftSubmitting}
-                className="bg-white border-[3px] border-billboard-ink font-bold px-6 py-3 rounded hover:-translate-y-0.5 transition disabled:opacity-60"
-              >
-                Pay by EFT instead
-              </button>
+            <div className="flex flex-col gap-4">
+              <div className="border-2 border-billboard-ink rounded-lg bg-white p-4 sm:p-5">
+                <p className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft mb-2">
+                  Primary online payment
+                </p>
+                <PayFastActivationButton activationType="business" userId={user!.id} />
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                <button
+                  onClick={activate}
+                  disabled={activating || eftSubmitting}
+                  className="bg-white border-[3px] border-billboard-ink font-bold px-6 py-3 rounded hover:-translate-y-0.5 transition disabled:opacity-60"
+                >
+                  {activating ? "Opening ChatSched PayFast checkout…" : "Use standard ChatSched checkout instead"}
+                </button>
+                <button
+                  onClick={() => { setError(null); document.getElementById("eft-fallback")?.scrollIntoView({ behavior: "smooth", block: "center" }); }}
+                  disabled={activating || eftSubmitting}
+                  className="bg-white border-[3px] border-billboard-ink font-bold px-6 py-3 rounded hover:-translate-y-0.5 transition disabled:opacity-60"
+                >
+                  Pay by EFT instead
+                </button>
+              </div>
             </div>
 
             <div id="eft-fallback" className="mt-6 border-2 border-billboard-ink rounded-lg p-5 bg-white">
