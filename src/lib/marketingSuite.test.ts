@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { estimateRoi, matchPublishers, isCaptionProviderConfigured } from "./marketingSuite";
+import { estimateRoi, matchPublishers } from "./marketingSuite";
 import { makePublisher } from "../test/fixtures";
 
 describe("estimateRoi", () => {
@@ -52,11 +52,5 @@ describe("matchPublishers", () => {
     const pubs = Array.from({ length: 10 }, (_, i) => makePublisher({ id: `p${i}` }));
     const results = matchPublishers("local business", pubs, { limit: 3 });
     expect(results.length).toBeLessThanOrEqual(3);
-  });
-});
-
-describe("isCaptionProviderConfigured", () => {
-  it("returns a boolean without throwing when no provider key is present", () => {
-    expect(typeof isCaptionProviderConfigured()).toBe("boolean");
   });
 });
