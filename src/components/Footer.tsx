@@ -15,11 +15,11 @@ export default function Footer() {
   return (
     <footer className="bg-billboard-ink text-billboard-paperDim pt-14 pb-8">
       <div className="max-w-6xl mx-auto px-5">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-8 pb-12 border-b border-[#3A342B]">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-8 pb-12 border-b border-[#3A342B]">
 
           {/* Brand + tagline */}
-          <div className="col-span-2 sm:col-span-3 lg:col-span-1 pr-4">
-            <div className="flex items-center gap-2 font-display text-lg text-billboard-paper mb-2">
+          <div className="col-span-2 sm:col-span-3 lg:col-span-2 pr-4">
+            <div className="flex items-center gap-2 font-display text-lg text-billboard-paper mb-2 whitespace-nowrap">
               <svg width="24" height="20" viewBox="0 0 26 22" fill="none">
                 <rect x="1" y="1" width="24" height="14" stroke="currentColor" strokeWidth="2" />
                 <line x1="8" y1="15" x2="8" y2="21" stroke="currentColor" strokeWidth="2" />
