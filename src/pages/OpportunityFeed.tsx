@@ -55,7 +55,7 @@ function formatR(n: number | null): string {
 }
 
 export default function OpportunityFeed() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [publisherId, setPublisherId] = useState<string | null>(null);
   const [publisherChannelSlug, setPublisherChannelSlug] = useState<ChannelSlug | null>(null);
   const [view, setView] = useState<"browse" | "applications">("browse");
@@ -71,9 +71,23 @@ export default function OpportunityFeed() {
   const [proposedAmount, setProposedAmount] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const isAdmin = profile?.role === "admin";
 
   async function loadPublisher() {
     if (!user) return;
+    if (isAdmin) {
+      const { data } = await supabase
+        .from("publishers")
+        .select("id, channel_slug")
+        .order("name", { ascending: true })
+        .limit(1)
+        .maybeSingle();
+      if (data) {
+        setPublisherId(data.id);
+        setPublisherChannelSlug(data.channel_slug);
+      }
+      return;
+    }
     const { data } = await supabase
       .from("publishers")
       .select("id, channel_slug")
@@ -115,9 +129,10 @@ export default function OpportunityFeed() {
   useEffect(() => {
     loadPublisher();
     loadOpportunities();
-    if (user) hasUsablePublisherSubscription(user.id).then(setSubscribed);
+    if (isAdmin) setSubscribed(true);
+    else if (user) hasUsablePublisherSubscription(user.id).then(setSubscribed);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, isAdmin]);
 
   useEffect(() => {
     if (publisherId) loadMyApplications(publisherId);
