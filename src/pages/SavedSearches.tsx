@@ -25,11 +25,12 @@ export default function SavedSearches() {
 
   async function load() {
     if (!user) return;
-    const { data } = await supabase
+    const query = supabase
       .from("saved_searches")
       .select("*")
-      .eq("business_id", user.id)
       .order("created_at", { ascending: false });
+    if (profile?.role !== "admin") query.eq("business_id", user.id);
+    const { data } = await query;
     setSearches((data ?? []) as SavedSearch[]);
     setLoading(false);
   }
@@ -54,7 +55,7 @@ export default function SavedSearches() {
   }
 
   if (!user) return <Navigate to="/login" replace />;
-  if (profile?.role === "publisher" || profile?.role === "admin") return <Navigate to="/dashboard" replace />;
+  if (profile?.role === "publisher") return <Navigate to="/dashboard" replace />;
 
   return (
     <div className="max-w-3xl mx-auto px-5 py-16">
