@@ -206,6 +206,7 @@ export default function ActivationFeeInfo() {
               You're activated — every feature above is already unlocked on your account. Nothing further to do.
             </p>
           ) : (
+            <>
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={activate}
@@ -260,6 +261,7 @@ export default function ActivationFeeInfo() {
                 </>
               )}
             </div>
+            </>
           )}
         </div>
       )}
