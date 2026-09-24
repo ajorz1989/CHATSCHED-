@@ -62,7 +62,8 @@ export default function ContentStudio() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const isSubscribed = subscription?.status === "active" && subscription.current_period_end && new Date(subscription.current_period_end) > new Date();
+  const isAdmin = profile?.role === "admin";
+  const isSubscribed = isAdmin || (subscription?.status === "active" && subscription.current_period_end && new Date(subscription.current_period_end) > new Date());
   const isActivated = activation ? isSubscriptionUsable(activation.status) : false;
   // A subscription is the better tier — same "activation is a floor, not
   // a ceiling" rule the edge function applies.
