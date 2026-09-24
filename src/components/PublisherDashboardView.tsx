@@ -29,6 +29,7 @@ import { SkeletonBlock, SkeletonLine, StatCardGridSkeleton, SkeletonRows } from 
 import EmptyState from "./EmptyState";
 import ConnectSocialAccounts from "./ConnectSocialAccounts";
 import PublisherTractionPanel from "./PublisherTractionPanel";
+import PublisherActivationNudge from "./PublisherActivationNudge";
 import RateCardManager from "./RateCardManager";
 import ContentApprovalPanel from "./ContentApprovalPanel";
 import { invalidatePublishersCache } from "../hooks/usePublishers";
@@ -82,9 +83,21 @@ export default function PublisherDashboardView() {
     message: searchParams.get("message"),
   } : null;
   const [tab, setTab] = useState<"requests" | "listing">("requests");
+  const [activated, setActivated] = useState<boolean | undefined>(undefined);
 
   const channelDef = publisher ? getChannelBySlug(publisher.channel_slug)?.definition : undefined;
   const isRequestFlowChannel = channelDef?.bookingFlow === "request";
+
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    hasUsablePublisherSubscription(user.id).then((usable) => {
+      if (!cancelled) setActivated(usable);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   async function load() {
     if (!user) return;
@@ -220,6 +233,8 @@ export default function PublisherDashboardView() {
     <div className="max-w-4xl mx-auto px-5 py-16">
       <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">Your dashboard</span>
 
+      <PublisherActivationNudge />
+
       <CreatorHomeSummary
         firstName={profile?.full_name ? profile.full_name.split(" ")[0] : null}
         publisher={publisher}
@@ -321,7 +336,14 @@ export default function PublisherDashboardView() {
                   </button>
                 )}
 
-                <PublisherTractionPanel publisherId={publisher.id} totalRequests={activeRequestCount} />
+                {activated === false ? (
+                  <div className="border-2 border-dashed border-billboard-inkSoft rounded p-4 mb-6 text-sm text-billboard-inkSoft">
+                    Traction analytics unlock once your account is activated.{" "}
+                    <Link to="/account" className="font-semibold underline text-billboard-ink">Activate now →</Link>
+                  </div>
+                ) : (
+                  <PublisherTractionPanel publisherId={publisher.id} totalRequests={activeRequestCount} />
+                )}
 
                 <h2 className="font-display text-lg mb-4">Requests</h2>
                 {isRequestFlowChannel ? (
@@ -1126,9 +1148,11 @@ function ChannelRequestCard({ request: r, publisher, onChange }: { request: Chan
                   Approve at {formatCurrency(r.proposed_amount)}
                 </button>
               )}
-              <button onClick={() => setCountering(true)} disabled={acting} className="border-[3px] border-billboard-ink bg-billboard-yellow font-bold px-4 py-2 rounded text-sm hover:-translate-y-0.5 transition disabled:opacity-60">
-                Propose a different price
-              </button>
+              {subscribed !== false && (
+                <button onClick={() => setCountering(true)} disabled={acting} className="border-[3px] border-billboard-ink bg-billboard-yellow font-bold px-4 py-2 rounded text-sm hover:-translate-y-0.5 transition disabled:opacity-60">
+                  Propose a different price
+                </button>
+              )}
               <button onClick={() => respond("declined")} disabled={acting} className="border-[3px] border-billboard-ink font-bold px-4 py-2 rounded text-sm hover:bg-billboard-paperDim transition disabled:opacity-60">
                 Decline
               </button>
