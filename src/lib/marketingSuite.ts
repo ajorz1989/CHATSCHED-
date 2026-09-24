@@ -476,14 +476,3 @@ export function estimateRoi(
     assumptions,
   };
 }
-
-/** True when a future VITE_CAPTION_PROVIDER_KEY (or similar) is present. */
-export function isCaptionProviderConfigured(): boolean {
-  try {
-    // Vite only exposes env prefixed with VITE_
-    const key = (import.meta as unknown as { env?: Record<string, string> }).env?.VITE_CAPTION_PROVIDER_KEY;
-    return Boolean(key && key.length > 8);
-  } catch {
-    return false;
-  }
-}
