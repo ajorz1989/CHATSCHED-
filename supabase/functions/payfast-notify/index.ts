@@ -365,9 +365,9 @@ async function handlePayNowActivationItn(admin: any, data: Record<string, string
 
   if (paymentStatus === "COMPLETE") {
     if (Math.abs(receivedAmount - expectedAmount) > 0.01) {
-      note = \`Amount mismatch: PayFast reported R\${receivedAmount.toFixed(2)}, expected R\${expectedAmount.toFixed(2)}.\`;
+      note = `Amount mismatch: PayFast reported R${receivedAmount.toFixed(2)}, expected R${expectedAmount.toFixed(2)}.`;
     } else if ((data.item_name ?? "").trim() !== expectedItem) {
-      note = \`Item mismatch: PayFast reported "\${data.item_name ?? "missing item name"}".\`;
+      note = `Item mismatch: PayFast reported "${data.item_name ?? "missing item name"}".`;
     } else {
       const candidateUserId = (data.custom_str2 ?? "").trim();
 
@@ -383,7 +383,7 @@ async function handlePayNowActivationItn(admin: any, data: Record<string, string
         if (profileError || !targetProfile) {
           note = "The Pay Now payment could not be matched to a ChatSched profile.";
         } else if (targetProfile.role !== activationType) {
-          note = \`The payment target account has role "\${targetProfile.role}", not "\${activationType}".\`;
+          note = `The payment target account has role "${targetProfile.role}", not "${activationType}".`;
         } else if (!payerEmail) {
           note = "PayFast did not return a payer email, so automatic activation was blocked.";
         } else {
