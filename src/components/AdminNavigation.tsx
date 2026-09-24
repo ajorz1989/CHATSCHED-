@@ -71,6 +71,7 @@ const GROUPS: NavGroup[] = [
     icon: CircleDollarSign,
     items: [
       { key: "payouts", label: "Payouts", icon: CircleDollarSign, tone: "attention" },
+      { label: "Activation EFT", href: "/admin/activation-payments", icon: CircleDollarSign, tone: "attention" },
       { key: "reports", label: "Reports", icon: FileText },
       { key: "disputes", label: "Disputes", icon: ShieldCheck },
       { key: "compliance", label: "Compliance", icon: ShieldCheck },
