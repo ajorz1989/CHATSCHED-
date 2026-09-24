@@ -56,8 +56,8 @@ export default function SaveSearchButton({ filters, resultCount }: { filters: Fi
     setSaved(true);
   }
 
-  // Publishers/admins never see this — saved searches are a business tool.
-  if (profile?.role === "publisher" || profile?.role === "admin") return null;
+  // Publishers never see this — saved searches are a business-side tool. Admins may use it as platform operators.
+  if (profile?.role === "publisher") return null;
 
   if (!user) {
     return (
