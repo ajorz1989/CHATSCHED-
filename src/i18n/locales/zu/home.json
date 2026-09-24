@@ -294,8 +294,7 @@
     "businessBody": "Finyelela ukwakha imikhankaso, ukukhangisa okuphethwe nemakethe.",
     "publisherBody": "Vula iphrofayela yakho nezici zenethiwekhi yabashicileli.",
     "businessCta": "Qala →",
-    "publisherCta": "Joyina Njengomshicileli →",
-    "commission": "Amabhukingi aqediwe asebenzisa ikhomishini ye-platform engu-{{commission}}% esobala; {{share}}% iya kumshicileli."
+    "publisherCta": "Joyina Njengomshicileli →"
   },
   "publisherCta": {
     "badge": "ABASHICILELI NENZA ABADALI",
