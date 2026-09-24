@@ -5,6 +5,7 @@ import { redirectToPayfast } from "../lib/payfastRedirect";
 import { subscriptionStatusInfo, isSubscriptionUsable, type SubscriptionStatus } from "../lib/subscriptions";
 import { PUBLISHER_SUBSCRIPTION_PRICE, BUSINESS_SUBSCRIPTION_PRICE } from "../lib/constants";
 import { formatCurrency } from "../lib/currency";
+import PayFastActivationButton from "./PayFastActivationButton";
 
 // Once-off activation, no renewal, ever (item 10,
 // schema_phase86_once_off_activation_pricing.sql) — this used to also
@@ -126,13 +127,22 @@ export default function SubscriptionSection({ userId, role }: Props) {
       {error && <p className="text-billboard-red text-xs font-semibold mb-3">{error}</p>}
 
       {!usable && (
-        <button
-          onClick={activate}
-          disabled={subscribing}
-          className="inline-flex items-center gap-2 border-[3px] border-billboard-ink font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition text-sm bg-white disabled:opacity-60"
-        >
-          {subscribing ? "Starting…" : status ? "Retry payment" : `Activate — ${formatCurrency(price)} once-off`}
-        </button>
+        <div className="flex flex-col gap-4">
+          <div className="border-2 border-billboard-ink rounded-lg bg-white p-4">
+            <p className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft mb-2">
+              Primary online payment
+            </p>
+            <PayFastActivationButton activationType={role} userId={userId} />
+          </div>
+
+          <button
+            onClick={activate}
+            disabled={subscribing}
+            className="inline-flex items-center gap-2 border-[3px] border-billboard-ink font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition text-sm bg-white disabled:opacity-60 w-fit"
+          >
+            {subscribing ? "Starting…" : status ? "Use standard ChatSched checkout instead" : "Use standard ChatSched checkout instead"}
+          </button>
+        </div>
       )}
 
       {usable && (
