@@ -5,6 +5,7 @@
 // about not surfacing it in the primary IA). Reached via ActivationNudge
 // on the dashboard, or a direct link.
 import { useEffect, useState } from "react";
+import BankDetailsPanel from "../components/BankDetailsPanel";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
 import { formatSupabaseError } from "../lib/supabaseErrors";
@@ -28,6 +29,10 @@ export default function ActivationFeeInfo() {
   const [loading, setLoading] = useState(true);
   const [activating, setActivating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [eftReference, setEftReference] = useState<string | null>(null);
+  const [eftNote, setEftNote] = useState("");
+  const [eftSubmitting, setEftSubmitting] = useState(false);
+  const [eftSubmitted, setEftSubmitted] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -58,13 +63,45 @@ export default function ActivationFeeInfo() {
         setError(formatSupabaseError(invokeError || data?.error, "Couldn't start activation"));
         return;
       }
-      redirectToPayfast(data.action_url, data.fields);
+      if (!data?.action_url || !data?.fields?.merchant_id || !data?.fields?.signature) {
+        setError("PayFast checkout could not be prepared. You can use the EFT option below instead.");
+        return;
+      }
+      try {
+        redirectToPayfast(data.action_url, data.fields);
+      } catch {
+        setError("PayFast checkout could not be opened. You can use the EFT option below instead.");
+      }
     } catch {
       // A genuine network failure throws here instead of returning an
       // { error } result — same pattern as SubscriptionSection.tsx.
       setActivating(false);
       setError("Couldn't reach the server. Check your connection and try again.");
     }
+  }
+
+  async function startEft() {
+    if (!user || !subscription?.id) {
+      setError("Your activation session has not finished loading. Please refresh and try again.");
+      return;
+    }
+    setEftSubmitting(true);
+    setError(null);
+    const reference = `CHS-ACT-${user.id.slice(0, 8).toUpperCase()}-${Date.now().toString(36).toUpperCase()}`;
+    const { error: eftError } = await supabase.from("business_activation_eft_payments").insert({
+      business_id: user.id,
+      subscription_id: subscription.id,
+      amount: Number(BUSINESS_SUBSCRIPTION_PRICE),
+      reference,
+      note: eftNote.trim() || null,
+    });
+    setEftSubmitting(false);
+    if (eftError) {
+      setError(formatSupabaseError(eftError, "Couldn't start the EFT payment option"));
+      return;
+    }
+    setEftReference(reference);
+    setEftSubmitted(true);
   }
 
   const status = subscription?.status ?? null;
@@ -169,13 +206,60 @@ export default function ActivationFeeInfo() {
               You're activated — every feature above is already unlocked on your account. Nothing further to do.
             </p>
           ) : (
-            <button
-              onClick={activate}
-              disabled={activating}
-              className="bg-billboard-yellow border-[3px] border-billboard-ink font-bold px-6 py-3 rounded hover:-translate-y-0.5 transition disabled:opacity-60"
-            >
-              {activating ? "Redirecting…" : `Pay Activation Fee — ${formatCurrency(BUSINESS_SUBSCRIPTION_PRICE)} once-off`}
-            </button>
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={activate}
+                disabled={activating || eftSubmitting}
+                className="bg-billboard-yellow border-[3px] border-billboard-ink font-bold px-6 py-3 rounded hover:-translate-y-0.5 transition disabled:opacity-60"
+              >
+                {activating ? "Opening PayFast…" : `Pay Online — ${formatCurrency(BUSINESS_SUBSCRIPTION_PRICE)} once-off`}
+              </button>
+              <button
+                onClick={() => { setError(null); setEftSubmitted(false); setEftReference(null); }}
+                disabled={activating || eftSubmitting}
+                className="bg-white border-[3px] border-billboard-ink font-bold px-6 py-3 rounded hover:-translate-y-0.5 transition disabled:opacity-60"
+              >
+                Pay by EFT instead
+              </button>
+            </div>
+
+            <div className="mt-6 border-2 border-billboard-ink rounded-lg p-5 bg-white">
+              <h3 className="font-display text-lg mb-2">Manual EFT fallback</h3>
+              <p className="text-sm text-billboard-inkSoft mb-4">
+                If PayFast does not open or you prefer a bank transfer, declare your EFT here first.
+                ChatSched will keep your activation pending until an admin verifies the payment has arrived.
+              </p>
+
+              {!eftSubmitted ? (
+                <>
+                  <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5">Optional payment note</label>
+                  <textarea
+                    value={eftNote}
+                    onChange={(e) => setEftNote(e.target.value)}
+                    rows={2}
+                    placeholder="For example: EFT made from ABC Business account"
+                    className="w-full border-2 border-billboard-ink rounded px-3 py-2 text-sm resize-y mb-4"
+                  />
+                  <button
+                    onClick={startEft}
+                    disabled={eftSubmitting}
+                    className="border-[3px] border-billboard-ink bg-billboard-green text-white font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition disabled:opacity-60"
+                  >
+                    {eftSubmitting ? "Creating EFT instruction…" : "Continue with EFT"}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm font-semibold mb-4">
+                    EFT instruction created. Use the reference below exactly, then wait for ChatSched to verify the transfer.
+                  </p>
+                  <BankDetailsPanel amount={BUSINESS_SUBSCRIPTION_PRICE} reference={eftReference!} />
+                  <p className="text-xs text-billboard-inkSoft mt-4">
+                    Do not consider the account activated until the activation status changes to Active.
+                  </p>
+                </>
+              )}
+            </div>
           )}
         </div>
       )}
