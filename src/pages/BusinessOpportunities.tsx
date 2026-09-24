@@ -74,7 +74,7 @@ function formatR(n: number | null): string {
 }
 
 export default function BusinessOpportunities() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [applicationsByOpp, setApplicationsByOpp] = useState<Record<string, ApplicationRow[]>>({});
   const [loading, setLoading] = useState(true);
@@ -99,23 +99,27 @@ export default function BusinessOpportunities() {
   const [actionError, setActionError] = useState<string | null>(null);
   const [decidingId, setDecidingId] = useState<string | null>(null);
 
+  const isAdmin = profile?.role === "admin";
+
   async function load() {
     if (!user) return;
     setLoading(true);
-    const { data } = await supabase
+    const query = supabase
       .from("opportunities")
       .select("*")
-      .eq("business_id", user.id)
       .order("created_at", { ascending: false });
+    if (!isAdmin) query.eq("business_id", user.id);
+    const { data } = await query;
     setOpportunities((data as Opportunity[]) ?? []);
     setLoading(false);
   }
 
   useEffect(() => {
     load();
-    if (user) hasUsableBusinessSubscription(user.id).then(setSubscribed);
+    if (isAdmin) setSubscribed(true);
+    else if (user) hasUsableBusinessSubscription(user.id).then(setSubscribed);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, isAdmin]);
 
   async function loadApplications(opportunityId: string) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -161,7 +165,11 @@ export default function BusinessOpportunities() {
       publishers_needed: publishersNeeded ? Number(publishersNeeded) : 1,
     };
     const { error: err } = editingId
-      ? await supabase.from("opportunities").update({ ...payload, status: "open", updated_at: new Date().toISOString() }).eq("id", editingId).eq("business_id", user.id)
+      ? await supabase
+          .from("opportunities")
+          .update({ ...payload, status: "open", updated_at: new Date().toISOString() })
+          .eq("id", editingId)
+          .match(isAdmin ? {} : { business_id: user.id })
       : await supabase.from("opportunities").insert({
           business_id: user.id,
           ...payload,
