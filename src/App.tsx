@@ -96,6 +96,7 @@ const OpportunityFeed = lazy(() => import("./pages/OpportunityFeed"));
 const OpportunityGate = lazy(() => import("./pages/OpportunityGate"));
 const Opportunities = lazy(() => import("./pages/Opportunities"));
 const Admin = lazy(() => import("./pages/Admin"));
+const AdminActivationPayments = lazy(() => import("./pages/AdminActivationPayments"));
 const PaymentResult = lazy(() => import("./pages/PaymentResult"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const ChannelHub = lazy(() => import("./pages/ChannelHub"));
@@ -217,6 +218,7 @@ function RoutedContent() {
         <Route path="/business/opportunities" element={<Navigate to="/opportunities/feed" replace />} />
         <Route path="/publisher/opportunities" element={<Navigate to="/opportunities/feed" replace />} />
         <Route path="/admin" element={<RequireAuth role="admin"><Admin /></RequireAuth>} />
+        <Route path="/admin/activation-payments" element={<RequireAuth role="admin"><AdminActivationPayments /></RequireAuth>} />
         <Route path="/payment/return" element={<RequireAuth><PaymentResult status="return" /></RequireAuth>} />
         <Route path="/payment/cancel" element={<RequireAuth><PaymentResult status="cancel" /></RequireAuth>} />
         <Route path="/channels" element={<ChannelHub />} />
