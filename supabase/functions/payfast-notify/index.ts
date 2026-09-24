@@ -59,6 +59,12 @@ Deno.serve(async (req) => {
     if (data.custom_str1 === "publisher_subscription") {
       return handlePublisherSubscriptionItn(admin, data);
     }
+    if (data.custom_str1 === "business_activation_paynow") {
+      return handlePayNowActivationItn(admin, data, "business");
+    }
+    if (data.custom_str1 === "publisher_activation_paynow") {
+      return handlePayNowActivationItn(admin, data, "publisher");
+    }
     if (data.custom_str1 === "business_subscription") {
       return handleBusinessSubscriptionItn(admin, data);
     }
@@ -315,6 +321,227 @@ async function handleBusinessSubscriptionItn(admin: any, data: Record<string, st
 }
 
 // deno-lint-ignore no-explicit-any
+
+// Primary Pay Now buttons use the merchant receiver directly instead of the
+// server-generated signed checkout. They carry the authenticated account ID
+// in custom_str2 so a confirmed PayFast payment can still be matched to the
+// correct ChatSched membership. The custom fields are treated as routing
+// hints only: the PayFast ITN signature + PayFast validation happen above,
+// the amount/item are checked again here, and the target profile role must
+// match the activation being purchased.
+//
+// deno-lint-ignore no-explicit-any
+async function handlePayNowActivationItn(admin: any, data: Record<string, string>, activationType: "business" | "publisher") {
+  const isBusiness = activationType === "business";
+  const expectedAmount = isBusiness ? 399.0 : 199.0;
+  const expectedItem = isBusiness
+    ? "ChatSched Business Activation"
+    : "ChatSched Publisher Network Activation";
+  const paymentStatus = (data.payment_status ?? "").toUpperCase();
+  const pfPaymentId = (data.pf_payment_id ?? "").trim() || null;
+  const mPaymentId = (data.m_payment_id ?? "").trim() || null;
+  const receivedAmount = Number.parseFloat(data.amount_gross ?? "0");
+  const payerEmail = (data.email_address ?? "").trim() || null;
+  const payerName = [data.name_first, data.name_last].filter(Boolean).join(" ").trim() || null;
+
+  // PayFast can retry the same ITN. A unique PayFast/payment ID keeps the
+  // admin event + notification idempotent while the membership update below
+  // is independently guarded by its current status.
+  const existingQuery = pfPaymentId
+    ? admin.from("payfast_activation_events").select("id").eq("pf_payment_id", pfPaymentId).maybeSingle()
+    : mPaymentId
+    ? admin.from("payfast_activation_events").select("id").eq("m_payment_id", mPaymentId).maybeSingle()
+    : Promise.resolve({ data: null, error: null });
+
+  const { data: existingEvent } = await existingQuery;
+  if (existingEvent) return new Response("ok", { status: 200 });
+
+  let matchedUserId: string | null = null;
+  let matchStatus: "auto_activated" | "already_active" | "action_required" | "failed" | "cancelled" | "ignored" =
+    paymentStatus === "COMPLETE"
+      ? "action_required"
+      : paymentStatus === "FAILED"
+      ? "failed"
+      : paymentStatus === "CANCELLED"
+      ? "cancelled"
+      : "ignored";
+  let note: string | null = null;
+
+  if (paymentStatus === "COMPLETE") {
+    if (Math.abs(receivedAmount - expectedAmount) > 0.01) {
+      note = `Amount mismatch: PayFast reported R${receivedAmount.toFixed(2)}, expected R${expectedAmount.toFixed(2)}.`;
+    } else if ((data.item_name ?? "").trim() !== expectedItem) {
+      note = `Item mismatch: PayFast reported "${data.item_name ?? "missing item name"}".`;
+    } else {
+      const candidateUserId = (data.custom_str2 ?? "").trim();
+      if (!candidateUserId) {
+        note = "No ChatSched account identifier was returned by the Pay Now button.";
+      } else {
+        const { data: targetProfile, error: profileError } = await admin
+          .from("profiles")
+          .select("id, role")
+          .eq("id", candidateUserId)
+          .maybeSingle();
+
+        if (profileError || !targetProfile) {
+          note = "The Pay Now payment could not be matched to a ChatSched profile.";
+        } else if (targetProfile.role !== activationType) {
+          note = `The payment target account has role "${targetProfile.role}", not "${activationType}".`;
+        } else {
+          matchedUserId = targetProfile.id;
+
+          if (isBusiness) {
+            const { data: subscription } = await admin
+              .from("business_subscriptions")
+              .select("*")
+              .eq("business_id", targetProfile.id)
+              .maybeSingle();
+
+            if (subscription?.status === "active") {
+              matchStatus = "already_active";
+            } else {
+              const paidAt = new Date().toISOString();
+              if (subscription) {
+                await admin.from("business_subscriptions").update({
+                  status: "active",
+                  payfast_payment_id: pfPaymentId,
+                  paid_at: paidAt,
+                  updated_at: paidAt,
+                }).eq("id", subscription.id);
+              } else {
+                const { data: created } = await admin.from("business_subscriptions")
+                  .insert({
+                    business_id: targetProfile.id,
+                    status: "active",
+                    payfast_payment_id: pfPaymentId,
+                    paid_at: paidAt,
+                    updated_at: paidAt,
+                  })
+                  .select("id")
+                  .single();
+                if (!created) note = "Payment was confirmed, but the business activation record could not be created.";
+              }
+
+              if (!note) {
+                const { data: wonRace } = await admin
+                  .from("business_subscriptions")
+                  .update({ launch_credit_granted: true, updated_at: paidAt })
+                  .eq("id", subscription?.id ?? "")
+                  .eq("launch_credit_granted", false)
+                  .select("id")
+                  .maybeSingle();
+
+                if (subscription && wonRace) {
+                  await admin.from("business_launch_credits").insert({
+                    business_id: targetProfile.id,
+                    subscription_id: subscription.id,
+                    amount: 199.0,
+                    remaining: 199.0,
+                  });
+                } else if (!subscription) {
+                  const { data: activeSub } = await admin
+                    .from("business_subscriptions")
+                    .select("id, launch_credit_granted")
+                    .eq("business_id", targetProfile.id)
+                    .maybeSingle();
+                  if (activeSub && !activeSub.launch_credit_granted) {
+                    const { data: creditRace } = await admin
+                      .from("business_subscriptions")
+                      .update({ launch_credit_granted: true, updated_at: paidAt })
+                      .eq("id", activeSub.id)
+                      .eq("launch_credit_granted", false)
+                      .select("id")
+                      .maybeSingle();
+                    if (creditRace) {
+                      await admin.from("business_launch_credits").insert({
+                        business_id: targetProfile.id,
+                        subscription_id: activeSub.id,
+                        amount: 199.0,
+                        remaining: 199.0,
+                      });
+                    }
+                  }
+                }
+
+                matchStatus = "auto_activated";
+                if (payerEmail) {
+                  const { data: authUser } = await admin.auth.admin.getUserById(targetProfile.id);
+                  const accountEmail = (authUser.user?.email ?? "").toLowerCase();
+                  if (accountEmail && accountEmail !== payerEmail.toLowerCase()) {
+                    note = "Payment matched to the ChatSched account identifier; payer email differs from the account email.";
+                  }
+                }
+              }
+            }
+          } else {
+            const { data: subscription } = await admin
+              .from("publisher_subscriptions")
+              .select("*")
+              .eq("publisher_id", targetProfile.id)
+              .maybeSingle();
+
+            if (subscription?.status === "active") {
+              matchStatus = "already_active";
+            } else {
+              const paidAt = new Date().toISOString();
+              if (subscription) {
+                await admin.from("publisher_subscriptions").update({
+                  status: "active",
+                  payfast_payment_id: pfPaymentId,
+                  paid_at: paidAt,
+                  updated_at: paidAt,
+                }).eq("id", subscription.id);
+                matchStatus = "auto_activated";
+              } else {
+                const { data: created } = await admin.from("publisher_subscriptions")
+                  .insert({
+                    publisher_id: targetProfile.id,
+                    status: "active",
+                    payfast_payment_id: pfPaymentId,
+                    paid_at: paidAt,
+                    updated_at: paidAt,
+                  })
+                  .select("id")
+                  .single();
+                matchStatus = created ? "auto_activated" : "action_required";
+                if (!created) note = "Payment was confirmed, but the Publisher Network activation record could not be created.";
+              }
+
+              if (matchStatus === "auto_activated" && payerEmail) {
+                const { data: authUser } = await admin.auth.admin.getUserById(targetProfile.id);
+                const accountEmail = (authUser.user?.email ?? "").toLowerCase();
+                if (accountEmail && accountEmail !== payerEmail.toLowerCase()) {
+                  note = "Payment matched to the ChatSched account identifier; payer email differs from the account email.";
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  const { error: insertError } = await admin.from("payfast_activation_events").insert({
+    pf_payment_id: pfPaymentId,
+    m_payment_id: mPaymentId,
+    activation_type: activationType,
+    amount: Number.isFinite(receivedAmount) ? receivedAmount : 0,
+    payer_email: payerEmail,
+    payer_name: payerName,
+    payment_status: paymentStatus || "UNKNOWN",
+    matched_user_id: matchedUserId,
+    match_status: matchStatus,
+    note,
+    processed_at: new Date().toISOString(),
+  });
+
+  if (insertError) {
+    console.error("payfast-notify: could not log Pay Now activation event", insertError);
+  }
+
+  return new Response("ok", { status: 200 });
+}
+
 async function handleFeaturedPlacementSubscriptionItn(admin: any, data: Record<string, string>) {
   const { data: subscription, error: subError } = await admin
     .from("featured_placement_subscriptions")
