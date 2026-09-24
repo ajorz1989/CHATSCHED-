@@ -49,8 +49,8 @@ export default function MarketingSuite() {
           </span>
           <h2 className="font-display text-xl md:text-2xl">Plan campaigns with data — and generate content with AI</h2>
           <p className="text-sm text-billboard-inkSoft mt-1 max-w-xl">
-            Rule-based matching and estimates, plus AI Content Studio for real, ready-to-post copy across nine formats.
-            Caption Writer's free-form generator stays disabled until a content provider is connected there too — no fabricated recommendations.
+            Rule-based matching and estimates, plus AI Content Studio for real, ready-to-post copy across nine formats,
+            and Caption Writer for one platform caption at a time from the same generator.
           </p>
         </div>
       </div>
