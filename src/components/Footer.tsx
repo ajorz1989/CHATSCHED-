@@ -52,7 +52,6 @@ export default function Footer() {
             <Link to="/compare" className={LINK_CLASS}>Compare placements</Link>
             <Link to="/case-studies" className={LINK_CLASS}>Case Studies</Link>
             <Link to="/blog" className={LINK_CLASS}>Blog</Link>
-            <Link to="/collaborate" className={LINK_CLASS}>Collaborate with us</Link>
           </div>
 
           {/* Trust & Help */}
@@ -72,12 +71,13 @@ export default function Footer() {
             <h4 className={HEADING_CLASS}>Company</h4>
             <Link to="/careers" className={LINK_CLASS}>Careers</Link>
             <Link to="/partners" className={LINK_CLASS}>Partners</Link>
+            <Link to="/collaborate" className={LINK_CLASS}>Collaborate with us</Link>
           </div>
 
           {/* Contact */}
           <div>
             <h4 className={HEADING_CLASS}>Contact</h4>
-            <a href={`mailto:${CONTACT_EMAIL}`} className={LINK_CLASS}>{CONTACT_EMAIL}</a>
+            <a href={`mailto:${CONTACT_EMAIL}`} className={`${LINK_CLASS} whitespace-nowrap break-normal leading-normal`}>{CONTACT_EMAIL}</a>
             <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className={LINK_CLASS}>{WHATSAPP_NUMBER_DISPLAY}</a>
             <p className="text-sm leading-relaxed mb-3">{CONTACT_ADDRESS_LINES.join(", ")}</p>
             <InstallAppButton className="inline-flex items-center gap-1.5 text-xs font-semibold text-billboard-paperDim hover:text-billboard-yellow transition-colors" />
