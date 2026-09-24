@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { CheckCircle2, ChevronDown, ExternalLink, Layers3, Plus, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import PublisherApply from "./PublisherApply";
+import AJListingsManager from "../components/AJListingsManager";
 import { getAllChannels, getEnabledChannels } from "../lib/channelRegistry";
 import type { ChannelSlug } from "../lib/channelTypes";
 
@@ -60,6 +61,8 @@ export default function AdminAJCreations() {
   const [created, setCreated] = useState<CreatedEntry[]>(loadSessionLog);
   const [justCreated, setJustCreated] = useState<CreatedEntry | null>(null);
   const [scrollTick, setScrollTick] = useState(0);
+  // Bumped on every successful create so the Step 3 listings list reloads.
+  const [listingsVersion, setListingsVersion] = useState(0);
 
   const pickerRef = useRef<HTMLElement | null>(null);
   const formSectionRef = useRef<HTMLElement | null>(null);
@@ -106,6 +109,7 @@ export default function AdminAJCreations() {
     formTouchedRef.current = false;
     setJustCreated(entry);
     setFormOpen(true);
+    setListingsVersion((v) => v + 1);
   }
 
   function createAnother() {
@@ -311,6 +315,8 @@ export default function AdminAJCreations() {
           )}
         </div>
       </section>
+
+      <AJListingsManager refreshKey={listingsVersion} />
 
       <section className="rounded-xl border border-white/10 bg-billboard-ink text-white p-5 md:p-6">
         {created.length > 0 ? (
