@@ -332,9 +332,8 @@ async function handleBusinessSubscriptionItn(admin: any, data: Record<string, st
 //
 // deno-lint-ignore no-explicit-any
 async function handlePayNowActivationItn(admin: any, data: Record<string, string>, activationType: "business" | "publisher") {
-  const isBusiness = activationType === "business";
-  const expectedAmount = isBusiness ? 399.0 : 199.0;
-  const expectedItem = isBusiness
+  const expectedAmount = activationType === "business" ? 399.0 : 199.0;
+  const expectedItem = activationType === "business"
     ? "ChatSched Business Activation"
     : "ChatSched Publisher Network Activation";
   const paymentStatus = (data.payment_status ?? "").toUpperCase();
@@ -344,9 +343,6 @@ async function handlePayNowActivationItn(admin: any, data: Record<string, string
   const payerEmail = (data.email_address ?? "").trim() || null;
   const payerName = [data.name_first, data.name_last].filter(Boolean).join(" ").trim() || null;
 
-  // PayFast can retry the same ITN. A unique PayFast/payment ID keeps the
-  // admin event + notification idempotent while the membership update below
-  // is independently guarded by its current status.
   const existingQuery = pfPaymentId
     ? admin.from("payfast_activation_events").select("id").eq("pf_payment_id", pfPaymentId).maybeSingle()
     : mPaymentId
@@ -369,11 +365,12 @@ async function handlePayNowActivationItn(admin: any, data: Record<string, string
 
   if (paymentStatus === "COMPLETE") {
     if (Math.abs(receivedAmount - expectedAmount) > 0.01) {
-      note = `Amount mismatch: PayFast reported R${receivedAmount.toFixed(2)}, expected R${expectedAmount.toFixed(2)}.`;
+      note = \`Amount mismatch: PayFast reported R\${receivedAmount.toFixed(2)}, expected R\${expectedAmount.toFixed(2)}.\`;
     } else if ((data.item_name ?? "").trim() !== expectedItem) {
-      note = `Item mismatch: PayFast reported "${data.item_name ?? "missing item name"}".`;
+      note = \`Item mismatch: PayFast reported "\${data.item_name ?? "missing item name"}".\`;
     } else {
       const candidateUserId = (data.custom_str2 ?? "").trim();
+
       if (!candidateUserId) {
         note = "No ChatSched account identifier was returned by the Pay Now button.";
       } else {
@@ -386,132 +383,116 @@ async function handlePayNowActivationItn(admin: any, data: Record<string, string
         if (profileError || !targetProfile) {
           note = "The Pay Now payment could not be matched to a ChatSched profile.";
         } else if (targetProfile.role !== activationType) {
-          note = `The payment target account has role "${targetProfile.role}", not "${activationType}".`;
+          note = \`The payment target account has role "\${targetProfile.role}", not "\${activationType}".\`;
+        } else if (!payerEmail) {
+          note = "PayFast did not return a payer email, so automatic activation was blocked.";
         } else {
-          const { data: authUser } = payerEmail
-            ? await admin.auth.admin.getUserById(targetProfile.id)
-            : { data: { user: null } };
+          const { data: authUser } = await admin.auth.admin.getUserById(targetProfile.id);
           const accountEmail = (authUser?.user?.email ?? "").toLowerCase().trim();
 
-          // The custom account ID is only a routing hint because it is
-          // visible in the browser. Never activate an account unless the
-          // payer identity returned by PayFast also matches the account's
-          // authenticated email.
-          if (!payerEmail || !accountEmail || accountEmail !== payerEmail.toLowerCase()) {
+          if (!accountEmail || accountEmail !== payerEmail.toLowerCase()) {
             note = "PayFast payer email does not match the ChatSched account email, so automatic activation was blocked.";
           } else {
             matchedUserId = targetProfile.id;
+            const paidAt = new Date().toISOString();
 
-            if (isBusiness) {
-            const { data: subscription } = await admin
-              .from("business_subscriptions")
-              .select("*")
-              .eq("business_id", targetProfile.id)
-              .maybeSingle();
+            if (activationType === "business") {
+              const { data: subscription, error: subscriptionError } = await admin
+                .from("business_subscriptions")
+                .select("*")
+                .eq("business_id", targetProfile.id)
+                .maybeSingle();
 
-            if (subscription?.status === "active") {
-              matchStatus = "already_active";
-            } else {
-              const paidAt = new Date().toISOString();
-              if (subscription) {
-                const { error: updateError } = await admin.from("business_subscriptions").update({
-                  status: "active",
-                  payfast_payment_id: pfPaymentId,
-                  paid_at: paidAt,
-                  updated_at: paidAt,
-                }).eq("id", subscription.id);
-                if (updateError) {
-                  note = "Payment was confirmed, but the business activation record could not be updated.";
-                }
+              if (subscriptionError) {
+                note = "Could not read the business activation record.";
+              } else if (subscription?.status === "active") {
+                matchStatus = "already_active";
               } else {
-                const { data: created, error: createError } = await admin.from("business_subscriptions")
-                  .insert({
-                    business_id: targetProfile.id,
+                let subscriptionId = subscription?.id ?? null;
+
+                if (subscriptionId) {
+                  const { error: updateError } = await admin
+                    .from("business_subscriptions")
+                    .update({
+                      status: "active",
+                      payfast_payment_id: pfPaymentId,
+                      paid_at: paidAt,
+                      updated_at: paidAt,
+                    })
+                    .eq("id", subscriptionId);
+                  if (updateError) note = "Payment was confirmed, but the business activation record could not be updated.";
+                } else {
+                  const { data: created, error: createError } = await admin
+                    .from("business_subscriptions")
+                    .insert({
+                      business_id: targetProfile.id,
+                      status: "active",
+                      payfast_payment_id: pfPaymentId,
+                      paid_at: paidAt,
+                      updated_at: paidAt,
+                    })
+                    .select("id")
+                    .single();
+
+                  if (createError || !created) {
+                    note = "Payment was confirmed, but the business activation record could not be created.";
+                  } else {
+                    subscriptionId = created.id;
+                  }
+                }
+
+                if (!note && subscriptionId) {
+                  const { data: creditRace } = await admin
+                    .from("business_subscriptions")
+                    .update({ launch_credit_granted: true, updated_at: paidAt })
+                    .eq("id", subscriptionId)
+                    .eq("launch_credit_granted", false)
+                    .select("id")
+                    .maybeSingle();
+
+                  if (creditRace) {
+                    const { error: creditError } = await admin.from("business_launch_credits").insert({
+                      business_id: targetProfile.id,
+                      subscription_id: subscriptionId,
+                      amount: 199.0,
+                      remaining: 199.0,
+                    });
+                    if (creditError) console.error("payfast-notify: launch credit insert failed", creditError);
+                  }
+
+                  matchStatus = "auto_activated";
+                }
+              }
+            } else {
+              const { data: subscription, error: subscriptionError } = await admin
+                .from("publisher_subscriptions")
+                .select("*")
+                .eq("publisher_id", targetProfile.id)
+                .maybeSingle();
+
+              if (subscriptionError) {
+                note = "Could not read the Publisher Network activation record.";
+              } else if (subscription?.status === "active") {
+                matchStatus = "already_active";
+              } else if (subscription) {
+                const { error: updateError } = await admin
+                  .from("publisher_subscriptions")
+                  .update({
                     status: "active",
                     payfast_payment_id: pfPaymentId,
                     paid_at: paidAt,
                     updated_at: paidAt,
                   })
-                  .select("id")
-                  .single();
-                if (createError || !created) {
-                  note = "Payment was confirmed, but the business activation record could not be created.";
+                  .eq("id", subscription.id);
+
+                if (updateError) {
+                  note = "Payment was confirmed, but the Publisher Network activation record could not be updated.";
+                } else {
+                  matchStatus = "auto_activated";
                 }
-              }
-
-              if (!note) {
-                const { data: wonRace } = await admin
-                  .from("business_subscriptions")
-                  .update({ launch_credit_granted: true, updated_at: paidAt })
-                  .eq("id", subscription?.id ?? "")
-                  .eq("launch_credit_granted", false)
-                  .select("id")
-                  .maybeSingle();
-
-                if (subscription && wonRace) {
-                  await admin.from("business_launch_credits").insert({
-                    business_id: targetProfile.id,
-                    subscription_id: subscription.id,
-                    amount: 199.0,
-                    remaining: 199.0,
-                  });
-                } else if (!subscription) {
-                  const { data: activeSub } = await admin
-                    .from("business_subscriptions")
-                    .select("id, launch_credit_granted")
-                    .eq("business_id", targetProfile.id)
-                    .maybeSingle();
-                  if (activeSub && !activeSub.launch_credit_granted) {
-                    const { data: creditRace } = await admin
-                      .from("business_subscriptions")
-                      .update({ launch_credit_granted: true, updated_at: paidAt })
-                      .eq("id", activeSub.id)
-                      .eq("launch_credit_granted", false)
-                      .select("id")
-                      .maybeSingle();
-                    if (creditRace) {
-                      await admin.from("business_launch_credits").insert({
-                        business_id: targetProfile.id,
-                        subscription_id: activeSub.id,
-                        amount: 199.0,
-                        remaining: 199.0,
-                      });
-                    }
-                  }
-                }
-
-                matchStatus = "auto_activated";
-                if (payerEmail) {
-                  const { data: authUser } = await admin.auth.admin.getUserById(targetProfile.id);
-                  const accountEmail = (authUser.user?.email ?? "").toLowerCase();
-                  if (accountEmail && accountEmail !== payerEmail.toLowerCase()) {
-                    note = "Payment matched to the ChatSched account identifier; payer email differs from the account email.";
-                  }
-                }
-              }
-            }
-          } else {
-            const { data: subscription } = await admin
-              .from("publisher_subscriptions")
-              .select("*")
-              .eq("publisher_id", targetProfile.id)
-              .maybeSingle();
-
-            if (subscription?.status === "active") {
-              matchStatus = "already_active";
-            } else {
-              const paidAt = new Date().toISOString();
-              if (subscription) {
-                const { error: updateError } = await admin.from("publisher_subscriptions").update({
-                  status: "active",
-                  payfast_payment_id: pfPaymentId,
-                  paid_at: paidAt,
-                  updated_at: paidAt,
-                }).eq("id", subscription.id);
-                matchStatus = updateError ? "action_required" : "auto_activated";
-                if (updateError) note = "Payment was confirmed, but the Publisher Network activation record could not be updated.";
               } else {
-                const { data: created, error: createError } = await admin.from("publisher_subscriptions")
+                const { data: created, error: createError } = await admin
+                  .from("publisher_subscriptions")
                   .insert({
                     publisher_id: targetProfile.id,
                     status: "active",
@@ -521,15 +502,11 @@ async function handlePayNowActivationItn(admin: any, data: Record<string, string
                   })
                   .select("id")
                   .single();
-                matchStatus = created && !createError ? "auto_activated" : "action_required";
-                if (!created || createError) note = "Payment was confirmed, but the Publisher Network activation record could not be created.";
-              }
 
-              if (matchStatus === "auto_activated" && payerEmail) {
-                const { data: authUser } = await admin.auth.admin.getUserById(targetProfile.id);
-                const accountEmail = (authUser.user?.email ?? "").toLowerCase();
-                if (accountEmail && accountEmail !== payerEmail.toLowerCase()) {
-                  note = "Payment matched to the ChatSched account identifier; payer email differs from the account email.";
+                if (createError || !created) {
+                  note = "Payment was confirmed, but the Publisher Network activation record could not be created.";
+                } else {
+                  matchStatus = "auto_activated";
                 }
               }
             }
