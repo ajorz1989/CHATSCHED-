@@ -24,7 +24,7 @@ export default function RequireAuth({ children, role }: { children: ReactNode; r
     const qs = next && next !== "/login" ? `?next=${encodeURIComponent(next)}` : "";
     return <Navigate to={`/login${qs}`} replace />;
   }
-  if (role && profile?.role !== role) return <Navigate to="/" replace />;
+  // Admins are platform operators: they may enter business/publisher routes without changing their stored role.\n  if (role && profile?.role !== role && profile?.role !== "admin") return <Navigate to="/" replace />;
 
   // Admin controls request approvals, payment confirmation, and payout
   // sign-off for the whole marketplace — one compromised password
