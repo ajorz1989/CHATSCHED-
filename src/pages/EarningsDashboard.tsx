@@ -75,7 +75,8 @@ export default function EarningsDashboard() {
   }
 
   if (!user || !profile) return <Navigate to="/login" replace />;
-  if (profile.role !== "publisher") return <Navigate to="/dashboard" replace />;
+  // Admins can open the publisher earnings surface for operational review.
+  if (profile.role !== "publisher" && profile.role !== "admin") return <Navigate to="/dashboard" replace />;
   if (!isSupabaseConfigured) return <SetupNotice />;
 
   if (!data) {
