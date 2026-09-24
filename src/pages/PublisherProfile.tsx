@@ -48,9 +48,13 @@ export default function PublisherProfile() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [subscribed, setSubscribed] = useState<boolean | undefined>(undefined);
 
+  const isAdmin = profile?.role === "admin";
+  const canUseBusinessFeature = isAdmin || subscribed !== false;
+
   useEffect(() => {
+    if (isAdmin) { setSubscribed(true); return; }
     if (user) hasUsableBusinessSubscription(user.id).then(setSubscribed);
-  }, [user]);
+  }, [user, isAdmin]);
 
   // Save menu
   const [showSave, setShowSave] = useState(false);
@@ -519,8 +523,8 @@ export default function PublisherProfile() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="mb-3">
-                {subscribed === false && <SubscriptionGateNotice role="business" />}
-                <fieldset disabled={subscribed === false} className="border-0 p-0 m-0 min-w-0 disabled:opacity-50 space-y-3">
+                {!canUseBusinessFeature && <SubscriptionGateNotice role="business" />}
+                <fieldset disabled={!canUseBusinessFeature} className="border-0 p-0 m-0 min-w-0 disabled:opacity-50 space-y-3">
                   <div className="border-b-2 border-billboard-ink/10 pb-2.5">
                     <div className="flex items-center justify-between gap-2 mb-1">
                       <h3 className="font-display text-base">Start Campaign Request</h3>
