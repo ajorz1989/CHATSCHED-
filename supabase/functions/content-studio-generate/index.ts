@@ -90,7 +90,8 @@ Deno.serve(async (req) => {
     if (!user) return json({ error: "Log in to use Content Studio" }, 401);
 
     const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
-    if (!profile || profile.role !== "business") return json({ error: "Content Studio is available to business accounts only" }, 403);
+    const isAdmin = profile?.role === "admin";
+    if (!profile || (profile.role !== "business" && !isAdmin)) return json({ error: "Content Studio is available to business accounts and platform admins" }, 403);
 
     const [{ data: subscription }, { data: activation }] = await Promise.all([
       supabase.from("content_studio_subscriptions").select("*").eq("business_id", user.id).maybeSingle(),
@@ -100,7 +101,7 @@ Deno.serve(async (req) => {
     const isSubscribed = subscription?.status === "active" && subscription.current_period_end && new Date(subscription.current_period_end) > new Date();
     const isActivated = activation?.status === "active";
 
-    if (!isSubscribed && !isActivated) {
+    if (!isAdmin && !isSubscribed && !isActivated) {
       return json(
         { error: "Content Studio needs an active ChatSched Business activation (free tier) or a Content Studio subscription — R99/month for more.", needsActivation: true },
         402
