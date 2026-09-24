@@ -98,7 +98,7 @@ type MetaValue = string | number | boolean;
  * See PublisherDashboardView for the creator side of this same workflow.
  */
 export default function ChannelRequestForm({ publisher }: { publisher: Publisher }) {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const channelModule = getChannelBySlug(publisher.channel_slug);
   const ch = channelModule?.definition;
 
@@ -129,9 +129,13 @@ export default function ChannelRequestForm({ publisher }: { publisher: Publisher
     setMetaValues((prev) => ({ ...prev, [key]: value }));
   }
 
+  const isAdmin = profile?.role === "admin";
+  const canUseBusinessFeature = isAdmin || subscribed !== false;
+
   useEffect(() => {
+    if (isAdmin) { setSubscribed(true); return; }
     if (user) hasUsableBusinessSubscription(user.id).then(setSubscribed);
-  }, [user]);
+  }, [user, isAdmin]);
 
   if (!ch) return null;
 
@@ -183,13 +187,13 @@ export default function ChannelRequestForm({ publisher }: { publisher: Publisher
 
   return (
     <form onSubmit={handleSubmit} className="mb-3">
-      {subscribed === false && <SubscriptionGateNotice role="business" />}
+      {!canUseBusinessFeature && <SubscriptionGateNotice role="business" />}
 
       <div className="border-2 border-billboard-ink rounded p-3 mb-3 bg-white text-xs text-billboard-inkSoft">
         No online checkout for {ch.name.toLowerCase()} — {publisher.name} approves or declines your request, then you pay the platform directly.
       </div>
 
-      <fieldset disabled={subscribed === false} className="border-0 p-0 m-0 min-w-0 disabled:opacity-50">
+      <fieldset disabled={!canUseBusinessFeature} className="border-0 p-0 m-0 min-w-0 disabled:opacity-50">
       <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5">Advertising method</label>
       <select
         required value={method} onChange={(e) => setMethod(e.target.value)}
