@@ -402,14 +402,17 @@ async function handlePayNowActivationItn(admin: any, data: Record<string, string
             } else {
               const paidAt = new Date().toISOString();
               if (subscription) {
-                await admin.from("business_subscriptions").update({
+                const { error: updateError } = await admin.from("business_subscriptions").update({
                   status: "active",
                   payfast_payment_id: pfPaymentId,
                   paid_at: paidAt,
                   updated_at: paidAt,
                 }).eq("id", subscription.id);
+                if (updateError) {
+                  note = "Payment was confirmed, but the business activation record could not be updated.";
+                }
               } else {
-                const { data: created } = await admin.from("business_subscriptions")
+                const { data: created, error: createError } = await admin.from("business_subscriptions")
                   .insert({
                     business_id: targetProfile.id,
                     status: "active",
@@ -419,7 +422,9 @@ async function handlePayNowActivationItn(admin: any, data: Record<string, string
                   })
                   .select("id")
                   .single();
-                if (!created) note = "Payment was confirmed, but the business activation record could not be created.";
+                if (createError || !created) {
+                  note = "Payment was confirmed, but the business activation record could not be created.";
+                }
               }
 
               if (!note) {
@@ -485,15 +490,16 @@ async function handlePayNowActivationItn(admin: any, data: Record<string, string
             } else {
               const paidAt = new Date().toISOString();
               if (subscription) {
-                await admin.from("publisher_subscriptions").update({
+                const { error: updateError } = await admin.from("publisher_subscriptions").update({
                   status: "active",
                   payfast_payment_id: pfPaymentId,
                   paid_at: paidAt,
                   updated_at: paidAt,
                 }).eq("id", subscription.id);
-                matchStatus = "auto_activated";
+                matchStatus = updateError ? "action_required" : "auto_activated";
+                if (updateError) note = "Payment was confirmed, but the Publisher Network activation record could not be updated.";
               } else {
-                const { data: created } = await admin.from("publisher_subscriptions")
+                const { data: created, error: createError } = await admin.from("publisher_subscriptions")
                   .insert({
                     publisher_id: targetProfile.id,
                     status: "active",
@@ -503,8 +509,8 @@ async function handlePayNowActivationItn(admin: any, data: Record<string, string
                   })
                   .select("id")
                   .single();
-                matchStatus = created ? "auto_activated" : "action_required";
-                if (!created) note = "Payment was confirmed, but the Publisher Network activation record could not be created.";
+                matchStatus = created && !createError ? "auto_activated" : "action_required";
+                if (!created || createError) note = "Payment was confirmed, but the Publisher Network activation record could not be created.";
               }
 
               if (matchStatus === "auto_activated" && payerEmail) {
