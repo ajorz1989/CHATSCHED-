@@ -294,8 +294,7 @@
     "businessBody": "Fikelela ekwakheni amaphulo, kwintengiso elawulwayo nakwimarike.",
     "publisherBody": "Vula iprofayile yakho kunye neempawu zomnatha wabapapashi.",
     "businessCta": "Qala →",
-    "publisherCta": "Joyina NjengoMpapi →",
-    "commission": "Iibhukisho ezigqityiweyo zisebenzisa ikhomishini yeplatform ecacileyo ye-{{commission}}%; {{share}}% iya kumpapashi."
+    "publisherCta": "Joyina NjengoMpapi →"
   },
   "publisherCta": {
     "badge": "KUBAPAPASHI NAKWABADALI",
