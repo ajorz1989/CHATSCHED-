@@ -215,7 +215,7 @@ export default function ActivationFeeInfo() {
                 {activating ? "Opening PayFast…" : `Pay Online — ${formatCurrency(BUSINESS_SUBSCRIPTION_PRICE)} once-off`}
               </button>
               <button
-                onClick={() => { setError(null); setEftSubmitted(false); setEftReference(null); }}
+                onClick={() => { setError(null); document.getElementById("eft-fallback")?.scrollIntoView({ behavior: "smooth", block: "center" }); }}
                 disabled={activating || eftSubmitting}
                 className="bg-white border-[3px] border-billboard-ink font-bold px-6 py-3 rounded hover:-translate-y-0.5 transition disabled:opacity-60"
               >
@@ -223,7 +223,7 @@ export default function ActivationFeeInfo() {
               </button>
             </div>
 
-            <div className="mt-6 border-2 border-billboard-ink rounded-lg p-5 bg-white">
+            <div id="eft-fallback" className="mt-6 border-2 border-billboard-ink rounded-lg p-5 bg-white">
               <h3 className="font-display text-lg mb-2">Manual EFT fallback</h3>
               <p className="text-sm text-billboard-inkSoft mb-4">
                 If PayFast does not open or you prefer a bank transfer, declare your EFT here first.
