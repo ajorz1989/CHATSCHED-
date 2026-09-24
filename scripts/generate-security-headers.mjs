@@ -39,7 +39,7 @@
 //   `@import url('https://fonts.googleapis.com/css2?...')`.
 // - font-src: https://fonts.gstatic.com — where fonts.googleapis.com's
 //   stylesheet actually points the browser to fetch the .woff2 files from.
-// - img-src: 'self', data:, blob:, and the Supabase host (storage-hosted
+// - img-src: 'self', data:, blob:, the Supabase host (storage-hosted
 //   CVs/proof screenshots/attachments).
 // - connect-src: 'self', the Supabase host over both https: and wss: (this
 //   app uses Supabase Realtime — src/hooks/useNotifications.ts,
@@ -139,10 +139,10 @@ const csp = [
   `script-src 'self' https://plausible.io https://static.cloudflareinsights.com 'sha256-${jsonLdHash}'`,
   `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
   `font-src 'self' https://fonts.gstatic.com`,
-  `img-src 'self' data: blob: https://${supabaseHost}`,
+  `img-src 'self' data: blob: https://${supabaseHost} https://my.payfast.io`,
   `connect-src 'self' https://${supabaseHost} wss://${supabaseHost} https://plausible.io https://*.sentry.io`,
   `frame-src https://www.youtube.com https://player.vimeo.com`,
-  `form-action 'self' https://www.payfast.co.za https://sandbox.payfast.co.za`,
+  `form-action 'self' https://www.payfast.co.za https://sandbox.payfast.co.za https://payment.payfast.io`,
   `frame-ancestors 'none'`,
   `object-src 'none'`,
   `base-uri 'self'`,
