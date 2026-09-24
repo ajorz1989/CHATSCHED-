@@ -1,5 +1,7 @@
 {
   "nav": {
+    "home": "Home",
+    "alerts": "Alerts",
     "agency": "Build a Campaign",
     "opportunities": "Opportunities",
     "browse": "Browse",
