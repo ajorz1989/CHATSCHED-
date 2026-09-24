@@ -67,8 +67,6 @@ export default function Dashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
-  if (profile?.role === "admin") return <Navigate to="/admin" replace />;
-
   if (profile?.role === "publisher") {
     return (
       <div>
