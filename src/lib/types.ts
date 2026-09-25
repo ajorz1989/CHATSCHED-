@@ -51,6 +51,13 @@ export interface Publisher {
   publisher_score: number;
   avg_response_hours: number | null;
   response_count: number;
+  // schema_phase109 — aggregate-only, same pattern as avg_response_hours
+  // above. acceptance_rate is a 0-100 percentage, null until this
+  // publisher has at least one responded request; acceptance_sample_size
+  // is how many responded requests it's computed from (worth hiding the
+  // rate in the UI below some minimum sample size).
+  acceptance_rate: number | null;
+  acceptance_sample_size: number;
   last_active_at: string | null;
   ai_audience_summary: string | null;
   ai_audience_summary_generated_at: string | null;
