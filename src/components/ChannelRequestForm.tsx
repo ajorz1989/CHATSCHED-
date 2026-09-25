@@ -130,7 +130,14 @@ export default function ChannelRequestForm({ publisher }: { publisher: Publisher
   }
 
   const isAdmin = profile?.role === "admin";
-  const canUseBusinessFeature = isAdmin || subscribed !== false;
+  // Same fix as PublisherProfile.tsx's identical pattern: was
+  // `subscribed !== false`, which is TRUE by default while the async
+  // subscription check is still in flight, briefly showing a fully
+  // enabled form to a business that turns out not to be subscribed.
+  // Admin resolves synchronously via the isAdmin branch below and is
+  // unaffected either way.
+  const subscriptionChecked = isAdmin || subscribed !== undefined;
+  const canUseBusinessFeature = isAdmin || subscribed === true;
 
   useEffect(() => {
     if (isAdmin) { setSubscribed(true); return; }
@@ -187,13 +194,13 @@ export default function ChannelRequestForm({ publisher }: { publisher: Publisher
 
   return (
     <form onSubmit={handleSubmit} className="mb-3">
-      {!canUseBusinessFeature && <SubscriptionGateNotice role="business" />}
+      {subscriptionChecked && !canUseBusinessFeature && <SubscriptionGateNotice role="business" />}
 
       <div className="border-2 border-billboard-ink rounded p-3 mb-3 bg-white text-xs text-billboard-inkSoft">
         No online checkout for {ch.name.toLowerCase()} — {publisher.name} approves or declines your request, then you pay the platform directly.
       </div>
 
-      <fieldset disabled={!canUseBusinessFeature} className="border-0 p-0 m-0 min-w-0 disabled:opacity-50">
+      <fieldset disabled={!subscriptionChecked || !canUseBusinessFeature} className="border-0 p-0 m-0 min-w-0 disabled:opacity-50">
       <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5">Advertising method</label>
       <select
         required value={method} onChange={(e) => setMethod(e.target.value)}
