@@ -754,6 +754,13 @@ export interface AdminAuditLogEntry {
 export type OpportunityStatus = "draft" | "open" | "filled" | "closed" | "cancelled";
 export type OpportunityApplicationStatus = "pending" | "accepted" | "declined" | "withdrawn";
 
+export interface OpportunityType {
+  slug: string;
+  label: string;
+  description: string;
+  suggested_channel_slug: ChannelSlug | null;
+}
+
 export interface Opportunity {
   id: string;
   business_id: string;
