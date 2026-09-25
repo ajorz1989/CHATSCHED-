@@ -100,7 +100,7 @@ export default function OpportunityFeed() {
       setLoading(true);
 
       const [typeResult, opportunityResult] = await Promise.all([
-        supabase.from("opportunity_types").select("slug,label,description,suggested_channel_slug").eq("active", true).order("sort_order", { ascending: true }),
+        supabase.from("opportunity_types").select("slug,label,description,suggested_channel_slug,active").eq("active", true).order("sort_order", { ascending: true }),
         supabase.from("opportunities").select("*").eq("status", "open").order("created_at", { ascending: false }),
       ]);
 
