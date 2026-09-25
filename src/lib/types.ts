@@ -775,6 +775,12 @@ export interface Opportunity {
   budget_min: number | null;
   budget_max: number | null;
   publishers_needed: number;
+  application_deadline: string | null;
+  campaign_start_at: string | null;
+  campaign_end_at: string | null;
+  deliverables: string | null;
+  publisher_requirements: string | null;
+  match_keywords: string[];
   status: OpportunityStatus;
   expires_at: string | null;
   created_at: string;
