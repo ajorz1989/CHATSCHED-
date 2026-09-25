@@ -7,7 +7,6 @@ import { hasUsableBusinessSubscription, hasUsablePublisherSubscription } from ".
 import { BUSINESS_SUBSCRIPTION_PRICE, PUBLISHER_SUBSCRIPTION_PRICE } from "../lib/constants";
 import { formatCurrency } from "../lib/currency";
 
-type AccessState = "loading" | "allowed" | "activation" | "verification";
 
 function AccessRequired({
   role,
