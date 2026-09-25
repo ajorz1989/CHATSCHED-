@@ -149,7 +149,7 @@ export default function BusinessOpportunities() {
     if (!isAdmin) query.eq("business_id", user.id);
     const [{ data: oppData }, { data: typeData }] = await Promise.all([
       query,
-      supabase.from("opportunity_types").select("slug,label,description,suggested_channel_slug").eq("active", true).order("sort_order", { ascending: true }),
+      supabase.from("opportunity_types").select("slug,label,description,suggested_channel_slug,active").eq("active", true).order("sort_order", { ascending: true }),
     ]);
     setOpportunities((oppData ?? []) as Opportunity[]);
     setOpportunityTypes((typeData ?? []) as OpportunityType[]);
