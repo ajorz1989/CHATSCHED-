@@ -100,9 +100,9 @@ export default function Opportunities() {
                 Explore opportunities that match your channel, audience, geography and strengths. Respond without exposing your private contact details or moving the conversation off-platform.
               </p>
               <ul className="space-y-2 text-sm">
-                <li>✓ Discover briefs beyond inbound profile requests.</li>
-                <li>✓ Pitch for opportunities that fit your audience.</li>
-                <li>✓ Build a track record through completed campaigns.</li>
+                <li>✓ Get briefs matched to your channel, location and audience.</li>
+                <li>✓ Submit a proposal and price without exposing private contact details.</li>
+                <li>✓ Accepted proposals move into the normal ChatSched booking workflow.</li>
               </ul>
               <Link to="/register?role=publisher" className="inline-flex mt-6 border-[3px] border-billboard-ink bg-billboard-green text-white font-bold px-5 py-2.5 rounded">
                 Join as a Publisher →
@@ -123,10 +123,10 @@ export default function Opportunities() {
           </div>
           <div className="grid md:grid-cols-4 gap-4">
             {[
-              ["01", "Business posts", "Define the objective, audience, channel, location, timing and budget."],
-              ["02", "Publishers discover", "Eligible publishers see opportunities relevant to their inventory."],
-              ["03", "Proposal stays inside", "Questions, proposals and next steps stay on-platform."],
-              ["04", "Campaign moves forward", "Once selected, the normal ChatSched campaign and payment workflow takes over."],
+              ["01", "Business posts", "Define the objective, audience, channel, location, timing, budget and deliverables."],
+              ["02", "ChatSched matches", "Eligible publishers are ranked using channel, geography, audience, budget and brief signals."],
+              ["03", "Publisher proposes", "A verified publisher sends a proposal and price without direct contact details being exposed."],
+              ["04", "Campaign moves forward", "Once selected, ChatSched creates the normal request or channel booking and the existing payment workflow takes over."],
             ].map(([n, title, body]) => (
               <div key={n} className="border-[3px] border-billboard-ink rounded-lg p-5 bg-white">
                 <div className="font-display text-3xl text-billboard-green mb-3">{n}</div>
