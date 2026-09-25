@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useState, type ReactNode } from "react";
+import { useId, useState, type ReactNode } from "react";
 import Seo from "../components/Seo";
 import MarketingIcon, { type MarketingIconName } from "../components/MarketingIcon";
 import { formatCurrency as formatCurrencyShared } from "../lib/currency";
@@ -10,7 +10,7 @@ const FAQS = [
   { q: "Do I need a contract or subscription?", a: "No long-term contract and no recurring membership fee. Browsing and basic listing are free. Sending a booking request needs a one-time ChatSched Business activation of R399, and approving requests as a Publisher needs a one-time R199 activation. Neither renews." },
   { q: "What exactly do I get for the activation fee?", a: "The activation fee unlocks the platform features on your side of the marketplace. Businesses unlock booking, opportunities, campaign tools and their launch credit. Publishers unlock Network access, opportunities, analytics, earnings tools and the ability to approve paid requests." },
   { q: "How does payment actually work?", a: "Payment happens after the booking reaches its required approval stage. The payment method depends on the channel, and payment is tracked through ChatSched before the placement moves live." },
-  { q: "Can I choose which channels to advertise on?", a: "Yes. ChatSched supports social media plus additional advertising channels such as influencer, website, podcast, radio, sports, events, community, transport and in-venue opportunities where available." },
+  { q: "Can I choose which channels to advertise on?", a: "Yes. ChatSched spans 12 channels: social media, influencer, website, podcast, radio, sports & recreation, events, community groups, transport, spaza shops & informal retail, local associations, and restaurants & cafés — availability depends on what's live in your area." },
 ];
 
 function FaqRow({ q, a }: { q: string; a: string }) {
@@ -118,7 +118,9 @@ function BenefitItem({ children }: { children: ReactNode }) {
 }
 
 function PricingFeeTeaser() {
-  const [value, setValue] = useState(500);
+  const inputId = useId();
+  const [raw, setRaw] = useState("500");
+  const value = Math.max(0, Number(raw) || 0);
   const fee = value * PLATFORM_COMMISSION_RATE;
   const earnings = value - fee;
   const fmt = (n: number) => formatCurrencyShared(n, { cents: true });
@@ -129,20 +131,31 @@ function PricingFeeTeaser() {
           <span className="font-mono text-[10px] uppercase tracking-wide text-billboard-inkSoft">Quick fee check</span>
           <h3 className="font-display text-xl">See the maths before you commit.</h3>
         </div>
-        <label className="font-mono text-xs">
+        <label htmlFor={inputId} className="font-mono text-xs">
           Campaign value
           <input
-            aria-label="Campaign value"
+            id={inputId}
             type="number"
             min={0}
             step={50}
-            value={value}
-            onChange={e => setValue(Math.max(0, Number(e.target.value) || 0))}
+            value={raw}
+            onChange={(e) => setRaw(e.target.value)}
+            onBlur={(e) => {
+              // Clamp to 0 on blur, not every keystroke, so typing a new number doesn't fight the cursor
+              const n = Number(e.target.value);
+              setRaw(String(Math.max(0, isNaN(n) ? 0 : n)));
+            }}
+            aria-describedby={`${inputId}-result`}
             className="ml-2 w-28 border-2 border-billboard-ink rounded px-2 py-1"
           />
         </label>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-center">
+      <div
+        id={`${inputId}-result`}
+        className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-center"
+        aria-live="polite"
+        aria-label={`Campaign ${fmt(value)}, marketplace fee ${fmt(fee)}, publisher earns ${fmt(earnings)}`}
+      >
         <div><div className="font-display text-xl">{fmt(value)}</div><div className="text-[10px] font-mono uppercase text-billboard-inkSoft">Campaign</div></div>
         <div><div className="font-display text-xl">-{fmt(fee)}</div><div className="text-[10px] font-mono uppercase text-billboard-inkSoft">Marketplace fee</div></div>
         <div className="col-span-2 sm:col-span-1"><div className="font-display text-xl text-billboard-greenDeep">{fmt(earnings)}</div><div className="text-[10px] font-mono uppercase text-billboard-inkSoft">Publisher earns</div></div>
