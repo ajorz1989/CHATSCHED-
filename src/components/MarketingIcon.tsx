@@ -3,7 +3,7 @@ export type MarketingIconName =
   | "document" | "check" | "megaphone" | "money" | "star"
   | "building" | "wave" | "lock" | "shield" | "globe" | "pin"
   | "mail" | "microphone" | "smartphone" | "people" | "bolt" | "camera"
-  | "briefcase";
+  | "briefcase" | "link";
 
 const common = {
   fill: "none",
@@ -40,5 +40,6 @@ export default function MarketingIcon({ name, className = "w-7 h-7" }: { name: M
     case "bolt": return <svg {...base}><path d="m13 2-8 12h6l-1 8 8-12h-6l1-8Z" /></svg>;
     case "camera": return <svg {...base}><path d="M4 7h4l1.5-2h5L16 7h4v12H4z" /><circle cx="12" cy="13" r="3.5" /></svg>;
     case "briefcase": return <svg {...base}><rect x="3" y="7" width="18" height="13" rx="1.5" /><path d="M8 7V5h8v2M3 12h18M10 12v2h4v-2" /></svg>;
+    case "link": return <svg {...base}><path d="M9 15 15 9" /><path d="M11 6.5 12.5 5a3.5 3.5 0 0 1 5 5L16 11.5" /><path d="M13 17.5 11.5 19a3.5 3.5 0 0 1-5-5L8 12.5" /></svg>;
   }
 }
