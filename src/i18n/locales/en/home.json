@@ -4,15 +4,15 @@
     "description": "South African advertising for small businesses: build a managed campaign with ChatSched or browse local advertising placements and send requests through the platform."
   },
   "hero": {
-    "badge": "LOCAL ADVERTISING, WITHOUT THE HEADACHE",
-    "title1": "Reach local customers.",
-    "title2": "Without the ad-platform headache.",
-    "subtitle": "Tell us your goal and budget — we build the campaign. Or browse real local pages, podcasts and radio slots yourself. Either way, it is tracked from request to proof.",
+    "badge": "GET SEEN WHERE LOCALS ARE",
+    "title1": "Get seen where",
+    "title2": "locals are.",
+    "subtitle": "Your customers are already paying attention. Put your business where they’re already looking. Set your goal and budget, let ChatSched manage the campaign, or discover real local advertising inventory and book it yourself — with every step tracked from request to proof.",
     "ctaBuildCampaign": "Build My Campaign →",
     "ctaBrowseMarketplace": "Browse Advertising →",
-    "noAccount": "No ad account needed",
-    "secure": "Payment held securely until your placement is confirmed live",
-    "tracked": "One tracked workflow"
+    "noAccount": "No complex ad accounts",
+    "secure": "Payment protected until your placement goes live",
+    "tracked": "One place to book, manage & verify"
   },
   "metrics": {
     "ariaLabel": "ChatSched network proof",
