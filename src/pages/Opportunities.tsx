@@ -64,9 +64,13 @@ export default function Opportunities() {
   const opportunitiesHref = user && profile ? "/opportunities/feed" : loginHref;
   const businessCtaHref = profile?.role === "business" || profile?.role === "admin"
     ? "/opportunities/feed"
+    : profile?.role === "publisher"
+    ? "/for-businesses"
     : "/register?role=business";
   const publisherCtaHref = profile?.role === "publisher" || profile?.role === "admin"
     ? "/opportunities/feed"
+    : profile?.role === "business"
+    ? "/for-publishers"
     : "/register?role=publisher";
   const [opportunityTypes, setOpportunityTypes] = useState<string[]>(FALLBACK_TYPES);
 
