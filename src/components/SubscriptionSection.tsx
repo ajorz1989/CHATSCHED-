@@ -104,7 +104,7 @@ export default function SubscriptionSection({ userId, role }: Props) {
       : "text-billboard-inkSoft";
 
   return (
-    <section className="border-[3px] border-billboard-ink rounded p-6 mb-6">
+    <section id="activation" className="border-[3px] border-billboard-ink rounded p-6 mb-6">
       <h2 className="font-display text-lg mb-1.5">{label}</h2>
       <p className="text-sm text-billboard-inkSoft mb-4">
         {formatCurrency(price)} once-off activation — no renewal, ever.
