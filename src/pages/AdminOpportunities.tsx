@@ -80,7 +80,7 @@ export default function AdminOpportunities() {
     const [{ data: oppData, error: oppError }, { data: appData, error: appError }, { data: typeData, error: typeError }] = await Promise.all([
       supabase.from("opportunities").select("*").order("created_at", { ascending: false }),
       supabase.from("opportunity_applications").select("*, publisher:publishers(name)").order("created_at", { ascending: false }),
-      supabase.from("opportunity_types").select("slug,label,description,suggested_channel_slug").order("sort_order", { ascending: true }),
+      supabase.from("opportunity_types").select("slug,label,description,suggested_channel_slug,active").order("sort_order", { ascending: true }),
     ]);
 
     if (oppError || appError || typeError) {
@@ -143,7 +143,7 @@ export default function AdminOpportunities() {
     setError(null);
     const { error: toggleError } = await supabase
       .from("opportunity_types")
-      .update({ active: false, updated_at: new Date().toISOString() })
+      .update({ active: !type.active, updated_at: new Date().toISOString() })
       .eq("slug", type.slug);
     if (toggleError) {
       setError(formatSupabaseError(toggleError, "Couldn't update opportunity type"));
@@ -204,9 +204,9 @@ export default function AdminOpportunities() {
                 <div className="text-xs font-semibold">{type.label}</div>
                 <div className="font-mono text-[9px] uppercase text-billboard-inkSoft">{type.suggested_channel_slug ?? "any channel"}</div>
               </div>
-              <span className="font-mono text-[9px] text-billboard-greenDeep">active</span>
+              <span className={"font-mono text-[9px] " + (type.active ? "text-billboard-greenDeep" : "text-billboard-inkSoft")}>{type.active ? "active" : "disabled"}</span>
               <button type="button" disabled={typeBusy === type.slug} onClick={() => toggleType(type)} className="text-[10px] font-semibold underline disabled:opacity-50">
-                Disable
+                {type.active ? "Disable" : "Enable"}
               </button>
             </div>
           ))}
