@@ -37,7 +37,7 @@ import Button from "../components/Button";
 
 export default function PublisherProfile() {
   const { id } = useParams();
-  const { publishers, loading } = usePublishers();
+  const { publishers, loading, error: publishersError } = usePublishers();
   const { user, profile } = useAuth();
   const { isComparing, togglePublisher, isFull } = useComparison();
   const { lists, addToList, createList, isInAnyList } = useSavedLists();
@@ -48,8 +48,30 @@ export default function PublisherProfile() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [subscribed, setSubscribed] = useState<boolean | undefined>(undefined);
 
+  // Admin is always fully enabled, synchronously — nothing below this
+  // ever gates or hides anything from an admin viewer.
   const isAdmin = profile?.role === "admin";
-  const canUseBusinessFeature = isAdmin || subscribed !== false;
+  // Was `subscribed !== false`, which defaults TRUE while the async
+  // subscription check is still in flight — a non-admin business briefly
+  // saw a fully-enabled form before it flipped to disabled once the real
+  // answer came back. Now nothing is treated as usable until the check
+  // actually resolves (admin still resolves instantly, unaffected).
+  const subscriptionChecked = isAdmin || subscribed !== undefined;
+  const canUseBusinessFeature = isAdmin || subscribed === true;
+
+  // Full profiles (bio, availability, portfolio, reviews, the request
+  // form) are only for signed-in business/publisher/admin accounts.
+  // Computed here rather than only below the early returns so the
+  // reviews fetch further down can skip the network round trip for
+  // anonymous visitors, who are most of this page's traffic and never
+  // render that data anyway.
+  const isRegisteredViewer = !!user && (profile?.role === "business" || profile?.role === "publisher" || profile?.role === "admin");
+  // Sending a campaign request is a business action. Admin can still do
+  // everything, everywhere — but a publisher (including one viewing
+  // their own listing) shouldn't see a "book this" form meant for
+  // buyers, and shouldn't be able to submit a request against
+  // themselves or another publisher.
+  const canRequestPlacement = isAdmin || profile?.role === "business";
 
   useEffect(() => {
     if (isAdmin) { setSubscribed(true); return; }
@@ -76,7 +98,11 @@ export default function PublisherProfile() {
   const [formError, setFormError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!id || !isSupabaseConfigured) return;
+    // Anonymous/unregistered visitors never reach the JSX that renders
+    // `reviews` (they get the locked-preview early return below), so
+    // there's no point spending two network round trips fetching data
+    // they'll never see — see isRegisteredViewer above.
+    if (!id || !isSupabaseConfigured || !isRegisteredViewer) return;
     let cancelled = false;
     // business:profiles(...) used to be embedded directly here, which
     // relied on the now-dropped profiles_select_via_shared_request policy
@@ -98,7 +124,7 @@ export default function PublisherProfile() {
         setReviews(rows.map((r) => ({ ...r, business: authors.get(r.business_id) ?? null })));
       });
     return () => { cancelled = true; };
-  }, [id]);
+  }, [id, isRegisteredViewer]);
 
   useEffect(() => {
     if (!showSave) return;
@@ -144,6 +170,29 @@ export default function PublisherProfile() {
     );
   }
 
+  // Was previously indistinguishable from "no such listing" below — a
+  // real fetch failure (network blip, RLS change, outage) silently
+  // rendered as "Publisher not found", with no way to tell the
+  // difference or retry.
+  if (publishersError) {
+    return (
+      <div className="max-w-3xl mx-auto px-5 py-24 text-center">
+        <h1 className="text-2xl mb-3">Couldn't load this listing</h1>
+        <p className="text-billboard-inkSoft mb-6">Something went wrong fetching this publisher. Please try again.</p>
+        <div className="flex justify-center gap-3">
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="inline-flex items-center gap-2 bg-billboard-yellow border-[3px] border-billboard-ink font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition"
+          >
+            Try again
+          </button>
+          <Link to="/browse" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink font-bold px-5 py-3 rounded">← Back to Browse</Link>
+        </div>
+      </div>
+    );
+  }
+
   if (!publisher) {
     return (
       <div className="max-w-3xl mx-auto px-5 py-24 text-center">
@@ -158,7 +207,8 @@ export default function PublisherProfile() {
   // the request form) are only for signed-in business and publisher/creator
   // accounts. Anyone else — including signed-out visitors — sees the same
   // card-level info they'd get from Browse, plus a prompt to register.
-  const isRegisteredViewer = !!user && (profile?.role === "business" || profile?.role === "publisher" || profile?.role === "admin");
+  // (isRegisteredViewer is computed above, before the early returns, so
+  // the reviews-fetch effect can use it too.)
   if (!isRegisteredViewer) {
     return (
       <div className="max-w-3xl mx-auto px-5 py-16">
@@ -175,7 +225,7 @@ export default function PublisherProfile() {
             to={`/login?next=${encodeURIComponent(`/browse/${publisher.id}`)}`}
             className="w-full inline-flex justify-center items-center gap-2 border-[3px] border-billboard-greenDeep bg-billboard-green text-white font-bold py-3 rounded hover:bg-billboard-greenDeep transition"
           >
-            Book This Placement →
+            Start Campaign Request →
           </Link>
           <p className="text-[11px] text-center text-billboard-inkSoft mt-2">
             ChatSched handles publisher outreach, scheduling, content verification, and payment protection. Log in or create an account to start.
@@ -400,6 +450,12 @@ export default function PublisherProfile() {
             <p className="text-billboard-inkSoft mb-8 leading-relaxed">{publisher.bio}</p>
 
             <MarketplaceProfileView publisher={publisher} liveRating={liveRating} liveReviewCount={liveReviewCount} />
+            {/* Was a second, separately-labeled "Audience: ..." paragraph
+                much further down the page — confusing next to the
+                "Audience" heading + stat cards MarketplaceProfileView
+                already renders above. Grouped here as a continuation of
+                that same section instead of a stray duplicate. */}
+            {publisher.audience && <p className="text-sm text-billboard-inkSoft mb-6">{publisher.audience}</p>}
             <EarnedBadges publisher={publisher} categoryPeers={publishers.filter((p) => p.category === publisher.category)} />
             {/* 12-Channel Audit fix C5 — an aggregate star rating alone
                 doesn't do much educating for a buyer unfamiliar with what
@@ -431,7 +487,6 @@ export default function PublisherProfile() {
                 <p className="text-sm text-billboard-inkSoft">{publisher.ai_audience_summary}</p>
               </div>
             )}
-            <p className="text-sm text-billboard-inkSoft mb-8">Audience: {publisher.audience}</p>
 
             {/* Availability calendar */}
             <div className="mb-8">
@@ -469,7 +524,7 @@ export default function PublisherProfile() {
           </div>
 
           {/* ── Sidebar ── */}
-          <aside className="border-[3px] border-billboard-ink rounded p-6 h-fit bg-billboard-paperDim sticky top-24">
+          <aside className="border-[3px] border-billboard-ink rounded p-6 h-fit bg-billboard-paperDim md:sticky md:top-24">
             {isRequestFlowChannel ? (
               <>
                 <div className="font-display text-lg font-bold text-billboard-greenDeep mb-1">Pricing varies</div>
@@ -489,7 +544,16 @@ export default function PublisherProfile() {
               </Link>
             </div>
 
-            {isRequestFlowChannel ? (
+            {!canRequestPlacement ? (
+              <div className="border-2 border-billboard-ink rounded p-4 mb-3 bg-white">
+                <div className="font-display text-base mb-1">Campaign requests are sent by businesses</div>
+                <p className="text-xs text-billboard-inkSoft">
+                  {isOwner
+                    ? "This is your own listing — campaign requests come from registered businesses, not from publishers."
+                    : `Only registered businesses can send a campaign request to ${publisher.name}.`}
+                </p>
+              </div>
+            ) : isRequestFlowChannel ? (
               <ChannelRequestForm publisher={publisher} />
             ) : sent ? (
               <div className="border-[3px] border-billboard-greenDeep bg-[#EAF3EC] text-billboard-greenDeep rounded p-5">
@@ -523,8 +587,8 @@ export default function PublisherProfile() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="mb-3">
-                {!canUseBusinessFeature && <SubscriptionGateNotice role="business" />}
-                <fieldset disabled={!canUseBusinessFeature} className="border-0 p-0 m-0 min-w-0 disabled:opacity-50 space-y-3">
+                {subscriptionChecked && !canUseBusinessFeature && <SubscriptionGateNotice role="business" />}
+                <fieldset disabled={!subscriptionChecked || !canUseBusinessFeature} className="border-0 p-0 m-0 min-w-0 disabled:opacity-50 space-y-3">
                   <div className="border-b-2 border-billboard-ink/10 pb-2.5">
                     <div className="flex items-center justify-between gap-2 mb-1">
                       <h3 className="font-display text-base">Start Campaign Request</h3>
@@ -688,13 +752,13 @@ export default function PublisherProfile() {
                     disabled={sending}
                     className="w-full bg-billboard-yellow border-[3px] border-billboard-ink font-bold py-3 rounded hover:-translate-y-0.5 transition disabled:opacity-60 text-xs shadow-block"
                   >
-                    {sending ? "Sending Brief to ChatSched…" : "Book This Placement →"}
+                    {sending ? "Sending Brief to ChatSched…" : "Send Campaign Brief →"}
                   </button>
                 </fieldset>
               </form>
             )}
 
-            {user && profile?.role === "business" && (
+            {user && (profile?.role === "business" || profile?.role === "publisher" || isAdmin) && (
               <button
                 onClick={() => setReportOpen(true)}
                 className="w-full text-center text-xs text-billboard-inkSoft underline mt-3 hover:text-billboard-red transition"
