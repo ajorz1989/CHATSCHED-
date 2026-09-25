@@ -209,7 +209,7 @@ export default function Pricing() {
                 <BenefitItem>Business-to-publisher messaging inside ChatSched, keeping the booking conversation on-platform.</BenefitItem>
                 <BenefitItem>Flexible campaign builder for your goal, channels, audience, location, budget, dates and creative brief.</BenefitItem>
                 <BenefitItem>Access to the gated business Opportunities area for relevant sponsorship and advertising opportunities.</BenefitItem>
-                <BenefitItem>Done-for-you campaign support — submit your brief and let a ChatSched campaign manager coordinate the media plan.</BenefitItem>
+                <BenefitItem>Done-for-you campaign support — submit your brief and a ChatSched campaign manager coordinates the media plan. Most managed campaigns are billed per booking at the standard marketplace fee; larger campaigns may instead use a single agreed package price, always confirmed with you before anything is booked.</BenefitItem>
                 <BenefitItem>Campaign tracking, booking history and reporting so you can follow the job from request through delivery.</BenefitItem>
                 <BenefitItem>AI Content Studio free tier with a monthly allowance to help create campaign copy and marketing content.</BenefitItem>
                 <BenefitItem>R199 launch credit applied toward an eligible first campaign after activation.</BenefitItem>
@@ -256,6 +256,15 @@ export default function Pricing() {
 
       <section className="max-w-5xl mx-auto px-5 pb-8">
         <PricingFeeTeaser />
+      </section>
+
+      <section className="max-w-5xl mx-auto px-5 pb-8">
+        <div className="border-2 border-billboard-ink bg-billboard-paperDim rounded p-5 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm max-w-[58ch] leading-relaxed">
+            Beyond activation, <strong className="text-billboard-ink">ChatSched Tools</strong> is a growing catalogue of practical add-ons for getting leads, handling customers, taking bookings and running campaigns — free, once-off, monthly and annual pricing, priced individually per tool.
+          </p>
+          <Link to="/tools" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink font-bold px-4 py-2.5 rounded text-sm bg-white shrink-0 hover:-translate-y-0.5 transition">Explore ChatSched Tools →</Link>
+        </div>
       </section>
 
       <section className="max-w-5xl mx-auto px-5 pb-16 grid md:grid-cols-2 gap-10">
