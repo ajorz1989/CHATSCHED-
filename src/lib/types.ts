@@ -759,6 +759,7 @@ export interface OpportunityType {
   label: string;
   description: string;
   suggested_channel_slug: ChannelSlug | null;
+  active: boolean;
 }
 
 export interface Opportunity {
