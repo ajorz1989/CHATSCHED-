@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import Seo from "../components/Seo";
+import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
 import type { OpportunityType } from "../lib/types";
 
@@ -56,9 +57,17 @@ const V2_FEATURES = [
 ];
 
 export default function Opportunities() {
+  const { user, profile } = useAuth();
   const [searchParams] = useSearchParams();
   const next = searchParams.get("next") || "/opportunities/feed";
   const loginHref = `/login?next=${encodeURIComponent(next)}`;
+  const opportunitiesHref = user && profile ? "/opportunities/feed" : loginHref;
+  const businessCtaHref = profile?.role === "business" || profile?.role === "admin"
+    ? "/opportunities/feed"
+    : "/register?role=business";
+  const publisherCtaHref = profile?.role === "publisher" || profile?.role === "admin"
+    ? "/opportunities/feed"
+    : "/register?role=publisher";
   const [opportunityTypes, setOpportunityTypes] = useState<string[]>(FALLBACK_TYPES);
 
   useEffect(() => {
@@ -107,13 +116,13 @@ export default function Opportunities() {
               </p>
               <div className="flex flex-wrap gap-3">
                 <Link
-                  to={loginHref}
+                  to={opportunitiesHref}
                   className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition"
                 >
                   Explore opportunities →
                 </Link>
                 <Link
-                  to="/register?role=business"
+                  to={businessCtaHref}
                   className="inline-flex items-center gap-2 border-[3px] border-white/70 text-white font-semibold px-5 py-3 rounded hover:bg-white/10 transition"
                 >
                   Post a brief
@@ -253,7 +262,7 @@ export default function Opportunities() {
                 <div>✓ Review publisher proposals in ChatSched.</div>
                 <div>✓ Accept proposals into the normal booking flow.</div>
               </div>
-              <Link to="/register?role=business" className="inline-flex mt-6 border-[3px] border-billboard-ink bg-billboard-ink text-billboard-paper font-bold px-5 py-2.5 rounded">
+              <Link to={businessCtaHref} className="inline-flex mt-6 border-[3px] border-billboard-ink bg-billboard-ink text-billboard-paper font-bold px-5 py-2.5 rounded">
                 Create a business account →
               </Link>
             </div>
@@ -270,7 +279,7 @@ export default function Opportunities() {
                 <div>✓ See deadlines and campaign dates before proposing.</div>
                 <div>✓ Track your applications from one workspace.</div>
               </div>
-              <Link to="/register?role=publisher" className="inline-flex mt-6 border-[3px] border-billboard-ink bg-billboard-green text-white font-bold px-5 py-2.5 rounded">
+              <Link to={publisherCtaHref} className="inline-flex mt-6 border-[3px] border-billboard-ink bg-billboard-green text-white font-bold px-5 py-2.5 rounded">
                 Join as a Publisher →
               </Link>
             </div>
@@ -315,7 +324,7 @@ export default function Opportunities() {
             Real opportunities are available inside ChatSched to eligible verified members. Businesses can publish briefs; publishers can discover, match and propose against them.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
-            <Link to={loginHref} className="inline-flex border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold px-6 py-3 rounded">
+            <Link to={opportunitiesHref} className="inline-flex border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold px-6 py-3 rounded">
               Log in to Opportunities →
             </Link>
             <Link to="/for-publishers" className="inline-flex border-[3px] border-white/40 text-white font-semibold px-6 py-3 rounded">
