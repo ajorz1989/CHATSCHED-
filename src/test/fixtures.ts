@@ -48,6 +48,8 @@ export function makePublisher(overrides: Partial<Publisher> = {}): Publisher {
     publisher_score: 50,
     avg_response_hours: null,
     response_count: 0,
+    acceptance_rate: null,
+    acceptance_sample_size: 0,
     last_active_at: null,
     ai_audience_summary: null,
     ai_audience_summary_generated_at: null,
