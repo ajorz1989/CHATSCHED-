@@ -1,5 +1,6 @@
 import TrustBadge from "./TrustBadge";
 import ResponseTimeBadge from "./ResponseTimeBadge";
+import AcceptanceRateBadge from "./AcceptanceRateBadge";
 import LastActiveBadge from "./LastActiveBadge";
 import MarketingIcon from "./MarketingIcon";
 import { scoreLabel } from "../lib/publisherDisplay";
@@ -21,6 +22,8 @@ export default function PublisherTrustStrip({
   publisherScore,
   avgResponseHours,
   responseCount,
+  acceptanceRate,
+  acceptanceSampleSize,
   lastActiveAt,
   className = "",
 }: {
@@ -29,11 +32,13 @@ export default function PublisherTrustStrip({
   publisherScore?: number;
   avgResponseHours?: number | null;
   responseCount?: number;
+  acceptanceRate?: number | null;
+  acceptanceSampleSize?: number;
   lastActiveAt?: string | null;
   className?: string;
 }) {
   const hasAnything =
-    !!level || trustScore > 0 || !!publisherScore || avgResponseHours != null || !!lastActiveAt;
+    !!level || trustScore > 0 || !!publisherScore || avgResponseHours != null || acceptanceRate != null || !!lastActiveAt;
   if (!hasAnything) return null;
 
   return (
@@ -59,6 +64,10 @@ export default function PublisherTrustStrip({
 
       {avgResponseHours != null && (
         <ResponseTimeBadge avgResponseHours={avgResponseHours} responseCount={responseCount ?? 0} className="text-xs text-billboard-inkSoft" />
+      )}
+
+      {acceptanceRate != null && (
+        <AcceptanceRateBadge acceptanceRate={acceptanceRate} acceptanceSampleSize={acceptanceSampleSize ?? 0} className="text-xs text-billboard-inkSoft" />
       )}
 
       {lastActiveAt && <LastActiveBadge lastActiveAt={lastActiveAt} className="text-xs text-billboard-inkSoft" />}
