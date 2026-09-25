@@ -42,21 +42,21 @@ const PROVINCES = [
 ];
 
 const FALLBACK_TYPES: OpportunityType[] = [
-  { slug: "social-media-promotion", label: "Social Media Promotion", description: "Commission verified social promotion.", suggested_channel_slug: "social-media" },
-  { slug: "influencer-product-placement", label: "Influencer Product Placement", description: "Put your product into creator content.", suggested_channel_slug: "influencer" },
-  { slug: "website-advertising", label: "Website Advertising", description: "Reach an audience through a website placement.", suggested_channel_slug: "website" },
-  { slug: "newsletter-sponsorship", label: "Newsletter Sponsorship", description: "Sponsor a newsletter or subscriber communication.", suggested_channel_slug: "website" },
-  { slug: "event-sponsorship", label: "Event Sponsorship", description: "Sponsor an event, activation or gathering.", suggested_channel_slug: "events" },
-  { slug: "school-partnership", label: "School Partnership", description: "Sponsor a school or education audience.", suggested_channel_slug: "events" },
-  { slug: "sports-sponsorship", label: "Sports Sponsorship", description: "Sponsor a sports audience, club or tournament.", suggested_channel_slug: "sports" },
-  { slug: "radio-podcast-spot", label: "Radio / Podcast Spot", description: "Book a radio or podcast opportunity.", suggested_channel_slug: "radio" },
-  { slug: "community-sponsorship", label: "Community Sponsorship", description: "Support a local community audience or initiative.", suggested_channel_slug: "community" },
-  { slug: "in-venue-screen-display", label: "In-Venue Screen Display", description: "Advertise on an in-venue screen.", suggested_channel_slug: "in-venue-screens" },
-  { slug: "restaurant-promotion", label: "Restaurant Promotion", description: "Reach diners through restaurant inventory.", suggested_channel_slug: "restaurants" },
-  { slug: "transport-advertising", label: "Transport Advertising", description: "Advertise through transport inventory.", suggested_channel_slug: "transport" },
-  { slug: "association-sponsorship", label: "Association Sponsorship", description: "Reach a member or professional audience.", suggested_channel_slug: "associations" },
-  { slug: "retail-promotion", label: "Retail Promotion", description: "Promote a product through retail-facing inventory.", suggested_channel_slug: "informal-retail" },
-  { slug: "brand-partnership", label: "Brand Partnership", description: "Create a broader sponsored partnership.", suggested_channel_slug: null },
+  { slug: "social-media-promotion", label: "Social Media Promotion", description: "Commission verified social promotion.", suggested_channel_slug: "social-media", active: true },
+  { slug: "influencer-product-placement", label: "Influencer Product Placement", description: "Put your product into creator content.", suggested_channel_slug: "influencer", active: true },
+  { slug: "website-advertising", label: "Website Advertising", description: "Reach an audience through a website placement.", suggested_channel_slug: "website", active: true },
+  { slug: "newsletter-sponsorship", label: "Newsletter Sponsorship", description: "Sponsor a newsletter or subscriber communication.", suggested_channel_slug: "website", active: true },
+  { slug: "event-sponsorship", label: "Event Sponsorship", description: "Sponsor an event, activation or gathering.", suggested_channel_slug: "events", active: true },
+  { slug: "school-partnership", label: "School Partnership", description: "Sponsor a school or education audience.", suggested_channel_slug: "events", active: true },
+  { slug: "sports-sponsorship", label: "Sports Sponsorship", description: "Sponsor a sports audience, club or tournament.", suggested_channel_slug: "sports", active: true },
+  { slug: "radio-podcast-spot", label: "Radio / Podcast Spot", description: "Book a radio or podcast opportunity.", suggested_channel_slug: "radio", active: true },
+  { slug: "community-sponsorship", label: "Community Sponsorship", description: "Support a local community audience or initiative.", suggested_channel_slug: "community", active: true },
+  { slug: "in-venue-screen-display", label: "In-Venue Screen Display", description: "Advertise on an in-venue screen.", suggested_channel_slug: "in-venue-screens", active: true },
+  { slug: "restaurant-promotion", label: "Restaurant Promotion", description: "Reach diners through restaurant inventory.", suggested_channel_slug: "restaurants", active: true },
+  { slug: "transport-advertising", label: "Transport Advertising", description: "Advertise through transport inventory.", suggested_channel_slug: "transport", active: true },
+  { slug: "association-sponsorship", label: "Association Sponsorship", description: "Reach a member or professional audience.", suggested_channel_slug: "associations", active: true },
+  { slug: "retail-promotion", label: "Retail Promotion", description: "Promote a product through retail-facing inventory.", suggested_channel_slug: "informal-retail", active: true },
+  { slug: "brand-partnership", label: "Brand Partnership", description: "Create a broader sponsored partnership.", suggested_channel_slug: null, active: true },
 ];
 
 const STATUS_LABEL: Record<OpportunityStatus, string> = {
