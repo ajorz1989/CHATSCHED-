@@ -330,37 +330,10 @@ export default function Admin() {
     await loadAll();
   }
 
-  // Approving recomputes trust_score / publisher_score / level right away via
-  // the same SQL function the review/request triggers call — otherwise a
-  // freshly-approved publisher would show no level until their first
-  // completed campaign or review came in and fired one of those triggers.
-  //
-  // `verification` (Task 2) is only ever passed for a channel where
-  // channels.verification_required is true — see ApplicationCard below.
-  // When present, it persists which of that channel's eligibility.checks
-  // were actually confirmed (publisher_verification_checks, current
-  // state — schema_phase79) and logs the approval distinctly if it went
-  // through without every check confirmed (overridden: true), per Task
-  // 2's own acceptance criteria: approving without checking is still
-  // possible, it's a tool not a hard gate, but it has to be an explicit,
-  // audited action, not indistinguishable from a fully-checked approval.
-  //
-  // "claude to fix 2" item 24's own audit of this system (already
-  // confirmed correct on every other count — checklist content is
-  // properly varied per inventory type, channel_slug can't be
-  // self-service-switched post-approval per
-  // enforce_publisher_self_update()'s trigger, and the checklist-to-
-  // application wiring is per-application not global) found one real
-  // gap: overriding required no explanation at all, unlike Reject and
-  // Request-more-info right next to it in the same component, which both
-  // require a reason "kept on file." overrideReason closes that —
-  // required (mirrors reason/note's `disabled={!x.trim()}` pattern
-  // below), logged into admin_audit_log's details alongside which checks
-  // were/weren't ticked, not bolted onto publishers.admin_notes (a
-  // different, general-purpose field — mixing an override's specific
-  // justification into it would get confusing across repeated overrides
-  // over time; the audit log is the purpose-built place for "why did
-  // admin X do Y at time Z").
+  // All publisher approvals now pass through the server-side approval RPC.
+  // High-trust channels require a complete checklist plus uploaded evidence;
+  // Social Media verification requires submitted public profile URLs.
+  // This keeps the admin UI and database enforcement on one canonical path.
   async function approvePublisher(
     id: string,
     verification?: { channelSlug: string; checksConfirmed: string[]; checksTotal: number }
@@ -371,7 +344,7 @@ export default function Admin() {
     });
 
     if (approvalError) {
-      console.error("Publisher approval failed", approvalError);
+      setActionError(formatSupabaseError(approvalError, "Publisher approval was blocked by verification requirements"));
       await loadAll();
       return;
     }
