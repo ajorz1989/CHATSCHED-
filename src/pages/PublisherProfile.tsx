@@ -23,7 +23,7 @@ import PublisherCard from "../components/PublisherCard";
 
 // 12-Channel Audit fix C4 — same set as PublisherCard.tsx's own copy; see
 // that file's comment for why this isn't a shared import.
-const VERIFICATION_REQUIRED_CHANNELS = new Set(["sports", "events", "community", "transport", "informal-retail", "associations", "restaurants"]);
+const VERIFICATION_REQUIRED_CHANNELS = new Set(["sports", "events", "community", "transport", "informal-retail", "associations", "restaurants", "in-venue-screens"]);
 import EmptyState from "../components/EmptyState";
 import Seo from "../components/Seo";
 import { SkeletonBlock, SkeletonLine, SkeletonParagraph } from "../components/Skeleton";
