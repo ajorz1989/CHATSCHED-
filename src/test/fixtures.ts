@@ -63,7 +63,6 @@ export function makePublisher(overrides: Partial<Publisher> = {}): Publisher {
     reviewed_at: "2026-01-02T00:00:00.000Z",
     channel_slug: "social-media",
     verification_proof_urls: [],
-    social_verification_links: [],
     ...overrides,
   };
 }
