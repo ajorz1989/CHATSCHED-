@@ -159,7 +159,7 @@ function AuthenticityCheck({ publisher: p, onChecked }: { publisher: Publisher; 
 }
 
 export default function Admin() {
-  const { user } = useAuth();
+  useAuth();
   const [tab, setTab] = useState<AdminTab>("requests");
   const [requests, setRequests] = useState<AdminRequestRow[]>([]);
   const [publishers, setPublishers] = useState<Publisher[]>([]);
@@ -1033,7 +1033,7 @@ function ApplicationsTab({
   applications, onApprove, onReject, onRequestInfo, onRefresh, verificationRequiredChannels, verificationChecks,
 }: {
   applications: Publisher[];
-  onApprove: (id: string, verification?: { channelSlug: string; checksConfirmed: string[]; checksTotal: number; overridden: boolean; overrideReason?: string }) => void;
+  onApprove: (id: string, verification?: { channelSlug: string; checksConfirmed: string[]; checksTotal: number }) => void;
   onReject: (id: string, reason: string) => void;
   onRequestInfo: (id: string, note: string) => void;
   onRefresh: () => void;
