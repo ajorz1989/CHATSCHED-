@@ -363,41 +363,37 @@ export default function Admin() {
   // admin X do Y at time Z").
   async function approvePublisher(
     id: string,
-    verification?: { channelSlug: string; checksConfirmed: string[]; checksTotal: number; overridden: boolean; overrideReason?: string }
+    verification?: { channelSlug: string; checksConfirmed: string[]; checksTotal: number }
   ) {
-    setPublishers((prev) => prev.map((p) => (p.id === id ? { ...p, status: "approved" } : p)));
-    await supabase.from("publishers").update({ status: "approved", reviewed_at: new Date().toISOString(), rejected_reason: null }).eq("id", id);
+    const { error: approvalError } = await supabase.rpc("approve_publisher_application", {
+      p_publisher_id: id,
+      p_checks_confirmed: verification?.checksConfirmed ?? [],
+    });
+
+    if (approvalError) {
+      console.error("Publisher approval failed", approvalError);
+      await loadAll();
+      return;
+    }
+
     await supabase.rpc("refresh_publisher_scores", { p_publisher_id: id });
     // In-app bell notifications for matching saved searches are trigger-driven
-    // (trg_notify_saved_search_matches, schema_phase33) and already fired by
-    // the update above. This is only the email half — fire-and-forget, same
-    // as the `notify` calls elsewhere in this file, so a slow/failed email
-    // never blocks the approval itself.
+    // by the publisher status transition. Keep the email half fire-and-forget.
     supabase.functions.invoke("notify-saved-search-matches", { body: { publisher_id: id } }).catch(() => {});
-    if (verification) {
-      await supabase.from("publisher_verification_checks").upsert({
-        publisher_id: id,
-        channel_slug: verification.channelSlug,
-        checks_confirmed: verification.checksConfirmed,
-        checks_total: verification.checksTotal,
-        updated_by: user?.id ?? null,
-        updated_at: new Date().toISOString(),
-      });
-      logAdminAction(
-        verification.overridden ? "publisher_approved_verification_overridden" : "publisher_approved",
-        "publishers",
-        id,
-        {
-          channel_slug: verification.channelSlug,
-          checks_confirmed: verification.checksConfirmed,
-          checks_total: verification.checksTotal,
-          overridden: verification.overridden,
-          ...(verification.overridden ? { override_reason: verification.overrideReason } : {}),
-        }
-      );
-    } else {
-      logAdminAction("publisher_approved", "publishers", id);
-    }
+
+    logAdminAction(
+      "publisher_approved",
+      "publishers",
+      id,
+      verification
+        ? {
+            channel_slug: verification.channelSlug,
+            checks_confirmed: verification.checksConfirmed,
+            checks_total: verification.checksTotal,
+            ...(verification.channelSlug === "social-media" ? { social_links_reviewed: true } : {}),
+          }
+        : undefined,
+    );
     loadAll();
   }
 
@@ -1149,7 +1145,7 @@ function ApplicationCard({
   publisher: p, onApprove, onReject, onRequestInfo, onRefresh, verificationRequired, previouslyConfirmedChecks,
 }: {
   publisher: Publisher;
-  onApprove: (id: string, verification?: { channelSlug: string; checksConfirmed: string[]; checksTotal: number; overridden: boolean; overrideReason?: string }) => void;
+  onApprove: (id: string, verification?: { channelSlug: string; checksConfirmed: string[]; checksTotal: number }) => void;
   onReject: (id: string, reason: string) => void;
   onRequestInfo: (id: string, note: string) => void;
   onRefresh: () => void;
@@ -1160,6 +1156,7 @@ function ApplicationCard({
   const [showInfo, setShowInfo] = useState(false);
   const [reason, setReason] = useState("");
   const [note, setNote] = useState("");
+  const [verificationError, setVerificationError] = useState<string | null>(null);
 
   // Task 2: channels.verification_required gives this application a
   // channel-specific checklist instead of just the generic review
@@ -1171,8 +1168,8 @@ function ApplicationCard({
   // busywork, not rigor.
   const checks = verificationRequired ? getChannelBySlug(p.channel_slug)?.definition.eligibility?.checks ?? [] : [];
   const [ticked, setTicked] = useState<Set<string>>(new Set(previouslyConfirmedChecks));
-  const [confirmingOverride, setConfirmingOverride] = useState(false);
-  const [overrideReason, setOverrideReason] = useState("");
+  const socialVerificationLinks = (p.social_verification_links ?? []).filter((link) => link.url?.trim());
+  const highTrustProofCount = p.verification_proof_urls?.length ?? 0;
 
   function toggleCheck(check: string) {
     setTicked((prev) => {
@@ -1181,30 +1178,44 @@ function ApplicationCard({
       else next.add(check);
       return next;
     });
-    setConfirmingOverride(false);
+    setVerificationError(null);
   }
 
   function handleApproveClick() {
-    if (checks.length === 0) {
-      onApprove(p.id);
-      return;
-    }
-    const allChecked = checks.every((c) => ticked.has(c));
-    if (allChecked) {
-      onApprove(p.id, { channelSlug: p.channel_slug, checksConfirmed: [...ticked], checksTotal: checks.length, overridden: false });
-      return;
-    }
-    // Not every box ticked — this is still allowed (a tool, not a hard
-    // gate) but needs an explicit second click, not the same one-click
-    // path a fully-checked approval gets, so it's never accidental and
-    // it's always distinguishable in admin_audit_log afterward.
-    setConfirmingOverride(true);
-  }
+    setVerificationError(null);
 
-  function confirmOverrideApprove() {
-    onApprove(p.id, { channelSlug: p.channel_slug, checksConfirmed: [...ticked], checksTotal: checks.length, overridden: true, overrideReason: overrideReason.trim() });
-    setConfirmingOverride(false);
-    setOverrideReason("");
+    if (checks.length > 0) {
+      const allChecked = checks.every((check) => ticked.has(check));
+      if (!allChecked) {
+        setVerificationError("Every high-trust verification check must be confirmed before approval.");
+        return;
+      }
+      if (highTrustProofCount === 0) {
+        setVerificationError("At least one verification evidence file is required before approval.");
+        return;
+      }
+      onApprove(p.id, {
+        channelSlug: p.channel_slug,
+        checksConfirmed: [...ticked],
+        checksTotal: checks.length,
+      });
+      return;
+    }
+
+    if (p.channel_slug === "social-media") {
+      if (socialVerificationLinks.length === 0) {
+        setVerificationError("At least one public Social Media profile link must be submitted before verification.");
+        return;
+      }
+      onApprove(p.id, {
+        channelSlug: p.channel_slug,
+        checksConfirmed: [],
+        checksTotal: 0,
+      });
+      return;
+    }
+
+    onApprove(p.id);
   }
 
   return (
@@ -1250,6 +1261,39 @@ function ApplicationCard({
             </div>
           );
         })()}
+        {p.channel_slug === "social-media" && (
+          <div className="mt-3 border-2 border-billboard-ink rounded p-3 bg-billboard-paperDim">
+            <p className="font-mono text-xs font-semibold uppercase tracking-wide mb-2">Social Media verification links</p>
+            {socialVerificationLinks.length === 0 ? (
+              <p className="text-sm text-billboard-red font-semibold">No social profile link submitted — verification cannot be approved.</p>
+            ) : (
+              <div className="space-y-1.5">
+                {socialVerificationLinks.map((link) => (
+                  <a
+                    key={`${link.platform}-${link.url}`}
+                    href={link.url}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="flex items-center justify-between gap-3 text-sm border-2 border-billboard-ink/15 rounded px-2.5 py-2 bg-white hover:bg-billboard-paper transition"
+                  >
+                    <span className="font-semibold capitalize">{link.platform.replace(/_/g, " ")}</span>
+                    <span className="font-mono text-xs text-billboard-greenDeep truncate max-w-[70%]" title={link.url}>{link.url}</span>
+                  </a>
+                ))}
+              </div>
+            )}
+            <p className="text-[11px] text-billboard-inkSoft mt-2">
+              Open the submitted public profiles and confirm they match the applicant before approving.
+            </p>
+          </div>
+        )}
+
+        {verificationError && (
+          <p role="alert" className="mt-3 text-sm font-semibold text-billboard-red border-2 border-billboard-red/30 bg-billboard-red/10 rounded p-2.5">
+            {verificationError}
+          </p>
+        )}
+
         {p.admin_notes && (
           <p className="text-xs text-billboard-ink mt-2 bg-billboard-paperDim border-2 border-billboard-inkSoft rounded px-2.5 py-1.5 inline-block">
             Note on file: {p.admin_notes}
@@ -1263,6 +1307,9 @@ function ApplicationCard({
         <div className="mt-3 border-2 border-billboard-ink rounded p-3 bg-billboard-paperDim">
           <p className="font-mono text-xs font-semibold uppercase tracking-wide mb-2">
             {getChannelBySlug(p.channel_slug)?.definition.name ?? p.channel_slug} verification checklist
+          </p>
+          <p className="text-xs text-billboard-red font-semibold mb-2">
+            Required for approval: all checks below and at least one evidence file.
           </p>
           {/* 12-Channel Audit fix A1/B1 — the checklist above used to be
               purely self-attested with nothing for a reviewer to actually
@@ -1292,27 +1339,6 @@ function ApplicationCard({
           Reject
         </button>
       </div>
-
-      {confirmingOverride && (
-        <div className="mt-3 border-2 border-billboard-yellowDeep rounded p-3 bg-billboard-paperDim">
-          <p className="text-sm mb-2">
-            {ticked.size} of {checks.length} checks confirmed. Approving anyway is recorded as an override in the admin audit log — this can't be undone quietly.
-          </p>
-          <input
-            value={overrideReason} onChange={(e) => setOverrideReason(e.target.value)}
-            placeholder="Why approve without every check confirmed? (kept on file)"
-            className="w-full border-2 border-billboard-ink rounded px-3 py-2 text-sm mb-2"
-          />
-          <div className="flex gap-2">
-            <button onClick={confirmOverrideApprove} disabled={!overrideReason.trim()} className="font-mono text-xs font-semibold uppercase border-2 border-billboard-greenDeep bg-billboard-green rounded px-3 py-1.5 disabled:opacity-60">
-              Approve anyway
-            </button>
-            <button onClick={() => { setConfirmingOverride(false); setOverrideReason(""); }} className="font-mono text-xs font-semibold uppercase border-2 border-billboard-ink rounded px-3 py-1.5">
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
 
       {showInfo && (
         <div className="mt-3 flex gap-2">
