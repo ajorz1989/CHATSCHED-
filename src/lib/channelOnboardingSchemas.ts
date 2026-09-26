@@ -109,6 +109,9 @@ export interface SocialMediaOnboardingFields {
   bestPerformingFormat: SocialMediaContentFormat;
   postsPerWeek: number;
   audienceCountry: string; // most pages are SA-focused, but not assumed — free text, not hardcoded to South Africa
+  // Public profile URLs supplied during Social Media onboarding for manual verification.
+  // Stored separately from channel_metadata because verification links are private.
+  socialProfileLinks: Partial<Record<SocialMediaPlatform, string>>;
 }
 
 // ── Website ──────────────────────────────────────────────────────────────
