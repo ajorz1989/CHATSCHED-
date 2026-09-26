@@ -1,17 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useReveal } from "../hooks/useReveal";
 import { getEnabledChannels } from "../lib/channelRegistry";
 import ChannelIcon from "./ChannelIcon";
 
-/**
- * Live channel switcher shared by Home and Categories.
- * The registry is the source of truth, so every live channel appears here
- * automatically while development channels stay out of the live experience.
- */
 export default function LiveChannelTabs() {
   const [active, setActive] = useState(0);
-  const reveal = useReveal<HTMLDivElement>();
   const tabs = getEnabledChannels();
 
   if (tabs.length === 0) return null;
@@ -21,25 +14,31 @@ export default function LiveChannelTabs() {
   const ch = current.definition;
 
   return (
-    <div ref={reveal.ref} className={reveal.className}>
-      <div className="flex flex-wrap gap-2.5 mb-8" role="tablist" aria-label="Live advertising channels">
-        {tabs.map((t, i) => (
+    <div>
+      <div
+        className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5"
+        role="tablist"
+        aria-label="Live advertising channels"
+      >
+        {tabs.map((tab, i) => (
           <button
-            key={t.definition.slug}
-            id={`channel-tab-${t.definition.slug}`}
+            key={tab.definition.slug}
+            id={`channel-tab-${tab.definition.slug}`}
             type="button"
             role="tab"
             aria-selected={i === activeIndex}
-            aria-controls={`channel-panel-${t.definition.slug}`}
+            aria-controls={`channel-panel-${tab.definition.slug}`}
             onClick={() => setActive(i)}
-            className={`inline-flex items-center gap-2 border-[3px] border-billboard-ink font-bold text-sm px-4 py-2.5 rounded transition ${
-              i === activeIndex
-                ? "bg-billboard-ink text-billboard-paper"
-                : "bg-billboard-paper hover:-translate-y-0.5"
-            }`}
+            className={`group min-w-0 text-left border-2 border-billboard-ink rounded-lg p-3.5 bg-billboard-paper transition hover:-translate-y-0.5 hover:shadow-blockSm ${i === activeIndex ? "ring-2 ring-billboard-greenDeep bg-billboard-paperDim" : ""}`}
           >
-            <ChannelIcon slug={t.definition.slug} size="sm" />
-            {t.definition.name}
+            <div className="flex items-center gap-2">
+              <ChannelIcon slug={tab.definition.slug} size="sm" />
+              <span className="font-bold text-sm leading-tight min-w-0">{tab.definition.name}</span>
+            </div>
+            <div className="flex items-center gap-1.5 mt-2 font-mono text-[9px] uppercase tracking-wide text-billboard-greenDeep">
+              <span className="h-1.5 w-1.5 rounded-full bg-billboard-green" aria-hidden="true" />
+              Live
+            </div>
           </button>
         ))}
       </div>
@@ -48,25 +47,32 @@ export default function LiveChannelTabs() {
         id={`channel-panel-${ch.slug}`}
         role="tabpanel"
         aria-labelledby={`channel-tab-${ch.slug}`}
-        className="border-[3px] border-billboard-ink rounded p-6 md:p-8 bg-billboard-paper grid md:grid-cols-[auto_1fr] gap-6 items-start"
+        className="mt-3 border-[3px] border-billboard-ink rounded-xl bg-billboard-ink text-billboard-paper p-5 md:p-7"
       >
-        <ChannelIcon slug={ch.slug} size="lg" />
-        <div>
-          <p className="text-xl md:text-2xl font-display leading-snug mb-4">{ch.tagline}</p>
-          <p className="text-sm text-billboard-inkSoft leading-relaxed mb-5">{ch.description}</p>
-          <ul className="grid sm:grid-cols-2 gap-2 mb-5">
-            {ch.advertiserBenefits.slice(0, 4).map((b, i) => (
-              <li key={i} className="flex gap-2 text-sm text-billboard-inkSoft">
-                <span className="text-billboard-green mt-0.5 shrink-0">✓</span>
-                <span>{b}</span>
-              </li>
-            ))}
-          </ul>
+        <div className="grid md:grid-cols-[auto_1fr_auto] gap-5 items-start">
+          <div className="rounded-lg bg-billboard-paper text-billboard-ink p-3 border-2 border-billboard-paper">
+            <ChannelIcon slug={ch.slug} size="lg" />
+          </div>
+          <div className="min-w-0">
+            <div className="font-mono text-[9px] uppercase tracking-[0.14em] text-billboard-yellow mb-2">
+              Live advertising channel
+            </div>
+            <p className="font-display text-xl md:text-2xl leading-snug mb-3">{ch.tagline}</p>
+            <p className="text-sm text-billboard-paperDim leading-relaxed mb-4 max-w-3xl">{ch.description}</p>
+            <div className="grid sm:grid-cols-2 gap-2">
+              {ch.advertiserBenefits.slice(0, 4).map((benefit, i) => (
+                <div key={i} className="flex gap-2 text-sm text-billboard-paperDim">
+                  <span className="text-billboard-yellow shrink-0">✓</span>
+                  <span>{benefit}</span>
+                </div>
+              ))}
+            </div>
+          </div>
           <Link
             to={`/channels/${ch.slug}`}
-            className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold px-5 py-2.5 rounded hover:bg-billboard-yellowDeep transition hover:-translate-y-0.5"
+            className="brand-button yellow shrink-0"
           >
-            Explore {ch.name} →
+            Explore →
           </Link>
         </div>
       </div>
