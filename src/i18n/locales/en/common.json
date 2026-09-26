@@ -21,7 +21,9 @@
     "account": "Account",
     "logOut": "Log out",
     "logIn": "Log in",
-    "getStarted": "Get Started"
+    "getStarted": "Get Started",
+    "advertise": "Advertise",
+    "budgetCalculator": "Budget Calculator"
   },
   "footer": {
     "tagline": "Reach local customers. Monetise local audiences.",
