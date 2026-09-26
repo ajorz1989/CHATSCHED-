@@ -38,21 +38,28 @@ function HomeMetrics() {
 
 function HeroMockup() {
   const { t } = useTranslation("home");
+  const placements = t("heroMockup.placements", { returnObjects: true }) as {
+    city: string; platform: string; audience: string; price: string; quote: string;
+  }[];
   return (
     <div className="relative w-full max-w-[430px]">
       <div className="relative w-full aspect-[16/12] bg-billboard-paper border-[3px] border-billboard-ink rounded shadow-block -rotate-[1deg] overflow-hidden p-4 sm:p-5">
         <span className="absolute top-3 right-3 bg-billboard-red text-white font-mono text-[10px] font-bold px-2.5 py-1 rounded border-2 border-billboard-ink rotate-2">{t("heroMockup.liveNow")}</span>
-        <div className="h-full flex flex-col justify-center gap-3">
+        <div className="h-full flex flex-col justify-center gap-2">
           <div className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft">{t("heroMockup.marketplaceLabel")}</div>
-          <div className="border-2 border-billboard-ink rounded p-3 bg-white">
-            <div className="flex items-start justify-between gap-2 mb-2 min-w-0"><strong className="min-w-0 break-words">{t("heroMockup.placementTitle")}</strong><span className="font-mono text-[10px] font-bold bg-billboard-yellow border-2 border-billboard-ink rounded-full px-2 py-0.5">{t("heroMockup.verified")}</span></div>
-            <div className="flex flex-wrap gap-1.5 font-mono text-[10px] text-billboard-inkSoft"><span>Instagram</span><span>•</span><span>42K audience</span><span>•</span><span>Cape Town</span></div>
+          <div className="flex flex-col gap-2">
+            {placements.map((p, i) => (
+              <div key={i} className="border-2 border-billboard-ink rounded p-2.5 bg-white">
+                <div className="flex items-start justify-between gap-2 mb-1.5 min-w-0"><strong className="min-w-0 break-words text-sm">{p.city}</strong><span className="shrink-0 font-mono text-[9px] font-bold bg-billboard-yellow border-2 border-billboard-ink rounded-full px-2 py-0.5">{t("heroMockup.verified")}</span></div>
+                <div className="flex flex-wrap gap-1.5 font-mono text-[9px] text-billboard-inkSoft mb-1.5"><span>{p.platform}</span><span>•</span><span>{p.audience}</span><span>•</span><span>{p.city}</span></div>
+                <div className="flex items-end justify-between gap-2">
+                  <div><div className="font-mono text-[8px] uppercase text-billboard-inkSoft">{t("heroMockup.price")}</div><div className="font-display text-lg leading-none">{p.price}</div></div>
+                  <span className="font-mono text-[8px] font-bold text-billboard-green uppercase">● {t("heroMockup.ready")}</span>
+                </div>
+                <p className="text-[9px] text-billboard-inkSoft border-l-2 border-billboard-yellow pl-1.5 mt-1.5 italic">{p.quote}</p>
+              </div>
+            ))}
           </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div className="border-2 border-billboard-ink rounded p-2.5 bg-billboard-yellow"><div className="font-mono text-[9px] uppercase">{t("heroMockup.price")}</div><div className="font-display text-xl">R1,250</div></div>
-            <div className="border-2 border-billboard-ink rounded p-2.5 bg-billboard-green text-white"><div className="font-mono text-[9px] uppercase">{t("heroMockup.status")}</div><div className="font-display text-xl">{t("heroMockup.ready")}</div></div>
-          </div>
-          <div className="border-2 border-billboard-ink rounded p-2.5 bg-white font-mono text-[10px]">{t("heroMockup.footer")}</div>
         </div>
       </div>
     </div>
