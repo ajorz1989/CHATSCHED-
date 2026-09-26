@@ -105,12 +105,33 @@
   "heroMockup": {
     "liveNow": "IZITHUBA EZIKHONA",
     "marketplaceLabel": "Indawo yentengiso",
-    "placementTitle": "Abaphulaphuli baseKapa",
     "verified": "IQINISEKISIWE",
     "price": "Ixabiso lokuqala",
     "status": "Isimo",
     "ready": "KULUNGILE",
-    "footer": "Khetha indawo. I-ChatSched igcina isicelo, intlawulo nobungqina kunye."
+    "placements": [
+      {
+        "city": "iKapa",
+        "platform": "Instagram",
+        "audience": "abaphulaphuli abangama-42K",
+        "price": "R1,250",
+        "quote": "Khetha indawo. I-ChatSched igcina isicelo, intlawulo nobungqina kunye."
+      },
+      {
+        "city": "eGoli",
+        "platform": "Facebook",
+        "audience": "abaphulaphuli abangama-68K",
+        "price": "R1,850",
+        "quote": "Qinisekisa indawo yakho ngemizuzu — akukho ukuhamba-uze, akukho ii-spreadsheet."
+      },
+      {
+        "city": "eThekwini",
+        "platform": "TikTok",
+        "audience": "abaphulaphuli abangama-31K",
+        "price": "R950",
+        "quote": "Yonke indawo iza nephakheji yobungqina — yibone phambi kokuhlawula."
+      }
+    ]
   },
   "quickStart": {
     "badge": "Ukuqala Ngokukhawuleza",
