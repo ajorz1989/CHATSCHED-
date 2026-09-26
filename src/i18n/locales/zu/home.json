@@ -105,12 +105,33 @@
   "heroMockup": {
     "liveNow": "IZIKHANGISO EZIKHONA",
     "marketplaceLabel": "Ukuboniswa kokukhangisa",
-    "placementTitle": "Izilaleli Zase-Cape Town",
     "verified": "KUQINISEKISIWE",
     "price": "Intengo yokuqala",
     "status": "Isimo",
     "ready": "KULUNGILE",
-    "footer": "Khetha ukuboniswa. I-ChatSched igcina isicelo, inkokhelo nobufakazi ndawonye."
+    "placements": [
+      {
+        "city": "eKapa",
+        "platform": "Instagram",
+        "audience": "izilaleli ezingu-42K",
+        "price": "R1,250",
+        "quote": "Khetha ukuboniswa. I-ChatSched igcina isicelo, inkokhelo nobufakazi ndawonye."
+      },
+      {
+        "city": "eGoli",
+        "platform": "Facebook",
+        "audience": "izilaleli ezingu-68K",
+        "price": "R1,850",
+        "quote": "Qinisekisa isikhala sakho ngemizuzu — akukho ukuhamba-uze, akukho ama-spreadsheet."
+      },
+      {
+        "city": "eThekwini",
+        "platform": "TikTok",
+        "audience": "izilaleli ezingu-31K",
+        "price": "R950",
+        "quote": "Konke ukuboniswa kufika nephakheji yobufakazi — kubone ngaphambi kokukhokha."
+      }
+    ]
   },
   "quickStart": {
     "badge": "Ukuqala Ngokushesha",
