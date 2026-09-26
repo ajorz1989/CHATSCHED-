@@ -105,12 +105,33 @@
   "heroMockup": {
     "liveNow": "LIVE INVENTORY",
     "marketplaceLabel": "Advertising placement",
-    "placementTitle": "Cape Town Local Audience",
     "verified": "VERIFIED",
     "price": "Starting price",
     "status": "Status",
     "ready": "READY",
-    "footer": "Choose the placement. ChatSched keeps the request, payment and proof together."
+    "placements": [
+      {
+        "city": "Cape Town",
+        "platform": "Instagram",
+        "audience": "42K audience",
+        "price": "R1,250",
+        "quote": "Choose the placement. ChatSched keeps the request, payment and proof together."
+      },
+      {
+        "city": "Johannesburg",
+        "platform": "Facebook",
+        "audience": "68K audience",
+        "price": "R1,850",
+        "quote": "Lock in your slot in minutes — no back-and-forth, no spreadsheets."
+      },
+      {
+        "city": "Durban",
+        "platform": "TikTok",
+        "audience": "31K audience",
+        "price": "R950",
+        "quote": "Every placement comes with a proof pack — see it before you pay."
+      }
+    ]
   },
   "quickStart": {
     "badge": "Quick Start",
