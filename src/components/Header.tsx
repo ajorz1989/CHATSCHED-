@@ -70,7 +70,7 @@ export default function Header() {
                     onClick={() => setAdvertiseOpen(false)}
                     className={({ isActive }) => `block rounded px-3 py-2.5 text-sm ${isActive ? "bg-billboard-yellow font-bold" : "hover:bg-billboard-paperDim"}`}
                   >
-                    {"label" in link ? link.label : t(link.key)}
+                    {t(link.key)}
                   </NavLink>
                 ))}
               </div>
@@ -133,7 +133,7 @@ export default function Header() {
                     onClick={closeMenu}
                     className="block rounded px-3 py-2.5 text-sm font-semibold hover:bg-billboard-paperDim"
                   >
-                    {"label" in link ? link.label : t(link.key)}
+                    {t(link.key)}
                   </NavLink>
                 ))}
               </div>
