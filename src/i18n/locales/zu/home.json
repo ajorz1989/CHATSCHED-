@@ -5,9 +5,9 @@
   },
   "hero": {
     "badge": "UKUKHANGISA KWASEKHAYA, NGAPHANDLE KOBUNZIMA",
-    "title1": "Finyelela amakhasimende asendaweni.",
-    "title2": "Ngaphandle kobunzima be-ad platform.",
-    "subtitle": "Sitshele inhloso nesabelomali sakho — sizokwakhela umkhankaso. Noma uphequlule amakhasi, ama-podcast nezikhala zomsakazo zangempela ngokwakho. Noma iyiphi indlela, konke kulandelwa kusukela esicelweni kuya ebufakazini.",
+    "title1": "Finyelela amakhasimende lapho",
+    "title2": "ukunaka kwasendaweni sekukhona.",
+    "subtitle": "Yakha umkhankaso ophethwe yi-ChatSched noma ukhethe izindawo zangempela zokukhangisa ngokwakho. Bheka izethameli zasendaweni ezinkundleni zokuxhumana, kubadali, kumawebhusayithi, emsakazweni, kuma-podcast, emicimbini nokunye — isicelo, inkokhelo nobufakazi kugcinwa kunqubo eyodwa.",
     "ctaBuildCampaign": "Yakha Umkhankaso Wami →",
     "ctaBrowseMarketplace": "Bheka Ukukhangisa →",
     "noAccount": "Awudingi i-akhawunti yezikhangiso",
@@ -15,10 +15,13 @@
     "tracked": "Inqubo eyodwa elandelwayo"
   },
   "metrics": {
-    "ariaLabel": "Ubufakazi benethiwekhi ye-ChatSched",
+    "ariaLabel": "Umsebenzi wenethiwekhi ye-ChatSched",
     "businesses": "Amabhizinisi aku-ChatSched",
     "paidOut": "Kukhokhelwe abashicileli",
-    "provinces": "Izifundazwe zaseNingizimu Afrika"
+    "provinces": "Izifundazwe zaseNingizimu Afrika",
+    "verifiedPublishers": "Abashicileli abaqinisekisiwe",
+    "newPublishers": "Abashicileli abasha kule nyanga",
+    "completedBookings": "Ukubhuka okuqediwe"
   },
   "audienceSplit": {
     "heading": "Noma ohlangothini luphi okukulo, kwakhelwe wena.",
@@ -32,9 +35,9 @@
     "publisherCta": "Hlola abashicileli →"
   },
   "layers": {
-    "badge": "IMODELI YE-CHATSCHED",
-    "title": "Noma ufuna ukukhangisa kanjani, ikhona indlela.",
-    "subtitle": "Izendlalelo ezintathu. I-platform eyodwa ngemuva kwazo. Umkhankaso wakho uhlala ulandelwa kusukela esicelweni kuya ebufakazini.",
+    "badge": "KHETHA INDLELA YAKHO",
+    "title": "Izindlela ezintathu zokusebenzisa i-ChatSched",
+    "subtitle": "Iplatifomu eyodwa ixhumanisa umkhankaso, imakethe kanye nabashicileli abahlinzeka ngayo.",
     "agencyBadge": "I-AGENCY",
     "agencyTitle": "Ukukhangisa Okuphethwe",
     "agencyBody": "Sitshele inhloso, izilaleli nesabelomali. Siyahlela futhi siphathe umkhankaso nawe.",
