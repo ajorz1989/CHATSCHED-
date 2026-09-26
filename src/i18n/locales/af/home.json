@@ -5,9 +5,9 @@
   },
   "hero": {
     "badge": "PLAASLIKE ADVERTENSIES, SONDER DIE GESUKKEL",
-    "title1": "Bereik plaaslike kliënte.",
-    "title2": "Sonder die advertensieplatform-hoofpyn.",
-    "subtitle": "Vertel ons jou doel en begroting — ons bou die veldtog. Of blaai self deur regte plaaslike bladsye, potgooie en radio-gleuwe. Hoe jy ook al kies, dit word van versoek tot bewys opgespoor.",
+    "title1": "Bereik kliënte waar",
+    "title2": "plaaslike aandag reeds is.",
+    "subtitle": "Bou ’n bestuurde veldtog met ChatSched of kies self regte advertensieplasings. Blaai deur plaaslike gehore op sosiale media, skeppers, webwerwe, radio, potgooie, geleenthede en meer — met versoek, betaling en bewys in een werkvloei.",
     "ctaBuildCampaign": "Bou My Veldtog →",
     "ctaBrowseMarketplace": "Blaai deur Advertensies →",
     "noAccount": "Geen advertensierekening nodig nie",
@@ -15,10 +15,13 @@
     "tracked": "Een opgespoorde werkvloei"
   },
   "metrics": {
-    "ariaLabel": "ChatSched netwerkbewys",
+    "ariaLabel": "ChatSched netwerkaktiwiteit",
     "businesses": "Besighede op ChatSched",
     "paidOut": "Uitbetaal aan uitgewers",
-    "provinces": "Suid-Afrikaanse provinsies"
+    "provinces": "Suid-Afrikaanse provinsies",
+    "verifiedPublishers": "Geverifieerde uitgewers",
+    "newPublishers": "Nuwe uitgewers hierdie maand",
+    "completedBookings": "Voltooide besprekings"
   },
   "audienceSplit": {
     "heading": "Watter kant jy ook al is, dit is vir jou gebou.",
@@ -32,9 +35,9 @@
     "publisherCta": "Verken vir uitgewers →"
   },
   "layers": {
-    "badge": "DIE CHATSCHED-MODEL",
-    "title": "Hoe jy ook al wil adverteer, daar is ’n manier in.",
-    "subtitle": "Drie lae. Een platform agter hulle. Jou veldtog bly in dieselfde opgespoorde werkvloei van versoek tot bewys.",
+    "badge": "KIES JOU PAD",
+    "title": "Drie maniere om ChatSched te gebruik",
+    "subtitle": "Een platform verbind die veldtog, die mark en die uitgewersvoorraad daaragter.",
     "agencyBadge": "AGENTSKAP",
     "agencyTitle": "Bestuurde Advertensies",
     "agencyBody": "Vertel ons die doel, gehoor en begroting. Ons beplan en bestuur die veldtog saam met jou.",
