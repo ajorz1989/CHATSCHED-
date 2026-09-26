@@ -12,6 +12,9 @@ import ChannelRequestForm from "../components/ChannelRequestForm";
 import { hasUsableBusinessSubscription } from "../lib/subscriptionGate";
 import SubscriptionGateNotice from "../components/SubscriptionGateNotice";
 import PortfolioGallery from "../components/PortfolioGallery";
+import ShareProfileButtons from "../components/ShareProfileButtons";
+import SimilarPublishers from "../components/SimilarPublishers";
+import NextAvailableTeaser from "../components/NextAvailableTeaser";
 import MarketplaceProfileView from "../components/MarketplaceProfileView";
 import EarnedBadges from "../components/EarnedBadges";
 import PublisherAvatar from "../components/PublisherAvatar";
@@ -23,7 +26,7 @@ import PublisherCard from "../components/PublisherCard";
 
 // 12-Channel Audit fix C4 — same set as PublisherCard.tsx's own copy; see
 // that file's comment for why this isn't a shared import.
-const VERIFICATION_REQUIRED_CHANNELS = new Set(["sports", "events", "community", "transport", "informal-retail", "associations", "restaurants", "in-venue-screens"]);
+const VERIFICATION_REQUIRED_CHANNELS = new Set(["sports", "events", "community", "transport", "informal-retail", "associations", "restaurants"]);
 import EmptyState from "../components/EmptyState";
 import Seo from "../components/Seo";
 import { SkeletonBlock, SkeletonLine, SkeletonParagraph } from "../components/Skeleton";
@@ -361,6 +364,8 @@ export default function PublisherProfile() {
               publisherScore={publisher.publisher_score}
               avgResponseHours={publisher.avg_response_hours}
               responseCount={publisher.response_count}
+              acceptanceRate={publisher.acceptance_rate}
+              acceptanceSampleSize={publisher.acceptance_sample_size}
               lastActiveAt={publisher.last_active_at}
               className="mb-3"
             />
@@ -543,6 +548,10 @@ export default function PublisherProfile() {
                 <MarketingIcon name="document" className="w-4 h-4" /> Download Media Kit
               </Link>
             </div>
+
+            <ShareProfileButtons publisherName={publisher.name} url={typeof window !== "undefined" ? window.location.href : ""} />
+
+            <NextAvailableTeaser publisherId={publisher.id} />
 
             {!canRequestPlacement ? (
               <div className="border-2 border-billboard-ink rounded p-4 mb-3 bg-white">
@@ -769,6 +778,8 @@ export default function PublisherProfile() {
           </aside>
         </div>
       </div>
+
+      <SimilarPublishers current={publisher} publishers={publishers} />
 
       {reportOpen && (
         <ReportPublisherModal
