@@ -83,8 +83,13 @@ export default function Dashboard() {
           ) : (
             <div className="border-t-4 border-billboard-ink pt-6 mt-2">
               <div className="flex items-center justify-between mb-3">
-                {/* Bug fix: was border-billboard-red text-billboard-red */}
-                <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-ink text-billboard-ink px-3 py-1.5 rounded">Your business activity</span>
+                {/* Bug fix: this and the "Your dashboard" kicker below had
+                    been changed to ink at some point, making this the only
+                    page out of ~60 across the site using ink instead of the
+                    site-wide red kicker-badge convention (including the
+                    Publisher dashboard and Earnings page right next to this
+                    one). Reverted to match everywhere else. */}
+                <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded">Your business activity</span>
                 <button type="button" onClick={() => setShowBusinessView(false)} className="text-xs font-semibold text-billboard-inkSoft hover:text-billboard-ink underline">Hide</button>
               </div>
               <BusinessDashboardBody profile={profile} requests={requests} channelRequests={channelRequests} loading={loading} user={user} onRefresh={load} />
@@ -98,8 +103,7 @@ export default function Dashboard() {
   return (
     <div className="max-w-4xl mx-auto px-5 py-16">
       <Seo title="Your Dashboard · ChatSched" noindex />
-      {/* Bug fix: was border-billboard-red text-billboard-red */}
-      <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-ink text-billboard-ink px-3 py-1.5 rounded mb-3">Your dashboard</span>
+      <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">Your dashboard</span>
 
       <BusinessDashboardBody profile={profile} requests={requests} channelRequests={channelRequests} loading={loading} user={user} onRefresh={load} />
     </div>
@@ -177,7 +181,10 @@ function BusinessDashboardBody({
       {/* Bug fix: previously only rendered when channelRequests.length > 0,
           leaving a completely blank section with no feedback when empty.
           Now shows a heading + empty state card always after loading. */}
-      <h2 className="font-display text-lg mb-1 mt-10">Your channel campaigns</h2>
+      {/* Bug fix: BusinessHomeSummary's "Continue your campaign" link needs
+          somewhere real to jump to when the ongoing item is a channel
+          campaign — it used to always point at #your-requests above. */}
+      <h2 className="font-display text-lg mb-1 mt-10" id="your-channel-campaigns">Your channel campaigns</h2>
       <p className="text-xs text-billboard-inkSoft mb-4">Influencer, website, podcast and radio requests you've sent.</p>
 
       {loading ? (

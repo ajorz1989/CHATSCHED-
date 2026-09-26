@@ -76,11 +76,15 @@ export default function CreatorHomeSummary({
             <p className="text-sm text-billboard-inkSoft">Nothing waiting on you right now — new requests will show up here.</p>
           ) : (
             <div className="space-y-2.5">
+              {/* Bug fix: these used to be plain text with nothing to click —
+                  a real dead end on the card most likely to need action.
+                  Links straight to the campaign workspace, same route every
+                  request card's own "Open campaign workspace" link uses. */}
               {opportunities.map((o) => (
-                <div key={o.id} className="flex items-center justify-between text-sm">
+                <Link key={o.id} to={`/campaigns/${o.id}`} className="flex items-center justify-between text-sm hover:text-billboard-greenDeep">
                   <span className="font-semibold">{o.name}</span>
                   <span className="text-billboard-inkSoft font-mono text-[10px]">{new Date(o.created_at).toLocaleDateString("en-ZA")}</span>
-                </div>
+                </Link>
               ))}
             </div>
           )}

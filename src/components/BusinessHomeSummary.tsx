@@ -204,7 +204,10 @@ export default function BusinessHomeSummary({
                 {ongoing.kind === "request" ? ongoing.item.publisher?.name ?? "A publisher" : ongoing.item.creator?.name ?? "A publisher"}
               </p>
               <p className="text-xs text-billboard-inkSoft mb-3">Status: {ongoing.item.status}</p>
-              <a href="#your-requests" className="text-xs font-semibold underline">View request →</a>
+              {/* Bug fix: this used to always link to #your-requests, which
+                  is wrong when the ongoing item is a channel campaign —
+                  that list lives under a different heading further down. */}
+              <a href={ongoing.kind === "channel" ? "#your-channel-campaigns" : "#your-requests"} className="text-xs font-semibold underline">View request →</a>
             </div>
           ) : (
             <div>

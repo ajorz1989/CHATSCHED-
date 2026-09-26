@@ -10,11 +10,74 @@ import SetupNotice from "../components/SetupNotice";
 import Seo from "../components/Seo";
 import { SkeletonBlock, SkeletonLine, StatCardGridSkeleton, SkeletonRows } from "../components/Skeleton";
 import EmptyState from "../components/EmptyState";
-import type { Publisher, PublisherRequest, Payment } from "../lib/types";
+import type { Publisher, PublisherRequest, ChannelRequest } from "../lib/types";
 
 interface EarningsData {
   publisher: Publisher;
   requests: PublisherRequest[];
+  channelRequests: ChannelRequest[];
+}
+
+// Bug fix: this page used to query only the legacy `requests` table, which
+// is exclusively the social-media (directory-bookingFlow) channel's data —
+// every other channel (podcast, radio, website, influencer, sports, events,
+// community, transport, informal-retail, associations, restaurants,
+// in-venue-screens) books through `channel_requests` instead. A publisher
+// on any of those 11 channels got a completely empty earnings page (R0,
+// "No payments yet") even with real paid campaigns, while the small
+// earnings card on the main dashboard (CreatorHomeSummary.tsx) correctly
+// totalled both sources. This normalizes both request types into one shape
+// so every stat below reflects whichever flow a given publisher actually
+// uses — matching how load() branches everywhere else in the app.
+type Bucket = "pending" | "awaiting_payment" | "completed" | "declined";
+
+interface NormalizedItem {
+  id: string;
+  createdAt: string;
+  bucket: Bucket;
+  // Amount once a price is actually agreed (null while still pending/
+  // negotiating) — drives avg campaign value + pipeline projection.
+  agreedAmount: number | null;
+  // Set only once money has actually been paid — drives every $ stat.
+  paidAmount: number | null;
+  paidAt: string | null;
+}
+
+function normalizeRequests(requests: PublisherRequest[]): NormalizedItem[] {
+  return requests.map((r) => {
+    const payment = [...(r.payments ?? [])].sort((a, b) => b.created_at.localeCompare(a.created_at))[0];
+    const paid = payment?.status === "paid" ? payment : null;
+    const bucket: Bucket =
+      r.status === "completed" ? "completed" :
+      r.status === "confirmed" ? "awaiting_payment" :
+      r.status === "declined" ? "declined" : "pending";
+    return {
+      id: r.id,
+      createdAt: r.created_at,
+      bucket,
+      agreedAmount: r.agreed_amount,
+      paidAmount: paid ? paid.amount : null,
+      paidAt: paid ? (paid.paid_at ?? paid.created_at) : null,
+    };
+  });
+}
+
+function normalizeChannelRequests(requests: ChannelRequest[]): NormalizedItem[] {
+  return requests.map((r) => {
+    const bucket: Bucket =
+      r.status === "completed" || r.status === "paid" || r.status === "live" ? "completed" :
+      r.status === "awaiting_payment" || r.status === "payment_submitted" ? "awaiting_payment" :
+      r.status === "declined" || r.status === "cancelled" ? "declined" : "pending";
+    const agreedAmount = bucket === "pending" || bucket === "declined" ? null : r.proposed_amount;
+    return {
+      id: r.id,
+      createdAt: r.created_at,
+      bucket,
+      agreedAmount,
+      paidAmount: r.paid_at ? r.proposed_amount : null,
+      paidAt: r.paid_at,
+    };
+  });
 }
 
 function StatCard({ label, value, sub, accent = false }: { label: string; value: string; sub?: string; accent?: boolean }) {
@@ -48,13 +111,24 @@ export default function EarningsDashboard() {
 
       if (!pub) { setLoading(false); return; }
 
-      const { data: reqs } = await supabase
-        .from("requests")
-        .select("*, payments(*)")
-        .eq("publisher_id", pub.id)
-        .order("created_at", { ascending: false });
+      const [{ data: reqs }, { data: creqs }] = await Promise.all([
+        supabase
+          .from("requests")
+          .select("*, payments(*)")
+          .eq("publisher_id", pub.id)
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("channel_requests")
+          .select("*")
+          .eq("creator_id", pub.id)
+          .order("created_at", { ascending: false }),
+      ]);
 
-      setData({ publisher: pub as Publisher, requests: (reqs ?? []) as unknown as PublisherRequest[] });
+      setData({
+        publisher: pub as Publisher,
+        requests: (reqs ?? []) as unknown as PublisherRequest[],
+        channelRequests: (creqs ?? []) as unknown as ChannelRequest[],
+      });
       setLoading(false);
     }
 
@@ -91,33 +165,38 @@ export default function EarningsDashboard() {
     );
   }
 
-  const { publisher, requests } = data;
+  const { publisher, requests, channelRequests } = data;
 
   // ── Compute metrics ──
-  const allPayments: Payment[] = requests.flatMap(r => (r.payments ?? []) as Payment[]);
-  const paidPayments = allPayments.filter(p => p.status === "paid");
+  // Only one of these two arrays is ever populated for a given publisher
+  // (their channel is either directory-bookingFlow → `requests`, or
+  // request-bookingFlow → `channel_requests`), but normalizing both and
+  // merging means this page works correctly either way instead of quietly
+  // assuming social-media.
+  const items = [...normalizeRequests(requests), ...normalizeChannelRequests(channelRequests)];
+  const paidItems = items.filter(i => i.paidAmount != null) as (NormalizedItem & { paidAmount: number; paidAt: string })[];
 
   const now = new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-  const payDate = (p: Payment) => new Date(p.paid_at ?? p.created_at);
+  const payDate = (p: { paidAt: string }) => new Date(p.paidAt);
 
-  const thisMonthPaid = paidPayments.filter(p => payDate(p) >= monthStart);
-  const thisWeekPaid = paidPayments.filter(p => payDate(p) >= weekAgo);
+  const thisMonthPaid = paidItems.filter(p => payDate(p) >= monthStart);
+  const thisWeekPaid = paidItems.filter(p => payDate(p) >= weekAgo);
 
-  const totalEarned = paidPayments.reduce((s, p) => s + p.amount * PUBLISHER_SHARE, 0);
-  const monthEarned = thisMonthPaid.reduce((s, p) => s + p.amount * PUBLISHER_SHARE, 0);
-  const weekEarned = thisWeekPaid.reduce((s, p) => s + p.amount * PUBLISHER_SHARE, 0);
+  const totalEarned = paidItems.reduce((s, p) => s + p.paidAmount * PUBLISHER_SHARE, 0);
+  const monthEarned = thisMonthPaid.reduce((s, p) => s + p.paidAmount * PUBLISHER_SHARE, 0);
+  const weekEarned = thisWeekPaid.reduce((s, p) => s + p.paidAmount * PUBLISHER_SHARE, 0);
 
-  const pendingRequests = requests.filter(r => r.status === "pending" || r.status === "contacted");
-  const completedRequests = requests.filter(r => r.status === "completed");
-  const confirmedRequests = requests.filter(r => r.status === "confirmed");
-  const declinedRequests = requests.filter(r => r.status === "declined");
+  const pendingRequests = items.filter(i => i.bucket === "pending");
+  const completedRequests = items.filter(i => i.bucket === "completed");
+  const confirmedRequests = items.filter(i => i.bucket === "awaiting_payment");
+  const declinedRequests = items.filter(i => i.bucket === "declined");
 
-  const withAmount = requests.filter(r => r.agreed_amount != null && r.agreed_amount > 0);
+  const withAmount = items.filter(i => i.agreedAmount != null && i.agreedAmount > 0);
   const avgCampaignValue = withAmount.length
-    ? withAmount.reduce((s, r) => s + (r.agreed_amount ?? 0), 0) / withAmount.length
+    ? withAmount.reduce((s, i) => s + (i.agreedAmount ?? 0), 0) / withAmount.length
     : 0;
 
   const decided = completedRequests.length + confirmedRequests.length + declinedRequests.length;
@@ -131,12 +210,12 @@ export default function EarningsDashboard() {
 
   // Last 3 months' average for comparison
   const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, 1);
-  const last3MonthsPaid = paidPayments.filter(p => payDate(p) >= threeMonthsAgo && payDate(p) < monthStart);
-  const avgMonthly3 = last3MonthsPaid.length ? last3MonthsPaid.reduce((s, p) => s + p.amount * PUBLISHER_SHARE, 0) / 3 : 0;
+  const last3MonthsPaid = paidItems.filter(p => payDate(p) >= threeMonthsAgo && payDate(p) < monthStart);
+  const avgMonthly3 = last3MonthsPaid.length ? last3MonthsPaid.reduce((s, p) => s + p.paidAmount * PUBLISHER_SHARE, 0) / 3 : 0;
   const forecastBase = avgMonthly3 > 0 ? avgMonthly3 : projectedMonthly;
 
   // Recent 10 earnings entries
-  const recentEarnings = [...paidPayments]
+  const recentEarnings = [...paidItems]
     .sort((a, b) => payDate(b).getTime() - payDate(a).getTime())
     .slice(0, 10);
 
@@ -199,7 +278,7 @@ export default function EarningsDashboard() {
         <StatCard
           label="Total lifetime"
           value={formatR(totalEarned)}
-          sub={`${paidPayments.length} paid campaign${paidPayments.length !== 1 ? "s" : ""}`}
+          sub={`${paidItems.length} paid campaign${paidItems.length !== 1 ? "s" : ""}`}
         />
       </div>
 
@@ -241,10 +320,10 @@ export default function EarningsDashboard() {
                         {payDate(p).toLocaleDateString("en-ZA", { day: "numeric", month: "short" })}
                       </td>
                       <td className="px-4 py-3 text-right font-mono text-xs text-billboard-inkSoft">
-                        {formatR(p.amount)}
+                        {formatR(p.paidAmount)}
                       </td>
                       <td className="px-4 py-3 text-right font-mono font-semibold text-billboard-greenDeep">
-                        {formatR(p.amount * PUBLISHER_SHARE)}
+                        {formatR(p.paidAmount * PUBLISHER_SHARE)}
                       </td>
                     </tr>
                   ))}
@@ -283,8 +362,8 @@ export default function EarningsDashboard() {
                 <p className="font-display text-2xl text-billboard-greenDeep">
                   {formatR(
                     confirmedRequests
-                      .filter(r => r.agreed_amount != null)
-                      .reduce((s, r) => s + (r.agreed_amount ?? 0) * PUBLISHER_SHARE, 0)
+                      .filter(i => i.agreedAmount != null)
+                      .reduce((s, i) => s + (i.agreedAmount ?? 0) * PUBLISHER_SHARE, 0)
                   )}
                 </p>
                 <p className="text-xs text-billboard-inkSoft mt-1">
