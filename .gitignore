@@ -27,3 +27,6 @@ test-results/
 
 # Misc
 *.tsbuildinfo
+
+# Design-preview research scratch (reference photos fetched during mockup work)
+/image-search/
