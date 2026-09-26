@@ -4,10 +4,10 @@
     "description": "South African advertising for small businesses: build a managed campaign with ChatSched or browse local advertising placements and send requests through the platform."
   },
   "hero": {
-    "badge": "GET SEEN WHERE LOCALS ARE",
-    "title1": "Get seen where",
-    "title2": "locals are.",
-    "subtitle": "Your customers are already paying attention. Put your business where they’re already looking. Set your goal and budget, let ChatSched manage the campaign, or discover real local advertising inventory and book it yourself — with every step tracked from request to proof.",
+    "badge": "LOCAL ADVERTISING, WITHOUT THE HEADACHE",
+    "title1": "Reach customers where",
+    "title2": "local attention already exists.",
+    "subtitle": "Build a managed campaign with ChatSched or choose real advertising placements yourself. Browse local audiences across social, creators, websites, radio, podcasts, events and more — with the request, payment and proof kept in one workflow.",
     "ctaBuildCampaign": "Build My Campaign →",
     "ctaBrowseMarketplace": "Browse Advertising →",
     "noAccount": "No complex ad accounts",
@@ -15,10 +15,13 @@
     "tracked": "One place to book, manage & verify"
   },
   "metrics": {
-    "ariaLabel": "ChatSched network proof",
+    "ariaLabel": "ChatSched network activity",
     "businesses": "Businesses on ChatSched",
     "paidOut": "Paid out to publishers",
-    "provinces": "South African provinces"
+    "provinces": "South African provinces",
+    "verifiedPublishers": "Verified publishers",
+    "newPublishers": "New publishers this month",
+    "completedBookings": "Completed bookings"
   },
   "audienceSplit": {
     "heading": "Whichever side you're on, it's built for you.",
@@ -32,9 +35,9 @@
     "publisherCta": "Join as a Publisher →"
   },
   "layers": {
-    "badge": "THE CHATSCHED MODEL",
-    "title": "However you want to advertise, there is a way in.",
-    "subtitle": "Three layers. One platform behind them. Your campaign stays in the same tracked workflow from request to proof.",
+    "badge": "CHOOSE YOUR PATH",
+    "title": "Three ways into ChatSched",
+    "subtitle": "One platform connects the campaign, the marketplace and the publisher supply behind it.",
     "agencyBadge": "AGENCY",
     "agencyTitle": "Managed Advertising",
     "agencyBody": "Tell us the goal, audience and budget. We plan and manage the campaign with you.",
