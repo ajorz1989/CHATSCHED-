@@ -72,6 +72,9 @@ export interface Publisher {
   portfolio_images: string[];
   profile_image_url: string | null;
   verification_proof_urls: string[];
+  // Private URLs submitted by Social Media channel applicants for manual verification.
+  // Deliberately omitted from publishers_public.
+  social_verification_links: Array<{ platform: string; url: string }>;
   rejected_reason: string | null;
   featured: boolean;
   featured_until: string | null;
