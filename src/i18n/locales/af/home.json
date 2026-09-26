@@ -105,12 +105,33 @@
   "heroMockup": {
     "liveNow": "REGTE INVENTARIS",
     "marketplaceLabel": "Advertensieplasing",
-    "placementTitle": "Kaapstad Plaaslike Gehoor",
     "verified": "GEVERIFIEER",
     "price": "Beginprys",
     "status": "Status",
     "ready": "GEREED",
-    "footer": "Kies die plasing. ChatSched hou die versoek, betaling en bewys saam."
+    "placements": [
+      {
+        "city": "Kaapstad",
+        "platform": "Instagram",
+        "audience": "42K gehoor",
+        "price": "R1,250",
+        "quote": "Kies die plasing. ChatSched hou die versoek, betaling en bewys saam."
+      },
+      {
+        "city": "Johannesburg",
+        "platform": "Facebook",
+        "audience": "68K gehoor",
+        "price": "R1,850",
+        "quote": "Bespreek jou gleuf binne minute — geen heen-en-weer, geen sigblaaie nie."
+      },
+      {
+        "city": "Durban",
+        "platform": "TikTok",
+        "audience": "31K gehoor",
+        "price": "R950",
+        "quote": "Elke plasing kom met 'n bewysbundel — sien dit voor jy betaal."
+      }
+    ]
   },
   "quickStart": {
     "badge": "Vinnige Begin",
