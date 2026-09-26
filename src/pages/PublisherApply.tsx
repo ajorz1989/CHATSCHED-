@@ -9,7 +9,7 @@ import type { ChannelSlug } from "../lib/channelTypes";
 import type { Platform } from "../lib/types";
 import type {
   PodcastOnboardingFields, InformalRetailOnboardingFields, SportsOnboardingFields,
-  SocialMediaOnboardingFields, WebsiteOnboardingFields, InfluencerOnboardingFields, RadioOnboardingFields,
+  SocialMediaOnboardingFields, SocialMediaPlatform, WebsiteOnboardingFields, InfluencerOnboardingFields, RadioOnboardingFields,
   EventsOnboardingFields, CommunityOnboardingFields, TransportOnboardingFields, AssociationsOnboardingFields, RestaurantsOnboardingFields,
   InVenueScreensOnboardingFields,
 } from "../lib/channelOnboardingSchemas";
@@ -30,7 +30,7 @@ const APPLY_CHANNEL_STORAGE_KEY = "mb_apply_channel";
 // page needs it before the first paint and a network round-trip to fetch
 // it from `channels` isn't worth adding just for this. If a future channel
 // changes this flag, update both places (see 12-Channel Audit fix A1/B1).
-const VERIFICATION_REQUIRED_CHANNELS: ChannelSlug[] = ["sports", "events", "community", "transport", "informal-retail", "associations", "restaurants"];
+const VERIFICATION_REQUIRED_CHANNELS: ChannelSlug[] = ["sports", "events", "community", "transport", "informal-retail", "associations", "restaurants", "in-venue-screens"];
 
 // 12-Channel Audit fix B6 — the Business step (company registration/VAT
 // number) was already optional in the sense that nothing validates those
@@ -41,6 +41,37 @@ const VERIFICATION_REQUIRED_CHANNELS: ChannelSlug[] = ["sports", "events", "comm
 // certainly has neither a VAT number nor formal company registration).
 // The step itself is untouched for every other channel.
 const LOW_BARRIER_CHANNELS: ChannelSlug[] = ["informal-retail", "transport"];
+
+const SOCIAL_MEDIA_PLATFORMS: SocialMediaPlatform[] = [
+  "facebook",
+  "instagram",
+  "tiktok",
+  "whatsapp_channel",
+  "youtube",
+  "x",
+];
+
+const SOCIAL_MEDIA_PLATFORM_LABELS: Record<SocialMediaPlatform, string> = {
+  facebook: "Facebook",
+  instagram: "Instagram",
+  tiktok: "TikTok",
+  whatsapp_channel: "WhatsApp Channel",
+  youtube: "YouTube",
+  x: "X",
+};
+
+function isSocialMediaPlatform(value: string): value is SocialMediaPlatform {
+  return SOCIAL_MEDIA_PLATFORMS.includes(value as SocialMediaPlatform);
+}
+
+function isValidHttpUrl(value: string): boolean {
+  try {
+    const url = new URL(value.trim());
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
 
 type Step = "eligibility" | "details" | "social" | "business" | "review" | "submitted" | "ineligible";
 const STEPS: Step[] = ["eligibility", "details", "social", "business", "review"];
@@ -108,6 +139,7 @@ interface FormState {
   // submit convention as the three above.
   smPrimaryPlatform: string;
   smSecondaryPlatforms: string[];
+  smSocialLinks: Partial<Record<SocialMediaPlatform, string>>;
   smFollowerCounts: string; // "facebook:1200, instagram:3400" — parsed into Record<string,number> on submit
   smBestFormat: string;
   smPostsPerWeek: string;
@@ -185,7 +217,7 @@ const initialState: FormState = {
   podcastDownloads: "", podcastFrequency: "", podcastEpisodeLength: "", podcastHostingPlatform: "", podcastAdSlots: [], podcastRegions: "", podcastShowUrl: "", podcastPeakTimes: "",
   retailFootTraffic: "", retailTradingHours: "", retailHasTill: false, retailHasWhatsapp: false, retailWhatsappSize: "", retailLandmark: "", retailPriceMin: "", retailPriceMax: "", retailPeakHours: "", retailMunicipalRegistrationConfirmed: false,
   sportsSport: "", sportsLevel: "", sportsLeague: "", sportsSeason: "", sportsSquadSize: "", sportsAttendance: "", sportsVenue: "", sportsAuthorityRole: "",
-  smPrimaryPlatform: "", smSecondaryPlatforms: [], smFollowerCounts: "", smBestFormat: "", smPostsPerWeek: "", smAudienceCountry: "",
+  smPrimaryPlatform: "", smSecondaryPlatforms: [], smSocialLinks: {}, smFollowerCounts: "", smBestFormat: "", smPostsPerWeek: "", smAudienceCountry: "",
   webDomain: "", webMonthlyVisitors: "", webNiche: "", webCms: "", webPlacements: [], webAvgSessionSeconds: "",
   infPrimaryPlatform: "", infNiche: "", infContentFormats: [], infEngagementRate: "", infPastCollabs: "", infOffersUsageRights: false,
   radioStationName: "", radioFrequency: "", radioCoverageArea: "", radioLanguages: "", radioListenership: "", radioSlotLengths: [], radioShowSponsorship: false, radioIcasaLicence: "", radioPeakTimes: "",
@@ -480,6 +512,51 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
     update("adFormats", form.adFormats.includes(label) ? form.adFormats.filter((x) => x !== label) : [...form.adFormats, label]);
   }
 
+  function setSocialPrimary(platform: string) {
+    update("smPrimaryPlatform", platform);
+    update("smSecondaryPlatforms", form.smSecondaryPlatforms.filter((value) => value !== platform));
+  }
+
+  function toggleSocialSecondary(platform: SocialMediaPlatform) {
+    if (platform === form.smPrimaryPlatform) return;
+    update(
+      "smSecondaryPlatforms",
+      form.smSecondaryPlatforms.includes(platform)
+        ? form.smSecondaryPlatforms.filter((value) => value !== platform)
+        : [...form.smSecondaryPlatforms, platform],
+    );
+  }
+
+  function updateSocialVerificationLink(platform: SocialMediaPlatform, value: string) {
+    update("smSocialLinks", { ...form.smSocialLinks, [platform]: value });
+  }
+
+  function getSelectedSocialVerificationPlatforms(): SocialMediaPlatform[] {
+    const selected = [form.smPrimaryPlatform, ...form.smSecondaryPlatforms].filter(isSocialMediaPlatform);
+    return [...new Set(selected)];
+  }
+
+  function validateSocialVerificationLinks(): string | null {
+    if (channelSlug !== "social-media" || adminMode) return null;
+
+    if (!isSocialMediaPlatform(form.smPrimaryPlatform)) {
+      return "Choose your primary social platform before submitting your Social Media application.";
+    }
+
+    const selectedPlatforms = getSelectedSocialVerificationPlatforms();
+    for (const platform of selectedPlatforms) {
+      const value = form.smSocialLinks[platform]?.trim() ?? "";
+      if (!value) {
+        return `Add the public ${SOCIAL_MEDIA_PLATFORM_LABELS[platform]} profile link so ChatSched can verify it.`;
+      }
+      if (!isValidHttpUrl(value)) {
+        return `The ${SOCIAL_MEDIA_PLATFORM_LABELS[platform]} verification link must be a valid http or https URL.`;
+      }
+    }
+
+    return null;
+  }
+
   // Social media placement selector only makes sense for the social-media
   // channel — the other channels (podcast, radio, website, influencer) have
   // their own booking flow and no equivalent "post format" concept.
@@ -523,6 +600,18 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
 
   async function submitApplication() {
     if (!user) return;
+
+    const socialVerificationError = validateSocialVerificationLinks();
+    if (socialVerificationError) {
+      setError(socialVerificationError);
+      return;
+    }
+
+    if (requiresProof && !adminMode && proofFiles.length === 0) {
+      setError(`At least one verification evidence photo or video is required for ${ch.name}. This evidence is reviewed before the channel can be approved.`);
+      return;
+    }
+
     if (adminMode && !form.name.trim()) {
       setError("Publisher or channel name is required for AJ: Creations.");
       return;
@@ -544,6 +633,11 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
       suburb: form.suburb || null,
       channel_slug: channelSlug,
       channel_metadata: buildChannelMetadata(channelSlug, form),
+      social_verification_links: channelSlug === "social-media"
+        ? getSelectedSocialVerificationPlatforms()
+            .map((platform) => ({ platform, url: form.smSocialLinks[platform]?.trim() ?? "" }))
+            .filter((link) => link.url)
+        : [],
       platforms: form.platforms,
       placement_types: form.placementTypes.length > 0 ? form.placementTypes : null,
       accepted_ad_formats: form.adFormats.length > 0 ? form.adFormats : null,
@@ -592,14 +686,10 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
       supabase.functions.invoke("notify-saved-search-matches", { body: { publisher_id: inserted.id } }).catch(() => {});
     }
 
-    // 12-Channel Audit fix A1/B1 — upload proof AFTER the publishers row
-    // exists, since the storage path (and the RLS policy that checks it,
-    // schema_phase90) is keyed by the real publisher id, not a
-    // pre-submission placeholder. Best-effort: a proof-upload failure
-    // shouldn't block an otherwise-successful application — admin's
-    // review screen already handles "no proof attached yet" by showing
-    // the plain checklist (same as it always has), so this degrades to
-    // today's behavior rather than a hard failure.
+    // Upload verification proof only after the publisher row exists because
+    // the private storage path is keyed by the real publisher id. High-trust
+    // channels must select proof before submission and the database will
+    // independently block approval if the evidence is still missing.
     if (proofFiles.length > 0) {
       setUploadingProof(true);
       const uploadedPaths: string[] = [];
@@ -648,11 +738,17 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
               we'll be in touch by email either way.</>}
         </p>
         <p className="text-billboard-inkSoft mb-8">
-          Next: connect your social account from your dashboard — it imports your real follower count automatically instead of relying on what you typed above, and tends to speed up review.
+          {adminMode
+            ? "This listing was created by an administrator."
+            : channelSlug === "social-media"
+            ? "Your submitted social profile links will be reviewed alongside the rest of your application. Keep those profiles public while your application is being reviewed."
+            : requiresProof
+            ? "Your application includes channel verification evidence. Our reviewer will check the evidence and eligibility details before approving the listing."
+            : "Your application is now in review. We'll contact you if the reviewer needs more information."}
         </p>
         <div className="flex flex-wrap justify-center gap-3">
           <Link to={adminMode ? "/admin" : "/dashboard"} className="inline-flex items-center gap-2 bg-billboard-yellow border-[3px] border-billboard-ink font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition">
-            {adminMode ? "Create another listing →" : "Connect your accounts →"}
+            {adminMode ? "Create another listing →" : "View dashboard →"}
           </Link>
           <button onClick={() => navigate("/")} className="border-[3px] border-billboard-ink bg-billboard-ink text-billboard-paper font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition">
             Back to home
@@ -978,16 +1074,61 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
               <p className="text-xs font-mono uppercase text-billboard-inkSoft">Page/profile specifics</p>
               <div>
                 <label className={labelClass}>Primary platform</label>
-                <select value={form.smPrimaryPlatform} onChange={(e) => update("smPrimaryPlatform", e.target.value)} className={inputClass}>
+                <select value={form.smPrimaryPlatform} onChange={(e) => setSocialPrimary(e.target.value)} className={inputClass}>
                   <option value="">Select…</option>
-                  <option value="facebook">Facebook</option>
-                  <option value="instagram">Instagram</option>
-                  <option value="tiktok">TikTok</option>
-                  <option value="whatsapp_channel">WhatsApp Channel</option>
-                  <option value="youtube">YouTube</option>
-                  <option value="x">X</option>
+                  {SOCIAL_MEDIA_PLATFORMS.map((platform) => (
+                    <option key={platform} value={platform}>{SOCIAL_MEDIA_PLATFORM_LABELS[platform]}</option>
+                  ))}
                 </select>
               </div>
+
+              <div>
+                <label className={labelClass}>Other platforms <span className="font-normal text-billboard-inkSoft">(optional)</span></label>
+                <div className="flex flex-wrap gap-2">
+                  {SOCIAL_MEDIA_PLATFORMS.filter((platform) => platform !== form.smPrimaryPlatform).map((platform) => (
+                    <button
+                      type="button"
+                      key={platform}
+                      onClick={() => toggleSocialSecondary(platform)}
+                      aria-pressed={form.smSecondaryPlatforms.includes(platform)}
+                      className={`text-sm font-semibold px-3 py-1.5 rounded border-2 border-billboard-ink transition ${
+                        form.smSecondaryPlatforms.includes(platform) ? "bg-billboard-green text-white" : "bg-billboard-paper"
+                      }`}
+                    >
+                      {SOCIAL_MEDIA_PLATFORM_LABELS[platform]}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="border-2 border-billboard-ink rounded-lg p-4 bg-billboard-yellow/20">
+                <label className={labelClass}>Social profile links for verification</label>
+                <p className="text-xs text-billboard-inkSoft mb-3">
+                  Submit the public profile URL for your primary platform and for every additional platform you select above. ChatSched uses these links for manual verification; they are kept private from the public publisher profile.
+                </p>
+                {getSelectedSocialVerificationPlatforms().length === 0 ? (
+                  <p className="text-sm text-billboard-red font-semibold">Choose your primary platform above to add your verification link.</p>
+                ) : (
+                  <div className="space-y-3">
+                    {getSelectedSocialVerificationPlatforms().map((platform) => (
+                      <div key={platform}>
+                        <label className="block text-xs font-semibold mb-1.5">
+                          {SOCIAL_MEDIA_PLATFORM_LABELS[platform]} profile URL
+                        </label>
+                        <input
+                          type="url"
+                          inputMode="url"
+                          placeholder={platform === "whatsapp_channel" ? "https://whatsapp.com/channel/..." : `https://${platform}.com/your-profile`}
+                          value={form.smSocialLinks[platform] ?? ""}
+                          onChange={(e) => updateSocialVerificationLink(platform, e.target.value)}
+                          className={inputClass}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <div>
                 <label className={labelClass}>Follower counts <span className="font-normal text-billboard-inkSoft">(e.g. instagram:3400, facebook:1200)</span></label>
                 <input placeholder="platform:count, platform:count" value={form.smFollowerCounts} onChange={(e) => update("smFollowerCounts", e.target.value)} className={inputClass} />
