@@ -86,11 +86,17 @@ export default function Register() {
   }
 
   async function handleGoogle() {
+    if (!acceptedLegalTerms) {
+      setError("You must accept the Terms of Service and Privacy Policy to continue with Google.");
+      return;
+    }
     setGoogleLoading(true);
     setError(null);
     const { error } = await signInWithGoogle();
-    if (!acceptedLegalTerms) { setError("You must accept the Terms of Service and Privacy Policy to continue with Google."); setGoogleLoading(false); return; }
-    if (error) { setError(error); setGoogleLoading(false); }
+    if (error) {
+      setError(error);
+      setGoogleLoading(false);
+    }
   }
 
   if (done) {
