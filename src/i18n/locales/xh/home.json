@@ -5,9 +5,9 @@
   },
   "hero": {
     "badge": "INTENGISO YASEKUHLALENI, NGAPHANDLE KWENKATHAZO",
-    "title1": "Fikelela kubathengi basekuhlaleni.",
-    "title2": "Ngaphandle kwenkathazo ye-ad platform.",
-    "subtitle": "Sixelele injongo nohlahlo-lwabiwo mali — sakha iphulo. Okanye jonga amaphepha asekuhlaleni, iipodcast kunye nezithuba zerediyo ngokwakho. Nokuba ukhetha yiphi indlela, ilandelwa ukusuka kwisicelo ukuya kubungqina.",
+    "title1": "Fikelela kubathengi apho",
+    "title2": "ingqalelo yasekuhlaleni sele ikhona.",
+    "subtitle": "Yakha iphulo elilawulwa yi-ChatSched okanye ukhethe ngokwakho iindawo zokubhengeza zokwenyani. Jonga abaphulaphuli basekuhlaleni kwimidiya yoluntu, kubavelisi, kwiiwebhusayithi, kunomathotholo, kwiipodcast, kwimisitho nangaphezulu — isicelo, intlawulo nobungqina buhlala kwinkqubo enye.",
     "ctaBuildCampaign": "Yakha Iphulo Lam →",
     "ctaBrowseMarketplace": "Jonga Intengiso →",
     "noAccount": "Akukho akhawunti yentengiso ifunekayo",
@@ -15,10 +15,13 @@
     "tracked": "Inkqubo enye elandelwayo"
   },
   "metrics": {
-    "ariaLabel": "Ubungqina bomnatha we-ChatSched",
+    "ariaLabel": "Umsebenzi womnatha we-ChatSched",
     "businesses": "Amashishini akwi-ChatSched",
     "paidOut": "Ihlawulwe kubapapashi",
-    "provinces": "Amaphondo oMzantsi Afrika"
+    "provinces": "Amaphondo oMzantsi Afrika",
+    "verifiedPublishers": "Abapapashi abaqinisekisiweyo",
+    "newPublishers": "Abapapashi abatsha kule nyanga",
+    "completedBookings": "Iibhukisho ezigqityiweyo"
   },
   "audienceSplit": {
     "heading": "Nakuluphi na uhlangothi okulo, yenzelwe wena.",
@@ -32,9 +35,9 @@
     "publisherCta": "Jonga abapapashi →"
   },
   "layers": {
-    "badge": "IMODELI YE-CHATSCHED",
-    "title": "Nokuba ufuna ukuthengisa njani, kukho indlela.",
-    "subtitle": "Iingqimba ezintathu. Iqonga elinye ngasemva kwazo. Iphulo lakho lilandelwa ukusuka kwisicelo ukuya kubungqina.",
+    "badge": "KHETHA INDLELA YAKHO",
+    "title": "Iindlela ezintathu zokusebenzisa i-ChatSched",
+    "subtitle": "Iqonga elinye lidibanisa iphulo, imarike kunye nabapapashi ababonelela ngendawo.",
     "agencyBadge": "I-AGENCY",
     "agencyTitle": "Intengiso Elawulwayo",
     "agencyBody": "Sixelele injongo, abaphulaphuli nohlahlo-lwabiwo mali. Siyacwangcisa kwaye silawule iphulo nawe.",
