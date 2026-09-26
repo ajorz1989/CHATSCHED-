@@ -70,32 +70,39 @@ export default function Dashboard() {
   if (profile?.role === "publisher") {
     return (
       <div>
-        <PublisherDashboardView />
-        <div className="max-w-4xl mx-auto px-5 pb-14 -mt-4">
-          {!showBusinessView ? (
+        {/* Bug fix: this used to be a dashed-border text button that, once
+            clicked, silently inserted an entire second dashboard's worth of
+            content below the fold with only a thin border for separation —
+            easy to miss in the first place, and easy to lose track of once
+            expanded. A segmented control up top makes both views equally
+            visible and switching between them a single click either way. */}
+        <div className="max-w-4xl mx-auto px-5 pt-8">
+          <div className="inline-flex border-[3px] border-billboard-ink rounded overflow-hidden">
+            <button
+              type="button"
+              onClick={() => setShowBusinessView(false)}
+              className={`px-4 py-2 text-sm font-semibold transition ${!showBusinessView ? "bg-billboard-ink text-white" : "bg-white text-billboard-ink hover:bg-billboard-paperDim"}`}
+            >
+              Publisher dashboard
+            </button>
             <button
               type="button"
               onClick={() => setShowBusinessView(true)}
-              className="w-full text-left border-2 border-dashed border-billboard-inkSoft rounded p-4 text-sm text-billboard-inkSoft hover:border-billboard-ink hover:text-billboard-ink transition"
+              className={`px-4 py-2 text-sm font-semibold transition border-l-[3px] border-billboard-ink ${showBusinessView ? "bg-billboard-ink text-white" : "bg-white text-billboard-ink hover:bg-billboard-paperDim"}`}
             >
-              Also want to book campaigns as a business? <span className="font-semibold underline">Show my business activity →</span>
+              Business activity
             </button>
-          ) : (
-            <div className="border-t-4 border-billboard-ink pt-6 mt-2">
-              <div className="flex items-center justify-between mb-3">
-                {/* Bug fix: this and the "Your dashboard" kicker below had
-                    been changed to ink at some point, making this the only
-                    page out of ~60 across the site using ink instead of the
-                    site-wide red kicker-badge convention (including the
-                    Publisher dashboard and Earnings page right next to this
-                    one). Reverted to match everywhere else. */}
-                <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded">Your business activity</span>
-                <button type="button" onClick={() => setShowBusinessView(false)} className="text-xs font-semibold text-billboard-inkSoft hover:text-billboard-ink underline">Hide</button>
-              </div>
-              <BusinessDashboardBody profile={profile} requests={requests} channelRequests={channelRequests} loading={loading} user={user} onRefresh={load} />
-            </div>
-          )}
+          </div>
         </div>
+
+        {!showBusinessView ? (
+          <PublisherDashboardView />
+        ) : (
+          <div className="max-w-4xl mx-auto px-5 pt-6 pb-14">
+            <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">Your business activity</span>
+            <BusinessDashboardBody profile={profile} requests={requests} channelRequests={channelRequests} loading={loading} user={user} onRefresh={load} />
+          </div>
+        )}
       </div>
     );
   }
@@ -120,6 +127,30 @@ function BusinessDashboardBody({
   user: { id: string; email?: string | null } | null;
   onRefresh: () => void;
 }) {
+  // Bug fix: this used to be one long scroll through ~9 stacked sections
+  // (nudge, summary, checklist, business profile, managed campaigns,
+  // campaign performance, marketing suite, then two separate request
+  // lists) with no in-page navigation — exactly the problem already solved
+  // on the Publisher dashboard with its two-tab layout ("a returning
+  // publisher shouldn't have to pass six setup panels to see whether
+  // anyone's requested them"). Mirrors that same pattern here: "Activity"
+  // for what a business is tracking day to day, "Manage & grow" for
+  // profile/checklist/marketing tools.
+  const [tab, setTab] = useState<"activity" | "manage">("activity");
+
+  const checklistItems = user ? computeBusinessChecklist(profile, requests, channelRequests, user.email) : [];
+  const checklistRemaining = checklistItems.filter((i) => !i.done).length;
+  const activeCount = requests.length + channelRequests.filter((r) => r.status !== "cancelled" && r.status !== "declined").length;
+
+  function jumpToActivity(kind: "request" | "channel") {
+    setTab("activity");
+    // The target list only mounts once the Activity tab is active, so give
+    // it a tick to render before scrolling to it.
+    setTimeout(() => {
+      document.getElementById(kind === "channel" ? "your-channel-campaigns" : "your-requests")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 0);
+  }
+
   return (
     <>
       <ActivationNudge />
@@ -128,11 +159,10 @@ function BusinessDashboardBody({
           jump when summary tiles snapped in. Now shows skeleton tiles. */}
       {loading
         ? <div className="grid sm:grid-cols-3 gap-4 mb-8"><SkeletonBlock className="h-20" /><SkeletonBlock className="h-20" /><SkeletonBlock className="h-20" /></div>
-        : <BusinessHomeSummary profile={profile} requests={requests} channelRequests={channelRequests} />
+        : <BusinessHomeSummary profile={profile} requests={requests} channelRequests={channelRequests} onViewOngoing={jumpToActivity} />
       }
 
-      <p className="text-billboard-inkSoft mb-6">
-        Track every campaign request you've sent, in one place.{" "}
+      <p className="text-billboard-inkSoft mb-8">
         <Link to="/messages" className="font-semibold underline">Open Messages →</Link>
         {" · "}
         <Link to="/saved-searches" className="font-semibold underline">Saved Searches →</Link>
@@ -140,73 +170,91 @@ function BusinessDashboardBody({
         <Link to="/account" className="font-semibold underline">Manage account &amp; data →</Link>
       </p>
 
-      {user && !loading && (
-        <OnboardingChecklist
-          title="Getting started"
-          items={computeBusinessChecklist(profile, requests, channelRequests, user.email)}
-          storageKey={`cs_onboarding_business_${user.id}`}
-        />
-      )}
+      <div className="flex gap-2 border-b-2 border-billboard-paperDim mb-6">
+        <button
+          onClick={() => setTab("activity")}
+          className={`px-4 py-2.5 text-sm font-semibold border-b-[3px] -mb-0.5 transition ${tab === "activity" ? "border-billboard-ink text-billboard-ink" : "border-transparent text-billboard-inkSoft hover:text-billboard-ink"}`}
+        >
+          Activity{activeCount > 0 ? ` (${activeCount})` : ""}
+        </button>
+        <button
+          onClick={() => setTab("manage")}
+          className={`px-4 py-2.5 text-sm font-semibold border-b-[3px] -mb-0.5 transition ${tab === "manage" ? "border-billboard-ink text-billboard-ink" : "border-transparent text-billboard-inkSoft hover:text-billboard-ink"}`}
+        >
+          Manage &amp; grow{checklistRemaining > 0 ? ` (${checklistRemaining} to finish)` : ""}
+        </button>
+      </div>
 
-      {profile && <BusinessProfileCard profile={profile} onSaved={onRefresh} />}
+      {tab === "activity" ? (
+        <>
+          <h2 className="font-display text-lg mb-4" id="your-requests">Your requests</h2>
 
-      <ManagedCampaignsSection />
-      <CampaignRollup />
-      <MarketingSuite />
+          {loading ? (
+            <SkeletonRows count={2} />
+          ) : requests.length === 0 ? (
+            <div className="border-[3px] border-dashed border-billboard-ink rounded">
+              <EmptyState
+                kind="list"
+                title="No requests yet"
+                description="Browse publishers to book your first campaign."
+                compact
+                action={
+                  <Link to="/browse" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition text-sm bg-white">
+                    Browse publishers
+                  </Link>
+                }
+              />
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {requests.map((r) => <RequestCard key={r.id} request={r} onChange={onRefresh} />)}
+            </div>
+          )}
 
-      <h2 className="font-display text-lg mb-4" id="your-requests">Your requests</h2>
+          {/* Bug fix: previously only rendered when channelRequests.length > 0,
+              leaving a completely blank section with no feedback when empty.
+              Now shows a heading + empty state card always after loading. */}
+          <h2 className="font-display text-lg mb-1 mt-10" id="your-channel-campaigns">Your channel campaigns</h2>
+          <p className="text-xs text-billboard-inkSoft mb-4">Influencer, website, podcast and radio requests you've sent.</p>
 
-      {loading ? (
-        <SkeletonRows count={2} />
-      ) : requests.length === 0 ? (
-        <div className="border-[3px] border-dashed border-billboard-ink rounded">
-          <EmptyState
-            kind="list"
-            title="No requests yet"
-            description="Browse publishers to book your first campaign."
-            compact
-            action={
-              <Link to="/browse" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition text-sm bg-white">
-                Browse publishers
-              </Link>
-            }
-          />
-        </div>
+          {loading ? (
+            <SkeletonRows count={1} />
+          ) : channelRequests.length === 0 ? (
+            <div className="border-[3px] border-dashed border-billboard-ink rounded">
+              <EmptyState
+                kind="list"
+                title="No channel campaigns yet"
+                description="Browse influencers, websites, podcasts and radio channels to get started."
+                compact
+                action={
+                  <Link to="/channels" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition text-sm bg-white">
+                    Browse channels
+                  </Link>
+                }
+              />
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {channelRequests.map((r) => <ChannelCampaignCard key={r.id} request={r} onChange={onRefresh} />)}
+            </div>
+          )}
+        </>
       ) : (
-        <div className="space-y-4">
-          {requests.map((r) => <RequestCard key={r.id} request={r} onChange={onRefresh} />)}
-        </div>
-      )}
+        <>
+          {user && !loading && (
+            <OnboardingChecklist
+              title="Getting started"
+              items={checklistItems}
+              storageKey={`cs_onboarding_business_${user.id}`}
+            />
+          )}
 
-      {/* Bug fix: previously only rendered when channelRequests.length > 0,
-          leaving a completely blank section with no feedback when empty.
-          Now shows a heading + empty state card always after loading. */}
-      {/* Bug fix: BusinessHomeSummary's "Continue your campaign" link needs
-          somewhere real to jump to when the ongoing item is a channel
-          campaign — it used to always point at #your-requests above. */}
-      <h2 className="font-display text-lg mb-1 mt-10" id="your-channel-campaigns">Your channel campaigns</h2>
-      <p className="text-xs text-billboard-inkSoft mb-4">Influencer, website, podcast and radio requests you've sent.</p>
+          {profile && <BusinessProfileCard profile={profile} onSaved={onRefresh} />}
 
-      {loading ? (
-        <SkeletonRows count={1} />
-      ) : channelRequests.length === 0 ? (
-        <div className="border-[3px] border-dashed border-billboard-ink rounded">
-          <EmptyState
-            kind="list"
-            title="No channel campaigns yet"
-            description="Browse influencers, websites, podcasts and radio channels to get started."
-            compact
-            action={
-              <Link to="/channels" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition text-sm bg-white">
-                Browse channels
-              </Link>
-            }
-          />
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {channelRequests.map((r) => <ChannelCampaignCard key={r.id} request={r} onChange={onRefresh} />)}
-        </div>
+          <ManagedCampaignsSection />
+          <CampaignRollup />
+          <MarketingSuite />
+        </>
       )}
     </>
   );

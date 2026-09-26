@@ -28,11 +28,16 @@ interface SearchMatch {
 // channelRequests are the two things Dashboard.tsx already fetches, so
 // they come in as props instead of being queried a second time here.
 export default function BusinessHomeSummary({
-  profile, requests, channelRequests,
+  profile, requests, channelRequests, onViewOngoing,
 }: {
   profile: Profile | null;
   requests: PublisherRequest[];
   channelRequests: ChannelRequest[];
+  // Optional: lets the parent switch to the right tab before jumping to the
+  // anchor below, now that "Your requests" / "Your channel campaigns" live
+  // inside a tab rather than always being on-screen. Falls back to a plain
+  // anchor jump if not provided.
+  onViewOngoing?: (kind: "request" | "channel") => void;
 }) {
   const [availableThisWeek, setAvailableThisWeek] = useState<number | null>(null);
   const [savedCount, setSavedCount] = useState(0);
@@ -204,10 +209,15 @@ export default function BusinessHomeSummary({
                 {ongoing.kind === "request" ? ongoing.item.publisher?.name ?? "A publisher" : ongoing.item.creator?.name ?? "A publisher"}
               </p>
               <p className="text-xs text-billboard-inkSoft mb-3">Status: {ongoing.item.status}</p>
-              {/* Bug fix: this used to always link to #your-requests, which
-                  is wrong when the ongoing item is a channel campaign —
-                  that list lives under a different heading further down. */}
-              <a href={ongoing.kind === "channel" ? "#your-channel-campaigns" : "#your-requests"} className="text-xs font-semibold underline">View request →</a>
+              {/* Switches to the Activity tab (if needed) before jumping,
+                  now that these lists live inside a tab instead of always
+                  being on-screen — falls back to a plain anchor for safety
+                  if no callback was passed in. */}
+              {onViewOngoing ? (
+                <button type="button" onClick={() => onViewOngoing(ongoing.kind)} className="text-xs font-semibold underline">View request →</button>
+              ) : (
+                <a href={ongoing.kind === "channel" ? "#your-channel-campaigns" : "#your-requests"} className="text-xs font-semibold underline">View request →</a>
+              )}
             </div>
           ) : (
             <div>
