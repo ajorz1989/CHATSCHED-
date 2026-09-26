@@ -22,7 +22,7 @@ const ADVERTISE_LINKS = [
   { to: "/build-my-campaign", key: "nav.agency" },
   { to: "/browse", key: "nav.browse" },
   { to: "/audience-finder", key: "nav.audienceFinder" },
-  { to: "/budget-calculator", label: "Budget Calculator" },
+  { to: "/budget-calculator", key: "nav.budgetCalculator" },
 ] as const;
 
 export default function Header() {
