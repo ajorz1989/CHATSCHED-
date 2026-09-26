@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ChatSched — Advertising Placement · 3 Homepage Concepts (Design Preview)</title>
+
+<!-- ============================================================================
+     CHATSCHED · DESIGN PREVIEW — NOT PRODUCTION CODE
+     ----------------------------------------------------------------------------
+     What this is : 3 high-fidelity, interactive mockups of the homepage
+                    "ADVERTISING PLACEMENT" billboard section.
+     Where it lives: design/previews/ (mockup only — nothing here is wired to
+                    the app, no routing, no Supabase, no production push).
+     Brand source : tailwind.config.js + src/index.css + src/pages/Home.tsx
+                    (billboard palette, Archivo Black / IBM Plex, 3px ink
+                    borders, hard offset shadows, .eyebrow / .brand-button).
+     Imagery      : hot-linked Pexels CDN photos (credits in the Spec Sheet).
+     ============================================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  /* Mirror of tailwind.config.js — kept 1:1 with the repo design system. */
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          billboard: {
+            yellow: "#F5B700",
+            yellowDeep: "#D9A400",
+            ink: "#1A1712",
+            inkSoft: "#4A4335",
+            paper: "#FAF9F5",
+            paperDim: "#F0EEE6",
+            green: "#1C6B45",
+            greenDeep: "#134F34",
+            red: "#D4451F",
+          },
+        },
+        fontFamily: {
+          display: ["'Archivo Black'", "sans-serif"],
+          body: ["'IBM Plex Sans'", "sans-serif"],
+          mono: ["'IBM Plex Mono'", "monospace"],
+        },
+        boxShadow: {
+          block: "8px 8px 0 #1A1712",
+          blockSm: "5px 5px 0 #1A1712",
+          blockYellow: "8px 8px 0 #F5B700",
+        },
+      },
+    },
+  };
+</script>
+
+<style>
+  /* ---- Brand primitives copied verbatim from src/index.css ---- */
+  .eyebrow { display:inline-block; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:10px; line-height:1.2; font-weight:700; letter-spacing:.08em; text-transform:uppercase; border:2px solid #F5B700; color:#1A1712; padding:6px 10px; border-radius:6px; margin-bottom:12px; }
+  .eyebrow.light { border-color:#F5B700; color:#F5B700; }
+  .eyebrow.dark-bg { background:#FAF9F5; border-color:#1A1712; }
+  .brand-button { display:inline-flex; align-items:center; justify-content:center; gap:8px; border:3px solid #1A1712; background:#FAF9F5; color:#1A1712; font-weight:700; padding:11px 18px; border-radius:6px; transition:transform .15s ease,box-shadow .15s ease; max-width:100%; text-align:center; white-space:normal; overflow-wrap:anywhere; cursor:pointer; }
+  .brand-button:hover { transform:translate(-2px,-2px); box-shadow:5px 5px 0 #1A1712; }
+  .brand-button.dark { background:#1A1712; color:#FAF9F5; }
+  .brand-button.yellow { background:#F5B700; color:#1A1712; }
+  .brand-button.light { background:#FAF9F5; color:#1A1712; }
+
+  html { scroll-behavior:smooth; }
+  body { font-family:'IBM Plex Sans',sans-serif; color:#1A1712; background:#FAF9F5; }
+  h1,h2,h3 { font-family:'Archivo Black',sans-serif; letter-spacing:-.02em; }
+
+  :focus-visible { outline:3px solid #1C6B45; outline-offset:2px; }
+
+  /* ---- Concept A: live status pulse ---- */
+  .pulse-dot { position:relative; }
+  .pulse-dot::after { content:""; position:absolute; inset:-4px; border-radius:9999px; border:2px solid currentColor; opacity:.5; animation:pulse-ring 1.8s ease-out infinite; }
+  @keyframes pulse-ring { 0%{transform:scale(.6);opacity:.7;} 80%,100%{transform:scale(1.4);opacity:0;} }
+
+  /* ---- Concept B: ticket perforation + notches + barcode + stamp ---- */
+  .perf { border-left:3px dashed #1A1712; }
+  @media (max-width:767px){ .perf { border-left:none; border-top:3px dashed #1A1712; } }
+  .notch { position:absolute; width:26px; height:26px; border-radius:9999px; background:#F5B700; border:3px solid #1A1712; }
+  .stamp { font-family:'IBM Plex Mono',monospace; font-weight:700; letter-spacing:.14em; text-transform:uppercase; border:4px solid #134F34; color:#134F34; border-radius:8px; padding:6px 12px; transform:rotate(-10deg); background:rgba(250,249,245,.82); box-shadow:0 0 0 2px rgba(19,79,52,.15) inset; }
+  .barcode { background:repeating-linear-gradient(90deg,#1A1712 0 3px,transparent 3px 5px,#1A1712 5px 6px,transparent 6px 10px,#1A1712 10px 14px,transparent 14px 16px); }
+
+  /* ---- Concept C: console LED + proof chain ---- */
+  .led { width:9px; height:9px; border-radius:9999px; display:inline-block; }
+  .led.on { background:#3FBF77; box-shadow:0 0 8px 2px rgba(63,191,119,.55); animation:led-breathe 2.2s ease-in-out infinite; }
+  @keyframes led-breathe { 0%,100%{box-shadow:0 0 6px 1px rgba(63,191,119,.45);} 50%{box-shadow:0 0 12px 4px rgba(63,191,119,.75);} }
+  .chain-line { position:absolute; left:11px; top:22px; bottom:-14px; width:3px; background:rgba(250,249,245,.18); }
+
+  /* ---- Review utilities ---- */
+  .blueprint { position:fixed; inset:0; pointer-events:none; z-index:40; display:none;
+    background-image:
+      linear-gradient(rgba(28,107,69,.10) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(28,107,69,.10) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(212,69,31,.16) 1px, transparent 1px);
+    background-size: 24px 24px, 24px 24px, calc(100% / 12) 100%;
+    background-position: 0 0, 0 0, calc(50% - 56rem/2), 0 0; }
+  .blueprint.on { display:block; }
+
+  .tab-btn[aria-selected="true"] { background:#1A1712; color:#FAF9F5; box-shadow:5px 5px 0 #F5B700; transform:translate(-2px,-2px); }
+  .concept[hidden] { display:none; }
+
+  @media (prefers-reduced-motion:reduce) {
+    html { scroll-behavior:auto; }
+    *,*::before,*::after { animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
+    .brand-button:hover { transform:none; box-shadow:none; }
+  }
+</style>
+</head>
+
+<body class="antialiased overflow-x-clip">
+
+<!-- Review utilities -->
+<div class="blueprint" id="blueprint" aria-hidden="true"></div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     PREVIEW CHROME (not part of the design — review tools only)
+     ═══════════════════════════════════════════════════════════════════════ -->
+<header class="sticky top-0 z-50 bg-billboard-ink text-billboard-paper border-b-[3px] border-billboard-yellow">
+  <div class="max-w-6xl mx-auto px-4 sm:px-5 py-2.5 flex flex-wrap items-center gap-x-4 gap-y-2">
+    <span class="font-display text-sm tracking-tight">ChatSched <span class="text-billboard-yellow">·</span> Design Preview</span>
+    <span class="font-mono text-[9px] font-bold uppercase tracking-[.14em] bg-billboard-red text-white px-2 py-1 rounded border border-black/40">Non-production mockup</span>
+
+    <nav class="ml-auto flex items-center gap-1.5" aria-label="Concept switcher">
+      <button class="tab-btn font-mono text-[10px] font-bold uppercase border-2 border-billboard-paper/70 rounded px-2.5 py-1.5" data-tab="all"  aria-selected="true"  title="Show all concepts (0)">All</button>
+      <button class="tab-btn font-mono text-[10px] font-bold uppercase border-2 border-billboard-paper/70 rounded px-2.5 py-1.5" data-tab="a" aria-selected="false" title="Concept A (1)">A · Listing</button>
+      <button class="tab-btn font-mono text-[10px] font-bold uppercase border-2 border-billboard-paper/70 rounded px-2.5 py-1.5" data-tab="b" aria-selected="false" title="Concept B (2)">B · Ticket</button>
+      <button class="tab-btn font-mono text-[10px] font-bold uppercase border-2 border-billboard-paper/70 rounded px-2.5 py-1.5" data-tab="c" aria-selected="false" title="Concept C (3)">C · Console</button>
+      <button id="gridToggle" class="font-mono text-[10px] font-bold uppercase border-2 border-billboard-yellow text-billboard-yellow rounded px-2.5 py-1.5 ml-1" title="Toggle blueprint grid (g)">Grid</button>
+      <button id="specToggle" class="font-mono text-[10px] font-bold uppercase bg-billboard-yellow text-billboard-ink border-2 border-billboard-yellow rounded px-2.5 py-1.5" title="Open spec sheet (s)">Spec sheet</button>
+    </nav>
+  </div>
+</header>
+
+<!-- Spec sheet drawer -->
+<aside id="specDrawer" hidden class="fixed right-0 top-0 bottom-0 z-[60] w-full max-w-md bg-billboard-paper border-l-[3px] border-billboard-ink shadow-[-8px_0_0_rgba(26,23,18,.15)] overflow-y-auto">
+  <div class="sticky top-0 bg-billboard-paper border-b-[3px] border-billboard-ink px-5 py-3 flex items-center justify-between">
+    <span class="font-display text-sm">Spec sheet</span>
+    <button id="specClose" class="font-mono text-[10px] font-bold uppercase border-2 border-billboard-ink rounded px-2 py-1" title="Close (Esc)">Close ✕</button>
+  </div>
+  <div class="px-5 py-4 space-y-6 text-sm">
+
+    <section>
+      <h3 class="font-mono text-[10px] font-bold uppercase tracking-[.14em] mb-2 text-billboard-inkSoft">Data contract (exact copy)</h3>
+      <dl class="border-[3px] border-billboard-ink rounded bg-white divide-y-2 divide-billboard-paperDim font-mono text-[11px]">
+        <div class="px-3 py-2"><dt class="font-bold uppercase text-billboard-inkSoft">Section header</dt><dd>ADVERTISING PLACEMENT</dd></div>
+        <div class="px-3 py-2"><dt class="font-bold uppercase text-billboard-inkSoft">Badge</dt><dd>Cape Town Local Audience [VERIFIED]</dd></div>
+        <div class="px-3 py-2"><dt class="font-bold uppercase text-billboard-inkSoft">Stats / metadata</dt><dd>Instagram • 42K audience • Cape Town</dd></div>
+        <div class="px-3 py-2"><dt class="font-bold uppercase text-billboard-inkSoft">Pricing</dt><dd>STARTING PRICE — R1,250</dd></div>
+        <div class="px-3 py-2"><dt class="font-bold uppercase text-billboard-inkSoft">Status</dt><dd>STATUS: READY</dd></div>
+        <div class="px-3 py-2"><dt class="font-bold uppercase text-billboard-inkSoft">Description copy</dt><dd>“Choose the placement. ChatSched keeps the request, payment and proof together.”</dd></div>
+      </dl>
+    </section>
+
+    <section>
+      <h3 class="font-mono text-[10px] font-bold uppercase tracking-[.14em] mb-2 text-billboard-inkSoft">Concept rationale</h3>
+      <ul class="space-y-3">
+        <li class="border-[3px] border-billboard-ink rounded bg-white p-3"><strong class="font-display text-xs block mb-1">A — Marketplace Listing</strong><span class="text-billboard-inkSoft text-[13px]">Direct evolution of the live <code class="font-mono text-[10px]">PublisherCard</code> + hero mockup. Photo-led, calm, conversion-focused — the safest fit in the homepage rhythm (white section, like Marketplace).</span></li>
+        <li class="border-[3px] border-billboard-ink rounded bg-white p-3"><strong class="font-display text-xs block mb-1">B — Billboard Ticket</strong><span class="text-billboard-inkSoft text-[13px]">The brand’s namesake, literalised: a perforated admission ticket with spec grid, stamp and barcode. Loud, poster-like, sits on the yellow Pricing-style band.</span></li>
+        <li class="border-[3px] border-billboard-ink rounded bg-white p-3"><strong class="font-display text-xs block mb-1">C — Ops Console</strong><span class="text-billboard-inkSoft text-[13px]">Dark control-room treatment on the ink band (like “How it works”). A mono spec readout plus a request→payment→proof chain that visualises the description copy.</span></li>
+      </ul>
+    </section>
+
+    <section>
+      <h3 class="font-mono text-[10px] font-bold uppercase tracking-[.14em] mb-2 text-billboard-inkSoft">Tokens used</h3>
+      <div class="grid grid-cols-2 gap-2 font-mono text-[10px] font-bold">
+        <span class="flex items-center gap-2 border-2 border-billboard-ink rounded px-2 py-1.5 bg-white"><i class="w-4 h-4 rounded-sm border border-billboard-ink" style="background:#F5B700"></i>yellow #F5B700</span>
+        <span class="flex items-center gap-2 border-2 border-billboard-ink rounded px-2 py-1.5 bg-white"><i class="w-4 h-4 rounded-sm border border-billboard-ink" style="background:#1A1712"></i>ink #1A1712</span>
+        <span class="flex items-center gap-2 border-2 border-billboard-ink rounded px-2 py-1.5 bg-white"><i class="w-4 h-4 rounded-sm border border-billboard-ink" style="background:#FAF9F5"></i>paper #FAF9F5</span>
+        <span class="flex items-center gap-2 border-2 border-billboard-ink rounded px-2 py-1.5 bg-white"><i class="w-4 h-4 rounded-sm border border-billboard-ink" style="background:#1C6B45"></i>green #1C6B45</span>
+        <span class="flex items-center gap-2 border-2 border-billboard-ink rounded px-2 py-1.5 bg-white"><i class="w-4 h-4 rounded-sm border border-billboard-ink" style="background:#D4451F"></i>red #D4451F</span>
+        <span class="flex items-center gap-2 border-2 border-billboard-ink rounded px-2 py-1.5 bg-white"><i class="w-4 h-4 rounded-sm border border-billboard-ink" style="background:#F0EEE6"></i>paperDim #F0EEE6</span>
+      </div>
+      <p class="mt-2 text-[12px] text-billboard-inkSoft">Type: Archivo Black (display) · IBM Plex Sans (body) · IBM Plex Mono (labels/stats). Borders: 3px ink · hard shadows <code class="font-mono text-[10px]">8px 8px 0 #1A1712</code>.</p>
+    </section>
+
+    <section>
+      <h3 class="font-mono text-[10px] font-bold uppercase tracking-[.14em] mb-2 text-billboard-inkSoft">Imagery credits (Pexels CDN, free licence)</h3>
+      <ul class="space-y-1.5 text-[12px] underline underline-offset-2">
+        <li><a class="font-semibold" href="https://www.pexels.com/photo/7514826/" target="_blank" rel="noopener">A — creator setting up tripod camera, home studio (#7514826)</a></li>
+        <li><a class="font-semibold" href="https://www.pexels.com/photo/38193989/" target="_blank" rel="noopener">B — Cape Town skyline &amp; Table Mountain at dusk (#38193989)</a></li>
+        <li><a class="font-semibold" href="https://www.pexels.com/photo/7676391/" target="_blank" rel="noopener">C — creator filming with ring light, brick wall (#7676391)</a></li>
+      </ul>
+    </section>
+
+    <section>
+      <h3 class="font-mono text-[10px] font-bold uppercase tracking-[.14em] mb-2 text-billboard-inkSoft">Productionising</h3>
+      <p class="text-[12px] text-billboard-inkSoft">All classes map 1:1 to the repo’s <code class="font-mono text-[10px]">tailwind.config.js</code> tokens, so a chosen concept ports into <code class="font-mono text-[10px]">src/pages/Home.tsx</code> as a section component beside <code class="font-mono text-[10px]">MarketplaceSection</code> — data comes from the placements API, price via <code class="font-mono text-[10px]">formatCurrency()</code>, badge gated on the publisher <code class="font-mono text-[10px]">verified</code> flag.</p>
+    </section>
+  </div>
+</aside>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     CONCEPT A — “MARKETPLACE LISTING”
+     Photo-led card, direct evolution of PublisherCard + the hero mockup.
+     Sits on a white band, exactly like the live Marketplace section.
+     ═══════════════════════════════════════════════════════════════════════ -->
+<article class="concept" id="concept-a">
+<section class="py-14 md:py-20 bg-white border-b-[3px] border-billboard-ink" aria-label="Advertising placement — concept A">
+  <div class="max-w-6xl mx-auto px-4 sm:px-5">
+
+    <!-- Section header (shared pattern: eyebrow + display H2 + sub) -->
+    <div class="mb-9 max-w-2xl">
+      <span class="eyebrow">Marketplace · book it yourself</span>
+      <h2 class="text-3xl md:text-4xl mb-3 uppercase">Advertising Placement</h2>
+      <p class="text-billboard-inkSoft">Browse verified local placements and lock one in — no back-and-forth, no spreadsheets.</p>
+    </div>
+
+    <!-- Placement widget -->
+    <div class="max-w-4xl border-[3px] border-billboard-ink rounded bg-white shadow-block overflow-hidden transition hover:-translate-y-1 hover:shadow-block">
+
+      <div class="grid md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+
+        <!-- Media + overlays -->
+        <div class="relative min-h-[240px] md:min-h-full">
+          <img src="https://images.pexels.com/photos/7514826/pexels-photo-7514826.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1200"
+               alt="Creator setting up a camera on a tripod in a bright home studio"
+               class="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+          <div class="absolute inset-0 bg-gradient-to-t from-billboard-ink/70 via-transparent to-billboard-ink/10"></div>
+
+          <!-- Badge: Cape Town Local Audience [VERIFIED] -->
+          <span class="absolute top-3 left-3 inline-flex items-center gap-1.5 bg-billboard-green text-white font-mono text-[10px] font-bold px-2.5 py-1.5 rounded border-2 border-billboard-ink">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Cape Town Local Audience <span class="bg-white text-billboard-greenDeep px-1.5 py-0.5 rounded-sm">[VERIFIED]</span>
+          </span>
+
+          <!-- Platform chip -->
+          <span class="absolute top-3 right-3 bg-billboard-ink text-billboard-paper font-mono text-[10px] font-bold px-2.5 py-1.5 rounded border-2 border-billboard-paper/60">
+            <svg class="inline -mt-0.5 mr-1" width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="6" stroke="currentColor" stroke-width="2.5"/><circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="2.5"/><circle cx="17.6" cy="6.4" r="1.6" fill="currentColor"/></svg>Instagram
+          </span>
+
+          <!-- Receipt pipeline — visualises the description copy -->
+          <span class="absolute bottom-3 left-3 right-3 flex flex-wrap items-center gap-1.5 font-mono text-[9px] font-bold uppercase text-white">
+            <span class="bg-white/15 backdrop-blur-sm border border-white/40 rounded px-2 py-1">Request</span><span aria-hidden="true" class="text-billboard-yellow">→</span>
+            <span class="bg-white/15 backdrop-blur-sm border border-white/40 rounded px-2 py-1">Payment</span><span aria-hidden="true" class="text-billboard-yellow">→</span>
+            <span class="bg-white/15 backdrop-blur-sm border border-white/40 rounded px-2 py-1">Proof</span>
+            <span class="ml-auto bg-billboard-yellow text-billboard-ink border-2 border-billboard-ink rounded px-2 py-1">Kept together</span>
+          </span>
+        </div>
+
+        <!-- Content -->
+        <div class="p-5 sm:p-6 flex flex-col">
+
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <!-- Stats / metadata -->
+            <p class="font-mono text-[11px] font-semibold text-billboard-inkSoft pt-1">
+              <span class="text-billboard-ink font-bold">Instagram</span>
+              <span class="mx-1.5" aria-hidden="true">•</span><span class="text-billboard-ink font-bold">42K</span> audience
+              <span class="mx-1.5" aria-hidden="true">•</span>Cape Town
+            </p>
+            <!-- Status indicator -->
+            <span class="shrink-0 inline-flex items-center gap-2 bg-[#EAF3EC] border-2 border-billboard-greenDeep text-billboard-greenDeep font-mono text-[10px] font-bold uppercase px-2.5 py-1.5 rounded-full">
+              <span class="pulse-dot led on" style="width:8px;height:8px" aria-hidden="true"></span>Status: Ready
+            </span>
+          </div>
+
+          <!-- Pricing -->
+          <div class="flex items-end justify-between gap-4 border-b-[3px] border-dashed border-billboard-paperDim pb-4 mb-4">
+            <div>
+              <div class="font-mono text-[10px] font-bold uppercase tracking-[.14em] text-billboard-inkSoft mb-1">Starting price</div>
+              <div class="font-display text-4xl md:text-5xl leading-none">R1,250</div>
+            </div>
+            <span class="font-mono text-[9px] font-bold uppercase bg-billboard-yellow border-2 border-billboard-ink rounded-full px-2.5 py-1 rotate-2">once-off</span>
+          </div>
+
+          <!-- Action / description copy -->
+          <p class="text-sm text-billboard-inkSoft border-l-4 border-billboard-yellow pl-3 mb-5">
+            “Choose the placement. ChatSched keeps the request, payment and proof together.”
+          </p>
+
+          <!-- CTAs -->
+          <div class="mt-auto flex flex-wrap items-center gap-3">
+            <button class="brand-button dark text-sm">Choose this placement →</button>
+            <a href="#" class="font-bold text-sm underline underline-offset-4 decoration-billboard-yellow decoration-[3px]">See a proof pack</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</article>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     CONCEPT B — “BILLBOARD TICKET”
+     The brand’s namesake made literal: a perforated admission ticket.
+     Sits on the yellow band, exactly like the live Pricing section.
+     ═══════════════════════════════════════════════════════════════════════ -->
+<article class="concept" id="concept-b">
+<section class="py-14 md:py-20 bg-billboard-yellow border-b-[3px] border-billboard-ink" aria-label="Advertising placement — concept B">
+  <div class="max-w-6xl mx-auto px-4 sm:px-5">
+
+    <div class="mb-9 max-w-2xl">
+      <span class="eyebrow dark-bg">One placement · one flat price</span>
+      <h2 class="text-3xl md:text-4xl mb-3 uppercase">Advertising Placement</h2>
+      <p class="text-billboard-inkSoft">Tear it off the board and it’s yours — ChatSched handles the paperwork end to end.</p>
+    </div>
+
+    <!-- Ticket -->
+    <div class="max-w-4xl relative">
+      <!-- ticket punch notches -->
+      <span class="notch hidden md:block" style="top:-16px; right:112px" aria-hidden="true"></span>
+      <span class="notch hidden md:block" style="bottom:-16px; right:112px" aria-hidden="true"></span>
+
+      <div class="relative border-[3px] border-billboard-ink rounded-xl bg-billboard-paper shadow-block overflow-hidden transition hover:-translate-y-1">
+
+        <div class="grid md:grid-cols-[minmax(0,0.72fr)_3px_minmax(0,1.28fr)]">
+
+          <!-- Stub: photo + verified stamp -->
+          <div class="relative min-h-[200px] md:min-h-full">
+            <img src="https://images.pexels.com/photos/38193989/pexels-photo-38193989.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1200"
+                 alt="Cape Town city skyline beneath Table Mountain at dusk"
+                 class="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+            <div class="absolute inset-0 bg-billboard-ink/25"></div>
+            <span class="stamp absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[13px] md:text-sm whitespace-nowrap">✓ Verified</span>
+            <span class="absolute bottom-3 left-3 font-mono text-[9px] font-bold uppercase text-white bg-billboard-ink/70 rounded px-2 py-1">CPT · ZA</span>
+          </div>
+
+          <!-- Perforation -->
+          <div class="perf" aria-hidden="true"></div>
+
+          <!-- Ticket body -->
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+              <span class="inline-flex items-center gap-1.5 bg-white border-2 border-billboard-ink rounded-full px-3 py-1.5 font-mono text-[10px] font-bold">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="6" stroke="currentColor" stroke-width="2.5"/><circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="2.5"/><circle cx="17.6" cy="6.4" r="1.6" fill="currentColor"/></svg>
+                Cape Town Local Audience <span class="text-billboard-greenDeep">[VERIFIED]</span>
+              </span>
+              <span class="inline-flex items-center gap-2 bg-billboard-ink text-billboard-paper font-mono text-[10px] font-bold uppercase rounded-full px-3 py-1.5">
+                <span class="pulse-dot led on" style="width:8px;height:8px" aria-hidden="true"></span>Status: Ready
+              </span>
+            </div>
+
+            <!-- Boarding-pass spec grid: stats/metadata -->
+            <dl class="grid grid-cols-3 border-[3px] border-billboard-ink rounded bg-white divide-x-[3px] divide-billboard-ink mb-4">
+              <div class="px-3 py-3 min-w-0">
+                <dt class="font-mono text-[9px] font-bold uppercase tracking-[.12em] text-billboard-inkSoft mb-1">Channel</dt>
+                <dd class="font-display text-lg md:text-xl truncate">Instagram</dd>
+              </div>
+              <div class="px-3 py-3 min-w-0">
+                <dt class="font-mono text-[9px] font-bold uppercase tracking-[.12em] text-billboard-inkSoft mb-1">Audience</dt>
+                <dd class="font-display text-lg md:text-xl truncate">42K</dd>
+              </div>
+              <div class="px-3 py-3 min-w-0">
+                <dt class="font-mono text-[9px] font-bold uppercase tracking-[.12em] text-billboard-inkSoft mb-1">Location</dt>
+                <dd class="font-display text-lg md:text-xl truncate">Cape Town</dd>
+              </div>
+            </dl>
+
+            <!-- Fare row -->
+            <div class="flex flex-wrap items-end justify-between gap-3 mb-4">
+              <div>
+                <div class="font-mono text-[10px] font-bold uppercase tracking-[.14em] text-billboard-inkSoft">Starting price</div>
+                <div class="font-display text-5xl md:text-6xl leading-none mt-1">R1,250</div>
+              </div>
+              <div class="text-right">
+                <div class="barcode h-9 w-28 md:w-36 border-2 border-billboard-ink rounded-sm mb-1 ml-auto" aria-hidden="true"></div>
+                <div class="font-mono text-[9px] font-bold uppercase text-billboard-inkSoft">CS·0412·ZA</div>
+              </div>
+            </div>
+
+            <p class="text-sm text-billboard-inkSoft mb-5">
+              “Choose the placement. ChatSched keeps the request, payment and proof together.”
+            </p>
+
+            <button class="brand-button dark text-sm w-full sm:w-auto">Choose this placement →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</article>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     CONCEPT C — “OPS CONSOLE”
+     Dark control-room treatment on the ink band (matches How-it-works).
+     The proof chain visualises the description copy literally.
+     ═══════════════════════════════════════════════════════════════════════ -->
+<article class="concept" id="concept-c">
+<section class="py-14 md:py-20 bg-billboard-ink text-billboard-paper border-b-[3px] border-billboard-yellow" aria-label="Advertising placement — concept C">
+  <div class="max-w-6xl mx-auto px-4 sm:px-5">
+
+    <div class="mb-9 max-w-2xl">
+      <span class="eyebrow light">Live inventory ·ZA feed</span>
+      <h2 class="text-3xl md:text-4xl mb-3 uppercase text-billboard-paper">Advertising Placement</h2>
+      <p class="text-billboard-paperDim">Every placement on the board is checked, priced and ready before you ever see it.</p>
+    </div>
+
+    <!-- Console card -->
+    <div class="max-w-4xl border-[3px] border-billboard-ink rounded-lg bg-[#211D16] shadow-blockYellow overflow-hidden transition hover:-translate-y-1">
+
+      <!-- Console title bar -->
+      <div class="flex items-center gap-2 border-b-2 border-white/10 px-4 py-2.5 bg-black/30">
+        <span class="w-2.5 h-2.5 rounded-full bg-billboard-red/80" aria-hidden="true"></span>
+        <span class="w-2.5 h-2.5 rounded-full bg-billboard-yellow/80" aria-hidden="true"></span>
+        <span class="w-2.5 h-2.5 rounded-full bg-[#3FBF77]/80" aria-hidden="true"></span>
+        <span class="ml-2 font-mono text-[10px] font-semibold text-billboard-paper/60 truncate">placements / cpt-0412 — instagram feed</span>
+        <span class="ml-auto inline-flex items-center gap-2 font-mono text-[10px] font-bold uppercase text-[#3FBF77]"><span class="led on" aria-hidden="true"></span>Ready</span>
+      </div>
+
+      <div class="grid md:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+
+        <!-- Photo panel -->
+        <div class="relative min-h-[220px] md:min-h-full">
+          <img src="https://images.pexels.com/photos/7676391/pexels-photo-7676391.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1200"
+               alt="Creator filming a reel with a smartphone and ring light against a brick wall"
+               class="absolute inset-0 w-full h-full object-cover saturate-[.85]" loading="lazy" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent md:bg-gradient-to-r md:from-transparent md:to-black/40"></div>
+          <span class="absolute top-3 left-3 bg-billboard-ink/80 text-billboard-paper font-mono text-[10px] font-bold px-2.5 py-1.5 rounded border border-white/30">
+            <svg class="inline -mt-0.5 mr-1" width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="6" stroke="currentColor" stroke-width="2.5"/><circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="2.5"/><circle cx="17.6" cy="6.4" r="1.6" fill="currentColor"/></svg>Instagram
+          </span>
+          <!-- Badge -->
+          <span class="absolute bottom-3 left-3 right-3 inline-flex items-center gap-1.5 bg-billboard-yellow text-billboard-ink font-mono text-[10px] font-bold px-2.5 py-2 rounded border-2 border-billboard-ink w-fit max-w-full">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Cape Town Local Audience <span class="bg-billboard-ink text-billboard-yellow px-1.5 py-0.5 rounded-sm">[VERIFIED]</span>
+          </span>
+        </div>
+
+        <!-- Readout -->
+        <div class="p-5 sm:p-6">
+          <!-- Mono spec rows -->
+          <dl class="font-mono text-[11px] space-y-2.5 mb-5">
+            <div class="flex items-baseline justify-between gap-3 border-b border-dashed border-white/15 pb-2.5">
+              <dt class="uppercase tracking-[.12em] text-billboard-paper/50 text-[10px] font-bold">Stats</dt>
+              <dd class="font-bold text-right">Instagram • 42K audience • Cape Town</dd>
+            </div>
+            <div class="flex items-baseline justify-between gap-3 border-b border-dashed border-white/15 pb-2.5">
+              <dt class="uppercase tracking-[.12em] text-billboard-paper/50 text-[10px] font-bold">Starting price</dt>
+              <dd class="font-display text-2xl text-billboard-yellow tracking-tight">R1,250</dd>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+              <dt class="uppercase tracking-[.12em] text-billboard-paper/50 text-[10px] font-bold">Status</dt>
+              <dd class="inline-flex items-center gap-2 font-bold uppercase text-[#3FBF77]"><span class="pulse-dot led on" aria-hidden="true"></span>Ready</dd>
+            </div>
+          </dl>
+
+          <!-- Proof chain — the description copy, drawn as a pipeline -->
+          <div class="relative pl-1 mb-4" aria-label="Booking pipeline">
+            <div class="space-y-3.5 text-[12px]">
+              <div class="relative flex items-start gap-3">
+                <span class="chain-line" aria-hidden="true"></span>
+                <span class="relative z-10 mt-0.5 w-[25px] h-[25px] shrink-0 grid place-items-center rounded-full bg-[#3FBF77] text-billboard-ink font-bold"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <span><strong class="font-semibold text-billboard-paper">Request</strong> <span class="text-billboard-paper/60">— logged &amp; scoped</span></span>
+              </div>
+              <div class="relative flex items-start gap-3">
+                <span class="chain-line" aria-hidden="true"></span>
+                <span class="relative z-10 mt-0.5 w-[25px] h-[25px] shrink-0 grid place-items-center rounded-full border-[3px] border-billboard-yellow text-billboard-yellow font-bold">2</span>
+                <span><strong class="font-semibold text-billboard-paper">Payment</strong> <span class="text-billboard-paper/60">— secured, released on delivery</span></span>
+              </div>
+              <div class="flex items-start gap-3">
+                <span class="relative z-10 mt-0.5 w-[25px] h-[25px] shrink-0 grid place-items-center rounded-full border-[3px] border-white/25 text-billboard-paper/50 font-bold">3</span>
+                <span><strong class="font-semibold text-billboard-paper">Proof</strong> <span class="text-billboard-paper/60">— pack issued with the run</span></span>
+              </div>
+            </div>
+          </div>
+
+          <p class="text-sm text-billboard-paperDim border-l-4 border-billboard-yellow pl-3 mb-5">
+            “Choose the placement. ChatSched keeps the request, payment and proof together.”
+          </p>
+
+          <div class="flex flex-wrap items-center gap-3">
+            <button class="brand-button yellow text-sm">Choose the placement →</button>
+            <a href="#" class="font-bold text-sm underline underline-offset-4 decoration-billboard-yellow decoration-[3px] text-billboard-paper">View audience data</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</article>
+
+<!-- Footer note -->
+<footer class="bg-billboard-paper py-8">
+  <div class="max-w-6xl mx-auto px-4 sm:px-5 flex flex-wrap gap-x-6 gap-y-2 font-mono text-[10px] font-bold uppercase tracking-[.12em] text-billboard-inkSoft">
+    <span>ChatSched · Advertising Placement — homepage mockups</span>
+    <span>Branch arena/01a0de12-chatsched · not for production</span>
+    <span class="ml-auto">Keys: 0 all · 1 A · 2 B · 3 C · G grid · S specs</span>
+  </div>
+</footer>
+
+<script>
+  // ---- Concept tabs ----
+  const tabs = document.querySelectorAll(".tab-btn");
+  const concepts = {
+    a: document.getElementById("concept-a"),
+    b: document.getElementById("concept-b"),
+    c: document.getElementById("concept-c"),
+  };
+  function selectTab(key) {
+    tabs.forEach(t => t.setAttribute("aria-selected", String(t.dataset.tab === key)));
+    const showAll = key === "all";
+    Object.entries(concepts).forEach(([k, el]) => { el.hidden = !(showAll || k === key); });
+    if (!showAll) concepts[key].scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  tabs.forEach(t => t.addEventListener("click", () => selectTab(t.dataset.tab)));
+
+  // ---- Blueprint grid toggle ----
+  const blueprint = document.getElementById("blueprint");
+  document.getElementById("gridToggle").addEventListener("click", () => blueprint.classList.toggle("on"));
+
+  // ---- Spec sheet drawer ----
+  const drawer = document.getElementById("specDrawer");
+  const openDrawer = () => { drawer.hidden = false; };
+  const closeDrawer = () => { drawer.hidden = true; };
+  document.getElementById("specToggle").addEventListener("click", openDrawer);
+  document.getElementById("specClose").addEventListener("click", closeDrawer);
+
+  // ---- Keyboard shortcuts ----
+  document.addEventListener("keydown", (e) => {
+    if (e.target.matches("input, textarea, select")) return;
+    if (e.key === "Escape") return closeDrawer();
+    const map = { 0: "all", 1: "a", 2: "b", 3: "c" };
+    if (map[e.key]) return selectTab(map[e.key]);
+    if (e.key.toLowerCase() === "g") blueprint.classList.toggle("on");
+    if (e.key.toLowerCase() === "s") drawer.hidden ? openDrawer() : closeDrawer();
+  });
+</script>
+</body>
+</html>
