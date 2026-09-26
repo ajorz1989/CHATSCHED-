@@ -190,12 +190,12 @@ export default function Admin() {
     setLoadError(null);
 
     const results = await Promise.all([
-      supabase.from("requests").select("*, publisher:publishers(id,name), business:profiles(full_name, company_name, phone), payments(*)").order("created_at", { ascending: false }),
+      supabase.from("requests").select("*, publisher:publishers(id,name), payments(*)").order("created_at", { ascending: false }),
       supabase.from("publishers").select("*").order("created_at", { ascending: false }),
       supabase.from("profiles").select("*").eq("role", "business").order("created_at", { ascending: false }),
       supabase.from("contact_messages").select("*").order("created_at", { ascending: false }),
       supabase.from("reports").select("*, publisher:publishers(name)").order("created_at", { ascending: false }),
-      supabase.from("disputes").select("*, publisher:publishers(name), business:profiles(full_name, company_name), dispute_messages(*)").order("updated_at", { ascending: false }),
+      supabase.from("disputes").select("*, publisher:publishers(name), dispute_messages(*)").order("updated_at", { ascending: false }),
       supabase.from("work_with_us_applications").select("*").order("created_at", { ascending: false }),
       supabase.from("partner_applications").select("*").order("created_at", { ascending: false }),
       supabase.from("advertise_inquiries").select("*").order("created_at", { ascending: false }),
@@ -234,7 +234,18 @@ export default function Admin() {
       setLoadError("Some admin data could not be loaded: " + failed.map(([name, result]) => name + " (" + (result.error?.message ?? "unknown error") + ")").join(", "));
     }
 
-    if (!reqRes.error) setRequests((reqRes.data ?? []) as unknown as AdminRequestRow[]);
+    // requests.business_id and disputes.business_id point at auth.users, not profiles, so
+    // PostgREST can't embed profiles on those two queries above (see the fix comment on those
+    // queries) — attach it here instead, from the businesses this Promise.all already loaded.
+    const businessProfileById = new Map(((bizRes.data ?? []) as Profile[]).map((biz) => [biz.id, biz] as const));
+    if (!reqRes.error) {
+      setRequests(
+        (reqRes.data ?? []).map((r) => ({
+          ...r,
+          business: r.business_id ? businessProfileById.get(r.business_id) ?? null : null,
+        })) as unknown as AdminRequestRow[]
+      );
+    }
     if (!pubRes.error) setPublishers((pubRes.data ?? []) as Publisher[]);
     if (!bizRes.error) setBusinesses((bizRes.data ?? []) as Profile[]);
     if (!msgRes.error) setMessages((msgRes.data ?? []) as ContactMessage[]);
@@ -246,10 +257,11 @@ export default function Admin() {
     if (!evtRes.error) setCommunityEvents((evtRes.data ?? []) as CommunityEvent[]);
     if (!qRes.error) setCommunityQuestions((qRes.data ?? []) as CommunityQuestion[]);
     if (!disputeRes.error) {
-      setDisputes(((disputeRes.data ?? []) as unknown as Dispute[]).map((d) => ({
+      setDisputes((disputeRes.data ?? []).map((d) => ({
         ...d,
-        dispute_messages: (d.dispute_messages ?? []).slice().sort((a, b) => a.created_at.localeCompare(b.created_at)),
-      })));
+        business: d.business_id ? businessProfileById.get(d.business_id) ?? null : null,
+        dispute_messages: (d.dispute_messages ?? []).slice().sort((a: { created_at: string }, b: { created_at: string }) => a.created_at.localeCompare(b.created_at)),
+      })) as unknown as Dispute[]);
     }
     if (!channelRes.error) {
       setVerificationRequiredChannels(
