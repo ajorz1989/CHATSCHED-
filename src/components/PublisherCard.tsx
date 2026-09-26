@@ -30,7 +30,7 @@ function isCurrentlyFeatured(p: Publisher): boolean {
 // PublisherApply.tsx's copy also carries onboarding-specific comments
 // that don't belong on a display component; update both together if this
 // set changes.
-const VERIFICATION_REQUIRED_CHANNELS = new Set(["sports", "events", "community", "transport", "informal-retail", "associations", "restaurants"]);
+const VERIFICATION_REQUIRED_CHANNELS = new Set(["sports", "events", "community", "transport", "informal-retail", "associations", "restaurants", "in-venue-screens"]);
 
 export default function PublisherCard({ publisher, matchReason = null }: { publisher: Publisher; matchReason?: string | null }) {
   const { isComparing, togglePublisher, isFull } = useComparison();
