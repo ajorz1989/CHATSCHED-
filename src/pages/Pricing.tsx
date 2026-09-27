@@ -254,6 +254,47 @@ export default function Pricing() {
         </p>
       </section>
 
+      <section className="max-w-5xl mx-auto px-5 pb-10">
+        <div className="border-[3px] border-billboard-ink rounded-lg overflow-hidden bg-billboard-ink text-white shadow-blockSm">
+          <div className="p-6 md:p-8 bg-billboard-ink">
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+              <div>
+                <span className="inline-block font-mono text-[10px] font-semibold tracking-wider uppercase border-2 border-billboard-yellow text-billboard-yellow px-3 py-1.5 rounded mb-3">How payment works</span>
+                <h2 className="font-display text-2xl md:text-3xl max-w-2xl">See what happens to your money before you book.</h2>
+              </div>
+              <Link to="/how-payment-works" className="inline-flex items-center gap-2 border-2 border-white/70 text-white font-bold px-4 py-2.5 rounded text-sm hover:bg-white/10 transition shrink-0">Full payment guide →</Link>
+            </div>
+            <p className="text-white/80 max-w-3xl leading-relaxed text-sm md:text-base mb-7">
+              The payment step depends on the advertising channel, but the principle stays clear: the booking is approved first, payment is verified, the placement goes live, and the publisher payout follows the rules for that booking.
+            </p>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              {[
+                { n: "01", title: "Choose & request", body: "Find the publisher or channel that fits your campaign and send the booking request." },
+                { n: "02", title: "Approval", body: "The publisher accepts the request and the final booking amount is confirmed." },
+                { n: "03", title: "Pay & verify", body: "Pay using the method shown for the booking. ChatSched records and verifies the payment." },
+                { n: "04", title: "Go live & payout", body: "The placement is delivered and marked live, then the publisher payout is processed." },
+              ].map((step) => (
+                <div key={step.n} className="border-2 border-white/20 rounded-lg p-4 bg-white/5">
+                  <span className="font-mono text-[10px] text-billboard-yellow font-bold">{step.n}</span>
+                  <h3 className="font-display text-lg mt-1 mb-1.5">{step.title}</h3>
+                  <p className="text-xs text-white/70 leading-relaxed">{step.body}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-6 grid md:grid-cols-2 gap-3 text-xs md:text-sm">
+              <div className="border border-billboard-yellow/40 rounded p-3 bg-billboard-yellow/10">
+                <strong className="text-billboard-yellow">Social media:</strong> PayFast (card or Instant EFT) or manual EFT may be offered for the confirmed booking.
+              </div>
+              <div className="border border-billboard-green/50 rounded p-3 bg-billboard-green/10">
+                <strong className="text-billboard-green">Request-based channels:</strong> approval comes first, then manual EFT and payment verification before delivery moves forward.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="max-w-5xl mx-auto px-5 pb-8">
         <PricingFeeTeaser />
       </section>
