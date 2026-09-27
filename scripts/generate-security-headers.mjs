@@ -129,7 +129,7 @@ const csp = [
   `script-src 'self' https://www.googletagmanager.com 'sha256-${jsonLdHash}'`,
   `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
   `font-src 'self' https://fonts.gstatic.com`,
-  `img-src 'self' data: blob: https://${supabaseHost} https://my.payfast.io https://*.google-analytics.com`,
+  `img-src 'self' data: blob: https://${supabaseHost} https://my.payfast.io https://www.googletagmanager.com https://*.google-analytics.com`,
   `connect-src 'self' https://${supabaseHost} wss://${supabaseHost} https://*.sentry.io https://www.googletagmanager.com https://*.google-analytics.com https://*.google.com`,
   `frame-src https://www.youtube.com https://player.vimeo.com`,
   `form-action 'self' https://www.payfast.co.za https://sandbox.payfast.co.za https://payment.payfast.io`,
