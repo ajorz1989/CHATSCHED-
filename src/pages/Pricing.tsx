@@ -211,7 +211,7 @@ export default function Pricing() {
                 <BenefitItem>Access to the gated business Opportunities area for relevant sponsorship and advertising opportunities.</BenefitItem>
                 <BenefitItem>Done-for-you campaign support — submit your brief and a ChatSched campaign manager coordinates the media plan. Most managed campaigns are billed per booking at the standard marketplace fee; larger campaigns may instead use a single agreed package price, always confirmed with you before anything is booked.</BenefitItem>
                 <BenefitItem>Campaign tracking, booking history and reporting so you can follow the job from request through delivery.</BenefitItem>
-                <BenefitItem>AI Content Studio free tier with a monthly allowance to help create campaign copy and marketing content.</BenefitItem>
+                <BenefitItem>Full Marketing Suite — Match, Reach Planner, Content Studio, Caption Writer, Campaign Builder, Campaign Tracker and ROI Calculator, included with Business activation.</BenefitItem>
                 <BenefitItem>R199 launch credit applied toward an eligible first campaign after activation.</BenefitItem>
               </ul>
             </div>
