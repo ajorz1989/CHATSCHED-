@@ -9,7 +9,6 @@ import Header from "./components/Header";
 import BottomNav from "./components/BottomNav";
 import Footer from "./components/Footer";
 import ErrorBoundary from "./components/ErrorBoundary";
-import AnalyticsListener from "./components/AnalyticsListener";
 import CookieConsentBanner from "./components/CookieConsentBanner";
 import CookieConsentScript from "./components/CookieConsentScript";
 import { SkeletonBlock } from "./components/Skeleton";
@@ -260,7 +259,6 @@ export default function App() {
                 <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:px-4 focus:py-2 focus:bg-billboard-ink focus:text-billboard-paper focus:font-semibold focus:rounded focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-billboard-green">
                   Skip to main content
                 </a>
-                <AnalyticsListener />
                 <CookieConsentScript />
                 <Header />
                 <main id="main-content" tabIndex={-1} className="flex-1 pb-bottom-nav outline-none">
