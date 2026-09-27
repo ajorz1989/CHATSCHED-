@@ -190,10 +190,6 @@ export default function BudgetCalculator() {
     const convRate = goal?.conversionRate ?? 0.03;
     const estimatedConversions = Math.round(estimatedReach * convRate);
 
-    // ROI estimate
-    const projectedRevenue = estimatedConversions * effectiveLtv;
-    const roi = totalBudget > 0 ? ((projectedRevenue - totalBudget) / totalBudget) * 100 : 0;
-
     // How it compares to existing spend
     const vsExisting = existingMonthlySpend > 0 ? monthlyBudget - existingMonthlySpend : null;
 
@@ -207,8 +203,6 @@ export default function BudgetCalculator() {
       placementsPerMonth,
       estimatedReach,
       estimatedConversions,
-      projectedRevenue,
-      roi,
       vsExisting,
       effectivePrice,
     };
@@ -555,24 +549,6 @@ export default function BudgetCalculator() {
             </div>
           </div>
 
-          {/* ROI estimate */}
-          <div className={`border-[3px] rounded p-5 ${
-            results.roi >= 0 ? "border-billboard-green bg-billboard-green/10" : "border-billboard-red bg-billboard-red/10"
-          }`}>
-            <p className="font-mono text-xs uppercase tracking-wide text-billboard-inkSoft mb-2">Projected ROI</p>
-            <div className="flex items-end gap-3">
-              <p className="font-display text-3xl font-bold">
-                {results.roi >= 0 ? "+" : ""}{Math.round(results.roi)}%
-              </p>
-              <p className="text-sm text-billboard-inkSoft pb-1">
-                ({formatCurrency(Math.round(results.projectedRevenue))} projected revenue on {formatCurrency(results.totalBudget)} spend)
-              </p>
-            </div>
-            <p className="text-xs text-billboard-inkSoft mt-1">
-              Based on estimated conversions × effective LTV. Treat as a planning guide, not a guarantee.
-            </p>
-          </div>
-
           {/* vs existing spend */}
           {results.vsExisting !== null && (
             <div className="border-[3px] border-billboard-ink rounded p-4 bg-billboard-paperDim">
@@ -614,6 +590,23 @@ export default function BudgetCalculator() {
       </div>
 
       {/* Footer note */}
+      <div className="mt-14 pt-10 border-t-2 border-billboard-ink/10 text-center">
+        <p className="text-sm text-billboard-inkSoft">
+          Placement prices shown use live data from approved publishers on ChatSched.{" "}
+          Conversion rates are industry estimates.{" "}
+          Want the reasoning? Read{" "}
+          <Link
+            to="/business-success/calculating-your-campaign-budget"
+            className="underline font-semibold text-billboard-ink"
+          >
+            Calculating a campaign budget that actually makes sense
+          </Link>{" "}
+          in the Business Success Centre.
+        </p>
+      </div>
+    </div>
+  );
+}
       <div className="mt-14 pt-10 border-t-2 border-billboard-ink/10 text-center">
         <p className="text-sm text-billboard-inkSoft">
           Placement prices shown use live data from approved publishers on ChatSched.{" "}
