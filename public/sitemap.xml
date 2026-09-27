@@ -29,7 +29,6 @@
   <url><loc>https://chatsched.com/how-payment-works</loc><priority>0.7</priority></url>
   <url><loc>https://chatsched.com/for-businesses</loc><priority>0.7</priority></url>
   <url><loc>https://chatsched.com/for-publishers</loc><priority>0.7</priority></url>
-  <url><loc>https://chatsched.com/advertise</loc><priority>0.7</priority></url>
   <url><loc>https://chatsched.com/about</loc><priority>0.6</priority></url>
   <url><loc>https://chatsched.com/categories</loc><priority>0.6</priority></url>
   <url><loc>https://chatsched.com/suburbs</loc><priority>0.6</priority></url>
@@ -48,14 +47,11 @@
   <url><loc>https://chatsched.com/channel-quiz</loc><priority>0.5</priority></url>
   <url><loc>https://chatsched.com/compare</loc><priority>0.5</priority></url>
   <url><loc>https://chatsched.com/map</loc><priority>0.5</priority></url>
-  <url><loc>https://chatsched.com/fees/calculator</loc><priority>0.5</priority></url>
   <url><loc>https://chatsched.com/mission</loc><priority>0.5</priority></url>
   <url><loc>https://chatsched.com/transparency</loc><priority>0.5</priority></url>
   <url><loc>https://chatsched.com/trust</loc><priority>0.5</priority></url>
-  <url><loc>https://chatsched.com/work-with-us</loc><priority>0.5</priority></url>
   <url><loc>https://chatsched.com/partners</loc><priority>0.5</priority></url>
   <url><loc>https://chatsched.com/careers</loc><priority>0.5</priority></url>
-  <url><loc>https://chatsched.com/register</loc><priority>0.5</priority></url>
   <url><loc>https://chatsched.com/build-my-campaign</loc><priority>0.5</priority></url>
   <url><loc>https://chatsched.com/help</loc><priority>0.5</priority></url>
   <url><loc>https://chatsched.com/community</loc><priority>0.5</priority></url>
@@ -64,15 +60,9 @@
   <url><loc>https://chatsched.com/community/events</loc><priority>0.4</priority></url>
   <url><loc>https://chatsched.com/trust/business-standards</loc><priority>0.4</priority></url>
   <url><loc>https://chatsched.com/trust/creator-standards</loc><priority>0.4</priority></url>
-  <url><loc>https://chatsched.com/trust/disputes</loc><priority>0.4</priority></url>
   <url><loc>https://chatsched.com/trust/fraud-prevention</loc><priority>0.4</priority></url>
-  <url><loc>https://chatsched.com/trust/payments</loc><priority>0.4</priority></url>
-  <url><loc>https://chatsched.com/trust/platform-compliance</loc><priority>0.4</priority></url>
   <url><loc>https://chatsched.com/trust/safety</loc><priority>0.4</priority></url>
-  <url><loc>https://chatsched.com/trust/verification</loc><priority>0.4</priority></url>
   <url><loc>https://chatsched.com/glossary</loc><priority>0.4</priority></url>
-  <url><loc>https://chatsched.com/media-kit</loc><priority>0.4</priority></url>
-  <url><loc>https://chatsched.com/investors</loc><priority>0.4</priority></url>
   <url><loc>https://chatsched.com/roadmap</loc><priority>0.4</priority></url>
   <url><loc>https://chatsched.com/compliance</loc><priority>0.4</priority></url>
   <url><loc>https://chatsched.com/partners/apply</loc><priority>0.4</priority></url>
@@ -81,5 +71,4 @@
   <url><loc>https://chatsched.com/privacy</loc><priority>0.3</priority></url>
   <url><loc>https://chatsched.com/terms</loc><priority>0.3</priority></url>
   <url><loc>https://chatsched.com/accessibility</loc><priority>0.3</priority></url>
-  <url><loc>https://chatsched.com/login</loc><priority>0.3</priority></url>
 </urlset>
