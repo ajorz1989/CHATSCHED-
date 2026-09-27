@@ -1,38 +1,18 @@
 // Generates ready-to-post copy across up to 9 formats from a photo and/or a
-// text brief. Server-side because the Anthropic API key must never reach
-// the browser, and this costs real money per call — so it's gated behind
-// one of two paid-for tiers AND rate-limited on top of that, not just
-// behind login.
-//
-// TWO TIERS (schema_phase103 — see that migration's header comment for
-// the full reasoning on why this is two tiers, not the single
-// `activation_fee_paid` gate originally briefed):
-//   - free_activation: unlocked the moment a business's ChatSched Business
-//     once-off R399 activation fee is active (business_subscriptions,
-//     schema_phase86). No extra payment. Cheaper model, lower limits.
-//   - subscription: the existing R99/month content_studio_subscriptions
-//     product (schema_phase22). Better model, higher limits. A business
-//     with BOTH gets the subscription tier's better limits — the free
-//     tier is a floor for activated-only businesses, not a ceiling for
-//     paying ones.
+// Text brief. Server-side because the Anthropic API key must never reach
+// the browser, and this costs real money per call — so it is gated behind
+// an active ChatSched Business activation and rate-limited on top of that,
+// not just behind login.
+
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders } from "../_shared/cors.ts";
 
-// Content Studio's outputs are short, formulaic marketing copy, not deep
-// reasoning, so the free tier stays on the cheapest current Claude model.
-// The paid subscription tier gets the requested model upgrade — real
-// current model string, not the fictional "claude-5-sonnet-20241022" /
-// "claude opus-latest" named in the brief (verified against Anthropic's
-// current lineup rather than guessed).
+// Content Studio's outputs are short, formulaic marketing copy, so keep
+// the included activation tier on the lowest-cost current Claude model.
+// Keep these limits aligned with the activation-only UI.
 const FREE_MODEL = "claude-haiku-4-5-20251001";
-const SUBSCRIPTION_MODEL = "claude-sonnet-5";
-
-// Keep in sync with the matching constants in src/lib/constants.ts (Deno
-// can't import from the Vite app).
 const FREE_MONTHLY_LIMIT = 15;
 const FREE_DAILY_LIMIT = 5;
-const SUBSCRIPTION_DAILY_LIMIT = 15;
-const SUBSCRIPTION_MONTHLY_LIMIT = 150;
 // Basic anti-spam-click floor, independent of the limits above, applies
 // to both tiers.
 const MIN_SECONDS_BETWEEN_CALLS = 8;
@@ -93,28 +73,25 @@ Deno.serve(async (req) => {
     const isAdmin = profile?.role === "admin";
     if (!profile || (profile.role !== "business" && !isAdmin)) return json({ error: "Content Studio is available to business accounts and platform admins" }, 403);
 
-    const [{ data: subscription }, { data: activation }] = await Promise.all([
-      supabase.from("content_studio_subscriptions").select("*").eq("business_id", user.id).maybeSingle(),
-      supabase.from("business_subscriptions").select("status").eq("business_id", user.id).maybeSingle(),
-    ]);
+    const { data: activation } = await supabase
+      .from("business_subscriptions")
+      .select("status")
+      .eq("business_id", user.id)
+      .maybeSingle();
 
-    const isSubscribed = subscription?.status === "active" && subscription.current_period_end && new Date(subscription.current_period_end) > new Date();
     const isActivated = activation?.status === "active";
 
-    if (!isAdmin && !isSubscribed && !isActivated) {
+    if (!isAdmin && !isActivated) {
       return json(
-        { error: "Content Studio needs an active ChatSched Business activation (free tier) or a Content Studio subscription — R99/month for more.", needsActivation: true },
+        { error: "Content Studio is included with an active ChatSched Business activation. There is no separate Content Studio subscription.", needsActivation: true },
         402
       );
     }
 
-    // A subscribed business gets the better tier even if also activated —
-    // activation is a floor, not a cap.
-    const tier: "subscription" | "free_activation" = isSubscribed ? "subscription" : "free_activation";
-    const model = tier === "subscription" ? SUBSCRIPTION_MODEL : FREE_MODEL;
-    const dailyLimit = tier === "subscription" ? SUBSCRIPTION_DAILY_LIMIT : FREE_DAILY_LIMIT;
-    const monthlyLimit = tier === "subscription" ? SUBSCRIPTION_MONTHLY_LIMIT : FREE_MONTHLY_LIMIT;
-
+    const tier: "free_activation" = "free_activation";
+    const model = FREE_MODEL;
+    const dailyLimit = FREE_DAILY_LIMIT;
+    const monthlyLimit = FREE_MONTHLY_LIMIT;
     // Rate limiting — service-role client so a business can't dodge this
     // by racing their own client-side count. Counted against THIS tier's
     // own generations only (schema_phase103's tier column) — an activated
