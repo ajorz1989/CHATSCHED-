@@ -37,8 +37,7 @@
 // - img-src: 'self', data:, blob:, the Supabase host (storage-hosted
 //   CVs/proof screenshots/attachments).
 // - connect-src: 'self', the Supabase host over both https: and wss:, Google
-//   Analytics / Google tag endpoints and
-//   Sentry's ingest hosts.
+//   Analytics / Google tag endpoints, and Sentry's ingest hosts.
 // - frame-src: https://www.youtube.com and https://player.vimeo.com —
 //   src/components/PortfolioGallery.tsx embeds exactly these two via
 //   src/lib/videoEmbed.ts's embedUrl construction, nothing else.
@@ -131,7 +130,7 @@ const csp = [
   `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
   `font-src 'self' https://fonts.gstatic.com`,
   `img-src 'self' data: blob: https://${supabaseHost} https://my.payfast.io https://*.google-analytics.com`,
-  `connect-src 'self' https://${supabaseHost} wss://${supabaseHost} https://plausible.io https://*.sentry.io https://www.googletagmanager.com https://*.google-analytics.com https://*.google.com`,
+  `connect-src 'self' https://${supabaseHost} wss://${supabaseHost} https://*.sentry.io https://www.googletagmanager.com https://*.google-analytics.com https://*.google.com`,
   `frame-src https://www.youtube.com https://player.vimeo.com`,
   `form-action 'self' https://www.payfast.co.za https://sandbox.payfast.co.za https://payment.payfast.io`,
   `frame-ancestors 'none'`,
