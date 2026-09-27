@@ -20,14 +20,9 @@
 //
 // ── What's actually in this CSP, and why (verified against this specific
 //    codebase, not a generic template) ──
-// - script-src: 'self' for the app's own bundled JS, https://plausible.io, and
-//   https://static.cloudflareinsights.com for Cloudflare Web Analytics' injected beacon.
-//   because src/lib/analytics.ts injects a real <script src="https://
-//   plausible.io/js/script.manual.js"> tag when VITE_PLAUSIBLE_DOMAIN is
-//   set, and a sha256 hash (computed below) for the one inline script
-//   index.html actually ships — the JSON-LD Organization block. No
-//   'unsafe-inline', no 'unsafe-eval': nothing else in this app needs
-//   either.
+// - script-src: 'self' for the app bundle, the consent-gated Google Analytics
+//   loader from www.googletagmanager.com, the legacy Plausible allow-list, and
+//   the JSON-LD script hash. No 'unsafe-inline' or 'unsafe-eval'.
 // - style-src: 'unsafe-inline' is a deliberate, narrower trade-off, not an
 //   oversight — 16 files use React's `style={{...}}` (inline style
 //   attributes), which CSP treats the same as literal <style> blocks, and
@@ -41,13 +36,9 @@
 //   stylesheet actually points the browser to fetch the .woff2 files from.
 // - img-src: 'self', data:, blob:, the Supabase host (storage-hosted
 //   CVs/proof screenshots/attachments).
-// - connect-src: 'self', the Supabase host over both https: and wss: (this
-//   app uses Supabase Realtime — src/hooks/useNotifications.ts,
-//   MessageThread.tsx, Messages.tsx all subscribe to postgres_changes
-//   over a websocket, not just REST), https://plausible.io (the script's
-//   own beacon requests), and Sentry's ingest hosts (wildcarded —
-//   *.sentry.io covers every regional ingest subdomain Sentry uses
-//   without needing to know which region this DSN happens to be in).
+// - connect-src: 'self', the Supabase host over both https: and wss:, Google
+//   Analytics / Google tag endpoints, the legacy Plausible endpoint, and
+//   Sentry's ingest hosts.
 // - frame-src: https://www.youtube.com and https://player.vimeo.com —
 //   src/components/PortfolioGallery.tsx embeds exactly these two via
 //   src/lib/videoEmbed.ts's embedUrl construction, nothing else.
@@ -136,11 +127,11 @@ const jsonLdHash = createHash("sha256").update(jsonLdMatch[1], "utf8").digest("b
 
 const csp = [
   `default-src 'self'`,
-  `script-src 'self' https://plausible.io https://static.cloudflareinsights.com 'sha256-${jsonLdHash}'`,
+  `script-src 'self' https://plausible.io https://www.googletagmanager.com 'sha256-${jsonLdHash}'`,
   `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
   `font-src 'self' https://fonts.gstatic.com`,
-  `img-src 'self' data: blob: https://${supabaseHost} https://my.payfast.io`,
-  `connect-src 'self' https://${supabaseHost} wss://${supabaseHost} https://plausible.io https://*.sentry.io`,
+  `img-src 'self' data: blob: https://${supabaseHost} https://my.payfast.io https://*.google-analytics.com`,
+  `connect-src 'self' https://${supabaseHost} wss://${supabaseHost} https://plausible.io https://*.sentry.io https://www.googletagmanager.com https://*.google-analytics.com https://*.google.com`,
   `frame-src https://www.youtube.com https://player.vimeo.com`,
   `form-action 'self' https://www.payfast.co.za https://sandbox.payfast.co.za https://payment.payfast.io`,
   `frame-ancestors 'none'`,
