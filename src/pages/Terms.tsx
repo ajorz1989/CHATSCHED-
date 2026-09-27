@@ -1,6 +1,6 @@
 import Seo from "../components/Seo";
 import LegalPageLayout, { type LegalSection } from "../components/LegalPageLayout";
-import { CONTACT_EMAIL, PLATFORM_COMMISSION_RATE, CREATOR_APPROVAL_WINDOW_DAYS, BUSINESS_PAYMENT_WINDOW_DAYS, CREATOR_PAYOUT_WINDOW_HOURS } from "../lib/constants";
+import { CONTACT_EMAIL, LEGAL_EMAIL, PLATFORM_COMMISSION_RATE, CREATOR_APPROVAL_WINDOW_DAYS, BUSINESS_PAYMENT_WINDOW_DAYS, CREATOR_PAYOUT_WINDOW_HOURS } from "../lib/constants";
 
 const commissionPct = Math.round(PLATFORM_COMMISSION_RATE * 100);
 
@@ -158,7 +158,7 @@ const sections: LegalSection[] = [
     title: "Contact us",
     body: (
       <p>
-        Questions about these Terms can be sent to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>, or via the <a href="/contact">Contact page</a>. For questions about how we handle personal information specifically, see our <a href="/privacy">Privacy Policy & POPIA Compliance</a> page.
+        Questions about these Terms can be sent to <a href={`mailto:${LEGAL_EMAIL}`}>{LEGAL_EMAIL}</a>, or via the <a href="/contact">Contact page</a>. For general support, reach us at <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. For questions about how we handle personal information specifically, see our <a href="/privacy">Privacy Policy & POPIA Compliance</a> page.
       </p>
     ),
   },

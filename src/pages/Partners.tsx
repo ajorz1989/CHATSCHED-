@@ -4,7 +4,7 @@ import Seo from "../components/Seo";
 import { isSupabaseConfigured } from "../lib/supabase";
 import { submitPublicForm } from "../lib/publicFormSubmit";
 import { useHoneypot } from "../hooks/useHoneypot";
-import { PARTNER_CATEGORIES, CONTACT_EMAIL } from "../lib/constants";
+import { PARTNER_CATEGORIES, PARTNERS_EMAIL } from "../lib/constants";
 import type { PartnerCategory } from "../lib/types";
 import Button from "../components/Button";
 
@@ -158,7 +158,7 @@ export default function Partners() {
 
             {submitError && <p className="text-billboard-red text-xs font-semibold mb-3">{submitError}</p>}
             {!isSupabaseConfigured && (
-              <p className="text-xs text-billboard-inkSoft mb-3">The database isn't connected yet, so this form won't save — email {CONTACT_EMAIL} for now.</p>
+              <p className="text-xs text-billboard-inkSoft mb-3">The database isn't connected yet, so this form won't save — email {PARTNERS_EMAIL} for now.</p>
             )}
             <Button type="submit" variant="primary" size="md" disabled={submitting || !isSupabaseConfigured} className="w-full">
               {submitting ? "Submitting…" : "Submit application"}

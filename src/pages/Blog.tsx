@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import Seo from "../components/Seo";
 import { BLOG_POSTS } from "../lib/blogPosts";
+import { CONTACT_EMAIL } from "../lib/constants";
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-ZA", { day: "numeric", month: "long", year: "numeric" });
@@ -16,7 +17,7 @@ export default function Blog() {
     e.preventDefault();
     if (!email.trim()) return;
     // Opens mailto as a simple fallback until a backend subscription endpoint is wired up
-    window.location.href = `mailto:info@chatsched.com?subject=Newsletter subscription&body=Please add me to the ChatSched newsletter: ${encodeURIComponent(email)}`;
+    window.location.href = `mailto:${CONTACT_EMAIL}?subject=Newsletter subscription&body=Please add me to the ChatSched newsletter: ${encodeURIComponent(email)}`;
     setSubscribed(true);
   }
 
@@ -122,10 +123,10 @@ export default function Blog() {
           <p className="text-billboard-inkSoft text-xs mt-3">
             Or email us directly at{" "}
             <a
-              href="mailto:info@chatsched.com"
+              href={`mailto:${CONTACT_EMAIL}`}
               className="underline hover:text-billboard-ink transition"
             >
-              info@chatsched.com
+              {CONTACT_EMAIL}
             </a>
           </p>
         </div>

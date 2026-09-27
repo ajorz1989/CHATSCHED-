@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import Seo from "../components/Seo";
 import { PUBLISHER_SUCCESS_ARTICLES } from "../lib/publisherSuccessArticles";
+import { CONTACT_EMAIL } from "../lib/constants";
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-ZA", { day: "numeric", month: "long", year: "numeric" });
@@ -15,7 +16,7 @@ export default function PublisherSuccess() {
   function handleNewsletterSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!email.trim()) return;
-    window.location.href = `mailto:info@chatsched.com?subject=Newsletter subscription&body=Please add me to the ChatSched Publisher newsletter: ${encodeURIComponent(email)}`;
+    window.location.href = `mailto:${CONTACT_EMAIL}?subject=Newsletter subscription&body=Please add me to the ChatSched Publisher newsletter: ${encodeURIComponent(email)}`;
     setSubscribed(true);
   }
 
@@ -119,8 +120,8 @@ export default function PublisherSuccess() {
           )}
           <p className="text-billboard-inkSoft text-xs mt-3">
             Or email us at{" "}
-            <a href="mailto:info@chatsched.com" className="underline hover:text-billboard-ink transition">
-              info@chatsched.com
+            <a href={`mailto:${CONTACT_EMAIL}`} className="underline hover:text-billboard-ink transition">
+              {CONTACT_EMAIL}
             </a>
           </p>
         </div>

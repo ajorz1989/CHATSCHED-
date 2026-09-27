@@ -3,7 +3,7 @@ import { useId, useState, type ReactNode } from "react";
 import Seo from "../components/Seo";
 import MarketingIcon, { type MarketingIconName } from "../components/MarketingIcon";
 import { formatCurrency as formatCurrencyShared } from "../lib/currency";
-import { PLATFORM_COMMISSION_RATE } from "../lib/constants";
+import { PLATFORM_COMMISSION_RATE, SALES_EMAIL } from "../lib/constants";
 
 const FAQS = [
   { q: "How do I know a publisher is legitimate?", a: "Every publisher and creator is reviewed before they go live, and carries a visible trust score and level built from campaign history and profile signals — not just follower count." },
@@ -319,6 +319,10 @@ export default function Pricing() {
             <Link to="/register?role=publisher" className="inline-flex items-center gap-2 bg-white text-billboard-ink border-[3px] border-white font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition text-sm">Join as a Publisher →</Link>
             <Link to="/fees" className="inline-flex items-center gap-2 bg-transparent text-white border-[3px] border-white font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition text-sm">Review Fees</Link>
           </div>
+          <p className="text-billboard-paperDim/80 text-sm mt-6">
+            Running a bigger campaign or have a custom pricing question? Talk to sales at{" "}
+            <a href={`mailto:${SALES_EMAIL}`} className="underline font-semibold text-white">{SALES_EMAIL}</a>.
+          </p>
         </div>
       </section>
     </div>

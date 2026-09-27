@@ -5,7 +5,7 @@ import Seo from "../components/Seo";
 import Button from "../components/Button";
 import MarketingIcon from "../components/MarketingIcon";
 import { useHoneypot } from "../hooks/useHoneypot";
-import { whatsappLink, CONTACT_EMAIL, CONTACT_WEBSITE, CONTACT_ADDRESS_LINES, WHATSAPP_NUMBER_DISPLAY } from "../lib/constants";
+import { whatsappLink, CONTACT_EMAIL, LEGAL_EMAIL, SALES_EMAIL, PARTNERS_EMAIL, CONTACT_WEBSITE, CONTACT_ADDRESS_LINES, WHATSAPP_NUMBER_DISPLAY } from "../lib/constants";
 
 const WHATSAPP_LINK = whatsappLink("Hi, I'd like to know more about ChatSched");
 const MAPS_LINK = "https://www.google.com/maps/search/?api=1&query=Century%20Boulevard%2C%20Century%20City%20Dr%2C%20Century%20City%2C%20Cape%20Town%2C%207440";
@@ -92,6 +92,11 @@ export default function Contact() {
                 <a href={`mailto:${CONTACT_EMAIL}`} className="underline font-semibold">
                   {CONTACT_EMAIL}
                 </a>
+              </p>
+              <p className="text-xs text-billboard-inkSoft leading-relaxed">
+                Legal or Terms questions: <a href={`mailto:${LEGAL_EMAIL}`} className="underline">{LEGAL_EMAIL}</a><br />
+                Sales &amp; advertising: <a href={`mailto:${SALES_EMAIL}`} className="underline">{SALES_EMAIL}</a><br />
+                Partnerships: <a href={`mailto:${PARTNERS_EMAIL}`} className="underline">{PARTNERS_EMAIL}</a>
               </p>
               <p>
                 <MarketingIcon name="globe" className="inline w-4 h-4 mr-1" />

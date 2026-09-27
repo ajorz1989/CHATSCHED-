@@ -205,7 +205,13 @@ export const PUBLISHER_SHARE = 1 - PLATFORM_COMMISSION_RATE;
 
 export const WHATSAPP_NUMBER = "27608973472";
 export const WHATSAPP_NUMBER_DISPLAY = "+27 60 897 3472";
-export const CONTACT_EMAIL = "info@chatsched.com";
+export const CONTACT_EMAIL = "contact@chatsched.com";
+// Dedicated inboxes for the pages where a general contact address isn't
+// the right fit — legal/Terms questions, sales/advertising inquiries, and
+// partnership applications each get routed to their own address instead.
+export const LEGAL_EMAIL = "legal@chatsched.com";
+export const SALES_EMAIL = "sales@chatsched.com";
+export const PARTNERS_EMAIL = "partners@chatsched.com";
 export const CONTACT_WEBSITE = "chatsched.com";
 export const CONTACT_ADDRESS_LINES = ["Century Boulevard, Century City Dr", "Century City", "Cape Town, 7441", "South Africa"];
 

@@ -92,16 +92,16 @@ export default function Footer() {
               <p className="text-xs text-[#8A8272]">ChatSched insights, straight to your inbox. No spam.</p>
             </div>
             <a
-              href="mailto:info@chatsched.com?subject=Newsletter subscription&body=Please add me to the ChatSched newsletter."
+              href={`mailto:${CONTACT_EMAIL}?subject=Newsletter subscription&body=Please add me to the ChatSched newsletter.`}
               className="inline-flex items-center gap-2 border-2 border-billboard-yellow text-billboard-yellow font-semibold text-sm px-4 py-2.5 rounded hover:bg-billboard-yellow hover:text-billboard-ink transition"
             >
               Subscribe via email
             </a>
             <a
-              href="mailto:info@chatsched.com"
+              href={`mailto:${CONTACT_EMAIL}`}
               className="font-mono text-xs text-[#8A8272] hover:text-billboard-yellow transition shrink-0"
             >
-              info@chatsched.com
+              {CONTACT_EMAIL}
             </a>
           </div>
         </div>
