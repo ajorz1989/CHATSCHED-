@@ -128,7 +128,7 @@ export default function MarketingSuite() {
             to="/activation-fee-info"
             className="inline-flex items-center gap-2 bg-billboard-yellow border-[3px] border-billboard-ink font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition"
           >
-            Activate Business — {BUSINESS_SUBSCRIPTION_PRICE} once-off →
+            Activate Business — R{BUSINESS_SUBSCRIPTION_PRICE} once-off →
           </Link>
         </div>
       </section>
