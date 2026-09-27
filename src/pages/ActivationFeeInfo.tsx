@@ -146,7 +146,7 @@ export default function ActivationFeeInfo() {
           <ul className="text-sm text-billboard-inkSoft space-y-1.5 list-disc pl-4">
             <li>The gated Opportunities job board</li>
             <li>Direct messaging with publishers</li>
-            <li>AI Content Studio (a free monthly tier — see below)</li>
+            <li>Full Marketing Suite — Match, Reach Planner, Content Studio, Caption Writer, Campaign Builder, Campaign Tracker and ROI Calculator</li>
             <li>A {formatCurrency(BUSINESS_LAUNCH_CREDIT_AMOUNT)} launch credit toward your first campaign, included in the fee</li>
           </ul>
         </div>
@@ -154,8 +154,7 @@ export default function ActivationFeeInfo() {
 
       <p className="text-xs text-billboard-inkSoft mb-10 max-w-2xl">
         This is a once-off fee, not a subscription — there's nothing to renew and nothing that lapses.
-        {" "}AI Content Studio's paid R99/month tier (higher limits, a stronger model) is a separate,
-        optional product on top of activation — activation alone already unlocks a smaller free tier of it.
+        {" "}The full Marketing Suite is included with your Business activation. There is no separate Content Studio or Caption Writer payment.
       </p>
 
       <h2 className="font-display text-lg mb-4">Your account</h2>
