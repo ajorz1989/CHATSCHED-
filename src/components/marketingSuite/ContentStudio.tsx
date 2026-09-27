@@ -44,17 +44,33 @@ export default function ContentStudio() {
   const [genError, setGenError] = useState<string | null>(null);
   const [results, setResults] = useState<Results | null>(null);
   const [usage, setUsage] = useState<{ today: number; dailyLimit: number; month: number; monthlyLimit: number } | null>(null);
-  const [tier, setTier] = useState<"subscription" | "free_activation" | null>(null);
+  const [tier, setTier] = useState<"free_activation" | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isAdmin = profile?.role === "admin";
   const isActivated = isAdmin || (activation ? isSubscriptionUsable(activation.status) : false);
-  const activeTier = isActivated ? "free_activation" : null;
+
+  async function loadActivation() {
+    if (!user) return;
+    setLoadingSub(true);
+    const { data } = await supabase
+      .from("business_subscriptions")
+      .select("id, business_id, status, payfast_payment_id, paid_at, created_at")
+      .eq("business_id", user.id)
+      .maybeSingle();
+    setActivation((data ?? null) as BusinessSubscription | null);
+    setLoadingSub(false);
+  }
+
+  useEffect(() => {
+    loadActivation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
   function toggleFormat(id: string) {
     setSelectedFormats((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
   }
-
   function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -139,6 +155,10 @@ export default function ContentStudio() {
   function sendToCreator(text: string) {
     setContentStudioDraft(text);
     navigate("/browse");
+  }
+
+  if (loadingSub) {
+    return <SkeletonBlock className="h-40" />;
   }
 
   if (loadingSub) {
@@ -241,7 +261,7 @@ export default function ContentStudio() {
         <div className="mt-6 space-y-4">
           <p className="font-semibold text-sm">
             Your generated content
-            {tier && <span className="font-normal text-xs text-billboard-inkSoft"> · "included activation tier"</span>}
+            {tier && <span className="font-normal text-xs text-billboard-inkSoft"> · included activation tier</span>}
           </p>
           {selectedFormats.filter((id) => results[id]).map((id) => {
             const format = CONTENT_STUDIO_FORMATS.find((f) => f.id === id);
