@@ -1,21 +1,11 @@
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import { trackPageview } from "../lib/analytics";
 
 /**
- * Renders nothing — just watches the route. Plausible's script.manual.js
- * doesn't auto-fire on load or on client-side navigation (there's no real
- * page load for it to catch in a SPA), so this calls trackPageview()
- * itself: once for the page you land on, then again on every route change.
- * A no-op when analytics isn't configured (trackPageview checks for
- * window.plausible existing first).
+ * GA4 page changes are handled by Google's enhanced measurement for browser
+ * history events. Keeping this component available avoids breaking any older
+ * imports while preventing duplicate manual page_view events in the SPA.
  */
 export default function AnalyticsListener() {
-  const location = useLocation();
-
-  useEffect(() => {
-    trackPageview();
-  }, [location.pathname]);
-
+  useEffect(() => undefined, []);
   return null;
 }
