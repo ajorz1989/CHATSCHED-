@@ -141,7 +141,7 @@ const sections: LegalSection[] = [
     title: "Cookies & similar technology",
     body: (
       <p>
-        We use essential cookies and similar technologies to keep you logged in and the platform functioning correctly, and limited analytics to understand how the site is used so we can improve it. We don't use these technologies to build advertising profiles about you for third parties.
+        We use essential cookies and similar technologies to keep you logged in and the platform functioning correctly, and limited analytics — including Google Analytics 4 when you allow analytics cookies — to understand how the site is used so we can improve it. Google advertising personalization is disabled in ChatSched's Google tag configuration, and we don't use these technologies to build advertising profiles about you for third parties.
       </p>
     ),
   },
