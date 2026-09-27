@@ -49,12 +49,11 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // AI Content Studio's recurring subscription is a separate table from
-    // one-off campaign `payments` — routed here by the custom_str1 flag set
-    // in content-studio-subscribe, checked before the payments lookup below
-    // so the two flows never collide on m_payment_id.
+    // The former Content Studio R99/month product has been retired.
+    // Legacy ITNs are acknowledged without activating or renewing the old product.
     if (data.custom_str1 === "content_studio_subscription") {
-      return handleContentStudioSubscriptionItn(admin, data);
+      console.warn("payfast-notify: retired content studio subscription ITN ignored", { payment_id: data.m_payment_id });
+      return new Response("deprecated product", { status: 200 });
     }
     if (data.custom_str1 === "publisher_subscription") {
       return handlePublisherSubscriptionItn(admin, data);
@@ -145,60 +144,6 @@ Deno.serve(async (req) => {
     return new Response("error logged", { status: 200 });
   }
 });
-
-// deno-lint-ignore no-explicit-any
-async function handleContentStudioSubscriptionItn(admin: any, data: Record<string, string>) {
-  const { data: subscription, error: subError } = await admin
-    .from("content_studio_subscriptions")
-    .select("*")
-    .eq("id", data.m_payment_id)
-    .maybeSingle();
-  if (subError || !subscription) {
-    console.error("payfast-notify: unknown content studio subscription", data.m_payment_id);
-    return new Response("unknown subscription", { status: 200 });
-  }
-
-  // Same reasoning as the amount check above for one-off payments — never
-  // trust the ITN amount blindly. R99/month is fixed, so any mismatch means
-  // something's wrong (a tampered request, a stale price on an old link) and
-  // this subscription should not be activated off the back of it.
-  const received = Number.parseFloat(data.amount_gross ?? "0");
-  if (Math.abs(received - 99.0) > 0.01 && data.payment_status === "COMPLETE") {
-    console.error("payfast-notify: content studio amount mismatch", { received, subscription_id: subscription.id });
-    return new Response("amount mismatch", { status: 200 });
-  }
-
-  if (data.payment_status === "COMPLETE") {
-    // Each successful ITN (first payment or a monthly recurring charge)
-    // pushes the period a month further out from whichever is later — the
-    // stored period end or now — so a late-arriving webhook never shortens
-    // what was already paid for.
-    const base = subscription.current_period_end && new Date(subscription.current_period_end) > new Date()
-      ? new Date(subscription.current_period_end)
-      : new Date();
-    const nextPeriodEnd = new Date(base);
-    nextPeriodEnd.setMonth(nextPeriodEnd.getMonth() + 1);
-
-    await admin.from("content_studio_subscriptions").update({
-      status: "active",
-      payfast_token: data.token ?? subscription.payfast_token,
-      current_period_end: nextPeriodEnd.toISOString(),
-      updated_at: new Date().toISOString(),
-    }).eq("id", subscription.id);
-  } else if (data.payment_status === "FAILED") {
-    await admin.from("content_studio_subscriptions").update({
-      status: subscription.status === "active" ? "past_due" : "cancelled",
-      updated_at: new Date().toISOString(),
-    }).eq("id", subscription.id);
-  } else if (data.payment_status === "CANCELLED") {
-    await admin.from("content_studio_subscriptions").update({
-      status: "cancelled",
-      updated_at: new Date().toISOString(),
-    }).eq("id", subscription.id);
-  }
-
-  return new Response("ok", { status: 200 });
-}
 
 // deno-lint-ignore no-explicit-any
 async function handlePublisherSubscriptionItn(admin: any, data: Record<string, string>) {
