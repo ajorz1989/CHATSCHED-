@@ -22,7 +22,7 @@ export default function BusinessSuccessArticle() {
         to="/business-success"
         className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-billboard-inkSoft hover:text-billboard-ink mb-6"
       >
-        \u2190 Back to Business Success Centre
+        ← Back to Business Success Centre
       </Link>
 
       <span className="inline-block font-mono text-xs font-semibold uppercase tracking-wider border-2 border-billboard-ink bg-billboard-paperDim px-2.5 py-1 rounded mb-4">
