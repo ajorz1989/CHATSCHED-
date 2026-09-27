@@ -2,19 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { supabase } from "../../lib/supabase";
-import { redirectToPayfast } from "../../lib/payfastRedirect";
 import { setContentStudioDraft } from "../../lib/contentStudioDraft";
-import { formatCurrency } from "../../lib/currency";
 import { isSubscriptionUsable } from "../../lib/subscriptions";
 import {
   CONTENT_STUDIO_FORMATS,
-  CONTENT_STUDIO_MONTHLY_PRICE,
-  CONTENT_STUDIO_DAILY_LIMIT,
-  CONTENT_STUDIO_MONTHLY_LIMIT,
   CONTENT_STUDIO_FREE_MONTHLY_LIMIT,
   CONTENT_STUDIO_FREE_DAILY_LIMIT,
 } from "../../lib/constants";
-import type { ContentStudioSubscription, BusinessSubscription } from "../../lib/types";
+import type { BusinessSubscription } from "../../lib/types";
 import { SkeletonBlock } from "../Skeleton";
 
 const DEFAULT_FORMAT_IDS = CONTENT_STUDIO_FORMATS.map((f) => f.id);
@@ -39,17 +34,8 @@ export default function ContentStudio() {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
 
-  const [subscription, setSubscription] = useState<ContentStudioSubscription | null>(null);
-  // The once-off ChatSched Business activation fee (business_subscriptions,
-  // schema_phase86) — checked alongside the R99/month Content Studio
-  // subscription above because activation alone now unlocks a free tier
-  // of Content Studio (schema_phase103). See content-studio-generate's
-  // own header comment for why this is two tiers rather than one.
   const [activation, setActivation] = useState<BusinessSubscription | null>(null);
   const [loadingSub, setLoadingSub] = useState(true);
-  const [subscribing, setSubscribing] = useState(false);
-  const [subscribeError, setSubscribeError] = useState<string | null>(null);
-
   const [prompt, setPrompt] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -63,51 +49,8 @@ export default function ContentStudio() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isAdmin = profile?.role === "admin";
-  const isSubscribed = isAdmin || (subscription?.status === "active" && subscription.current_period_end && new Date(subscription.current_period_end) > new Date());
-  const isActivated = activation ? isSubscriptionUsable(activation.status) : false;
-  // A subscription is the better tier — same "activation is a floor, not
-  // a ceiling" rule the edge function applies.
-  const isActive = Boolean(isSubscribed || isActivated);
-  const activeTier: "subscription" | "free_activation" | null = isSubscribed ? "subscription" : isActivated ? "free_activation" : null;
-
-  async function loadSubscription() {
-    if (!user) return;
-    setLoadingSub(true);
-    const [{ data }, { data: activationData }] = await Promise.all([
-      supabase.from("content_studio_subscriptions").select("*").eq("business_id", user.id).maybeSingle(),
-      supabase.from("business_subscriptions").select("id, business_id, status, payfast_payment_id, paid_at, created_at").eq("business_id", user.id).maybeSingle(),
-    ]);
-    setSubscription((data ?? null) as ContentStudioSubscription | null);
-    setActivation((activationData ?? null) as BusinessSubscription | null);
-    setLoadingSub(false);
-  }
-
-  useEffect(() => {
-    loadSubscription();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
-
-  async function subscribe() {
-    setSubscribing(true);
-    setSubscribeError(null);
-    try {
-      const { data, error } = await supabase.functions.invoke("content-studio-subscribe", { body: {} });
-      setSubscribing(false);
-      if (error || data?.error) {
-        setSubscribeError(data?.error ?? "Couldn't start the subscription — try again in a moment.");
-        return;
-      }
-      redirectToPayfast(data.action_url, data.fields);
-    } catch {
-      // A genuine network failure throws here instead of returning an
-      // { error } result — without this, setSubscribing(false) never
-      // runs and the button is stuck disabled with no way to retry short
-      // of a refresh. See AuthContext.tsx for the same pattern.
-      setSubscribing(false);
-      setSubscribeError("Couldn't reach the server. Check your connection and try again.");
-    }
-  }
-
+  const isActivated = isAdmin || (activation ? isSubscriptionUsable(activation.status) : false);
+  const activeTier = isActivated ? "free_activation" : null;
   function toggleFormat(id: string) {
     setSelectedFormats((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
   }
@@ -175,7 +118,7 @@ export default function ContentStudio() {
         // Neither an active subscription nor an active activation fee —
         // re-check both on the next render rather than guessing which
         // one lapsed.
-        loadSubscription();
+        loadActivation();
       }
       setGenError(data?.error ?? "Couldn't generate content — try again in a moment.");
       return;
@@ -202,68 +145,41 @@ export default function ContentStudio() {
     return <SkeletonBlock className="h-40" />;
   }
 
-  if (!isActive) {
+  if (!isActivated) {
     return (
-      <div>
-        <div className="border-[3px] border-billboard-ink rounded-lg p-6 md:p-8 bg-billboard-paperDim">
-          <span className="inline-block font-mono text-[10px] font-semibold uppercase tracking-wider border-2 border-billboard-ink bg-billboard-yellow px-2.5 py-1 rounded mb-3">AI Content Studio</span>
-          <h3 className="font-display text-xl mb-2">Upload a photo. Get 9 ready-to-post pieces of content.</h3>
-          <p className="text-sm text-billboard-inkSoft mb-5 max-w-lg">
-            Upload one photo — or just describe what you want — and get a Facebook post, Instagram caption, LinkedIn post, TikTok caption, WhatsApp status, X post, Google Business Profile update, blog article, and email newsletter, all generated together. Copy anything straight to a creator's request.
-          </p>
-          <div className="flex flex-wrap gap-1.5 mb-6">
-            {CONTENT_STUDIO_FORMATS.map((f) => (
-              <span key={f.id} className="font-mono text-[10px] border border-billboard-ink rounded-full px-2 py-1 bg-white">{f.label}</span>
-            ))}
-          </div>
-          <div className="flex flex-wrap items-center gap-4">
-            <button
-              onClick={subscribe}
-              disabled={subscribing}
-              className="bg-billboard-yellow border-[3px] border-billboard-ink font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition disabled:opacity-60"
-            >
-              {subscribing ? "Redirecting…" : `Subscribe — ${formatCurrency(CONTENT_STUDIO_MONTHLY_PRICE)}/month`}
-            </button>
-            {subscription?.status === "past_due" && <span className="text-xs font-semibold text-billboard-red">Your last payment didn't go through — subscribe again to reactivate.</span>}
-            {subscription?.status === "cancelled" && <span className="text-xs text-billboard-inkSoft">Your subscription was cancelled — resubscribe any time.</span>}
-          </div>
-          {subscribeError && <p className="text-billboard-red text-xs font-semibold mt-3">{subscribeError}</p>}
-          <p className="text-xs text-billboard-inkSoft mt-4">Billed monthly via PayFast, cancel any time. Fair-use limits apply ({CONTENT_STUDIO_DAILY_LIMIT}/day, {CONTENT_STUDIO_MONTHLY_LIMIT}/month) to keep it sustainable for everyone.</p>
-          <p className="text-xs text-billboard-inkSoft mt-2">
-            Already paid your once-off ChatSched Business activation fee? That alone unlocks a free tier
-            ({CONTENT_STUDIO_FREE_MONTHLY_LIMIT}/month) — no subscription needed.{" "}
-            <Link to="/activation-fee-info" className="font-semibold underline">Check your activation status →</Link>
-          </p>
-        </div>
+      <div className="border-[3px] border-billboard-ink rounded-lg p-6 md:p-8 bg-billboard-paperDim">
+        <span className="inline-block font-mono text-[10px] font-semibold uppercase tracking-wider border-2 border-billboard-ink bg-billboard-yellow px-2.5 py-1 rounded mb-3">AI Content Studio</span>
+        <h3 className="font-display text-xl mb-2">Included with your Business activation.</h3>
+        <p className="text-sm text-billboard-inkSoft max-w-lg mb-5">This tool is part of your full Marketing Suite. Activate ChatSched Business once to unlock it — there is no separate Content Studio payment.</p>
+        <Link to="/activation-fee-info" className="inline-flex items-center gap-2 bg-billboard-yellow border-[3px] border-billboard-ink font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition">
+          Activate Business — R399 once-off →
+        </Link>
       </div>
     );
   }
-
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
         <div>
           <h3 className="font-display text-lg">Create content</h3>
           <p className="text-xs text-billboard-inkSoft mt-0.5">
-            {activeTier === "subscription" ? "Active subscription" : "Free tier (via activation fee)"} ·{" "}
+            Included with Business activation ·{" "}
             {usage
               ? `${usage.today}/${usage.dailyLimit} today · ${usage.month}/${usage.monthlyLimit} this month`
-              : activeTier === "subscription"
-              ? `up to ${CONTENT_STUDIO_DAILY_LIMIT}/day`
               : `up to ${CONTENT_STUDIO_FREE_DAILY_LIMIT}/day, ${CONTENT_STUDIO_FREE_MONTHLY_LIMIT}/month`}
           </p>
         </div>
-        {activeTier === "free_activation" && (
+        {false && (
           <button
-            onClick={subscribe}
-            disabled={subscribing}
+            onClick={() => undefined}
+            disabled
             className="font-mono text-[10px] font-semibold uppercase border-2 border-billboard-ink rounded px-3 py-1.5 hover:bg-billboard-paperDim transition disabled:opacity-60 whitespace-nowrap"
           >
-            {subscribing ? "Redirecting…" : `Upgrade — ${formatCurrency(CONTENT_STUDIO_MONTHLY_PRICE)}/mo for more`}
+            ""
           </button>
         )}
       </div>
-      {activeTier === "free_activation" && subscribeError && <p className="text-billboard-red text-xs font-semibold -mt-3 mb-4">{subscribeError}</p>}
+      
 
       <div className="border-[3px] border-billboard-ink rounded p-5 space-y-4">
         <div>
@@ -325,7 +241,7 @@ export default function ContentStudio() {
         <div className="mt-6 space-y-4">
           <p className="font-semibold text-sm">
             Your generated content
-            {tier && <span className="font-normal text-xs text-billboard-inkSoft"> · {tier === "subscription" ? "subscription tier" : "free activation tier"}</span>}
+            {tier && <span className="font-normal text-xs text-billboard-inkSoft"> · "included activation tier"</span>}
           </p>
           {selectedFormats.filter((id) => results[id]).map((id) => {
             const format = CONTENT_STUDIO_FORMATS.find((f) => f.id === id);
