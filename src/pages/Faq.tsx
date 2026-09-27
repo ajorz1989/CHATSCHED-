@@ -11,7 +11,6 @@ import {
   BUSINESS_SUBSCRIPTION_PRICE,
   PUBLISHER_SUBSCRIPTION_PRICE,
   BUSINESS_LAUNCH_CREDIT_AMOUNT,
-  CONTENT_STUDIO_MONTHLY_PRICE,
   CONTENT_STUDIO_FREE_MONTHLY_LIMIT,
   FEATURED_PLACEMENT_MONTHLY_PRICE,
   PLATFORM_BANK_DETAILS,
@@ -111,7 +110,7 @@ const CATEGORIES: FaqCategory[] = [
       },
       {
         q: "What is the AI Content Studio and do I need to pay for it?",
-        a: `Content Studio is a built-in AI tool that writes social media captions, Facebook posts, Instagram captions, LinkedIn posts, TikTok scripts, WhatsApp statuses, blog articles, and email newsletters in your brand's voice — directly from your business description. ChatSched Business activation (${formatCurrency(BUSINESS_SUBSCRIPTION_PRICE)} once-off) includes ${CONTENT_STUDIO_FREE_MONTHLY_LIMIT} free generations per month at no extra cost. For heavier use, the full Content Studio subscription is ${formatCurrency(CONTENT_STUDIO_MONTHLY_PRICE)}/month.`,
+        a: `Content Studio is included with ChatSched Business activation at no extra charge. It is part of the full Marketing Suite and becomes available when your business activation is active. Fair-use generation limits apply.`
       },
       {
         q: "What is the R199 launch credit I keep seeing mentioned?",
