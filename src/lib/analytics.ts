@@ -1,55 +1,92 @@
-const domain = import.meta.env.VITE_PLAUSIBLE_DOMAIN as string | undefined;
+const GOOGLE_ANALYTICS_ID = "G-GTQJRRP6SS";
 
-/** True once VITE_PLAUSIBLE_DOMAIN is set — see .env.example. */
-export const isAnalyticsConfigured = Boolean(domain);
+let googleAnalyticsScriptLoaded = false;
 
 declare global {
   interface Window {
-    plausible?: (event: string, options?: { props?: Record<string, string> }) => void;
+    dataLayer?: unknown[];
+    gtag?: (...args: unknown[]) => void;
+    [key: string]: unknown;
   }
 }
 
 /**
- * Loads Plausible — chosen over Google Analytics because it's cookieless
- * and doesn't fingerprint or build ad profiles, which matches what
- * Privacy.tsx already promises ("limited analytics... we don't use these
- * technologies to build advertising profiles about you for third parties")
- * without needing a cookie-consent banner to stay true to that. No script
- * loads at all — not even to plausible.io — unless VITE_PLAUSIBLE_DOMAIN is
- * set, so local dev and any deploy that hasn't configured it stay silent.
+ * Google Analytics 4 integration.
  *
- * Uses the "manual" build of Plausible's script (no automatic pageview on
- * load) because this is a client-rendered SPA — route changes don't
- * trigger a real page load for the default script to catch. trackPageview()
- * is called explicitly on every route change instead (see App.tsx).
+ * The app uses a custom analytics consent banner, so the Google tag library
+ * is only loaded after the visitor grants analytics consent. Once loaded,
+ * the standard gtag config records the initial page view; Google Analytics'
+ * enhanced measurement handles client-side browser-history page changes.
+ */
+export const isAnalyticsConfigured = true;
+
+/**
+ * Prepare the Google tag queue without loading Google's network script.
+ * This runs during app startup and is safe before consent because no data is
+ * sent until enableGoogleAnalytics() loads and configures the tag.
  */
 export function initAnalytics() {
-  if (!domain) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      "[ChatSched] Analytics isn't configured yet — set VITE_PLAUSIBLE_DOMAIN " +
-      "to enable it. No tracking script loads without it."
-    );
-    return;
+  window.dataLayer = window.dataLayer || [];
+  if (!window.gtag) {
+    window.gtag = (...args: unknown[]) => {
+      window.dataLayer?.push(args);
+    };
   }
-  const script = document.createElement("script");
-  script.defer = true;
-  script.dataset.domain = domain;
-  script.src = "https://plausible.io/js/script.manual.js";
-  document.head.appendChild(script);
 }
 
-/** Call on every route change — see the <AnalyticsListener> in App.tsx. */
-export function trackPageview() {
-  window.plausible?.("pageview");
+/** Load and configure GA4 after analytics consent has been granted. */
+export function enableGoogleAnalytics() {
+  initAnalytics();
+
+  const disableKey = `ga-disable-${GOOGLE_ANALYTICS_ID}`;
+  window[disableKey] = false;
+
+  if (googleAnalyticsScriptLoaded || document.getElementById("chatsched-google-analytics")) {
+    window.gtag?.("config", GOOGLE_ANALYTICS_ID, {
+      allow_google_signals: false,
+      allow_ad_personalization_signals: false,
+    });
+    return;
+  }
+
+  const script = document.createElement("script");
+  script.id = "chatsched-google-analytics";
+  script.async = true;
+  script.src = `https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ANALYTICS_ID}`;
+  document.head.appendChild(script);
+
+  window.gtag?.("js", new Date());
+  window.gtag?.("config", GOOGLE_ANALYTICS_ID, {
+    allow_google_signals: false,
+    allow_ad_personalization_signals: false,
+  });
+
+  googleAnalyticsScriptLoaded = true;
+}
+
+/** Stop future GA4 collection when analytics consent is withdrawn. */
+export function disableGoogleAnalytics() {
+  const disableKey = `ga-disable-${GOOGLE_ANALYTICS_ID}`;
+  window[disableKey] = true;
+  window.gtag?.("consent", "update", {
+    analytics_storage: "denied",
+    ad_storage: "denied",
+    ad_user_data: "denied",
+    ad_personalization: "denied",
+  });
+}
+
+/** Send a named GA4 event when analytics is enabled. */
+export function trackEvent(name: string, props?: Record<string, string>) {
+  window.gtag?.("event", name, props);
 }
 
 /**
- * For a specific action worth naming beyond "visited a page" — e.g.
- * trackEvent("Request Submitted", { channel: "podcast" }). Optional; most
- * of what's useful here is already covered by pageviews on the funnel
- * pages (Browse → a profile → the request form).
+ * Retained as a compatibility export for existing imports. Standard GA4
+ * pageview collection is handled by the Google tag plus browser-history
+ * measurement for this SPA, rather than manually emitting duplicate
+ * pageviews here.
  */
-export function trackEvent(name: string, props?: Record<string, string>) {
-  window.plausible?.(name, props ? { props } : undefined);
+export function trackPageview() {
+  // Intentionally empty.
 }
