@@ -161,10 +161,6 @@ export default function ContentStudio() {
     return <SkeletonBlock className="h-40" />;
   }
 
-  if (loadingSub) {
-    return <SkeletonBlock className="h-40" />;
-  }
-
   if (!isActivated) {
     return (
       <div className="border-[3px] border-billboard-ink rounded-lg p-6 md:p-8 bg-billboard-paperDim">
@@ -189,15 +185,7 @@ export default function ContentStudio() {
               : `up to ${CONTENT_STUDIO_FREE_DAILY_LIMIT}/day, ${CONTENT_STUDIO_FREE_MONTHLY_LIMIT}/month`}
           </p>
         </div>
-        {false && (
-          <button
-            onClick={() => undefined}
-            disabled
-            className="font-mono text-[10px] font-semibold uppercase border-2 border-billboard-ink rounded px-3 py-1.5 hover:bg-billboard-paperDim transition disabled:opacity-60 whitespace-nowrap"
-          >
-            ""
-          </button>
-        )}
+
       </div>
       
 
