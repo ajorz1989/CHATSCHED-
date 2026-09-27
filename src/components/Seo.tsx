@@ -27,10 +27,15 @@
  * dropped.
  */
 export default function Seo({ title, description, noindex }: { title: string; description?: string; noindex?: boolean }) {
+  const location = useLocation();
+  const pathname = location.pathname === "/" ? "/" : location.pathname.replace(/\/+$/, "");
+  const canonical = `https://chatsched.com${pathname}`;
+
   return (
     <>
       <title>{title}</title>
       {description && <meta name="description" content={description} />}
+      <link rel="canonical" href={canonical} />
       {noindex && <meta name="robots" content="noindex, nofollow" />}
     </>
   );
