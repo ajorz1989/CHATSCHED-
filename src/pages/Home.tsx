@@ -55,49 +55,22 @@ function HomeMetrics() {
 }
 
 function HeroMockup() {
-  const { t } = useTranslation("home");
-  const placements = t("heroMockup.placements", { returnObjects: true }) as {
-    city: string; platform: string; audience: string; price: string; quote: string;
-  }[];
-
   return (
-    <div className="relative w-full max-w-[460px]">
-      <div className="relative border-[3px] border-billboard-ink rounded-xl bg-billboard-paper shadow-block -rotate-[1deg] overflow-hidden">
-        <div className="flex items-center justify-between gap-3 px-4 py-3 border-b-[3px] border-billboard-ink bg-white">
-          <div>
-            <div className="font-mono text-[9px] uppercase tracking-[0.14em] text-billboard-inkSoft">{t("heroMockup.marketplaceLabel")}</div>
-            <div className="font-display text-base mt-0.5">{t("heroMockup.liveNow")}</div>
-          </div>
-          <span className="font-mono text-[9px] font-bold uppercase bg-billboard-green text-white border-2 border-billboard-ink rounded-full px-2.5 py-1">
-            {t("heroMockup.ready")}
-          </span>
-        </div>
-        <div className="p-3 sm:p-4 space-y-2.5">
-          {placements.map((p, i) => (
-            <div key={i} className="border-2 border-billboard-ink rounded-lg bg-white p-3">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <strong className="block text-sm">{p.city}</strong>
-                  <div className="font-mono text-[9px] text-billboard-inkSoft mt-1">{p.platform} · {p.audience}</div>
-                </div>
-                <span className="shrink-0 font-mono text-[9px] font-bold bg-billboard-yellow border-2 border-billboard-ink rounded-full px-2 py-0.5">
-                  {t("heroMockup.verified")}
-                </span>
-              </div>
-              <div className="flex items-end justify-between gap-2 mt-3">
-                <div>
-                  <div className="font-mono text-[8px] uppercase text-billboard-inkSoft">{t("heroMockup.price")}</div>
-                  <div className="font-display text-xl leading-none mt-1">{p.price}</div>
-                </div>
-                <span className="text-[9px] text-billboard-inkSoft italic max-w-[48%] text-right">{p.quote}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="px-4 py-3 border-t-2 border-billboard-ink/15 bg-billboard-paperDim flex items-center justify-between gap-3">
-          <span className="font-mono text-[9px] uppercase tracking-wide text-billboard-inkSoft">Local inventory · verified supply</span>
-          <span className="font-bold text-xs">Live →</span>
-        </div>
+    <div className="relative w-full">
+      <div className="relative border-[3px] border-billboard-ink rounded-xl shadow-block -rotate-[1deg] overflow-hidden">
+        <video
+          className="block w-full h-auto"
+          width={960}
+          height={570}
+          src="/videos/hero-billboard.mp4"
+          poster="/videos/hero-billboard-poster.jpg"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          aria-hidden="true"
+        />
       </div>
     </div>
   );
