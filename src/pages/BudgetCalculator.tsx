@@ -607,20 +607,3 @@ export default function BudgetCalculator() {
     </div>
   );
 }
-      <div className="mt-14 pt-10 border-t-2 border-billboard-ink/10 text-center">
-        <p className="text-sm text-billboard-inkSoft">
-          Placement prices shown use live data from approved publishers on ChatSched.{" "}
-          Conversion rates are industry estimates.{" "}
-          Want the reasoning? Read{" "}
-          <Link
-            to="/business-success/calculating-your-campaign-budget"
-            className="underline font-semibold text-billboard-ink"
-          >
-            Calculating a campaign budget that actually makes sense
-          </Link>{" "}
-          in the Business Success Centre.
-        </p>
-      </div>
-    </div>
-  );
-}
