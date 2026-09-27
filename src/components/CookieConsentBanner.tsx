@@ -94,7 +94,7 @@ export default function CookieConsentBanner() {
                   <div className="flex-1">
                     <h4 className="font-display text-base mb-1">Analytics</h4>
                     <p className="text-sm text-billboard-paper/80">
-                      Helps us understand how you use ChatSched so we can make improvements. No personal data is stored, and we use Plausible (a privacy-first analytics service).
+                      Helps us understand how you use ChatSched so we can make improvements. Google Analytics 4 is loaded only when you allow analytics cookies.
                     </p>
                   </div>
                   <label className="ml-3 flex items-center cursor-pointer">
