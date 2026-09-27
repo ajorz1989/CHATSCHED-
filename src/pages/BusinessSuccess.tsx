@@ -22,7 +22,7 @@ export default function BusinessSuccess() {
   return (
     <div className="max-w-6xl mx-auto px-5 py-16">
       <Seo
-        title="Business Success Centre \u00b7 ChatSched"
+        title="Business Success Centre · ChatSched"
         description="Practical guides on getting your first campaign, choosing publishers, budgets, ROI, local growth, avoiding mistakes, and building a repeat campaign rhythm."
       />
       <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-green text-billboard-greenDeep px-3 py-1.5 rounded mb-3">
@@ -32,7 +32,7 @@ export default function BusinessSuccess() {
         Practical guidance for every stage of your campaigns.
       </h1>
       <p className="text-billboard-inkSoft max-w-xl mb-10">
-        From your first campaign to your fiftieth \u2014 straightforward guides on choosing publishers,
+        From your first campaign to your fiftieth — straightforward guides on choosing publishers,
         budgeting, measuring results, and growing locally.
       </p>
 
@@ -48,10 +48,10 @@ export default function BusinessSuccess() {
         <p className="text-white/85 max-w-xl mb-4">{featured.excerpt}</p>
         <div className="flex items-center gap-3 font-mono text-xs text-white/80">
           <span>{formatDate(featured.date)}</span>
-          <span>\u00b7</span>
+          <span>·</span>
           <span>{featured.readMins} min read</span>
           <span className="ml-auto font-bold text-white group-hover:gap-2 inline-flex items-center gap-1 transition-all">
-            Read \u2192
+            Read →
           </span>
         </div>
       </Link>
@@ -71,7 +71,7 @@ export default function BusinessSuccess() {
             <p className="text-sm text-billboard-inkSoft mb-4">{a.excerpt}</p>
             <div className="mt-auto flex items-center gap-2.5 font-mono text-[10px] text-billboard-inkSoft">
               <span>{formatDate(a.date)}</span>
-              <span>\u00b7</span>
+              <span>·</span>
               <span>{a.readMins} min read</span>
             </div>
           </Link>
@@ -89,7 +89,7 @@ export default function BusinessSuccess() {
           </h2>
           <p className="text-white/80 text-sm mb-6">
             Practical guides on local advertising, budgeting, and growing your business through
-            ChatSched \u2014 delivered straight to you. No spam.
+            ChatSched — delivered straight to you. No spam.
           </p>
           {subscribed ? (
             <div className="border-2 border-white/40 bg-white/10 rounded p-4 text-sm font-semibold">
@@ -133,7 +133,7 @@ export default function BusinessSuccess() {
           to="/browse"
           className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-yellow font-bold px-5 py-3 rounded hover:-translate-x-0.5 hover:-translate-y-0.5 transition"
         >
-          Browse Advertising \u2192
+          Browse Advertising →
         </Link>
       </div>
     </div>
