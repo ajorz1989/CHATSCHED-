@@ -17,7 +17,7 @@ export default function BusinessSuccessArticle() {
 
   return (
     <div className="max-w-2xl mx-auto px-5 py-16">
-      <Seo title={`${article.title} \u00b7 Business Success Centre`} description={article.excerpt} />
+      <Seo title={`${article.title} · Business Success Centre`} description={article.excerpt} />
       <Link
         to="/business-success"
         className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-billboard-inkSoft hover:text-billboard-ink mb-6"
@@ -31,7 +31,7 @@ export default function BusinessSuccessArticle() {
       <h1 className="text-3xl md:text-4xl mb-4 leading-tight">{article.title}</h1>
       <div className="flex items-center gap-3 font-mono text-xs text-billboard-inkSoft mb-10 pb-8 border-b-2 border-billboard-ink/15">
         <span>{formatDate(article.date)}</span>
-        <span>\u00b7</span>
+        <span>·</span>
         <span>{article.readMins} min read</span>
       </div>
 
@@ -82,7 +82,7 @@ export default function BusinessSuccessArticle() {
           to="/browse"
           className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-yellow font-bold px-5 py-3 rounded hover:-translate-x-0.5 hover:-translate-y-0.5 transition"
         >
-          Browse Advertising \u2192
+          Browse Advertising →
         </Link>
       </div>
     </div>
