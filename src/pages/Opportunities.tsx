@@ -23,7 +23,7 @@ const FALLBACK_TYPES = [
   "Brand Partnership",
 ];
 
-const V2_FEATURES = [
+const OPPORTUNITY_FEATURES = [
   {
     number: "01",
     title: "Structured briefs",
@@ -102,7 +102,7 @@ export default function Opportunities() {
     <div>
       <Seo
         title="Advertising Opportunities · ChatSched"
-        description="ChatSched Opportunities V2 connects verified businesses with relevant publishers through structured advertising and sponsorship briefs, smart matching, deadlines and on-platform proposals."
+        description="ChatSched connects verified businesses with relevant publishers through structured advertising and sponsorship briefs, smart matching, deadlines and on-platform proposals."
       />
 
       <section className="bg-billboard-green text-white border-b-[3px] border-billboard-ink py-16 md:py-24 overflow-hidden">
@@ -110,7 +110,7 @@ export default function Opportunities() {
           <div className="grid lg:grid-cols-[1.08fr_0.92fr] gap-12 items-center">
             <div>
               <span className="inline-flex items-center gap-2 font-mono text-xs font-semibold uppercase tracking-wider border-2 border-billboard-yellow text-billboard-yellow px-3 py-1.5 rounded mb-5">
-                Opportunities V2
+                Opportunity marketplace
               </span>
               <h1 className="font-display text-5xl md:text-7xl leading-[.96] mb-5">
                 Turn a marketing need into a matched advertising opportunity.
@@ -148,41 +148,70 @@ export default function Opportunities() {
             <div className="relative">
               <div className="border-[3px] border-billboard-yellow rounded-xl bg-white/5 p-5 shadow-block rotate-1">
                 <div className="flex items-center justify-between mb-4">
-                  <span className="font-mono text-[10px] uppercase tracking-wider text-white/70">V2 opportunity brief</span>
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-white/70">Opportunity brief</span>
                   <span className="font-mono text-[10px] font-bold uppercase bg-billboard-yellow text-billboard-ink px-2 py-1 rounded">
                     OPEN
                   </span>
                 </div>
 
                 <div className="border-2 border-white/20 rounded-lg p-4 bg-white/5 mb-3">
-                  <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-start justify-between gap-3">
                     <div>
-                      <div className="text-xs font-mono text-billboard-yellow mb-1">Event Sponsorship</div>
-                      <div className="font-display text-xl">Local brand partner needed</div>
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <span className="text-xs font-mono text-billboard-yellow">BUSINESS BRIEF</span>
+                        <span className="font-mono text-[9px] uppercase border border-white/20 text-white/55 px-1.5 py-0.5 rounded">Cape Town</span>
+                      </div>
+                      <div className="font-display text-xl">Local event brand partner</div>
                     </div>
                     <span className="font-mono text-[9px] font-bold uppercase border border-billboard-yellow text-billboard-yellow px-2 py-1 rounded">
-                      MATCH 92
+                      OPEN
                     </span>
                   </div>
-                  <div className="grid grid-cols-2 gap-2 mt-4 text-xs text-white/70">
-                    <span>Cape Town · Events</span>
-                    <span>Budget: R5k–R12k</span>
-                    <span>Applications: 14 Oct</span>
-                    <span>Campaign: 20–27 Oct</span>
+
+                  <div className="grid grid-cols-2 gap-2 mt-4 text-xs">
+                    <div className="rounded-md border border-white/10 bg-white/[0.03] p-2.5">
+                      <div className="font-mono text-[8px] text-white/45 uppercase">Deliverables</div>
+                      <div className="mt-1 text-white/80">2 social posts + event mention</div>
+                    </div>
+                    <div className="rounded-md border border-white/10 bg-white/[0.03] p-2.5">
+                      <div className="font-mono text-[8px] text-white/45 uppercase">Budget</div>
+                      <div className="mt-1 text-white/80">R5k–R12k</div>
+                    </div>
+                    <div className="rounded-md border border-white/10 bg-white/[0.03] p-2.5">
+                      <div className="font-mono text-[8px] text-white/45 uppercase">Publisher fit</div>
+                      <div className="mt-1 text-white/80">Events + local audience</div>
+                    </div>
+                    <div className="rounded-md border border-white/10 bg-white/[0.03] p-2.5">
+                      <div className="font-mono text-[8px] text-white/45 uppercase">Apply by</div>
+                      <div className="mt-1 text-white/80">14 Oct · 3 days left</div>
+                    </div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 text-center">
-                  {[
-                    ["AUDIENCE", "Local families"],
-                    ["SUPPLY", "3 publishers"],
-                    ["FLOW", "Proposal → booking"],
-                  ].map(([label, value]) => (
-                    <div key={label} className="border-2 border-white/15 rounded-lg p-3 bg-white/[0.03]">
-                      <div className="font-mono text-[9px] text-white/50">{label}</div>
-                      <div className="font-semibold text-xs mt-1">{value}</div>
-                    </div>
-                  ))}
+                <div className="border-2 border-white/15 rounded-lg p-3 bg-white/[0.03]">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-mono text-[9px] uppercase tracking-wide text-white/50">Publisher applications</span>
+                    <span className="font-mono text-[9px] font-bold text-billboard-yellow">03</span>
+                  </div>
+                  <div className="space-y-2">
+                    {[
+                      ["Cape Local Guide", "R6,500", "Proposal submitted"],
+                      ["Cape Town Events", "R8,000", "Awaiting review"],
+                    ].map(([name, price, status]) => (
+                      <div key={name} className="flex items-center justify-between gap-3 border border-white/10 rounded-md px-3 py-2">
+                        <div className="min-w-0">
+                          <div className="font-semibold text-xs truncate">{name}</div>
+                          <div className="font-mono text-[8px] text-white/45 uppercase mt-0.5">{status}</div>
+                        </div>
+                        <div className="font-mono text-[10px] text-billboard-yellow shrink-0">{price}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-3 flex items-center justify-between gap-3 text-[9px] font-mono uppercase tracking-wide text-white/45">
+                  <span>Brief → proposal → booking</span>
+                  <span>Private contact details</span>
                 </div>
               </div>
 
@@ -203,7 +232,7 @@ export default function Opportunities() {
                 One engine. Multiple advertising opportunities.
               </h2>
               <p className="text-billboard-inkSoft">
-                ChatSched V2 supports a broader range of digital, physical, community, events, sports and sponsorship briefs.
+                ChatSched supports a broad range of digital, physical, community, events, sports and sponsorship briefs.
               </p>
             </div>
             <div className="font-mono text-xs uppercase tracking-wide border-2 border-billboard-ink rounded px-3 py-2 bg-billboard-paperDim">
@@ -230,17 +259,17 @@ export default function Opportunities() {
       <section className="py-16 bg-billboard-paperDim border-b-[3px] border-billboard-ink">
         <div className="max-w-6xl mx-auto px-5">
           <div className="max-w-2xl mb-9">
-            <span className="font-mono text-xs font-bold uppercase tracking-wider">What changed in V2</span>
+            <span className="font-mono text-xs font-bold uppercase tracking-wider">How the opportunity engine works</span>
             <h2 className="font-display text-3xl md:text-4xl mt-2 mb-3">
               More structure before the first proposal.
             </h2>
             <p className="text-billboard-inkSoft">
-              The upgraded engine gives businesses and publishers more useful information before a proposal is made, while keeping the marketplace workflow controlled by ChatSched.
+              The opportunity engine gives businesses and publishers useful information before a proposal is made, while keeping the marketplace workflow controlled by ChatSched.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {V2_FEATURES.map((feature) => (
+            {OPPORTUNITY_FEATURES.map((feature) => (
               <div key={feature.number} className="border-[3px] border-billboard-ink rounded-xl p-5 bg-white">
                 <div className="font-display text-3xl text-billboard-green mb-3">{feature.number}</div>
                 <h3 className="font-bold text-lg mb-2">{feature.title}</h3>
