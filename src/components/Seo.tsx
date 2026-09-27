@@ -1,3 +1,5 @@
+import { useLocation } from "react-router-dom";
+
 /**
  * Per-page title + meta description, using React 19's native support for
  * hoisting <title>/<meta> rendered anywhere in the tree up to <head> — no
