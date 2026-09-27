@@ -327,13 +327,10 @@ export const ADVERTISE_PRODUCTS: { value: AdvertiseProduct; label: string; blurb
 export const MAX_PROOF_SCREENSHOT_BYTES = 5 * 1024 * 1024;
 export const ALLOWED_PROOF_SCREENSHOT_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
-export const CONTENT_STUDIO_MONTHLY_PRICE = 99;
-export const CONTENT_STUDIO_DAILY_LIMIT = 15;
 
 export const PUBLISHER_SUBSCRIPTION_PRICE = 199;
 export const BUSINESS_SUBSCRIPTION_PRICE = 399;
 export const BUSINESS_LAUNCH_CREDIT_AMOUNT = 199;
-export const CONTENT_STUDIO_MONTHLY_LIMIT = 150;
 
 export const CONTENT_STUDIO_FREE_MONTHLY_LIMIT = 15;
 export const CONTENT_STUDIO_FREE_DAILY_LIMIT = 5;
