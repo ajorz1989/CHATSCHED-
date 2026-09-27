@@ -55,11 +55,19 @@ function HomeMetrics() {
 }
 
 function HeroMockup() {
+  // The source video (960x570) has the actual billboard card centred in a
+  // large yellow margin (card + shadow occupy x 90-880, y 126-452). That
+  // margin blends into the yellow hero, so the old CSS border framed empty
+  // space and the card looked small and floating. Crop to the card (plus a
+  // few px of breathing room) instead: the container takes the card's aspect
+  // ratio and the video is offset/scaled inside it. The card already carries
+  // its own border and shadow, so no second CSS frame is drawn around it.
   return (
     <div className="relative w-full">
-      <div className="relative border-[3px] border-billboard-ink rounded-xl shadow-block -rotate-[1deg] overflow-hidden">
+      <div className="relative w-full overflow-hidden" style={{ aspectRatio: "802 / 338" }}>
         <video
-          className="block w-full h-auto"
+          className="absolute block max-w-none pointer-events-none"
+          style={{ width: "119.7%", left: "-10.47%", top: "-35.5%" }}
           width={960}
           height={570}
           src="/videos/hero-billboard.mp4"
