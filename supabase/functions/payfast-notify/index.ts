@@ -502,7 +502,7 @@ async function handleFeaturedPlacementSubscriptionItn(admin: any, data: Record<s
 
   if (data.payment_status === "COMPLETE") {
     // Same "push the period a month further from whichever is later"
-    // logic as handleContentStudioSubscriptionItn — a late-arriving
+    // logic used by the remaining recurring placement product — a late-arriving
     // webhook never shortens what was already paid for.
     const base = subscription.current_period_end && new Date(subscription.current_period_end) > new Date()
       ? new Date(subscription.current_period_end)
