@@ -555,7 +555,6 @@ function ListingEditor({ listing, onChanged }: { listing: AJListing; onChanged: 
           )}
         </div>
       )}
-    </div>
       <div className="mt-6 pt-6 border-t-2 border-billboard-paperDim">
         <PortfolioManager
           publisher={{
@@ -567,5 +566,6 @@ function ListingEditor({ listing, onChanged }: { listing: AJListing; onChanged: 
           storagePathPrefix={user ? `${user.id}/aj-${listing.id}` : undefined}
         />
       </div>
+    </div>
   );
 }
