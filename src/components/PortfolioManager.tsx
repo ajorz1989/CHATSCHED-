@@ -79,7 +79,8 @@ export default function PortfolioManager({
     }
 
     const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
-    const path = `${user.id}/${Date.now()}.${ext}`;
+    const basePath = storagePathPrefix?.replace(/\/+$/, "") || user.id;
+    const path = `${basePath}/${Date.now()}.${ext}`;
 
     const { error: uploadErr } = await supabase.storage.from("portfolio-images").upload(path, file, { cacheControl: "3600", upsert: false });
     if (uploadErr) {
