@@ -9,6 +9,7 @@ import LiveChannelTabs from "../components/LiveChannelTabs";
 import RecentlyViewedStrip from "../components/RecentlyViewedStrip";
 import Seo from "../components/Seo";
 import ToolIcon from "../components/ToolIcon";
+import { HeroTopBand, HeroBottomBand } from "../components/HomeHeroBands";
 import type { Tool } from "../lib/types";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
 
@@ -340,30 +341,16 @@ export default function Home() {
   return (
     <>
       <Seo title={t("seo.title")} description={t("seo.description")} />
-      <section className="bg-billboard-yellow border-b-[3px] border-billboard-ink overflow-hidden py-12 sm:py-16 md:py-24">
-        <div className="max-w-6xl mx-auto px-4 sm:px-5 grid md:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] gap-9 sm:gap-12 items-center">
-          <div className="min-w-0">
-            <span className={`eyebrow dark-bg transition-all duration-500 ${loaded ? "opacity-100" : "opacity-0"}`}>{t("hero.badge")}</span>
-            <h1 className={`text-4xl sm:text-5xl md:text-7xl leading-[.98] mb-5 transition-all duration-700 ${loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-              {t("hero.title1")}<br />{t("hero.title2")}
-            </h1>
-            <p className="text-lg md:text-xl text-billboard-inkSoft max-w-[50ch] mb-7 leading-relaxed">{t("hero.subtitle")}</p>
-            <div className="flex flex-col sm:flex-row flex-wrap gap-3">
-              <Link to="/build-my-campaign" className="brand-button dark">{t("hero.ctaBuildCampaign")}</Link>
-              <Link to="/browse" className="brand-button">{t("hero.ctaBrowseMarketplace")}</Link>
-            </div>
-            <Link to="/for-publishers" className="inline-flex font-bold text-sm mt-4 underline underline-offset-4">{t("publisherCta.title")} →</Link>
-            <div className="flex flex-wrap gap-x-5 gap-y-2 mt-5 font-mono text-[10px] font-bold uppercase">
-              <span>✓ {t("hero.noAccount")}</span>
-              <span>✓ {t("hero.secure")}</span>
-              <span>✓ {t("hero.tracked")}</span>
-            </div>
-          </div>
-          <div className={`min-w-0 flex justify-center transition-all duration-700 ${loaded ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}>
-            <HeroMockup />
-          </div>
+      <HeroTopBand loaded={loaded} />
+      {/* Video band — HeroMockup is unchanged; only its wrapper now sits
+          between the two hero bands. Same yellow as the top band so the
+          card reads as part of one continuous hero. */}
+      <section className="bg-billboard-yellow border-b-[3px] border-billboard-ink overflow-hidden pb-12 sm:pb-16 md:pb-20">
+        <div className={`max-w-3xl mx-auto px-4 sm:px-5 flex justify-center transition-all duration-700 ${loaded ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}>
+          <HeroMockup />
         </div>
       </section>
+      <HeroBottomBand />
       <HomeMetrics />
       <PathwaysSection />
       <MarketplaceSection publishers={publishers} loading={loading} />
