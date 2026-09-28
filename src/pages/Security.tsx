@@ -9,43 +9,43 @@ const LAST_REVIEWED = "September 2026";
 const PRACTICES = [
   {
     title: "Row-level security on every table",
-    body: "Every table in the database enforces its own access rules at the database layer \u2014 a business can\u2019t read another business\u2019s requests, a publisher can\u2019t read another publisher\u2019s earnings, and admin access requires a verified admin account. This runs whether the request comes from the app or directly against the API.",
+    body: "Every table in the database enforces its own access rules at the database layer — a business can’t read another business’s requests, a publisher can’t read another publisher’s earnings, and admin access requires a verified admin account. This runs whether the request comes from the app or directly against the API.",
   },
   {
     title: "Mandatory two-factor authentication for admin",
-    body: "Every admin account requires a TOTP authenticator app before it can access anything in /admin \u2014 not optional, and enforced at login, not just recommended in a settings page.",
+    body: "Every admin account requires a TOTP authenticator app before it can access anything in /admin — not optional, and enforced at login, not just recommended in a settings page.",
   },
   {
     title: "Two-factor authentication for users",
-    body: "Publishers and businesses can enable TOTP-based two-factor authentication from their account settings. Once enabled, a valid authenticator code is required at every login \u2014 a compromised password alone isn\u2019t enough to access the account.",
+    body: "Publishers and businesses can enable TOTP-based two-factor authentication from their account settings. Once enabled, a valid authenticator code is required at every login — a compromised password alone isn’t enough to access the account.",
   },
   {
     title: "All data encrypted in transit",
-    body: "Every connection to ChatSched is served over HTTPS with TLS. There is no plaintext fallback \u2014 unencrypted requests are redirected automatically. Data between the app and the database also travels over encrypted connections only.",
+    body: "Every connection to ChatSched is served over HTTPS with TLS. There is no plaintext fallback — unencrypted requests are redirected automatically. Data between the app and the database also travels over encrypted connections only.",
   },
   {
     title: "Payments verified, not trusted",
-    body: "Every payment notification from PayFast is independently re-verified \u2014 the signature is recomputed server-side and checked against what was received before a payment is ever marked as paid. A forged or tampered notification fails that check and is rejected.",
+    body: "Every payment notification from PayFast is independently re-verified — the signature is recomputed server-side and checked against what was received before a payment is ever marked as paid. A forged or tampered notification fails that check and is rejected.",
   },
   {
     title: "Third-party credentials encrypted at rest",
-    body: "OAuth tokens for connected social accounts are encrypted (AES-256-GCM) before they\u2019re stored, with the encryption key held only as a server-side secret, never in the database itself. A database-level exposure alone isn\u2019t enough to make those credentials usable.",
+    body: "OAuth tokens for connected social accounts are encrypted (AES-256-GCM) before they’re stored, with the encryption key held only as a server-side secret, never in the database itself. A database-level exposure alone isn’t enough to make those credentials usable.",
   },
   {
     title: "Session management and expiry",
-    body: "Authentication tokens expire after a fixed window. Users can sign out from all active sessions at once from their account settings, immediately invalidating any session on any device \u2014 useful after a lost phone or a suspected account compromise.",
+    body: "Authentication tokens expire after a fixed window. Users can sign out from all active sessions at once from their account settings, immediately invalidating sessions across devices.",
   },
   {
     title: "Rate limiting and brute-force protection",
-    body: "Login attempts, password resets, and public form submissions are rate-limited server-side. Repeated failed attempts trigger a temporary lockout before any account can be accessed \u2014 automated credential-stuffing attacks are blocked before they can make progress.",
+    body: "Login attempts, password resets, and public form submissions are rate-limited server-side. Repeated failed attempts can trigger a temporary lockout, helping limit automated credential-stuffing attempts.",
   },
   {
     title: "Every admin action is logged",
-    body: "Status changes, approvals, and other admin actions are written to an audit log \u2014 who did what, to which record, and when \u2014 so admin activity is reviewable, not just trusted.",
+    body: "Status changes, approvals, and other admin actions are written to an audit log — who did what, to which record, and when — so admin activity is reviewable, not just trusted.",
   },
   {
     title: "Self-service data deletion",
-    body: "Accounts can be deleted directly from account settings, not just requested by email. Deletion is blocked while something financially unresolved is still tied to the account, so it can\u2019t be used to make an active request vanish on the other party.",
+    body: "Accounts can be deleted directly from account settings, not just requested by email. Deletion is blocked while something financially unresolved is still tied to the account, so it can’t be used to make an active request vanish on the other party.",
   },
 ];
 
@@ -53,8 +53,8 @@ export default function Security() {
   return (
     <div>
       <Seo
-        title="Security \u00b7 ChatSched"
-        description="How ChatSched protects data and accounts \u2014 row-level security, mandatory admin 2FA, user 2FA, TLS encryption, verified payment webhooks, session management, rate limiting, encrypted credentials, audit logging, and self-service data deletion."
+        title="Security · ChatSched"
+        description="How ChatSched protects data and accounts — row-level security, mandatory admin 2FA, user 2FA, TLS encryption, verified payment webhooks, session management, rate limiting, encrypted credentials, audit logging, and self-service data deletion."
       />
 
       {/* Hero */}
@@ -67,7 +67,7 @@ export default function Security() {
             How ChatSched protects data and accounts.
           </h1>
           <p className="text-lg text-billboard-paperDim/90 max-w-xl mb-4">
-            This is about the platform itself \u2014 how accounts, payments and data are protected.
+            This is about the platform itself — how accounts, payments and data are protected.
             For how the marketplace guards against fraud and fake audiences, see the{" "}
             <Link to="/trust/fraud-prevention" className="underline hover:text-billboard-yellow transition">
               Trust Centre
@@ -111,13 +111,13 @@ export default function Security() {
               <h3 className="font-bold text-sm mb-1">What to report</h3>
               <p className="text-sm text-billboard-inkSoft">
                 Authentication bypasses, data exposure, payment manipulation, privilege escalation,
-                or anything that could let one user access another user\u2019s data or funds.
+                or anything that could let one user access another user’s data or funds.
               </p>
             </div>
             <div>
               <h3 className="font-bold text-sm mb-1">What to expect</h3>
               <p className="text-sm text-billboard-inkSoft">
-                We\u2019ll acknowledge your report within 2 business days and keep you updated as
+                We’ll acknowledge your report within 2 business days and keep you updated as
                 we investigate. We ask that you give us reasonable time to fix the issue before
                 any public disclosure.
               </p>
@@ -140,8 +140,8 @@ export default function Security() {
               <h3 className="font-bold text-sm mb-1">Out of scope</h3>
               <p className="text-sm text-billboard-inkSoft">
                 Social engineering, phishing, denial-of-service, and reports that require
-                physical access to a device are out of scope. We also can\u2019t act on reports
-                that don\u2019t include a reproducible way to verify the issue.
+                physical access to a device are out of scope. We also can’t act on reports
+                that don’t include a reproducible way to verify the issue.
               </p>
             </div>
           </div>
@@ -149,7 +149,7 @@ export default function Security() {
             href={`mailto:${CONTACT_EMAIL}?subject=Security%20report`}
             className="inline-flex items-center gap-2 bg-billboard-yellow border-[3px] border-billboard-ink font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition"
           >
-            Report a security issue \u2192
+            Report a security issue →
           </a>
         </div>
       </section>
@@ -182,7 +182,7 @@ export default function Security() {
           >
             <h3 className="font-bold text-sm mb-1">Privacy Policy</h3>
             <p className="text-xs text-billboard-inkSoft">
-              What\u2019s collected, why, and how long it\u2019s kept.
+              What’s collected, why, and how long it’s kept.
             </p>
           </Link>
           <Link
