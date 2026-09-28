@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import ChannelIcon from "./ChannelIcon";
@@ -6,11 +5,11 @@ import { getEnabledChannels } from "../lib/channelRegistry";
 import type { ChannelSlug } from "../lib/channelTypes";
 
 /**
- * Two conversion bands that wrap the hero video on the homepage:
+ * Conversion band above the hero video on the homepage:
  *   <HeroTopBand />   — headline, offer, CTAs and a channel "network" that
  *                       funnels down into the video
  *   (video lives in Home.tsx, untouched)
- *   <HeroBottomBand /> — closing pitch + trust facts + quick-feature pills
+ *   The closing "Open opportunities" band now lives in HomeOpenOpportunities.tsx
  *
  * The channel count comes from the channel registry, so it can't drift out
  * of date. No pricing or fees appear in either band — these sections sell
@@ -120,104 +119,6 @@ export function HeroTopBand({ loaded = true }: { loaded?: boolean }) {
         </div>
 
         <ChannelNetwork liveCount={liveCount} />
-      </div>
-    </section>
-  );
-}
-
-/** Feature pills — mirror the real steps on /opportunities. */
-const FEATURE_PILLS: { key: string; label: string }[] = [
-  { key: "briefs", label: "Structured briefs" },
-  { key: "matching", label: "Smart matching" },
-  { key: "proposals", label: "Tracked proposals" },
-  { key: "deadlines", label: "Deadline-aware" },
-  { key: "private", label: "Contact details stay private" },
-  { key: "proof", label: "Proof of delivery" },
-];
-
-function BenefitCard({ icon, tag, title, note }: { icon: ReactNode; tag: string; title: string; note: string }) {
-  return (
-    <div className="border-[3px] border-billboard-ink rounded-lg bg-billboard-paper text-billboard-ink p-5 shadow-[6px_6px_0_#F5B700]">
-      <div className="flex items-center justify-between mb-4">
-        <span className="inline-flex w-10 h-10 items-center justify-center rounded-md border-[3px] border-billboard-ink bg-billboard-yellow">{icon}</span>
-        <span className="font-mono text-[9px] font-bold uppercase tracking-wide text-billboard-inkSoft">{tag}</span>
-      </div>
-      <h3 className="font-display text-xl leading-tight mb-2">{title}</h3>
-      <p className="text-sm text-billboard-inkSoft leading-snug">{note}</p>
-    </div>
-  );
-}
-
-const iconProps = { width: 20, height: 20, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round" } as const;
-
-export function HeroBottomBand() {
-  const { t } = useTranslation("home");
-  const liveCount = getEnabledChannels().length;
-
-  return (
-    <section className="bg-billboard-ink text-billboard-paper border-b-[3px] border-billboard-ink py-14 md:py-20" aria-labelledby="hero-bottom-title">
-      <div className="max-w-6xl mx-auto px-4 sm:px-5 grid lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] gap-10 lg:gap-14 items-center">
-        <div className="min-w-0">
-          <span className="eyebrow light">{t("heroBands.bottom.eyebrow", { defaultValue: "Open opportunities" })}</span>
-          <h2 id="hero-bottom-title" className="text-3xl sm:text-4xl md:text-6xl leading-[.98] mb-5">
-            {t("heroBands.bottom.title", { defaultValue: "Your next booking is one brief away." })}
-          </h2>
-          <p className="text-lg text-billboard-paper/75 max-w-xl mb-6 leading-relaxed">
-            {t("heroBands.bottom.subtitle", {
-              defaultValue:
-                "Set the channel, location, audience, budget and deadline. Matched, verified publishers send proposals inside ChatSched — you choose, pay and get proof without private contact details changing hands.",
-            })}
-          </p>
-
-          <ul className="flex flex-wrap gap-2 mb-7">
-            {FEATURE_PILLS.map((p) => (
-              <li key={p.key} className="inline-flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-wide border-2 border-billboard-yellow text-billboard-yellow rounded-full px-3 py-1.5">
-                <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2 6.5 5 9.5 10 3" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                {t(`heroBands.bottom.pills.${p.key}`, { defaultValue: p.label })}
-              </li>
-            ))}
-          </ul>
-
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Link to="/opportunities" className="brand-button yellow">
-              {t("heroBands.bottom.ctaPrimary", { defaultValue: "Post an opportunity →" })}
-            </Link>
-            <Link to="/register?role=publisher" className="brand-button light">
-              {t("heroBands.bottom.ctaSecondary", { defaultValue: "Join as a publisher →" })}
-            </Link>
-          </div>
-
-          <p className="font-mono text-[10px] font-bold uppercase tracking-wide text-billboard-paper/60 mt-5">
-            {t("heroBands.bottom.reassurance", { defaultValue: "Verified publishers · Protected payment · Proof of delivery" })}
-          </p>
-        </div>
-
-        <div className="min-w-0 grid gap-5 sm:grid-cols-2">
-          <BenefitCard
-            icon={<svg {...iconProps}><circle cx="12" cy="12" r="2" /><path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 8.5a5 5 0 0 1 0 7M5.5 5.5a9 9 0 0 0 0 13M18.5 5.5a9 9 0 0 1 0 13" /></svg>}
-            tag={t("heroBands.bottom.reachTag", { defaultValue: "For businesses" })}
-            title={t("heroBands.bottom.reachTitle", { defaultValue: "Reach the right local audience, fast" })}
-            note={t("heroBands.bottom.reachNote", { defaultValue: "{{channels}} live channels — creators, podcasts, radio, websites, events and sports — matched to your location, audience and budget.", channels: liveCount })}
-          />
-          <BenefitCard
-            icon={<svg {...iconProps}><path d="M12 3 4.5 6v5.5c0 4.6 3.1 8.2 7.5 9.5 4.4-1.3 7.5-4.9 7.5-9.5V6L12 3Z" /><path d="m8.8 12 2.4 2.4 4.2-4.6" /></svg>}
-            tag={t("heroBands.bottom.verifiedTag", { defaultValue: "Trust" })}
-            title={t("heroBands.bottom.verifiedTitle", { defaultValue: "Every publisher is reviewed before they go live" })}
-            note={t("heroBands.bottom.verifiedNote", { defaultValue: "Visible trust scores built from real campaign history — not just follower counts." })}
-          />
-          <BenefitCard
-            icon={<svg {...iconProps}><rect x="4" y="10.5" width="16" height="10" rx="2" /><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5M12 14.5v2.5" /></svg>}
-            tag={t("heroBands.bottom.protectedTag", { defaultValue: "Peace of mind" })}
-            title={t("heroBands.bottom.protectedTitle", { defaultValue: "Payment protected until your placement goes live" })}
-            note={t("heroBands.bottom.protectedNote", { defaultValue: "Request, payment and proof of delivery stay in one workflow — no chasing, no guesswork." })}
-          />
-          <BenefitCard
-            icon={<svg {...iconProps}><path d="M4 19V9M10 19V5M16 19v-7M22 19H2" /><path d="m14 6 3-3 3 3" /></svg>}
-            tag={t("heroBands.bottom.growTag", { defaultValue: "For publishers" })}
-            title={t("heroBands.bottom.growTitle", { defaultValue: "Turn your audience into bookings" })}
-            note={t("heroBands.bottom.growNote", { defaultValue: "Get found by verified businesses already looking to book — and win the briefs that fit your channel." })}
-          />
-        </div>
       </div>
     </section>
   );

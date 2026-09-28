@@ -9,7 +9,8 @@ import LiveChannelTabs from "../components/LiveChannelTabs";
 import RecentlyViewedStrip from "../components/RecentlyViewedStrip";
 import Seo from "../components/Seo";
 import ToolIcon from "../components/ToolIcon";
-import { HeroTopBand, HeroBottomBand } from "../components/HomeHeroBands";
+import { HeroTopBand } from "../components/HomeHeroBands";
+import HomeOpenOpportunities from "../components/HomeOpenOpportunities";
 import HomeCampaignCta from "../components/HomeCampaignCta";
 import type { Tool } from "../lib/types";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
@@ -231,27 +232,6 @@ function ProofSection() {
   );
 }
 
-function OpportunitiesSection() {
-  const { t } = useTranslation("home");
-  return (
-    <section className="py-12 md:py-14 bg-billboard-yellow border-b-[3px] border-billboard-ink">
-      <div className="max-w-6xl mx-auto px-5">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-          <div className="max-w-3xl">
-            <span className="eyebrow dark-bg">{t("opportunities.badge")}</span>
-            <h2 className="font-display text-3xl md:text-4xl mb-2">{t("opportunities.title")}</h2>
-            <p className="text-billboard-inkSoft">{t("opportunities.subtitle")}</p>
-          </div>
-          <div className="flex flex-wrap gap-3 shrink-0">
-            <Link to="/opportunities" className="brand-button dark">{t("opportunities.primaryCta")}</Link>
-            <Link to="/for-publishers" className="font-bold text-sm underline self-center">{t("opportunities.publisherCta")}</Link>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function ToolsSection() {
   const { t } = useTranslation("home");
   const [tools, setTools] = useState<Tool[]>([]);
@@ -351,7 +331,7 @@ export default function Home() {
           <HeroMockup />
         </div>
       </section>
-      <HeroBottomBand />
+      <HomeOpenOpportunities />
       <HomeCampaignCta />
       <HomeMetrics />
       <PathwaysSection />
@@ -359,7 +339,6 @@ export default function Home() {
       <ChannelsSection />
       <LocalSection />
       <ProofSection />
-      <OpportunitiesSection />
       <ToolsSection />
       <PricingSection />
       <PublisherCta />

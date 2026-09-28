@@ -17,5 +17,5 @@ export function useReveal<T extends HTMLElement>() {
     return () => io.disconnect();
   }, []);
 
-  return { ref, className: `transition-all duration-700 ease-out ${revealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}` };
+  return { ref, revealed, className: `transition-all duration-700 ease-out ${revealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}` };
 }
