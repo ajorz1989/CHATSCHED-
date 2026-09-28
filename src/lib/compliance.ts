@@ -1,4 +1,5 @@
 import { supabase } from "./supabase";
+import { describeEdgeFunctionError } from "./edgeFunctionError";
 import type {
   PlatformComplianceRule,
   CampaignCategoryRule,
@@ -220,7 +221,7 @@ export async function decideComplianceReview(
 /** Business or admin only — runs the AI-assisted screen on a campaign's brief text. Never a final decision: writes risk_score/risk_level and campaign_risk_flags, and may open a compliance_reviews entry on a high-severity flag, but campaign_compliance.status is always computed server-side afterward. */
 export async function runComplianceScreening(campaignComplianceId: string): Promise<{ risk_score: number; risk_level: string; flags: unknown[] }> {
   const { data, error } = await supabase.functions.invoke("campaign-compliance-screen", { body: { campaign_compliance_id: campaignComplianceId } });
-  if (error) throw error;
+  if (error) throw new Error(await describeEdgeFunctionError(error, "Couldn't run the compliance check — try again."));
   if (data?.error) throw new Error(data.error);
   return data;
 }

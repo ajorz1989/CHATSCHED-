@@ -121,13 +121,19 @@ Use an empty flags array if there's nothing worth a reviewer's attention.`;
     // own RLS grants should need to cover directly.
     const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
-    await admin.from("campaign_compliance").update({
+    // Check these writes: the caller used to get a 200 "success" even when
+    // nothing had actually been saved.
+    const { error: updateError } = await admin.from("campaign_compliance").update({
       risk_score: Math.max(0, Math.min(100, Math.round(result.risk_score))),
       risk_level: result.risk_level,
     }).eq("id", campaign_compliance_id);
+    if (updateError) {
+      console.error("campaign-compliance-screen: could not save risk score", updateError);
+      return json({ error: "The check ran but the result couldn't be saved — try again shortly." }, 500);
+    }
 
     if (flags.length > 0) {
-      await admin.from("campaign_risk_flags").insert(
+      const { error: flagsError } = await admin.from("campaign_risk_flags").insert(
         flags.map((f) => ({
           campaign_compliance_id,
           flag_type: (f.flag_type || "unspecified").slice(0, 64),
@@ -136,6 +142,10 @@ Use an empty flags array if there's nothing worth a reviewer's attention.`;
           source: "ai" as const,
         }))
       );
+      if (flagsError) {
+        console.error("campaign-compliance-screen: could not save risk flags", flagsError);
+        return json({ error: "The check ran but its flags couldn't be saved — try again shortly." }, 500);
+      }
     }
 
     // A high-severity flag opens a review automatically — mirrors brief
@@ -160,7 +170,8 @@ Use an empty flags array if there's nothing worth a reviewer's attention.`;
 
     // recompute_campaign_compliance reads campaign_risk_flags/compliance_reviews
     // fresh, so call it after the writes above land.
-    await admin.rpc("recompute_campaign_compliance", { p_campaign_compliance_id: campaign_compliance_id });
+    const { error: recomputeError } = await admin.rpc("recompute_campaign_compliance", { p_campaign_compliance_id: campaign_compliance_id });
+    if (recomputeError) console.error("campaign-compliance-screen: recompute failed", recomputeError);
 
     return json({ risk_score: result.risk_score, risk_level: result.risk_level, flags });
   } catch (err) {

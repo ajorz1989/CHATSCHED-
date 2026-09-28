@@ -42,8 +42,10 @@ your real domain once deployed. `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`
 don't need setting — Supabase injects those into every Edge Function
 automatically. `ADMIN_EMAIL`, `RESEND_API_KEY`, and `ANTHROPIC_API_KEY` are
 Phase 3 additions — see the bottom of this file if you're only deploying
-Phase 2's payment functions for now. `ANTHROPIC_API_KEY` is only used by
-`content-studio-generate` now (the business-facing AI Content Studio) —
+Phase 2's payment functions for now. `ANTHROPIC_API_KEY` is used by
+`content-studio-generate` (the business-facing AI Content Studio),
+`summarize-publisher-audience`, and `campaign-compliance-screen` (the AI
+compliance check — see its section at the bottom of this file) —
 every other AI feature on the site is either rule-based (publisher
 matching, no key needed at all) or runs on Cloudflare Workers AI
 (`publisher-authenticity-check`, needs the two `CLOUDFLARE_*` secrets
@@ -2060,3 +2062,38 @@ prerendering/SSR/edge rendering — a change to this app's rendering
 architecture, not its build tooling, and the task that raised this
 explicitly frames it as a "Later introduce" recommendation at LOW/MEDIUM
 severity rather than a required fix. See Seo.tsx's own header comment.
+
+## AI compliance check (`campaign-compliance-screen`)
+
+The **Run compliance check** button on a campaign's Compliance tab
+(`/campaigns/:id?tab=compliance`, and the standalone
+`/campaigns/:id/compliance` page) calls this function. It needs three things
+in place — if any is missing the button fails:
+
+1. **Deployed** (keeps normal JWT verification — it acts as the logged-in
+   business):
+   ```
+   supabase functions deploy campaign-compliance-screen
+   ```
+2. **Secret**: `supabase secrets set ANTHROPIC_API_KEY=your-anthropic-api-key`
+   (same key `content-studio-generate` uses).
+3. **Schema**: `schema_phase39_compliance.sql` applied (tables
+   `campaign_compliance`, `campaign_risk_flags`, `compliance_reviews`,
+   `platform_compliance_rules`).
+
+Only the campaign's business (or an admin) can run it, and the campaign needs
+a platform + category chosen and some brief text. It only writes
+`risk_score`/`risk_level` and `campaign_risk_flags` — it never decides
+eligibility.
+
+### If the button shows an error
+The message shown to the user is now the function's real reason. Mapping:
+
+| Message | Meaning / fix |
+|---|---|
+| "…hasn't been deployed…" (HTTP 404 from Supabase) | Run the deploy command above. |
+| "Compliance screening isn't set up yet — … Anthropic API key" (501) | Set `ANTHROPIC_API_KEY`. |
+| "Screening is temporarily unavailable" (502) | Anthropic rejected the call — check `supabase functions logs campaign-compliance-screen` for the API error (bad key, no credit, model name). |
+| "Only the campaign's business (or an admin)…" (403) | Signed in as the wrong account — the publisher side can't run it. |
+| "Set the campaign's platform and category…" / "no brief text" (400) | Fill those in first. |
+| "…couldn't be saved" (500) | A database write failed — check the function logs and that phase 39 is applied. |
