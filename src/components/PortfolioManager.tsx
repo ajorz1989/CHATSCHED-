@@ -10,7 +10,7 @@ function formatMB(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)}MB`;
 }
 
-export default function PortfolioManager({ publisher, onChange }: { publisher: Publisher; onChange: () => void }) {
+export default function PortfolioManager({\n  publisher,\n  onChange,\n  storagePathPrefix,\n}: {\n  publisher: Pick<Publisher, "id" | "intro_video_url" | "portfolio_images">;\n  onChange: () => void;\n  /** Optional admin-managed storage path, e.g. `${adminId}/aj-${publisherId}`. */\n  storagePathPrefix?: string;\n}) {
   const [videoUrl, setVideoUrl] = useState(publisher.intro_video_url ?? "");
   const [savingVideo, setSavingVideo] = useState(false);
   const [videoError, setVideoError] = useState<string | null>(null);
