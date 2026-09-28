@@ -1,6 +1,7 @@
 import { Link, useParams, Navigate } from "react-router-dom";
 import Seo from "../components/Seo";
 import { SUCCESS_ARTICLES, getSuccessArticleBySlug } from "../lib/businessSuccessArticles";
+import { getTeamMemberForArticle, TEAM_SPRITE_SRC } from "../lib/teamMembers";
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-ZA", { day: "numeric", month: "long", year: "numeric" });
@@ -14,6 +15,7 @@ export default function BusinessSuccessArticle() {
 
   const index = SUCCESS_ARTICLES.findIndex((a) => a.slug === article.slug);
   const next = SUCCESS_ARTICLES[(index + 1) % SUCCESS_ARTICLES.length];
+  const author = getTeamMemberForArticle(article.slug);
 
   return (
     <div className="max-w-2xl mx-auto px-5 py-16">
@@ -47,21 +49,23 @@ export default function BusinessSuccessArticle() {
         <h2 className="font-mono text-xs font-semibold uppercase tracking-wider text-billboard-inkSoft mb-4">
           Author Bio
         </h2>
-        <div className="flex items-center gap-4">
-          {/* Circle avatar placeholder — swap for <img> when photo is ready */}
-          <div className="w-14 h-14 rounded-full border-2 border-billboard-ink bg-billboard-paperDim flex items-center justify-center shrink-0 overflow-hidden">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" className="text-billboard-inkSoft">
-              <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.5" />
-              <path d="M4 20c0-4 3.582-7 8-7s8 3 8 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
+        <div className="flex items-start gap-4">
+          <div className="w-16 h-16 rounded-full border-2 border-billboard-ink bg-billboard-paperDim shrink-0 overflow-hidden">
+            <div
+              role="img"
+              aria-label={`Photo of ${author.name}`}
+              className="w-full h-full bg-cover bg-no-repeat"
+              style={{
+                backgroundImage: `url(${TEAM_SPRITE_SRC})`,
+                backgroundSize: "200% 200%",
+                backgroundPosition: author.imagePosition,
+              }}
+            />
           </div>
-          <div>
-            <p className="font-bold text-billboard-ink">
-              {article.author?.name ?? "[Author Name]"}
-            </p>
-            <p className="text-sm text-billboard-inkSoft">
-              {article.author?.title ?? "[Job Title] at ChatSched"}
-            </p>
+          <div className="min-w-0">
+            <p className="font-bold text-billboard-ink">{author.name}</p>
+            <p className="text-sm text-billboard-inkSoft">{author.title} · ChatSched</p>
+            <p className="text-sm text-billboard-inkSoft mt-1 leading-relaxed">{author.bio}</p>
           </div>
         </div>
       </div>
