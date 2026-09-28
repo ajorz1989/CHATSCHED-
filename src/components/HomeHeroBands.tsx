@@ -82,10 +82,6 @@ export function HeroTopBand({ loaded = true }: { loaded?: boolean }) {
   return (
     <section className="bg-billboard-yellow overflow-hidden pt-12 sm:pt-16 md:pt-20 pb-4 sm:pb-6" aria-labelledby="hero-top-title">
       <div className="max-w-4xl mx-auto px-4 sm:px-5 text-center">
-        <span className={`eyebrow dark-bg transition-all duration-500 ${loaded ? "opacity-100" : "opacity-0"}`}>
-          {t("heroBands.top.eyebrow", { defaultValue: "The ChatSched marketplace · {{channels}} live channels", channels: liveCount })}
-        </span>
-
         <h1
           id="hero-top-title"
           className={`text-4xl sm:text-5xl md:text-7xl leading-[.98] mb-5 transition-all duration-700 ${loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}

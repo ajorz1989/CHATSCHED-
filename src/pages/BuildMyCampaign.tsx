@@ -7,6 +7,7 @@ import { usePublishers } from "../hooks/usePublishers";
 import { useAuth } from "../hooks/useAuth";
 import Seo from "../components/Seo";
 import MarketingIcon, { type MarketingIconName } from "../components/MarketingIcon";
+import { CAMPAIGN_GOAL_OPTIONS, CAMPAIGN_WIZARD_STEPS } from "../lib/campaignGoals";
 import { PROVINCES, CATEGORIES, LANGUAGES } from "../lib/constants";
 
 const TOP_CITIES = [
@@ -18,43 +19,6 @@ const TOP_CITIES = [
   "Bloemfontein",
   "Stellenbosch",
   "East London",
-];
-
-const CAMPAIGN_GOAL_OPTIONS: Array<{
-  id: string;
-  title: string;
-  icon: MarketingIconName;
-  tagline: string;
-  focus: string;
-}> = [
-  {
-    id: "cross_platform_awareness",
-    title: "Cross-Platform Awareness",
-    icon: "chart",
-    tagline: "Build consistent visibility across multiple audiences and media touchpoints.",
-    focus: "Brand visibility, recall & social proof",
-  },
-  {
-    id: "multi_channel_leads",
-    title: "Multi-Channel Lead Generation",
-    icon: "chat",
-    tagline: "Turn attention into WhatsApp chats, enquiries, bookings or qualified leads.",
-    focus: "Enquiries, conversations & lead capture",
-  },
-  {
-    id: "omnichannel_traffic",
-    title: "Omnichannel Traffic & Conversion",
-    icon: "bolt",
-    tagline: "Drive measurable visits to your website, store, venue, event or offer.",
-    focus: "Traffic, actions & conversion intent",
-  },
-  {
-    id: "launch_demand",
-    title: "Launch, Promotion & Demand",
-    icon: "rocket",
-    tagline: "Create coordinated momentum around a product, service, event or seasonal campaign.",
-    focus: "Launches, promotions & demand creation",
-  },
 ];
 
 const CUSTOMER_PROFILE_OPTIONS: Array<{
@@ -745,15 +709,7 @@ export default function BuildMyCampaign() {
 
         <div className="max-w-4xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between overflow-x-auto gap-2">
-            {[
-              { num: 1, label: "Goal" },
-              { num: 2, label: "Where" },
-              { num: 3, label: "Customers" },
-              { num: 4, label: "Budget" },
-              { num: 5, label: "Timing" },
-              { num: 6, label: "Brand" },
-              { num: 7, label: "Submit Campaign" },
-            ].map((step) => {
+            {CAMPAIGN_WIZARD_STEPS.map((step) => {
               const isCurrent = currentStep === step.num;
               const isDone = currentStep > step.num;
               const canVisit = step.num <= currentStep;

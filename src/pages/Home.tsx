@@ -10,6 +10,7 @@ import RecentlyViewedStrip from "../components/RecentlyViewedStrip";
 import Seo from "../components/Seo";
 import ToolIcon from "../components/ToolIcon";
 import { HeroTopBand, HeroBottomBand } from "../components/HomeHeroBands";
+import HomeCampaignCta from "../components/HomeCampaignCta";
 import type { Tool } from "../lib/types";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
 
@@ -351,6 +352,7 @@ export default function Home() {
         </div>
       </section>
       <HeroBottomBand />
+      <HomeCampaignCta />
       <HomeMetrics />
       <PathwaysSection />
       <MarketplaceSection publishers={publishers} loading={loading} />
