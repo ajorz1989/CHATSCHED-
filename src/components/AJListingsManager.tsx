@@ -14,6 +14,7 @@ import {
   MIN_BIO_LENGTH,
 } from "../lib/constants";
 import PublisherAvatar from "./PublisherAvatar";
+import PortfolioManager from "./PortfolioManager";
 
 // Manage the listings created through AJ: Creations — same profile photo and
 // profile fields a normal publisher edits from their own dashboard, but driven
@@ -35,14 +36,17 @@ interface AJListing {
   company_registration: string | null;
   vat_number: string | null;
   profile_image_url: string | null;
+  intro_video_url: string | null;
+  portfolio_images: string[];
   initials: string;
+  swatch: string;
   channel_slug: string | null;
   status: string | null;
   created_at: string;
 }
 
 const LISTING_COLUMNS =
-  "id, user_id, name, category, province, city, suburb, bio, audience, mobile_number, business_name, company_registration, vat_number, profile_image_url, initials, channel_slug, status, created_at";
+  "id, user_id, name, category, province, city, suburb, bio, audience, mobile_number, business_name, company_registration, vat_number, profile_image_url, intro_video_url, portfolio_images, initials, swatch, channel_slug, status, created_at";
 
 const MIME_TO_EXT: Record<string, string> = {
   "image/jpeg": "jpg",
@@ -52,6 +56,14 @@ const MIME_TO_EXT: Record<string, string> = {
 
 const fieldClass = "w-full border-2 border-billboard-ink rounded px-2.5 py-2 text-sm bg-white text-billboard-ink";
 const labelClass = "block text-xs font-semibold mb-1";
+
+const PROFILE_BACKGROUNDS = [
+  { label: "ChatSched Green", value: "from-billboard-green to-billboard-greenDeep" },
+  { label: "Yellow", value: "from-billboard-yellow to-billboard-yellow" },
+  { label: "Yellow + Green", value: "from-billboard-yellow to-billboard-greenDeep" },
+  { label: "Red", value: "from-billboard-red to-billboard-red" },
+  { label: "Ink", value: "from-billboard-ink to-billboard-inkSoft" },
+] as const;
 
 export default function AJListingsManager({ refreshKey }: { refreshKey: number }) {
   const [listings, setListings] = useState<AJListing[]>([]);
@@ -166,11 +178,13 @@ function ListingEditor({ listing, onChanged }: { listing: AJListing; onChanged: 
   const [businessName, setBusinessName] = useState(listing.business_name ?? "");
   const [companyRegistration, setCompanyRegistration] = useState(listing.company_registration ?? "");
   const [vatNumber, setVatNumber] = useState(listing.vat_number ?? "");
+  const [swatch, setSwatch] = useState(listing.swatch);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
   const [photoUploading, setPhotoUploading] = useState(false);
+  const [photoRemoving, setPhotoRemoving] = useState(false);
   const [photoError, setPhotoError] = useState<string | null>(null);
   const photoInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -238,6 +252,38 @@ function ListingEditor({ listing, onChanged }: { listing: AJListing; onChanged: 
     onChanged();
   }
 
+  async function removeProfilePhoto() {
+    if (!listing.profile_image_url || !user || photoRemoving) return;
+    if (!confirm("Remove this profile picture?")) return;
+
+    setPhotoError(null);
+    setPhotoRemoving(true);
+
+    const { error: updateErr } = await supabase
+      .from("publishers")
+      .update({ profile_image_url: null })
+      .eq("id", listing.id);
+
+    if (updateErr) {
+      setPhotoRemoving(false);
+      setPhotoError(formatSupabaseError(updateErr, "Couldn't remove the profile picture"));
+      return;
+    }
+
+    const marker = "/profile-images/";
+    const index = listing.profile_image_url.indexOf(marker);
+    if (index !== -1) {
+      const path = listing.profile_image_url.slice(index + marker.length).split("?")[0];
+      if (path) {
+        await supabase.storage.from("profile-images").remove([path]).catch(() => undefined);
+      }
+    }
+
+    setPhotoRemoving(false);
+    invalidatePublishersCache();
+    onChanged();
+  }
+
   function startEditing() {
     setName(listing.name);
     setCategory(listing.category);
@@ -250,6 +296,7 @@ function ListingEditor({ listing, onChanged }: { listing: AJListing; onChanged: 
     setBusinessName(listing.business_name ?? "");
     setCompanyRegistration(listing.company_registration ?? "");
     setVatNumber(listing.vat_number ?? "");
+    setSwatch(listing.swatch);
     setError(null);
     setSaved(false);
     setEditing(true);
@@ -281,6 +328,7 @@ function ListingEditor({ listing, onChanged }: { listing: AJListing; onChanged: 
         business_name: businessName.trim() || null,
         company_registration: companyRegistration.trim() || null,
         vat_number: vatNumber.trim() || null,
+        swatch,
       })
       .eq("id", listing.id);
     setSaving(false);
@@ -303,16 +351,28 @@ function ListingEditor({ listing, onChanged }: { listing: AJListing; onChanged: 
       <div className="flex items-center gap-4 mb-4">
         <PublisherAvatar imageUrl={listing.profile_image_url} initials={listing.initials} name={listing.name} size="md" />
         <div>
-          <button
-            type="button"
-            onClick={() => photoInputRef.current?.click()}
-            disabled={photoUploading}
-            className="text-xs font-semibold underline text-billboard-inkSoft disabled:opacity-60"
-          >
-            {photoUploading ? "Uploading…" : listing.profile_image_url ? "Change photo" : "Add a profile photo"}
-          </button>
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={() => photoInputRef.current?.click()}
+              disabled={photoUploading || photoRemoving}
+              className="text-xs font-semibold underline text-billboard-inkSoft disabled:opacity-60"
+            >
+              {photoUploading ? "Uploading…" : listing.profile_image_url ? "Change photo" : "Add a profile photo"}
+            </button>
+            {listing.profile_image_url && (
+              <button
+                type="button"
+                onClick={removeProfilePhoto}
+                disabled={photoUploading || photoRemoving}
+                className="text-xs font-semibold underline text-billboard-red disabled:opacity-60"
+              >
+                {photoRemoving ? "Removing…" : "Remove photo"}
+              </button>
+            )}
+          </div>
           <p className="text-[11px] text-billboard-inkSoft mt-0.5">
-            {listing.profile_image_url ? "" : "Businesses trust a real photo over initials on a colour swatch. "}
+            {listing.profile_image_url ? "Replace or remove the profile picture. " : "Add a profile picture shown on the listing. "}
             JPG, PNG or WebP, up to {maxMb}MB.
           </p>
           {photoError && <p role="alert" className="text-billboard-red text-xs font-semibold mt-1">{photoError}</p>}
@@ -424,6 +484,33 @@ function ListingEditor({ listing, onChanged }: { listing: AJListing; onChanged: 
           </div>
 
           <div className="sm:col-span-2 mt-2 pt-4 border-t-2 border-billboard-paperDim">
+            <label className={labelClass}>Profile background colour</label>
+            <p className="text-[11px] text-billboard-inkSoft mb-3">
+              Choose the background treatment shown on the public profile and publisher card.
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+              {PROFILE_BACKGROUNDS.map((option) => {
+                const selected = swatch === option.value;
+                return (
+                  <button
+                    key={option.label}
+                    type="button"
+                    onClick={() => setSwatch(option.value)}
+                    aria-pressed={selected}
+                    className={`rounded border-2 p-1.5 text-left transition ${selected ? "border-billboard-ink ring-2 ring-billboard-yellow" : "border-billboard-ink/20 hover:border-billboard-ink"}`}
+                  >
+                    <span className={`block h-10 rounded bg-gradient-to-br ${option.value}`} aria-hidden="true" />
+                    <span className="block text-[10px] font-mono mt-1.5 truncate">{option.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+            <div className={`mt-3 h-14 rounded border-2 border-billboard-ink bg-gradient-to-br ${swatch} flex items-center px-4`}>
+              <span className="font-bold text-white drop-shadow-sm truncate">{listing.name}</span>
+            </div>
+          </div>
+
+          <div className="sm:col-span-2 mt-2 pt-4 border-t-2 border-billboard-paperDim">
             <p className="text-xs font-semibold text-billboard-inkSoft uppercase tracking-wide mb-2">
               Business details (optional, for invoicing)
             </p>
@@ -469,5 +556,16 @@ function ListingEditor({ listing, onChanged }: { listing: AJListing; onChanged: 
         </div>
       )}
     </div>
+      <div className="mt-6 pt-6 border-t-2 border-billboard-paperDim">
+        <PortfolioManager
+          publisher={{
+            id: listing.id,
+            intro_video_url: listing.intro_video_url,
+            portfolio_images: listing.portfolio_images,
+          }}
+          onChange={onChanged}
+          storagePathPrefix={user ? `${user.id}/aj-${listing.id}` : undefined}
+        />
+      </div>
   );
 }
