@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -105,7 +104,7 @@ select:focus-visible {
 }
 
 /* Homepage brand primitives — intentionally flat, hard-edged and billboard-led. */
-.eyebrow { display:inline-block; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:10px; line-height:1.2; font-weight:700; letter-spacing:.08em; text-transform:uppercase; border:2px solid #F5B700; color:#1A1712; padding:6px 10px; border-radius:6px; margin-bottom:12px; }
+.eyebrow { display:inline-block; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; line-height:1.2; font-weight:700; letter-spacing:.08em; text-transform:uppercase; border:2px solid #F5B700; color:#1A1712; padding:6px 10px; border-radius:6px; margin-bottom:12px; }
 .eyebrow.light { border-color:#F5B700; color:#F5B700; }
 .eyebrow.dark-bg { background:#FAF9F5; border-color:#1A1712; }
 .brand-button { display:inline-flex; align-items:center; justify-content:center; gap:8px; border:3px solid #1A1712; background:#FAF9F5; color:#1A1712; font-weight:700; padding:11px 18px; border-radius:6px; transition:transform .15s ease,box-shadow .15s ease; max-width:100%; text-align:center; white-space:normal; overflow-wrap:anywhere; }
@@ -114,3 +113,8 @@ select:focus-visible {
 .brand-button.yellow { background:#F5B700; color:#1A1712; }
 .brand-button.light { background:#FAF9F5; color:#1A1712; }
 @media (prefers-reduced-motion:reduce) { .brand-button { transition:none; } .brand-button:hover { transform:none; box-shadow:none; } }
+
+/* Decorative loops stop while their section is off-screen (usePauseOffscreen). */
+.pause-offscreen[data-offscreen="true"] *,
+.pause-offscreen[data-offscreen="true"] *::before,
+.pause-offscreen[data-offscreen="true"] *::after { animation-play-state: paused !important; }

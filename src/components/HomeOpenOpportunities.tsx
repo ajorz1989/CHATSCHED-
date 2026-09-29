@@ -5,6 +5,7 @@ import ChannelIcon from "./ChannelIcon";
 import { getEnabledChannels } from "../lib/channelRegistry";
 import type { ChannelSlug } from "../lib/channelTypes";
 import { useReveal } from "../hooks/useReveal";
+import { usePauseOffscreen } from "../hooks/usePauseOffscreen";
 
 /**
  * "Open opportunities" band on the homepage.
@@ -61,7 +62,7 @@ function OpportunityBoard({ revealed }: { revealed: boolean }) {
         >
           <div className="rounded-xl border-[3px] border-billboard-ink bg-billboard-paper text-billboard-ink p-4 shadow-[6px_6px_0_#F5B700] -rotate-2">
             <div className="flex items-center justify-between mb-3">
-              <span className="font-mono text-[10px] font-bold uppercase tracking-wide">{t("heroBands.bottom.board.brief", { defaultValue: "Brief" })}</span>
+              <span className="font-mono text-[11px] font-bold uppercase tracking-wide">{t("heroBands.bottom.board.brief", { defaultValue: "Brief" })}</span>
               <span className="flex items-center gap-1">
                 <span className="w-2 h-2 rounded-full bg-billboard-red" />
                 <span className="w-2 h-2 rounded-full bg-billboard-yellow" />
@@ -75,7 +76,7 @@ function OpportunityBoard({ revealed }: { revealed: boolean }) {
               {BRIEF_FIELDS.map((f, i) => (
                 <span
                   key={f.key}
-                  className={`inline-flex items-center gap-1 rounded-full border-2 border-billboard-ink bg-billboard-paper px-2 py-1 font-mono text-[9px] font-bold uppercase animate-op-chip ${still}`}
+                  className={`inline-flex items-center gap-1 rounded-full border-2 border-billboard-ink bg-billboard-paper px-2 py-1 font-mono text-[11px] font-bold uppercase animate-op-chip ${still}`}
                   style={{ animationDelay: `${i * 0.7}s` }}
                 >
                   <BriefTick />
@@ -115,7 +116,7 @@ function OpportunityBoard({ revealed }: { revealed: boolean }) {
                 <div className="flex items-center gap-3 rounded-lg border-[3px] border-billboard-ink bg-billboard-paper text-billboard-ink p-2.5 shadow-[4px_4px_0_#1C6B45]">
                   <ChannelIcon slug={slug} size="sm" />
                   <div className="flex-1 min-w-0">
-                    <div className="font-mono text-[9px] font-bold uppercase tracking-wide text-billboard-inkSoft mb-1.5">
+                    <div className="font-mono text-[11px] font-bold uppercase tracking-wide text-billboard-inkSoft mb-1.5">
                       {t("heroBands.bottom.board.proposal", { defaultValue: "Proposal" })}
                     </div>
                     <div className="h-2 w-4/5 rounded bg-billboard-ink" />
@@ -202,6 +203,7 @@ function Benefit({ icon, title, index, revealed }: { icon: ReactNode; title: str
 export default function HomeOpenOpportunities() {
   const { t } = useTranslation("home");
   const { ref, revealed } = useReveal<HTMLDivElement>();
+  const sectionRef = usePauseOffscreen<HTMLElement>();
 
   const title = t("heroBands.bottom.title", { defaultValue: "Your next booking is one brief away." });
   const words = title.split(" ");
@@ -214,7 +216,7 @@ export default function HomeOpenOpportunities() {
   });
 
   return (
-    <section className="relative overflow-hidden bg-billboard-ink text-billboard-paper border-b-[3px] border-billboard-ink py-12 md:py-16" aria-labelledby="hero-bottom-title">
+    <section ref={sectionRef} className="pause-offscreen relative overflow-hidden bg-billboard-ink text-billboard-paper border-b-[3px] border-billboard-ink py-16 md:py-24" aria-labelledby="hero-bottom-title">
       {/* decorative backdrop */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute inset-0 opacity-60 bg-[radial-gradient(rgba(250,249,245,.09)_1.2px,transparent_1.2px)] [background-size:24px_24px]" />
@@ -243,15 +245,15 @@ export default function HomeOpenOpportunities() {
 
 
             <div {...rv(4)} className={`flex flex-col sm:flex-row gap-3 ${rv(4).className}`}>
-              <Link to="/opportunities" className="brand-button yellow">
+              <Link to="/opportunities" data-cta="opps-post" className="brand-button yellow">
                 {t("heroBands.bottom.ctaPrimary", { defaultValue: "Post an opportunity →" })}
               </Link>
-              <Link to="/register?role=publisher" className="brand-button light">
+              <Link to="/register?role=publisher" data-cta="opps-publisher" className="brand-button light">
                 {t("heroBands.bottom.ctaSecondary", { defaultValue: "Join as a publisher →" })}
               </Link>
             </div>
 
-            <p {...rv(5)} className={`font-mono text-[10px] font-bold uppercase tracking-wide text-billboard-paper/60 mt-5 ${rv(5).className}`}>
+            <p {...rv(5)} className={`font-mono text-[11px] font-bold uppercase tracking-wide text-billboard-paper/80 mt-5 ${rv(5).className}`}>
               {t("heroBands.bottom.reassurance", { defaultValue: "Verified publishers · Protected payment · Proof of delivery" })}
             </p>
           </div>

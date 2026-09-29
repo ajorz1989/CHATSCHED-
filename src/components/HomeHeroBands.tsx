@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import ChannelIcon from "./ChannelIcon";
@@ -64,22 +65,22 @@ function ChannelNetwork({ liveCount }: { liveCount: number }) {
         >
           <span className="sm:hidden"><ChannelIcon slug={n.slug} size="sm" /></span>
           <span className="hidden sm:inline-flex"><ChannelIcon slug={n.slug} size="md" /></span>
-          <span className="hidden sm:block font-mono text-[9px] font-bold uppercase tracking-wide text-billboard-ink mt-2">{n.label}</span>
+          <span className="hidden sm:block font-mono text-[11px] font-bold uppercase tracking-wide text-billboard-ink mt-2">{n.label}</span>
         </div>
       ))}
 
-      <div className="absolute left-1/2 bottom-0 -translate-x-1/2 whitespace-nowrap font-mono text-[9px] sm:text-[10px] font-bold uppercase tracking-wider bg-billboard-ink text-billboard-paper rounded-full px-3 sm:px-4 py-1.5">
+      <div className="absolute left-1/2 bottom-0 -translate-x-1/2 whitespace-nowrap font-mono text-[11px] font-bold uppercase tracking-wider bg-billboard-ink text-billboard-paper rounded-full px-3 sm:px-4 py-1.5">
         {t("heroBands.network.hub", { defaultValue: "{{channels}} live channels · one workflow", channels: liveCount })}
       </div>
     </div>
   );
 }
 
-export function HeroTopBand({ loaded = true }: { loaded?: boolean }) {
+export function HeroTopBand({ loaded = true, children }: { loaded?: boolean; children?: ReactNode }) {
   const { t } = useTranslation("home");
   const liveCount = getEnabledChannels().length;
   return (
-    <section className="bg-billboard-yellow overflow-hidden pt-12 sm:pt-16 md:pt-20 pb-4 sm:pb-6" aria-labelledby="hero-top-title">
+    <section className="bg-billboard-yellow border-b-[3px] border-billboard-ink overflow-hidden pt-12 sm:pt-16 md:pt-20 pb-12 sm:pb-16 md:pb-20" aria-labelledby="hero-top-title">
       <div className="max-w-4xl mx-auto px-4 sm:px-5 text-center">
         <h1
           id="hero-top-title"
@@ -99,20 +100,18 @@ export function HeroTopBand({ loaded = true }: { loaded?: boolean }) {
           })}
         </p>
 
-        <div className="flex flex-col sm:flex-row justify-center gap-3">
-          <Link to="/opportunities" className="brand-button dark">
-            {t("heroBands.top.ctaPrimary", { defaultValue: "Post an opportunity →" })}
-          </Link>
-          <Link to="/browse" className="brand-button">
-            {t("heroBands.top.ctaSecondary", { defaultValue: "Browse the marketplace →" })}
+        {/* One primary action for businesses; publishers get a quiet text link. */}
+        <div className="flex justify-center">
+          <Link to="/build-my-campaign" data-cta="hero-build" className="brand-button dark w-full sm:w-auto">
+            {t("heroBands.top.ctaBuild", { defaultValue: "Build my campaign →" })}
           </Link>
         </div>
 
-        <Link to="/for-publishers" className="inline-flex font-bold text-sm mt-4 underline underline-offset-4">
+        <Link to="/for-publishers" data-cta="hero-publisher" className="inline-flex font-bold text-sm sm:text-base mt-5 underline underline-offset-4 decoration-2 hover:decoration-4 transition-all">
           {t("heroBands.top.ctaTertiary", { defaultValue: "Own an audience? Start earning as a publisher →" })}
         </Link>
 
-        <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 mt-5 font-mono text-[10px] font-bold uppercase">
+        <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 mt-5 font-mono text-[11px] font-bold uppercase">
           <span>✓ {t("hero.noAccount")}</span>
           <span>✓ {t("hero.secure")}</span>
           <span>✓ {t("hero.tracked")}</span>
@@ -120,6 +119,7 @@ export function HeroTopBand({ loaded = true }: { loaded?: boolean }) {
 
         <ChannelNetwork liveCount={liveCount} />
       </div>
+      {children}
     </section>
   );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { usePublishers } from "../hooks/usePublishers";
@@ -11,7 +11,6 @@ import Seo from "../components/Seo";
 import ToolIcon from "../components/ToolIcon";
 import { HeroTopBand } from "../components/HomeHeroBands";
 import HomeOpenOpportunities from "../components/HomeOpenOpportunities";
-import HomeCampaignCta from "../components/HomeCampaignCta";
 import type { Tool } from "../lib/types";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
 
@@ -32,10 +31,13 @@ function HomeMetrics() {
     });
   }, []);
 
+  // Proof strip: show nothing rather than dashes or zeros.
+  if (!metrics || (metrics.verified_publishers === 0 && metrics.new_publishers_this_month === 0 && metrics.completed_bookings === 0)) return null;
+
   const values = [
-    { value: metrics?.verified_publishers ?? "—", label: t("metrics.verifiedPublishers") },
-    { value: metrics?.new_publishers_this_month ?? "—", label: t("metrics.newPublishers") },
-    { value: metrics?.completed_bookings ?? "—", label: t("metrics.completedBookings") },
+    { value: metrics.verified_publishers, label: t("metrics.verifiedPublishers") },
+    { value: metrics.new_publishers_this_month, label: t("metrics.newPublishers") },
+    { value: metrics.completed_bookings, label: t("metrics.completedBookings") },
   ];
 
   return (
@@ -48,7 +50,7 @@ function HomeMetrics() {
               className={`p-4 sm:p-5 text-center ${index < values.length - 1 ? "border-b-[3px] sm:border-b-0 sm:border-r-[3px] border-billboard-ink" : ""}`}
             >
               <div className="font-display text-2xl md:text-3xl">{item.value}</div>
-              <div className="font-mono text-[10px] uppercase tracking-wide text-billboard-inkSoft mt-1">{item.label}</div>
+              <div className="font-mono text-[11px] uppercase tracking-wide text-billboard-inkSoft mt-1">{item.label}</div>
             </div>
           ))}
         </div>
@@ -65,21 +67,42 @@ function HeroMockup() {
   // few px of breathing room) instead: the container takes the card's aspect
   // ratio and the video is offset/scaled inside it. The card already carries
   // its own border and shadow, so no second CSS frame is drawn around it.
+  //
+  // Loading: nothing but the small poster downloads up front. The video
+  // starts when it nears the viewport, pauses when it leaves, and stays on
+  // the poster for visitors who prefer reduced motion.
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || typeof IntersectionObserver === "undefined") return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) video.play().catch(() => undefined);
+        else video.pause();
+      },
+      { rootMargin: "200px 0px" },
+    );
+    io.observe(video);
+    return () => io.disconnect();
+  }, []);
+
   return (
     <div className="relative w-full">
       <div className="relative w-full overflow-hidden" style={{ aspectRatio: "802 / 338" }}>
         <video
+          ref={videoRef}
           className="absolute block max-w-none pointer-events-none"
           style={{ width: "119.7%", left: "-10.47%", top: "-35.5%" }}
           width={960}
           height={570}
           src="/videos/hero-billboard.mp4"
           poster="/videos/hero-billboard-poster.jpg"
-          autoPlay
           muted
           loop
           playsInline
-          preload="auto"
+          preload="none"
           aria-hidden="true"
         />
       </div>
@@ -87,108 +110,44 @@ function HeroMockup() {
   );
 }
 
-function PathwaysSection() {
-  const { t } = useTranslation("home");
-  const cards = [
-    { key: "agency", to: "/build-my-campaign", number: "01" },
-    { key: "marketplace", to: "/browse", number: "02" },
-    { key: "network", to: "/for-publishers", number: "03" },
-  ] as const;
-
-  return (
-    <section className="py-14 md:py-16 bg-white border-b-[3px] border-billboard-ink">
-      <div className="max-w-6xl mx-auto px-5">
-        <div className="max-w-2xl mb-8">
-          <span className="eyebrow">{t("layers.badge")}</span>
-          <h2 className="text-3xl md:text-5xl mb-3">{t("layers.title")}</h2>
-          <p className="text-billboard-inkSoft">{t("layers.subtitle")}</p>
-        </div>
-        <div className="grid md:grid-cols-3 gap-4">
-          {cards.map((card) => (
-            <Link
-              key={card.key}
-              to={card.to}
-              className="group border-2 border-billboard-ink rounded-xl p-6 bg-billboard-paper hover:-translate-y-1 hover:shadow-blockSm transition flex flex-col min-h-[220px]"
-            >
-              <div className="flex items-center justify-between gap-3 mb-8">
-                <span className="font-mono text-[10px] font-bold uppercase tracking-wider">{card.number} · {t(`layers.${card.key}Badge`)}</span>
-                <span className="text-billboard-greenDeep font-bold">↗</span>
-              </div>
-              <div className="flex-1">
-                <h3 className="font-display text-2xl mb-2">{t(`layers.${card.key}Title`)}</h3>
-                <p className="text-sm text-billboard-inkSoft leading-relaxed">{t(`layers.${card.key}Body`)}</p>
-              </div>
-              <span className="font-bold text-sm mt-5 group-hover:text-billboard-greenDeep transition-colors">{t(`layers.${card.key}Cta`)} →</span>
-            </Link>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function MarketplaceSection({ publishers, loading }: { publishers: ReturnType<typeof usePublishers>["publishers"]; loading: boolean }) {
+function ChannelsMarketplaceSection({ publishers, loading }: { publishers: ReturnType<typeof usePublishers>["publishers"]; loading: boolean }) {
   const { t } = useTranslation("home");
   return (
-    <section className="py-14 md:py-16 bg-billboard-paperDim border-b-[3px] border-billboard-ink">
-      <div className="max-w-6xl mx-auto px-5">
-        <RecentlyViewedStrip />
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-5 mt-7 mb-8">
-          <div className="max-w-2xl">
-            <span className="eyebrow">{t("marketplace.badge")}</span>
-            <h2 className="text-3xl md:text-5xl mb-3">{t("marketplace.title")}</h2>
-            <p className="text-billboard-inkSoft">{t("marketplace.subtitle")}</p>
-          </div>
-          <Link to="/browse" className="font-bold text-sm underline underline-offset-4 shrink-0">{t("marketplace.cta")}</Link>
-        </div>
-        {loading ? (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">{[0, 1, 2, 3].map((i) => <PublisherCardSkeleton key={i} />)}</div>
-        ) : publishers.length === 0 ? (
-          <div className="border-2 border-dashed border-billboard-ink rounded-xl bg-white"><EmptyState kind="list" title={t("marketplace.emptyTitle")} description={t("marketplace.emptyDescription")} compact /></div>
-        ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">{publishers.slice(0, 4).map((p) => <PublisherCard key={p.id} publisher={p} />)}</div>
-        )}
-      </div>
-    </section>
-  );
-}
-
-function ChannelsSection() {
-  const { t } = useTranslation("home");
-  return (
-    <section className="py-14 md:py-16 bg-white border-b-[3px] border-billboard-ink">
+    <section className="py-16 md:py-24 bg-billboard-paperDim border-b-[3px] border-billboard-ink">
       <div className="max-w-6xl mx-auto px-5">
         <div className="max-w-2xl mb-8">
           <span className="eyebrow">{t("channels.badge")}</span>
           <h2 className="text-3xl md:text-5xl mb-3">{t("channels.title")}</h2>
-          <p className="text-billboard-inkSoft">{t("channels.subtitle")}</p>
+          <p className="text-billboard-inkSoft max-w-prose">{t("channels.subtitle")}</p>
         </div>
         <LiveChannelTabs />
-      </div>
-    </section>
-  );
-}
 
-function LocalSection() {
-  const { t } = useTranslation("home");
-  const items = ["associations", "suburbs", "design", "activeChannels"] as const;
-  return (
-    <section className="py-14 md:py-16 bg-billboard-paperDim border-b-[3px] border-billboard-ink">
-      <div className="max-w-6xl mx-auto px-5">
-        <div className="max-w-3xl mb-8">
-          <span className="eyebrow">{t("local.badge")}</span>
-          <h2 className="text-3xl md:text-5xl mb-3 max-w-3xl">{t("local.title")}</h2>
-          <p className="text-billboard-inkSoft">{t("local.subtitle")}</p>
-        </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {items.map((item) => (
-            <div key={item} className="border-2 border-billboard-ink rounded-lg p-5 bg-white">
-              <h3 className="font-display text-lg mb-2">{t(`local.items.${item}.title`)}</h3>
-              <p className="text-sm text-billboard-inkSoft leading-relaxed">{t(`local.items.${item}.body`)}</p>
+        <div className="mt-14">
+          <RecentlyViewedStrip />
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6">
+            <div className="max-w-2xl">
+              <span className="eyebrow">{t("marketplace.badge")}</span>
+              <h3 className="font-display text-2xl md:text-3xl leading-tight mb-2">{t("marketplace.title")}</h3>
+              <p className="text-billboard-inkSoft max-w-prose">{t("marketplace.subtitle")}</p>
             </div>
-          ))}
+            <Link to="/browse" data-cta="channels-browse" className="font-bold text-sm underline underline-offset-4 shrink-0">{t("marketplace.cta")}</Link>
+          </div>
+          {loading ? (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">{[0, 1, 2, 3].map((i) => <PublisherCardSkeleton key={i} />)}</div>
+          ) : publishers.length === 0 ? (
+            <div className="border-2 border-dashed border-billboard-ink rounded-xl bg-white"><EmptyState kind="list" title={t("marketplace.emptyTitle")} description={t("marketplace.emptyDescription")} compact /></div>
+          ) : (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">{publishers.slice(0, 4).map((p) => <PublisherCard key={p.id} publisher={p} />)}</div>
+          )}
         </div>
-        <Link to="/audience-finder" className="brand-button dark mt-7">{t("local.cta")}</Link>
+
+        <div className="mt-12 flex flex-col md:flex-row md:items-center md:justify-between gap-5 border-[3px] border-billboard-ink rounded-xl bg-white p-6 shadow-blockSm">
+          <div className="max-w-2xl">
+            <h3 className="font-display text-xl md:text-2xl leading-tight mb-2">{t("local.title")}</h3>
+            <p className="text-sm text-billboard-inkSoft max-w-prose">{t("local.subtitle")}</p>
+          </div>
+          <Link to="/audience-finder" data-cta="channels-audience-finder" className="brand-button dark shrink-0">{t("local.cta")}</Link>
+        </div>
       </div>
     </section>
   );
@@ -199,12 +158,12 @@ function ProofSection() {
   const steps = [1, 2, 3, 4, 5, 6] as const;
   const trust = ["payment", "verified", "tracked"] as const;
   return (
-    <section className="py-14 md:py-16 bg-billboard-ink text-billboard-paper border-b-[3px] border-billboard-ink">
+    <section className="py-16 md:py-24 bg-billboard-ink text-billboard-paper border-b-[3px] border-billboard-ink">
       <div className="max-w-6xl mx-auto px-5">
         <div className="max-w-3xl mb-9">
           <span className="eyebrow light">{t("how.badge")}</span>
           <h2 className="font-display text-3xl md:text-5xl leading-tight mb-3">{t("how.title")}</h2>
-          <p className="text-billboard-paperDim">{t("trust.subtitle")}</p>
+          <p className="text-billboard-paperDim max-w-prose">{t("trust.subtitle")}</p>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {steps.map((step) => (
@@ -224,8 +183,8 @@ function ProofSection() {
           ))}
         </div>
         <div className="flex flex-wrap gap-3 mt-7">
-          <Link to="/how-it-works" className="brand-button light">{t("how.cta")}</Link>
-          <Link to="/trust" className="font-bold text-sm text-billboard-yellow underline underline-offset-4 self-center">{t("trust.cta")}</Link>
+          <Link to="/how-it-works" data-cta="how-it-works" className="brand-button light">{t("how.cta")}</Link>
+          <Link to="/trust" data-cta="how-trust" className="font-bold text-sm text-billboard-yellow underline underline-offset-4 self-center">{t("trust.cta")}</Link>
         </div>
       </div>
     </section>
@@ -243,11 +202,11 @@ function ToolsSection() {
   if (!isSupabaseConfigured || tools.length === 0) return null;
 
   return (
-    <section className="py-14 md:py-16 bg-white border-b-[3px] border-billboard-ink">
+    <section className="py-16 md:py-24 bg-white border-b-[3px] border-billboard-ink">
       <div className="max-w-6xl mx-auto px-5">
         <span className="eyebrow">{t("tools.badge")}</span>
         <h2 className="text-3xl md:text-5xl mb-3 max-w-2xl">{t("tools.title")}</h2>
-        <p className="text-billboard-inkSoft max-w-2xl mb-8">{t("tools.subtitle")}</p>
+        <p className="text-billboard-inkSoft max-w-prose mb-8">{t("tools.subtitle")}</p>
         <div className="grid md:grid-cols-3 gap-4">
           {tools.map((tool) => (
             <Link key={tool.slug} to={`/tools/${tool.slug}`} className="group border-2 border-billboard-ink rounded-lg p-5 bg-billboard-paperDim flex flex-col hover:-translate-y-1 hover:shadow-blockSm transition">
@@ -258,7 +217,7 @@ function ToolsSection() {
             </Link>
           ))}
         </div>
-        <Link to="/tools" className="brand-button mt-7">{t("tools.cta")}</Link>
+        <Link to="/tools" data-cta="tools-all" className="brand-button mt-7">{t("tools.cta")}</Link>
       </div>
     </section>
   );
@@ -267,27 +226,27 @@ function ToolsSection() {
 function PricingSection() {
   const { t } = useTranslation("home");
   return (
-    <section className="py-14 md:py-16 bg-billboard-paperDim border-b-[3px] border-billboard-ink">
+    <section className="py-16 md:py-24 bg-billboard-paperDim border-b-[3px] border-billboard-ink">
       <div className="max-w-6xl mx-auto px-5">
         <div className="max-w-3xl mb-8">
           <span className="eyebrow">{t("pricing.badge")}</span>
           <h2 className="text-3xl md:text-5xl mb-3">{t("pricing.title")}</h2>
-          <p className="text-billboard-inkSoft">{t("pricing.subtitle")}</p>
+          <p className="text-billboard-inkSoft max-w-prose">{t("pricing.subtitle")}</p>
         </div>
         <div className="grid md:grid-cols-2 gap-4">
           <div className="border-2 border-billboard-ink rounded-xl p-6 bg-white shadow-blockSm">
-            <div className="font-mono text-[10px] font-bold uppercase">{t("pricing.businessLabel")}</div>
+            <div className="font-mono text-[11px] font-bold uppercase">{t("pricing.businessLabel")}</div>
             <div className="font-display text-4xl mt-2">R399</div>
             <p className="font-bold mb-2">{t("pricing.onceOff")}</p>
             <p className="text-sm text-billboard-inkSoft mb-5">{t("pricing.businessBody")}</p>
-            <Link to="/register?role=business" className="brand-button dark">{t("pricing.businessCta")}</Link>
+            <Link to="/register?role=business" data-cta="pricing-business" className="brand-button dark">{t("pricing.businessCta")}</Link>
           </div>
           <div className="border-2 border-billboard-ink rounded-xl p-6 bg-billboard-yellow shadow-blockSm">
-            <div className="font-mono text-[10px] font-bold uppercase">{t("pricing.publisherLabel")}</div>
+            <div className="font-mono text-[11px] font-bold uppercase">{t("pricing.publisherLabel")}</div>
             <div className="font-display text-4xl mt-2">R199</div>
             <p className="font-bold mb-2">{t("pricing.onceOff")}</p>
             <p className="text-sm text-billboard-inkSoft mb-5">{t("pricing.publisherBody")}</p>
-            <Link to="/register?role=publisher" className="brand-button dark">{t("pricing.publisherCta")}</Link>
+            <Link to="/register?role=publisher" data-cta="pricing-publisher" className="brand-button dark">{t("pricing.publisherCta")}</Link>
           </div>
         </div>
       </div>
@@ -298,12 +257,12 @@ function PricingSection() {
 function PublisherCta() {
   const { t } = useTranslation("home");
   return (
-    <section className="py-14 md:py-16 bg-white border-b-[3px] border-billboard-ink">
+    <section className="py-16 md:py-24 bg-white border-b-[3px] border-billboard-ink">
       <div className="max-w-5xl mx-auto px-5 text-center">
         <span className="eyebrow">{t("publisherCta.badge")}</span>
         <h2 className="font-display text-3xl md:text-5xl mb-4">{t("publisherCta.title")}</h2>
-        <p className="text-billboard-inkSoft max-w-2xl mx-auto mb-7">{t("publisherCta.subtitle")}</p>
-        <Link to="/register?role=publisher" className="brand-button dark">{t("publisherCta.cta")}</Link>
+        <p className="text-billboard-inkSoft max-w-prose mx-auto mb-7">{t("publisherCta.subtitle")}</p>
+        <Link to="/register?role=publisher" data-cta="publisher-band" className="brand-button dark">{t("publisherCta.cta")}</Link>
       </div>
     </section>
   );
@@ -322,35 +281,28 @@ export default function Home() {
   return (
     <>
       <Seo title={t("seo.title")} description={t("seo.description")} />
-      <HeroTopBand loaded={loaded} />
-      {/* Video band — HeroMockup is unchanged; only its wrapper now sits
-          between the two hero bands. Same yellow as the top band so the
-          card reads as part of one continuous hero. */}
-      <section className="bg-billboard-yellow border-b-[3px] border-billboard-ink overflow-hidden pb-12 sm:pb-16 md:pb-20">
-        <div className={`max-w-3xl mx-auto px-4 sm:px-5 flex justify-center transition-all duration-700 ${loaded ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}>
+      {/* Hero and video are one continuous yellow section. */}
+      <HeroTopBand loaded={loaded}>
+        <div className={`max-w-3xl mx-auto px-4 sm:px-5 mt-2 flex justify-center transition-all duration-700 ${loaded ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}>
           <HeroMockup />
         </div>
-      </section>
-      <HomeOpenOpportunities />
-      <HomeCampaignCta />
+      </HeroTopBand>
       <HomeMetrics />
-      <PathwaysSection />
-      <MarketplaceSection publishers={publishers} loading={loading} />
-      <ChannelsSection />
-      <LocalSection />
+      <HomeOpenOpportunities />
+      <ChannelsMarketplaceSection publishers={publishers} loading={loading} />
       <ProofSection />
       <ToolsSection />
       <PricingSection />
       <PublisherCta />
-      <section className="py-16 md:py-20 bg-billboard-green text-white border-b-[3px] border-billboard-ink">
+      <section className="py-16 md:py-24 bg-billboard-green text-white border-b-[3px] border-billboard-ink">
         <div className="max-w-4xl mx-auto px-5 text-center">
           <h2 className="font-display text-4xl md:text-6xl leading-tight mb-5">{t("final.title")}</h2>
-          <p className="text-white/80 max-w-xl mx-auto mb-8">{t("final.subtitle")}</p>
+          <p className="text-white/90 max-w-prose mx-auto mb-8">{t("final.subtitle")}</p>
           <div className="flex flex-col sm:flex-row justify-center gap-3">
-            <Link to="/build-my-campaign" className="brand-button yellow">{t("final.build")}</Link>
-            <Link to="/browse" className="brand-button light">{t("final.browse")}</Link>
+            <Link to="/build-my-campaign" data-cta="final-build" className="brand-button yellow">{t("final.build")}</Link>
+            <Link to="/browse" data-cta="final-browse" className="brand-button light">{t("final.browse")}</Link>
           </div>
-          <p className="font-mono text-[10px] uppercase mt-5 text-white/70">{t("final.closer")}</p>
+          <p className="font-mono text-[11px] uppercase mt-5 text-white/90">{t("final.closer")}</p>
         </div>
       </section>
     </>

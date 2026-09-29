@@ -30,8 +30,8 @@
 //   static files to whatever host). Inline style injection is a much
 //   lower-severity XSS primitive than inline script injection, which is
 //   why script-src stays strict while style-src doesn't. Also allows
-//   https://fonts.googleapis.com — src/index.css's very first line is
-//   `@import url('https://fonts.googleapis.com/css2?...')`.
+//   https://fonts.googleapis.com — index.html loads the Google Fonts
+//   stylesheet via <link rel="stylesheet" href="https://fonts.googleapis.com/css2?...">.
 // - font-src: https://fonts.gstatic.com — where fonts.googleapis.com's
 //   stylesheet actually points the browser to fetch the .woff2 files from.
 // - img-src: 'self', data:, blob:, the Supabase host (storage-hosted

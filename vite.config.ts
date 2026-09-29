@@ -14,16 +14,21 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
+            // Match on the package name, not a substring of the whole path:
+            // `id.includes('react')` also caught react-leaflet, @sentry/react
+            // and friends, dragging the map library into the chunk every page
+            // (including the homepage) downloads.
+            const pkg = id.split('node_modules/').pop() ?? '';
+            if (/^(react|react-dom|react-router|react-router-dom|scheduler|use-sync-external-store)\//.test(pkg)) {
               return 'vendor-react';
             }
-            if (id.includes('@supabase')) {
+            if (pkg.startsWith('@supabase')) {
               return 'vendor-supabase';
             }
-            if (id.includes('@sentry')) {
+            if (pkg.startsWith('@sentry')) {
               return 'vendor-sentry';
             }
-            if (id.includes('i18next')) {
+            if (pkg.startsWith('i18next') || pkg.startsWith('react-i18next')) {
               return 'vendor-i18n';
             }
           }

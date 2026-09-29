@@ -11,6 +11,7 @@ import Footer from "./components/Footer";
 import ErrorBoundary from "./components/ErrorBoundary";
 import CookieConsentBanner from "./components/CookieConsentBanner";
 import CookieConsentScript from "./components/CookieConsentScript";
+import CtaTracker from "./components/CtaTracker";
 import { SkeletonBlock } from "./components/Skeleton";
 import Home from "./pages/Home";
 import Browse from "./pages/Browse";
@@ -260,6 +261,7 @@ export default function App() {
                   Skip to main content
                 </a>
                 <CookieConsentScript />
+                <CtaTracker />
                 <Header />
                 <main id="main-content" tabIndex={-1} className="flex-1 pb-bottom-nav outline-none">
                   <ErrorBoundary>
