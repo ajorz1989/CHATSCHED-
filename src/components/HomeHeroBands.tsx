@@ -32,8 +32,8 @@ const NETWORK_NODES: { slug: ChannelSlug; x: number; y: number; label: string }[
 ];
 
 const VIEW_W = 1000;
-const VIEW_H = 300;
-const HUB_Y = 262;
+const VIEW_H = 250;
+const HUB_Y = 214;
 
 function ChannelNetwork({ liveCount }: { liveCount: number }) {
   const { t } = useTranslation("home");
@@ -41,12 +41,12 @@ function ChannelNetwork({ liveCount }: { liveCount: number }) {
   const nodes = NETWORK_NODES.filter((n) => enabled.has(n.slug));
 
   return (
-    <div className="relative w-full max-w-4xl mx-auto mt-10" style={{ aspectRatio: `${VIEW_W} / ${VIEW_H}` }} aria-hidden="true">
+    <div className="relative w-full max-w-4xl mx-auto mt-6" style={{ aspectRatio: `${VIEW_W} / ${VIEW_H}` }} aria-hidden="true">
       <svg className="absolute inset-0 w-full h-full" viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} fill="none">
         {nodes.map((n) => (
           <path
             key={n.slug}
-            d={`M ${n.x} ${n.y + 60} C ${n.x} 200, ${VIEW_W / 2} 170, ${VIEW_W / 2} ${HUB_Y}`}
+            d={`M ${n.x} ${n.y + 60} C ${n.x} 165, ${VIEW_W / 2} 150, ${VIEW_W / 2} ${HUB_Y}`}
             stroke="#1A1712"
             strokeWidth="3"
             strokeLinecap="round"
@@ -80,11 +80,11 @@ export function HeroTopBand({ loaded = true, children }: { loaded?: boolean; chi
   const { t } = useTranslation("home");
   const liveCount = getEnabledChannels().length;
   return (
-    <section className="bg-billboard-yellow border-b-[3px] border-billboard-ink overflow-hidden pt-12 sm:pt-16 md:pt-20 pb-12 sm:pb-16 md:pb-20" aria-labelledby="hero-top-title">
+    <section className="bg-billboard-yellow border-b-[3px] border-billboard-ink overflow-hidden pt-10 sm:pt-12 md:pt-14 pb-12 sm:pb-14 md:pb-16" aria-labelledby="hero-top-title">
       <div className="max-w-4xl mx-auto px-4 sm:px-5 text-center">
         <h1
           id="hero-top-title"
-          className={`text-4xl sm:text-5xl md:text-7xl leading-[.98] mb-5 transition-all duration-700 ${loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+          className={`text-4xl sm:text-5xl md:text-7xl leading-[.98] mb-4 transition-all duration-700 ${loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
         >
           {t("heroBands.top.title1", { defaultValue: "Buy local attention." })}
           <br />
@@ -93,25 +93,33 @@ export function HeroTopBand({ loaded = true, children }: { loaded?: boolean; chi
           </span>
         </h1>
 
-        <p className="text-lg md:text-xl text-billboard-inkSoft max-w-2xl mx-auto mb-7 leading-relaxed">
+        <p className="text-lg md:text-xl text-billboard-inkSoft max-w-2xl mx-auto mb-6 leading-relaxed">
           {t("heroBands.top.subtitle", {
             defaultValue:
-              "Businesses post advertising opportunities. Verified creators, podcasts, radio stations, websites, events and communities send proposals to win them — with the request, payment and proof handled in one place.",
+              "Tell us your goal, audience and budget and ChatSched builds the campaign. Verified creators, podcasts, radio stations, websites and events send proposals — with the request, payment and proof handled in one place.",
           })}
         </p>
 
-        {/* One primary action for businesses; publishers get a quiet text link. */}
+        {/* One primary action. The self-serve route is named as the alternative
+            (so visitors know there are two ways in), and publishers get their own link. */}
         <div className="flex justify-center">
           <Link to="/build-my-campaign" data-cta="hero-build" className="brand-button dark w-full sm:w-auto">
             {t("heroBands.top.ctaBuild", { defaultValue: "Build my campaign →" })}
           </Link>
         </div>
 
-        <Link to="/for-publishers" data-cta="hero-publisher" className="inline-flex font-bold text-sm sm:text-base mt-5 underline underline-offset-4 decoration-2 hover:decoration-4 transition-all">
+        <p className="text-sm sm:text-base text-billboard-inkSoft mt-3">
+          {t("heroBands.top.selfServe", { defaultValue: "Rather pick the placements yourself?" })}{" "}
+          <Link to="/opportunities" data-cta="hero-post" className="whitespace-nowrap font-bold text-billboard-ink underline underline-offset-4 decoration-2 hover:decoration-4 transition-all">
+            {t("heroBands.top.ctaPost", { defaultValue: "Post an opportunity →" })}
+          </Link>
+        </p>
+
+        <Link to="/for-publishers" data-cta="hero-publisher" className="inline-flex font-bold text-sm sm:text-base mt-3 underline underline-offset-4 decoration-2 hover:decoration-4 transition-all">
           {t("heroBands.top.ctaTertiary", { defaultValue: "Own an audience? Start earning as a publisher →" })}
         </Link>
 
-        <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 mt-5 font-mono text-[11px] font-bold uppercase">
+        <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 mt-4 font-mono text-[11px] font-bold uppercase">
           <span>✓ {t("hero.noAccount")}</span>
           <span>✓ {t("hero.secure")}</span>
           <span>✓ {t("hero.tracked")}</span>

@@ -283,7 +283,7 @@ export default function Home() {
       <Seo title={t("seo.title")} description={t("seo.description")} />
       {/* Hero and video are one continuous yellow section. */}
       <HeroTopBand loaded={loaded}>
-        <div className={`max-w-3xl mx-auto px-4 sm:px-5 mt-2 flex justify-center transition-all duration-700 ${loaded ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}>
+        <div className={`max-w-3xl mx-auto px-4 sm:px-5 flex justify-center transition-all duration-700 ${loaded ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}>
           <HeroMockup />
         </div>
       </HeroTopBand>
