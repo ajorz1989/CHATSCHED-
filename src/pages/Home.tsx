@@ -60,18 +60,15 @@ function HomeMetrics() {
 }
 
 function HeroMockup() {
-  // The source video (960x570) has the actual billboard card centred in a
-  // large yellow margin (card + shadow occupy x 90-880, y 126-452). That
-  // margin blends into the yellow hero, so the old CSS border framed empty
-  // space and the card looked small and floating. Crop to the card (plus a
-  // few px of breathing room) instead: the container takes the card's aspect
-  // ratio and the video is offset/scaled inside it. The card already carries
-  // its own border and shadow, so no second CSS frame is drawn around it.
+  // 15 s loop, 1920x1080 (16:9), silent: every beat is carried by on-screen
+  // text, so it autoplays muted. The frame is a plain 16:9 box, so nothing is
+  // cropped; the video's own safe zone is the central 70%.
   //
-  // Loading: nothing but the small poster downloads up front. The video
-  // starts when it nears the viewport, pauses when it leaves, and stays on
-  // the poster for visitors who prefer reduced motion.
+  // Loading: only the poster downloads up front. Playback starts when the
+  // video nears the viewport and pauses when it leaves. Visitors who prefer
+  // reduced motion stay on the poster. Phones get the 720p file.
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [small] = useState(() => typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -90,21 +87,31 @@ function HeroMockup() {
 
   return (
     <div className="relative w-full">
-      <div className="relative w-full overflow-hidden" style={{ aspectRatio: "802 / 338" }}>
+      <div
+        className="relative w-full overflow-hidden rounded-xl border-[3px] border-billboard-ink bg-billboard-paper shadow-block"
+        style={{ aspectRatio: "16 / 9" }}
+      >
         <video
           ref={videoRef}
-          className="absolute block max-w-none pointer-events-none"
-          style={{ width: "119.7%", left: "-10.47%", top: "-35.5%" }}
-          width={960}
-          height={570}
-          src="/videos/hero-billboard.mp4"
-          poster="/videos/hero-billboard-poster.jpg"
+          className="absolute inset-0 block w-full h-full object-cover pointer-events-none"
+          width={1920}
+          height={1080}
+          poster="/media/chatsched-homepage-hero-poster.jpg"
           muted
           loop
           playsInline
           preload="none"
           aria-hidden="true"
-        />
+        >
+          {small ? (
+            <source src="/media/chatsched-homepage-hero-720p.mp4" type="video/mp4" />
+          ) : (
+            <>
+              <source src="/media/chatsched-homepage-hero-1080p.webm" type="video/webm" />
+              <source src="/media/chatsched-homepage-hero-1080p.mp4" type="video/mp4" />
+            </>
+          )}
+        </video>
       </div>
     </div>
   );
