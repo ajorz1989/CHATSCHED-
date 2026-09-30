@@ -47,5 +47,3 @@ Review results monthly. Look for trends in enquiries, branded searches, repeat c
 ## Conclusion
 
 One great ad can create a spark, but consistency builds recognition and trust. Keep showing up with useful, credible messages, and be ready to deliver when customers decide it is time to act.
-
-**CTA:** Create a simple four-week visibility plan today and commit to a rhythm your business can sustain long after the first burst of enthusiasm.
