@@ -47,5 +47,3 @@ Keep learning from customer questions. Repeated questions often signal where adv
 ## Conclusion
 
 Advertising does not have to feel distant or disruptive. When it is relevant, useful and connected to a good follow-up experience, it becomes the beginning of a relationship rather than the end of a broadcast.
-
-**CTA:** Review your next campaign and add one useful idea customers can act on before they buy anything from you.
