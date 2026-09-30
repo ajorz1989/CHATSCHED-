@@ -14,34 +14,15 @@ import HomeOpenOpportunities from "../components/HomeOpenOpportunities";
 import type { Tool } from "../lib/types";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
 
-type HomeMetricsData = {
-  verified_publishers: number;
-  new_publishers_this_month: number;
-  completed_bookings: number;
-};
-
 function HomeMetrics() {
-  const { t } = useTranslation("home");
-  const [metrics, setMetrics] = useState<HomeMetricsData | null>(null);
-
-  useEffect(() => {
-    if (!isSupabaseConfigured) return;
-    supabase.rpc("get_home_public_metrics").then(({ data }) => {
-      if (data?.[0]) setMetrics(data[0] as HomeMetricsData);
-    });
-  }, []);
-
-  // Proof strip: show nothing rather than dashes or zeros.
-  if (!metrics || (metrics.verified_publishers === 0 && metrics.new_publishers_this_month === 0 && metrics.completed_bookings === 0)) return null;
-
   const values = [
-    { value: metrics.verified_publishers, label: t("metrics.verifiedPublishers") },
-    { value: metrics.new_publishers_this_month, label: t("metrics.newPublishers") },
-    { value: metrics.completed_bookings, label: t("metrics.completedBookings") },
+    { value: "11", label: "Advertising channels" },
+    { value: "1", label: "Managed campaign workflow" },
+    { value: "100%", label: "Payment-protected bookings" },
   ];
 
   return (
-    <section className="bg-white border-b-[3px] border-billboard-ink" aria-label={t("metrics.ariaLabel")}>
+    <section className="bg-white border-b-[3px] border-billboard-ink" aria-label="ChatSched advertising value">
       <div className="max-w-6xl mx-auto px-5 py-5">
         <div className="grid grid-cols-1 sm:grid-cols-3 border-[3px] border-billboard-ink rounded-lg bg-billboard-paper shadow-blockSm overflow-hidden">
           {values.map((item, index) => (
