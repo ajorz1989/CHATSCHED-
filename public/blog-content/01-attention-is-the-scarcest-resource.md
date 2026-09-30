@@ -52,5 +52,3 @@ Review performance using meaningful signals: replies, enquiries, saves, website 
 ## Conclusion
 
 Attention is not something a business can demand. It is a small vote of confidence from a person who believes a message may help them. Earn it with relevance, clarity and consistency, then make the next step easy.
-
-**CTA:** Choose one customer problem your business solves this week and create a message that describes the moment, the outcome and the simplest next action.
