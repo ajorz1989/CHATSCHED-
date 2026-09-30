@@ -47,5 +47,3 @@ The insight can guide future spending and improve the service itself.
 ## Conclusion
 
 Effective advertising is not defined by the size of the spend. It is defined by relevance, clarity, proof and disciplined learning. Small businesses can compete by knowing their customers better and using every rand with purpose.
-
-**CTA:** Pick one service, one audience and one outcome for your next campaign, then design the smallest test that can teach you something useful.
