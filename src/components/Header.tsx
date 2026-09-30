@@ -41,13 +41,8 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 bg-billboard-paper border-b-[3px] border-billboard-ink">
       <div className="max-w-[1400px] w-full mx-auto min-w-0 flex items-center justify-between px-3 sm:px-5 py-3 gap-2 sm:gap-4">
-        <Link to="/" onClick={closeMenu} className="flex items-center gap-1.5 sm:gap-2 font-display text-[15px] sm:text-lg shrink-0 min-w-0">
-          <svg width="26" height="22" viewBox="0 0 26 22" fill="none" aria-hidden="true">
-            <rect x="1" y="1" width="24" height="14" stroke="currentColor" strokeWidth="2" />
-            <line x1="8" y1="15" x2="8" y2="21" stroke="currentColor" strokeWidth="2" />
-            <line x1="18" y1="15" x2="18" y2="21" stroke="currentColor" strokeWidth="2" />
-          </svg>
-          <span className="truncate">CHATSCHED</span>
+        <Link to="/" onClick={closeMenu} className="flex items-center shrink-0" aria-label="ChatSched home">
+          <img src="/brand/logo-horizontal-light.svg" alt="ChatSched" className="h-8 sm:h-9 w-auto" />
         </Link>
 
         <nav className="hidden lg:flex items-center gap-5 font-semibold text-sm whitespace-nowrap">

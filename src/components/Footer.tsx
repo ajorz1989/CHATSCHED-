@@ -19,14 +19,7 @@ export default function Footer() {
 
           {/* Brand + tagline */}
           <div className="col-span-2 sm:col-span-3 lg:col-span-2 pr-4">
-            <div className="flex items-center gap-2 font-display text-lg text-billboard-paper mb-2 whitespace-nowrap">
-              <svg width="24" height="20" viewBox="0 0 26 22" fill="none">
-                <rect x="1" y="1" width="24" height="14" stroke="currentColor" strokeWidth="2" />
-                <line x1="8" y1="15" x2="8" y2="21" stroke="currentColor" strokeWidth="2" />
-                <line x1="18" y1="15" x2="18" y2="21" stroke="currentColor" strokeWidth="2" />
-              </svg>
-              CHATSCHED
-            </div>
+            <img src="/brand/logo-horizontal-dark.svg" alt="ChatSched" className="h-9 w-auto mb-2" />
             <p className="text-sm max-w-[32ch] mb-4">{t("footer.tagline")}</p>
             <LanguageSwitcher compact />
           </div>
