@@ -54,5 +54,3 @@ Ask permission before using customer names, images or data. Accuracy protects bo
 ## Conclusion
 
 Promises introduce your value. Proof makes that value easier to trust. When customers can see what you do, how you work and what others experienced, they do not have to take your word for everything.
-
-**CTA:** Audit your main service page today: replace one generic claim with a customer quote, example, process detail or result that a buyer can evaluate.
