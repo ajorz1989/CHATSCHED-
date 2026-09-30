@@ -47,5 +47,3 @@ Monitor reviews and local conversations, but do not treat them only as promotion
 ## Conclusion
 
 Global reach has value when it supports a business model, but local trust often drives the decisions that keep a small business healthy. Be visible where customers live and talk, then back that visibility with dependable action.
-
-**CTA:** Update your primary online profile this week with clear service-area information and one piece of proof that shows why local customers trust you.
