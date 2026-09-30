@@ -47,5 +47,3 @@ Start small and measure outcomes. A campaign that creates ten qualified enquirie
 ## Conclusion
 
 Word-of-mouth is a foundation, not a complete growth plan. Preserve the service that earns recommendations, then add systems that help more of the right people discover, trust and choose your business.
-
-**CTA:** Choose one way to make referrals more visible this month—such as a review request, case study or referral link—and one way to reach a new audience.
