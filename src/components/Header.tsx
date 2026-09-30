@@ -42,7 +42,7 @@ export default function Header() {
     <header className="sticky top-0 z-50 bg-billboard-paper border-b-[3px] border-billboard-ink">
       <div className="max-w-[1400px] w-full mx-auto min-w-0 flex items-center justify-between px-3 sm:px-5 py-3 gap-2 sm:gap-4">
         <Link to="/" onClick={closeMenu} className="flex items-center shrink-0" aria-label="ChatSched home">
-          <img src="/brand/logo-horizontal-light.svg" alt="ChatSched" className="h-8 sm:h-9 w-auto" />
+          <img src="/brand/logo-horizontal-light.svg" alt="ChatSched" className="h-7 sm:h-8 w-auto" />
         </Link>
 
         <nav className="hidden lg:flex items-center gap-5 font-semibold text-sm whitespace-nowrap">
@@ -116,8 +116,8 @@ export default function Header() {
 
       {menuOpen && (
         <>
-          <div className="lg:hidden fixed inset-0 top-[55px] z-40 bg-billboard-ink/30" onClick={closeMenu} aria-hidden="true" />
-          <nav aria-label="Mobile navigation" className="lg:hidden absolute left-0 right-0 z-50 bg-billboard-paper border-b-[3px] border-billboard-ink shadow-blockSm max-h-[calc(100vh-55px)] overflow-y-auto">
+          <div className="lg:hidden fixed inset-0 top-[55px] sm:top-[59px] z-40 bg-billboard-ink/30" onClick={closeMenu} aria-hidden="true" />
+          <nav aria-label="Mobile navigation" className="lg:hidden absolute left-0 right-0 z-50 bg-billboard-paper border-b-[3px] border-billboard-ink shadow-blockSm max-h-[calc(100vh-55px)] sm:max-h-[calc(100vh-59px)] overflow-y-auto">
             <div className="max-w-6xl mx-auto px-5 py-4">
               <div className="border-2 border-billboard-ink rounded-lg bg-white p-2 mb-3">
                 <div className="font-mono text-[11px] uppercase tracking-wider text-billboard-inkSoft px-2 py-1">{t("nav.advertise")}</div>
