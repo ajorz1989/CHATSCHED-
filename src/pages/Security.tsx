@@ -28,10 +28,6 @@ const PRACTICES = [
     body: "Every payment notification from PayFast is independently re-verified — the signature is recomputed server-side and checked against what was received before a payment is ever marked as paid. A forged or tampered notification fails that check and is rejected.",
   },
   {
-    title: "Third-party credentials encrypted at rest",
-    body: "OAuth tokens for connected social accounts are encrypted (AES-256-GCM) before they’re stored, with the encryption key held only as a server-side secret, never in the database itself. A database-level exposure alone isn’t enough to make those credentials usable.",
-  },
-  {
     title: "Session management and expiry",
     body: "Authentication tokens expire after a fixed window. Users can sign out from all active sessions at once from their account settings, immediately invalidating sessions across devices.",
   },

@@ -26,7 +26,16 @@ import PublisherCard from "../components/PublisherCard";
 
 // 12-Channel Audit fix C4 — same set as PublisherCard.tsx's own copy; see
 // that file's comment for why this isn't a shared import.
-const VERIFICATION_REQUIRED_CHANNELS = new Set(["sports", "events", "community", "transport", "informal-retail", "associations", "restaurants"]);
+// Local to this page — not the same thing as channels.verification_required
+// in the database (that's specifically the high-trust placement/eligibility
+// checklist for physical channels). This set decides the "✓ Ownership
+// Verified" (green) vs plain "✓ Verified" (dark) wording once
+// publisher.verified is true. Social Media earns that same "ownership"
+// framing via a different mechanism — a bio code + screenshot an admin
+// confirms (social_verification_confirmed, migration 20260929120000) —
+// but the claim it backs is the same one: a human checked this specific
+// account is really theirs, not just that a form was filled in.
+const VERIFICATION_REQUIRED_CHANNELS = new Set(["sports", "events", "community", "transport", "informal-retail", "associations", "restaurants", "social-media"]);
 import EmptyState from "../components/EmptyState";
 import Seo from "../components/Seo";
 import { SkeletonBlock, SkeletonLine, SkeletonParagraph } from "../components/Skeleton";
@@ -487,8 +496,10 @@ export default function PublisherProfile() {
               </div>
             )}
             {publisher.ai_audience_summary && (
-              <div className="border-2 border-billboard-green rounded p-4 mb-4 bg-[#EAF3EC]">
-                <p className="font-mono text-[10px] uppercase text-billboard-greenDeep font-semibold mb-1">Audience summary — from verified follower data</p>
+              <div className={`border-2 rounded p-4 mb-4 ${publisher.verified ? "border-billboard-green bg-[#EAF3EC]" : "border-billboard-ink/20 bg-billboard-paperDim/40"}`}>
+                <p className={`font-mono text-[10px] uppercase font-semibold mb-1 ${publisher.verified ? "text-billboard-greenDeep" : "text-billboard-inkSoft"}`}>
+                  Audience summary — {publisher.verified ? "verified by ChatSched" : "self-reported by publisher"}
+                </p>
                 <p className="text-sm text-billboard-inkSoft">{publisher.ai_audience_summary}</p>
               </div>
             )}

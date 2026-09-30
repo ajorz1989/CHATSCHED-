@@ -75,6 +75,14 @@ export interface Publisher {
   // Private URLs submitted by Social Media channel applicants for manual verification.
   // Deliberately omitted from publishers_public.
   social_verification_links: Array<{ platform: string; url: string }>;
+  // Bio-code + screenshot verification (replaces the old OAuth "Connect
+  // social accounts" step — see migration 20260929120000). The screenshot
+  // itself is a path in verification_proof_urls above, reused as-is.
+  social_verification_code: string | null;
+  social_verification_code_generated_at: string | null;
+  social_verification_confirmed: boolean;
+  social_verification_confirmed_at: string | null;
+  social_verification_confirmed_by: string | null;
   rejected_reason: string | null;
   featured: boolean;
   featured_until: string | null;

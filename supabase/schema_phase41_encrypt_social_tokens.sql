@@ -1,6 +1,13 @@
 -- ChatSched — Phase 41 schema additions
 -- Run once in the Supabase SQL editor, AFTER schema_phase40_proof_screenshots.sql.
 --
+-- SUPERSEDED as of migrations/20260929120000_social_bio_code_verification.sql
+-- — see schema_phase34_social_connect.sql's own updated header for why.
+-- Nothing writes to social_connections anymore, so nothing needs encrypting;
+-- kept in place, not dropped, per this project's additive-migrations-only
+-- convention.
+--
+-- Original comment, kept for history:
 -- No structural change — access_token/refresh_token were already `text`
 -- columns and stay `text` columns; what they hold changed, not their
 -- type. This migration exists to record that change where the schema

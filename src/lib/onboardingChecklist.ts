@@ -59,8 +59,7 @@ export function computePublisherChecklist(
   publisher: Publisher | null,
   isRequestFlowChannel: boolean,
   requests: PublisherRequest[],
-  channelRequests: ChannelRequest[],
-  connectedPlatformCount: number
+  channelRequests: ChannelRequest[]
 ): ChecklistItem[] {
   if (!publisher) return [];
 
@@ -83,13 +82,22 @@ export function computePublisherChecklist(
       onAction: !verified && publisher.email ? () => resendVerificationEmail(publisher.email) : undefined,
       onActionLabel: "Resend email",
     },
-    {
-      id: "social-connect",
-      label: "Connect a social account",
-      hint: "Import real follower numbers instead of typing them in — it also tends to speed up admin review.",
-      done: connectedPlatformCount > 0,
-    },
   ];
+
+  // Bio-code verification only applies to the Social Media channel — every
+  // other channel already has its own eligibility/verification checklist
+  // at application time (src/channels/*/index.ts, publisher_verification_checks).
+  // Replaces the old OAuth-based "Connect a social account" step, which
+  // depended on ConnectSocialAccounts.tsx / social_connections
+  // (see migration 20260929120000_social_bio_code_verification.sql).
+  if (publisher.channel_slug === "social-media") {
+    items.push({
+      id: "social-verify",
+      label: "Verify your social account",
+      hint: "A code in your bio plus a screenshot of your own analytics — confirms you actually own the account, and is required before we can approve your listing.",
+      done: publisher.social_verification_confirmed,
+    });
+  }
 
   // Format selection only applies where the concept exists — social media
   // creators pick placement types, request-flow channels pick ad formats.

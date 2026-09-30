@@ -1151,8 +1151,24 @@ function ApplicationCard({
   const checks = verificationRequired ? getChannelBySlug(p.channel_slug)?.definition.eligibility?.checks ?? [] : [];
   const [ticked, setTicked] = useState<Set<string>>(new Set(previouslyConfirmedChecks));
   const [verificationError, setVerificationError] = useState<string | null>(null);
+  const [confirmingVerification, setConfirmingVerification] = useState(false);
   const socialVerificationLinks = (p.social_verification_links ?? []).filter((link) => link.url?.trim());
   const highTrustProofCount = p.verification_proof_urls?.length ?? 0;
+
+  async function handleConfirmSocialVerification(confirmed: boolean) {
+    setConfirmingVerification(true);
+    setVerificationError(null);
+    const { error } = await supabase.rpc("confirm_social_verification", { p_publisher_id: p.id, p_confirmed: confirmed });
+    setConfirmingVerification(false);
+    if (error) {
+      setVerificationError(formatSupabaseError(error, "Couldn't update verification status"));
+      return;
+    }
+    await logAdminAction(confirmed ? "social_verification_confirmed" : "social_verification_unconfirmed", "publishers", p.id, {
+      code: p.social_verification_code,
+    });
+    onRefresh();
+  }
 
   function toggleCheck(check: string) {
     setTicked((prev) => {
@@ -1187,6 +1203,10 @@ function ApplicationCard({
     if (p.channel_slug === "social-media") {
       if (socialVerificationLinks.length === 0) {
         setVerificationError("At least one public Social Media profile link must be submitted before verification.");
+        return;
+      }
+      if (!p.social_verification_confirmed) {
+        setVerificationError("Confirm the bio verification code below before approving.");
         return;
       }
       onApprove(p.id, {
@@ -1265,6 +1285,45 @@ function ApplicationCard({
               </div>
             )}
             <p className="text-[11px] text-billboard-inkSoft mt-2">Open the submitted public profiles and confirm they match the applicant before approving.</p>
+
+            <div className="mt-3 pt-3 border-t-2 border-billboard-ink/15">
+              <p className="font-mono text-xs font-semibold uppercase tracking-wide mb-2">Bio code + screenshot</p>
+              {p.social_verification_code ? (
+                <>
+                  <p className="text-sm mb-2">
+                    Code: <span className="font-mono font-bold">{p.social_verification_code}</span>
+                    {p.social_verification_code_generated_at && (
+                      <span className="text-billboard-inkSoft"> · generated {new Date(p.social_verification_code_generated_at).toLocaleDateString("en-ZA")}</span>
+                    )}
+                  </p>
+                  <VerificationProofThumbnails publisherId={p.id} proofPaths={p.verification_proof_urls ?? []} />
+                  {p.social_verification_confirmed ? (
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold text-billboard-greenDeep">✓ Confirmed{p.social_verification_confirmed_at ? ` on ${new Date(p.social_verification_confirmed_at).toLocaleDateString("en-ZA")}` : ""}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleConfirmSocialVerification(false)}
+                        disabled={confirmingVerification}
+                        className="text-xs font-semibold underline text-billboard-inkSoft disabled:opacity-60"
+                      >
+                        Undo
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => handleConfirmSocialVerification(true)}
+                      disabled={confirmingVerification}
+                      className="text-xs font-bold px-3 py-1.5 rounded border-2 border-billboard-ink bg-billboard-yellow disabled:opacity-60"
+                    >
+                      {confirmingVerification ? "Confirming…" : "Confirm — code is live in their bio"}
+                    </button>
+                  )}
+                </>
+              ) : (
+                <p className="text-sm text-billboard-inkSoft">The applicant hasn't generated a verification code yet.</p>
+              )}
+            </div>
           </div>
         )}
 

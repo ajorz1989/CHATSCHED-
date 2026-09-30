@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import Button from "./Button";
 import { formatCurrency, formatCurrencyRange } from "../lib/currency";
@@ -27,7 +27,7 @@ import CollapsiblePanel from "./CollapsiblePanel";
 import { computePublisherChecklist } from "../lib/onboardingChecklist";
 import { SkeletonBlock, SkeletonLine, StatCardGridSkeleton, SkeletonRows } from "./Skeleton";
 import EmptyState from "./EmptyState";
-import ConnectSocialAccounts from "./ConnectSocialAccounts";
+import SocialVerificationPanel from "./SocialVerificationPanel";
 import PublisherTractionPanel from "./PublisherTractionPanel";
 import PublisherActivationNudge from "./PublisherActivationNudge";
 import RateCardManager from "./RateCardManager";
@@ -73,15 +73,7 @@ export default function PublisherDashboardView() {
   const [publisher, setPublisher] = useState<Publisher | null>(null);
   const [requests, setRequests] = useState<PublisherRequest[]>([]);
   const [channelRequests, setChannelRequests] = useState<ChannelRequest[]>([]);
-  const [connectedPlatformCount, setConnectedPlatformCount] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const connectResult = searchParams.get("connect") ? {
-    status: searchParams.get("status"),
-    platform: searchParams.get("platform"),
-    followers: searchParams.get("followers"),
-    message: searchParams.get("message"),
-  } : null;
   const [tab, setTab] = useState<"requests" | "listing">("requests");
   const [activated, setActivated] = useState<boolean | undefined>(undefined);
 
@@ -104,19 +96,6 @@ export default function PublisherDashboardView() {
     const { data: pub } = await supabase.from("publishers").select("*").eq("user_id", user.id).maybeSingle();
     setPublisher((pub ?? null) as Publisher | null);
     if (pub) {
-      // Just the count, for the onboarding checklist's "Connect a social
-      // account" step — ConnectSocialAccounts.tsx below owns the full
-      // per-platform stats and re-fetches them itself, so this doesn't
-      // duplicate that; publisher_platform_stats is publicly readable
-      // (unlike social_connections, locked to service-role only — see
-      // schema_phase34_social_connect.sql), so a plain client select is
-      // fine here.
-      const { count } = await supabase
-        .from("publisher_platform_stats")
-        .select("id", { count: "exact", head: true })
-        .eq("publisher_id", pub.id);
-      setConnectedPlatformCount(count ?? 0);
-
       const pubChannelDef = getChannelBySlug((pub as Publisher).channel_slug)?.definition;
       if (pubChannelDef?.bookingFlow === "request") {
         // business:profiles(...) used to be embedded directly here too —
@@ -190,20 +169,12 @@ export default function PublisherDashboardView() {
       <div className="max-w-lg mx-auto px-5 py-16 text-center">
         <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-inkSoft text-billboard-inkSoft px-3 py-1.5 rounded mb-4">Pending review</span>
         <h1 className="text-2xl mb-3">Your application's with us.</h1>
-        <p className="text-billboard-inkSoft mb-10">We review every publisher by hand — we'll email you either way. In the meantime, connecting your accounts below gives us real numbers to review instead of self-reported ones, which tends to speed things up.</p>
-        {connectResult && (
-          <div className={`border-2 rounded p-3 mb-6 text-sm flex items-center justify-between gap-3 text-left ${connectResult.status === "success" ? "border-billboard-green bg-[#EAF3EC]" : "border-billboard-red bg-billboard-red/10"}`}>
-            <p>
-              {connectResult.status === "success"
-                ? `Connected — imported ${Number(connectResult.followers ?? 0).toLocaleString()} followers from ${connectResult.platform}.`
-                : connectResult.message || "Couldn't finish connecting that platform."}
-            </p>
-            <button onClick={() => setSearchParams({})} className="text-xs font-bold underline shrink-0">Dismiss</button>
+        <p className="text-billboard-inkSoft mb-10">We review every publisher by hand — we'll email you either way{publisher.channel_slug === "social-media" ? ". In the meantime, verifying your account below gives us something concrete to check instead of self-reported numbers, which tends to speed things up." : "."}</p>
+        {publisher.channel_slug === "social-media" && (
+          <div className="text-left">
+            <SocialVerificationPanel publisher={publisher} onChange={load} />
           </div>
         )}
-        <div className="text-left">
-          <ConnectSocialAccounts publisherId={publisher.id} />
-        </div>
       </div>
     );
   }
@@ -241,7 +212,6 @@ export default function PublisherDashboardView() {
         isRequestFlowChannel={isRequestFlowChannel}
         requests={requests}
         channelRequests={channelRequests}
-        connectedPlatformCount={connectedPlatformCount}
       />
 
       {/* CHANNEL_UPDATES_AUDIT.md's own remaining gap: "the publisher's own
@@ -268,17 +238,6 @@ export default function PublisherDashboardView() {
         <Link to="/account" className="font-semibold underline">Manage account & data →</Link>
       </p>
 
-      {connectResult && (
-        <div className={`border-2 rounded p-3 mb-6 text-sm flex items-center justify-between gap-3 ${connectResult.status === "success" ? "border-billboard-green bg-[#EAF3EC]" : "border-billboard-red bg-billboard-red/10"}`}>
-          <p>
-            {connectResult.status === "success"
-              ? `Connected — imported ${Number(connectResult.followers ?? 0).toLocaleString()} followers from ${connectResult.platform}.`
-              : connectResult.message || "Couldn't finish connecting that platform."}
-          </p>
-          <button onClick={() => setSearchParams({})} className="text-xs font-bold underline shrink-0">Dismiss</button>
-        </div>
-      )}
-
       <div className="flex flex-wrap items-center gap-3 mb-6">
         <PublisherAvatar imageUrl={publisher.profile_image_url} initials={publisher.initials} name={publisher.name} size="md" />
         <PublisherTrustStrip
@@ -302,7 +261,7 @@ export default function PublisherDashboardView() {
           getting-started checklist) lives in "Manage listing" instead. */}
       {(() => {
         const checklistItems = user
-          ? computePublisherChecklist(publisher, isRequestFlowChannel, requests, channelRequests, connectedPlatformCount)
+          ? computePublisherChecklist(publisher, isRequestFlowChannel, requests, channelRequests)
           : [];
         const checklistRemaining = checklistItems.filter((i) => !i.done).length;
         const activeRequestCount = requests.length + channelRequests.filter((r) => r.status !== "cancelled" && r.status !== "declined").length;
@@ -395,7 +354,7 @@ export default function PublisherDashboardView() {
                   // edit. Reuses the exact same checklist the "Getting
                   // started" list above already computed — one source of
                   // truth for "is this done", not a second copy of the logic.
-                  const socialDone = checklistItems.find((i) => i.id === "social-connect")?.done ?? connectedPlatformCount > 0;
+                  const socialDone = checklistItems.find((i) => i.id === "social-verify")?.done ?? !!publisher.social_verification_confirmed;
                   const profileDone = checklistItems.find((i) => i.id === "profile")?.done ?? false;
                   const formatsItem = checklistItems.find((i) => i.id === "formats");
                   const formatsDone = formatsItem?.done ?? true; // no item = format concept doesn't apply to this channel
@@ -403,16 +362,18 @@ export default function PublisherDashboardView() {
 
                   return (
                     <>
-                      <CollapsiblePanel
-                        title="Connect social accounts"
-                        status={connectedPlatformCount > 0 ? `${connectedPlatformCount} connected` : "Not connected"}
-                        complete={socialDone}
-                        defaultOpen={!socialDone}
-                      >
-                        <div className="mb-10">
-                          <ConnectSocialAccounts publisherId={publisher.id} />
-                        </div>
-                      </CollapsiblePanel>
+                      {publisher.channel_slug === "social-media" && (
+                        <CollapsiblePanel
+                          title="Verify your account"
+                          status={publisher.social_verification_confirmed ? "Verified" : publisher.social_verification_code ? "Awaiting review" : "Not started"}
+                          complete={socialDone}
+                          defaultOpen={!socialDone}
+                        >
+                          <div className="mb-10">
+                            <SocialVerificationPanel publisher={publisher} onChange={load} />
+                          </div>
+                        </CollapsiblePanel>
+                      )}
 
                       <CollapsiblePanel
                         title="Your profile"

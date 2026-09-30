@@ -1,6 +1,18 @@
 -- ChatSched — Phase 34 schema additions
 -- Run once in the Supabase SQL editor, AFTER every prior schema_phase*.sql.
 --
+-- SUPERSEDED as of migrations/20260929120000_social_bio_code_verification.sql:
+-- the OAuth "Connect your social account" flow this backed (ConnectSocialAccounts.tsx,
+-- social-oauth-start, social-oauth-callback — all deleted) needed a
+-- platform-approved developer app per provider that never actually cleared
+-- for real publishers, and only ever covered 4 of the platforms this
+-- marketplace needs. Replaced with an admin-confirmed bio code + screenshot,
+-- which needs no platform approval and works on any platform. The tables
+-- below are left in place (additive-migrations-only convention) but nothing
+-- reads or writes them anymore — see the migration above for what replaced
+-- this and why.
+--
+-- Original comment, kept for history:
 -- Backs the "Connect your social account" onboarding step: real OAuth
 -- against each platform's official API (YouTube, Facebook Pages,
 -- Instagram, TikTok — see supabase/DEPLOY.md's "Social account connect"

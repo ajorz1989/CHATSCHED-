@@ -1,11 +1,15 @@
 // CORS headers for the Edge Functions browsers call directly (notify,
 // payfast-checkout, content-studio-generate, content-studio-subscribe,
 // publisher-authenticity-check, notify-saved-search-matches, delete-account,
-// summarize-publisher-audience, campaign-compliance-screen, social-oauth-start,
-// send-otp, verify-otp — payfast-notify, expire-channel-requests, and
-// social-oauth-callback are server-to-server, scheduled, or mid-redirect
-// calls, never a normal fetch from a browser with a session header, so
-// they don't need this).
+// summarize-publisher-audience, campaign-compliance-screen,
+// send-otp, verify-otp — payfast-notify and expire-channel-requests are
+// server-to-server or scheduled calls, never a normal fetch from a browser
+// with a session header, so they don't need this).
+// (social-oauth-start and social-oauth-callback, the two OAuth Edge
+// Functions previously listed here, were deleted in migration
+// 20260929120000_social_bio_code_verification.sql — see that file and
+// SocialVerificationPanel.tsx for what replaced the "Connect social
+// accounts" flow they supported.)
 // (send-otp and verify-otp were missing from this list even though they
 // already imported corsHeaders — comment-only fix, caught in a pre-launch
 // audit pass while looking at the fallback issue below.)

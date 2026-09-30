@@ -64,6 +64,11 @@ export function makePublisher(overrides: Partial<Publisher> = {}): Publisher {
     channel_slug: "social-media",
     verification_proof_urls: [],
     social_verification_links: [],
+    social_verification_code: null,
+    social_verification_code_generated_at: null,
+    social_verification_confirmed: false,
+    social_verification_confirmed_at: null,
+    social_verification_confirmed_by: null,
     ...overrides,
   };
 }

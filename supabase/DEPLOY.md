@@ -760,171 +760,89 @@ Worth testing:
    copy the URL, open it in a new tab, and confirm every filter (not just
    the 4 that used to sync) comes back exactly as set.
 
-## Social account connect
-`schema_phase34_social_connect.sql` + three Edge Functions
-(`social-oauth-start`, `social-oauth-callback`, `summarize-publisher-audience`)
-+ `ConnectSocialAccounts.tsx`, wired into the publisher dashboard (both the
-pending-review state and the main one) and the application-submitted
-screen. Real OAuth against each platform's official API — not a mockup —
-for the ones that actually have a free, self-serve way to read a creator's
-own follower count: **YouTube, Facebook Pages, Instagram, TikTok**.
+## Social Media verification (bio code + screenshot)
+`migrations/20260929120000_social_bio_code_verification.sql` + one Edge
+Function (`summarize-publisher-audience`) + `SocialVerificationPanel.tsx`,
+wired into the publisher dashboard for the `social-media` channel only
+(both the pending-review state and the main one).
 
-Also has its own step in the onboarding checklist now
-(`onboardingChecklist.ts`'s `computePublisherChecklist`, `id: "social-connect"`)
-— done once `publisher_platform_stats` has at least one row for that
-publisher. `PublisherDashboardView.tsx` fetches just the count (not the
-full per-platform breakdown `ConnectSocialAccounts.tsx` already owns and
-re-fetches itself) purely so the checklist has a done/not-done signal.
+**Replaces the old OAuth "Connect social accounts" step**
+(`social-oauth-start`, `social-oauth-callback`, `ConnectSocialAccounts.tsx`,
+`schema_phase34_social_connect.sql` — all deleted). That flow needed a
+real, platform-approved developer app for each of YouTube, Facebook Pages,
+Instagram and TikTok before it worked for anyone outside a test user (Meta
+App Review alone runs 2-4 weeks plus Business Verification; TikTok has no
+published timeline at all), and even fully working, it only ever covered
+those four platforms — never WhatsApp Channels, Facebook Groups, X,
+LinkedIn, or a personal (non-Business/Creator) Instagram account, all of
+which real publishers on this marketplace use. Discussed directly with the
+platform owner and replaced with something that needs no platform approval
+and works identically on every platform, at the cost of needing a person
+to look at it: an admin, not an API, confirms ownership.
 
-**Why only those four, and not the rest of `PLATFORMS` in `src/lib/constants.ts`:**
-- **X** — no free API tier at all as of 2026. Every read costs money per
-  call, with no way around it. Not something to wire up and then discover
-  it's silently burning a card on file.
-- **LinkedIn** — its follower/audience API is restricted to approved
-  marketing partners, not self-serve for an individual developer account.
-- **Facebook Group** — no public API for member counts the way Pages have;
-  only a group's own admins can see that number, and not via a general
-  OAuth grant.
-- **WhatsApp Channel** — no public API for follower counts exists yet.
+Decided when this was built: verification is **required** for a Social
+Media publisher to be approved (`enforce_publisher_channel_verification`
+and `approve_publisher_application` both enforce it — see the migration's
+own comments for exactly where and why it has to live in the function, not
+just the trigger), and the AI audience summary stays, now sourced from the
+publisher's own entered follower/engagement numbers and
+`social_verification_links` instead of OAuth-imported stats.
 
-If any of that changes, `supabase/functions/_shared/socialProviders.ts` is
-where a fifth platform would slot in — it's one config object per
-platform, not a rewrite.
-
-### What each of the four actually needs (all free, all real developer setup)
-1. **YouTube** — a Google Cloud project, OAuth consent screen, and OAuth
-   Client ID (Web application type). Scope used is `youtube.readonly`,
-   classified by Google as "sensitive" — needs their standard verification
-   step (a form + a short screen-recording demo) before it'll work for
-   anyone beyond your own test users, typically a few days to a couple
-   weeks. Not the multi-week CASA security assessment "restricted" scopes
-   require.
-   ```
-   supabase secrets set GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
-   supabase secrets set GOOGLE_CLIENT_SECRET=your-client-secret
-   ```
-2. **Facebook Pages** — a Meta App (Business type) at developers.facebook.com,
-   with the Facebook Login product added. Scopes: `pages_show_list`,
-   `pages_read_engagement`. Works immediately in Development Mode for Pages
-   you or your added testers admin; needs Meta App Review (Meta's own
-   published estimate is 2-4 weeks, plus Business Verification) before it
-   works for real publishers generally.
-   ```
-   supabase secrets set META_APP_ID=your-app-id
-   supabase secrets set META_APP_SECRET=your-app-secret
-   ```
-3. **Instagram** — the same Meta App as above, with the Instagram product
-   added, using "Instagram API with Instagram Login" (the current,
-   non-deprecated path — no linked Facebook Page required). Business or
-   Creator accounts only; Instagram has had no official API for personal
-   accounts since Basic Display API shut down. Same Meta App Review gate as
-   Facebook Pages.
-   ```
-   supabase secrets set INSTAGRAM_APP_ID=your-app-id
-   supabase secrets set INSTAGRAM_APP_SECRET=your-app-secret
-   ```
-4. **TikTok** — a TikTok for Developers app with Login Kit and the Display
-   API product added, scope `user.info.basic`. Requires TikTok's own app
-   review before it works for real users — no fixed published timeline.
-   Worth knowing regardless of review status: TikTok has no audience-
-   demographics endpoint for commercial apps at all, reviewed or not —
-   that's Research-API-only, restricted to academic access.
-   ```
-   supabase secrets set TIKTOK_CLIENT_KEY=your-client-key
-   supabase secrets set TIKTOK_CLIENT_SECRET=your-client-secret
-   ```
-
-### Shared setup (needed regardless of which platforms you enable)
-```
-supabase secrets set OAUTH_STATE_SECRET=some-long-random-string
-supabase secrets set SOCIAL_TOKEN_ENCRYPTION_KEY=$(openssl rand -base64 32)
-```
-`OAUTH_STATE_SECRET` signs the OAuth `state` parameter so
-`social-oauth-callback` can trust it wasn't tampered with, without needing
-a database table to track in-flight authorization attempts. Any long
-random string works — it's never shown to anyone, just used to sign/verify.
-
-`SOCIAL_TOKEN_ENCRYPTION_KEY` encrypts the actual provider access/refresh
-tokens before `social-oauth-callback` stores them (schema_phase41 — see
-that migration and `_shared/tokenCrypto.ts` for why plaintext wasn't
-acceptable here). Must be exactly 32 bytes, base64-encoded — the
-`openssl rand -base64 32` above produces one directly. Losing this key
-after connecting real accounts means every one of them needs to be
-reconnected; there's no recovery path by design.
-
-**For every provider you actually enable**, the redirect URI you register
-in that platform's developer console must be exactly:
-```
-https://YOUR-PROJECT-REF.supabase.co/functions/v1/social-oauth-callback
-```
-
-Deploy all three functions with `--no-verify-jwt`. `social-oauth-callback`
-needs it for real — it's the mid-redirect browser navigation every
-provider sends the user back to, with no Supabase session header at all
-(identity comes from the signed `state` token instead). `social-oauth-start`
-and `summarize-publisher-audience` don't strictly need the flag anymore —
-both are called with `supabase.functions.invoke`, which sends a genuine
-Authorization header, and both verify it manually inside the function the
-same way — but matching all three here keeps the deploy step uniform.
-(`social-oauth-start` used to be the odd one out here, taking the user's
-access token as a `?access_token=...` query-string param and redirecting
-the browser directly — a bearer credential sitting in a URL, and therefore
-exposed to browser history, proxy/server logs, and analytics/monitoring
-systems. Fixed: it's now `POST`ed to like the other two, authenticated via
-a real header, and hands back the provider's authorize URL for the browser
-to navigate to itself.)
-```
-supabase functions deploy social-oauth-start --no-verify-jwt
-supabase functions deploy social-oauth-callback --no-verify-jwt
-supabase functions deploy summarize-publisher-audience --no-verify-jwt
-```
-
-`summarize-publisher-audience` reuses `ANTHROPIC_API_KEY` — see "Setup —
-Phase 3" above if that's not already set. It's the same Claude Haiku call
-shape as `content-studio-generate`; nothing new to configure there if
-Content Studio already works.
+### How it works
+1. **Publisher lists their profile URLs** — unchanged; still
+   `social_verification_links` (jsonb), still admin-reviewed by eye. What's
+   new is publishers can now edit this after applying too, from the
+   dashboard, not just once at application time.
+2. **Publisher generates a code** (`generate_social_verification_code`
+   RPC — e.g. `CS-7K3P9`) and places it in that profile's bio/description
+   for admin to find. Regenerating the code always resets confirmation —
+   the code an admin last checked is no longer live, so a stale
+   "confirmed" would be a false signal, not a convenience.
+3. **Publisher uploads a screenshot** of their own platform analytics
+   (followers, reach, audience). Reuses `verification_proof_urls` and the
+   `publisher-verification-proof` bucket as-is (schema_phase97) — that
+   column was already generic, just previously only populated by
+   high-trust physical-placement channels.
+4. **Admin confirms it** from the Applications tab (Admin.tsx) — opens the
+   live profile, checks the code is actually in the bio, reviews the
+   screenshot, clicks Confirm (`confirm_social_verification` RPC, admin-only).
+   Approval is blocked until this is done.
 
 ### What actually gets stored
-Two new tables, deliberately split by sensitivity:
-- `social_connections` — the real access/refresh tokens. **No RLS policies
-  at all beyond enabling RLS** — not even the publisher who owns the
-  connection can query this table directly. Every access goes through a
-  service-role Edge Function. This is a decision, not an oversight.
-- `publisher_platform_stats` — just the follower count/username/avatar
-  pulled *from* a connection, publicly readable (same as everything else on
-  a profile), and kept in its own table specifically so "what's safe to
-  show" and "what's a credential" can never be confused by a future query
-  someone writes without reading this section first.
+Nothing new needing special handling — five plain columns on `publishers`
+(`social_verification_code`, `_code_generated_at`, `_confirmed`,
+`_confirmed_at`, `_confirmed_by`), same visibility rules as everything
+else on that row. `publishers_public` (the safe read surface for the
+marketplace directory) exposes only the boolean `social_verification_confirmed`
+— never the code itself, never the confirmation timestamp or which admin
+confirmed it.
+
+`social_connections` and `publisher_platform_stats` (the OAuth-era tables)
+are left in the database, per this project's additive-migrations-only
+convention, but nothing reads or writes them anymore.
 
 ### Worth testing before relying on this
-1. **A full round trip** on whichever platform you set up first — click
-   Connect, actually authorize on the real platform, land back on
-   `/dashboard` with a success banner and a real follower count showing.
-2. **Declining the authorization** on the platform's side — confirm you
-   land back with a clear error banner, not a blank page or a stuck spinner.
-3. **A stale/tampered state token** — manually edit the `state` query param
-   on a callback URL and confirm it's rejected, not silently accepted.
-4. **The AI summary** — connect at least one platform, click "Generate with
-   AI" from the dashboard, confirm the summary only references numbers that
-   are actually true, and shows up on the public profile afterward.
-5. **Someone else's publisher_id** — while logged in as publisher A, try
-   calling `social-oauth-start` (e.g. via the browser console:
-   `supabase.functions.invoke('social-oauth-start', { body: { platform: 'youtube', publisher_id: '<publisher-B-id>' } })`)
-   with publisher B's id (there's a real check for this in the function —
-   confirm it actually rejects rather than trusting the request body).
-6. **Tokens are actually encrypted** — after connecting a real account,
-   check the row directly (`select access_token from
-   public.social_connections where publisher_id = '...'` via the SQL
-   editor, using the service role — RLS blocks everyone else). It should
-   be an opaque base64 blob, not something that visibly starts like a real
-   provider token. Then try connecting with `SOCIAL_TOKEN_ENCRYPTION_KEY`
-   unset — the connection should fail with a clear error, not silently
-   store the token unencrypted.
-7. **CORS isn't accidentally wide open** — deploy a function without
-   setting `SITE_URL`, then check the `Access-Control-Allow-Origin` header
-   on a response from a browser (dev tools → Network tab) or with
-   `curl -i` — it should read `http://localhost:5173`, never `*`. Then set
-   `SITE_URL` to your real domain and confirm the header updates to match.
+1. **The whole publisher-side flow** — as a `social-media` publisher, add
+   a profile link, generate a code, upload a screenshot, confirm all
+   three save and reappear after a page reload.
+2. **Regenerating resets confirmation** — get an admin to confirm a
+   publisher, then regenerate that publisher's code and confirm the
+   dashboard now shows "Awaiting admin review" again, not "Verified".
+3. **A non-admin can't self-confirm** — while logged in as the publisher,
+   try `supabase.rpc('confirm_social_verification', { p_publisher_id:
+   '<own id>', p_confirmed: true })` from the browser console and confirm
+   it's rejected (`Only admins can confirm social verification.`), not
+   silently accepted.
+4. **Approval is actually blocked** — try approving a `social-media`
+   application with no code confirmed yet (both from the UI — the Approve
+   button should show an inline error — and directly via
+   `approve_publisher_application`, which should raise rather than
+   silently succeed).
+5. **The AI summary** — as a publisher with a follower count set, generate
+   a summary, confirm it only references numbers actually on the profile,
+   and that its public-profile wording changes between "self-reported by
+   publisher" and "verified by ChatSched" depending on
+   `social_verification_confirmed`.
 
 ## Counter-offers on the Request Feature workflow
 `schema_phase35_counter_offer.sql` — adds one round of price negotiation to
@@ -1583,8 +1501,7 @@ codebase, not generic security-page boilerplate: RLS is enabled on all
 40 tables across `supabase/*.sql`; admin 2FA is enforced by
 `AdminSecurity.tsx`/`MfaSetup.tsx` and gates `/admin` via `RequireAuth`;
 PayFast ITN signatures are independently recomputed and checked in
-`supabase/functions/_shared/payfast.ts`; social OAuth tokens are
-AES-256-GCM encrypted at rest per `tokenCrypto.ts`; admin actions are
+`supabase/functions/_shared/payfast.ts`; admin actions are
 written to `admin_audit_log` (schema_phase15) via `log_admin_action()`;
 and self-service account deletion (`delete-account` Edge Function) is
 POPIA "right to erasure" support, not a "email us" placeholder. Nothing

@@ -17,17 +17,16 @@ function formatR(n: number): string {
 }
 
 // Everything here is derived from data PublisherDashboardView.tsx already
-// has loaded (publisher, requests, channelRequests, connected platform
-// count) — no separate fetch, so this doesn't add a single extra query.
+// has loaded (publisher, requests, channelRequests) — no separate fetch,
+// so this doesn't add a single extra query.
 export default function CreatorHomeSummary({
-  firstName, publisher, isRequestFlowChannel, requests, channelRequests, connectedPlatformCount,
+  firstName, publisher, isRequestFlowChannel, requests, channelRequests,
 }: {
   firstName: string | null;
   publisher: Publisher;
   isRequestFlowChannel: boolean;
   requests: PublisherRequest[];
   channelRequests: ChannelRequest[];
-  connectedPlatformCount: number;
 }) {
   // ── Campaigns that need a response right now ──────────────────────────
   const actionableRequests = requests.filter((r) => r.status === "pending" || r.status === "contacted");
@@ -41,7 +40,7 @@ export default function CreatorHomeSummary({
   ].sort((a, b) => b.created_at.localeCompare(a.created_at)).slice(0, 3);
 
   // ── Profile completeness ────────────────────────────────────────────────
-  const checklist = computePublisherChecklist(publisher, isRequestFlowChannel, requests, channelRequests, connectedPlatformCount);
+  const checklist = computePublisherChecklist(publisher, isRequestFlowChannel, requests, channelRequests);
   const doneCount = checklist.filter((i) => i.done).length;
   const completePct = checklist.length > 0 ? Math.round((doneCount / checklist.length) * 100) : 0;
   const nextAction = checklist.find((i) => !i.done);
