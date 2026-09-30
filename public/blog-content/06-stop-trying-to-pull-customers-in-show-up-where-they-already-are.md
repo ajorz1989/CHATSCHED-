@@ -47,5 +47,3 @@ Test the experience yourself on a phone. If you cannot complete the journey quic
 ## Conclusion
 
 Marketing becomes more effective when it respects the customer’s existing habits. Instead of constantly trying to pull people into your world, make it simple for them to find and choose you in theirs.
-
-**CTA:** Map one customer journey today—from the moment they recognise a need to the moment they buy—and remove one unnecessary step.
