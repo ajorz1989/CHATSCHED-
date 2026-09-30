@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { usePublishers } from "../hooks/usePublishers";
@@ -11,6 +11,7 @@ import Seo from "../components/Seo";
 import ToolIcon from "../components/ToolIcon";
 import { HeroTopBand } from "../components/HomeHeroBands";
 import HomeOpenOpportunities from "../components/HomeOpenOpportunities";
+import LazyLoopVideo from "../components/LazyLoopVideo";
 import type { Tool } from "../lib/types";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
 
@@ -42,57 +43,20 @@ function HomeMetrics() {
 
 function HeroMockup() {
   // 15 s loop, 1920x1080 (16:9), silent: every beat is carried by on-screen
-  // text, so it autoplays muted. The frame is a plain 16:9 box, so nothing is
-  // cropped; the video's own safe zone is the central 70%.
-  //
-  // Loading: only the poster downloads up front. Playback starts when the
-  // video nears the viewport and pauses when it leaves. Visitors who prefer
-  // reduced motion stay on the poster. Phones get the 720p file.
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [small] = useState(() => typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video || typeof IntersectionObserver === "undefined") return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) video.play().catch(() => undefined);
-        else video.pause();
-      },
-      { rootMargin: "200px 0px" },
-    );
-    io.observe(video);
-    return () => io.disconnect();
-  }, []);
-
+  // text. The frame is a plain 16:9 box, so nothing is cropped; the video's
+  // own safe zone is the central 70%.
   return (
     <div className="relative w-full">
       <div
         className="relative w-full overflow-hidden rounded-xl border-[3px] border-billboard-ink bg-billboard-paper shadow-block"
         style={{ aspectRatio: "16 / 9" }}
       >
-        <video
-          ref={videoRef}
-          className="absolute inset-0 block w-full h-full object-cover pointer-events-none"
-          width={1920}
-          height={1080}
+        <LazyLoopVideo
+          webm="/media/chatsched-homepage-hero-1080p.webm"
+          mp4="/media/chatsched-homepage-hero-1080p.mp4"
+          mp4Small="/media/chatsched-homepage-hero-720p.mp4"
           poster="/media/chatsched-homepage-hero-poster.jpg"
-          muted
-          loop
-          playsInline
-          preload="none"
-          aria-hidden="true"
-        >
-          {small ? (
-            <source src="/media/chatsched-homepage-hero-720p.mp4" type="video/mp4" />
-          ) : (
-            <>
-              <source src="/media/chatsched-homepage-hero-1080p.webm" type="video/webm" />
-              <source src="/media/chatsched-homepage-hero-1080p.mp4" type="video/mp4" />
-            </>
-          )}
-        </video>
+        />
       </div>
     </div>
   );
@@ -153,24 +117,44 @@ function ProofSection() {
           <h2 className="font-display text-3xl md:text-5xl leading-tight mb-3">{t("how.title")}</h2>
           <p className="text-billboard-paperDim max-w-prose">{t("trust.subtitle")}</p>
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {steps.map((step) => (
-            <div key={step} className="border-2 border-white/20 rounded-lg p-5 bg-white/5">
-              <span className="font-display text-3xl text-billboard-yellow">0{step}</span>
-              <h3 className="font-display text-lg mt-3 mb-1">{t(`how.steps.${step}.title`)}</h3>
-              <p className="text-sm text-billboard-paperDim leading-relaxed">{t(`how.steps.${step}.body`)}</p>
-            </div>
-          ))}
+
+        {/* Animated walkthrough: the six steps and three trust points, in motion. */}
+        <div className="max-w-5xl mx-auto">
+          <div
+            className="relative w-full overflow-hidden rounded-xl border-[3px] border-billboard-paper bg-billboard-ink shadow-[8px_8px_0_#F5B700]"
+            style={{ aspectRatio: "16 / 9" }}
+          >
+            <LazyLoopVideo
+              webm="/media/chatsched-proof-workflow-1080p.webm"
+              mp4="/media/chatsched-proof-workflow-1080p.mp4"
+              mp4Small="/media/chatsched-proof-workflow-720p.mp4"
+              poster="/media/chatsched-proof-workflow-poster.jpg"
+            />
+          </div>
         </div>
-        <div className="grid md:grid-cols-3 gap-3 mt-7">
-          {trust.map((item) => (
-            <div key={item} className="border-2 border-white/20 rounded-lg p-5">
-              <h3 className="font-display text-lg mb-2">{t(`trust.${item}.title`)}</h3>
-              <p className="text-sm text-billboard-paperDim leading-relaxed">{t(`trust.${item}.body`)}</p>
-            </div>
-          ))}
+
+        {/* The video is decorative, so the same content stays available as text
+            for screen readers and search engines. */}
+        <div className="sr-only">
+          <ol>
+            {steps.map((step) => (
+              <li key={step}>
+                <h3>{t(`how.steps.${step}.title`)}</h3>
+                <p>{t(`how.steps.${step}.body`)}</p>
+              </li>
+            ))}
+          </ol>
+          <ul>
+            {trust.map((item) => (
+              <li key={item}>
+                <h3>{t(`trust.${item}.title`)}</h3>
+                <p>{t(`trust.${item}.body`)}</p>
+              </li>
+            ))}
+          </ul>
         </div>
-        <div className="flex flex-wrap gap-3 mt-7">
+
+        <div className="flex flex-wrap gap-3 mt-10 max-w-5xl mx-auto">
           <Link to="/how-it-works" data-cta="how-it-works" className="brand-button light">{t("how.cta")}</Link>
           <Link to="/trust" data-cta="how-trust" className="font-bold text-sm text-billboard-yellow underline underline-offset-4 self-center">{t("trust.cta")}</Link>
         </div>
