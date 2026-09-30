@@ -47,5 +47,3 @@ Listen carefully to enquiries. The words customers use to describe their problem
 ## Conclusion
 
 Niche marketing is not about limiting ambition. It is about concentrating effort where relevance is strongest. When a business becomes known for solving one important problem for one recognisable group, growth becomes easier to explain and repeat.
-
-**CTA:** Write your niche statement today, then use it to review whether your homepage, social profile and latest advert speak clearly to the people you most want to serve.
