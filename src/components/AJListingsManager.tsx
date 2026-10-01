@@ -357,10 +357,6 @@ function ListingEditor({ listing, onChanged, onDeleted }: { listing: AJListing; 
     }
 
     setPhotoUploading(true);
-    // AJ-created listings have no owning user, and the profile-images storage
-    // policies only allow writing inside your own {auth.uid()}/ folder. So the
-    // photo lives in the admin's folder, named after the listing. One fixed
-    // filename per listing (upsert) so a new photo replaces the old one.
     const folder = user.id;
     const path = `${folder}/aj-${listing.id}.${ext}`;
     const { error: uploadErr } = await supabase.storage
@@ -373,7 +369,6 @@ function ListingEditor({ listing, onChanged, onDeleted }: { listing: AJListing; 
     }
 
     const { data: publicUrlData } = supabase.storage.from("profile-images").getPublicUrl(path);
-    // Cache-bust: same path on re-upload, so without this the old image would stay cached.
     const freshUrl = `${publicUrlData.publicUrl}?v=${Date.now()}`;
     const { error: updateErr } = await supabase
       .from("publishers")
@@ -386,7 +381,6 @@ function ListingEditor({ listing, onChanged, onDeleted }: { listing: AJListing; 
       return;
     }
 
-    // Switching format (e.g. PNG -> JPG) would otherwise leave the old file behind.
     const staleExts = Object.values(MIME_TO_EXT).filter((x) => x !== ext);
     await supabase.storage
       .from("profile-images")
@@ -701,6 +695,7 @@ function ListingEditor({ listing, onChanged, onDeleted }: { listing: AJListing; 
           )}
         </div>
       )}
+
       <div className="mt-6 pt-6 border-t-2 border-billboard-paperDim">
         <div className="flex items-center justify-between gap-3 mb-3">
           <div>
@@ -800,3 +795,4 @@ function ListingEditor({ listing, onChanged, onDeleted }: { listing: AJListing; 
       </div>
     </div>
   );
+}
