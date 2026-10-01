@@ -86,6 +86,25 @@ export default function About() {
         </div>
       </section>
 
+      {/* Schedy explainer — introduce the mascot after the About context */}
+      <section aria-labelledby="schedy-explainer-title" className="bg-billboard-paperDim border-b-[3px] border-billboard-ink py-12 md:py-16">
+        <div className="max-w-5xl mx-auto px-5 grid md:grid-cols-[minmax(0,1fr)_minmax(280px,420px)] gap-8 md:gap-12 items-center">
+          <div>
+            <span className="inline-flex items-center gap-2 font-mono text-xs font-semibold uppercase tracking-wider border-2 border-billboard-ink bg-billboard-yellow px-3 py-1.5 rounded mb-4">Meet Schedy · Your ChatSched guide</span>
+            <h2 id="schedy-explainer-title" className="font-display text-2xl md:text-3xl mb-4">Meet Schedy. See how ChatSched brings local advertising together.</h2>
+            <p className="text-billboard-inkSoft leading-relaxed mb-5">Our mascot Schedy makes it easier to understand how businesses discover real local audiences, connect with publishers, and manage advertising requests through one clear workflow. Watch the short explainer to see how it works.</p>
+            <p className="font-mono text-[11px] uppercase tracking-wider text-billboard-inkSoft">37-second explainer · Sound on for the full experience</p>
+          </div>
+          <div className="mx-auto w-full max-w-[360px] border-[3px] border-billboard-ink rounded-xl bg-billboard-ink p-2 shadow-block overflow-hidden">
+            <video className="block w-full h-auto rounded-lg bg-black" controls playsInline preload="metadata" poster="/brand/schedy-explainer-poster.webp" aria-label="ChatSched explainer video featuring Schedy">
+              <source src="/videos/schedy-explainer.mp4" type="video/mp4" />
+              Your browser does not support the video element. Please use a modern browser to watch the ChatSched explainer.
+            </video>
+            <p className="text-center font-mono text-[10px] text-billboard-paper/70 uppercase tracking-wider py-2">Schedy · Advertising for the better</p>
+          </div>
+        </div>
+      </section>
+
       {/* Mission & Vision (merged from the standalone Mission page) */}
       <section id="mission" className="max-w-3xl mx-auto px-5 py-16">
         <span className="font-mono text-xs font-semibold tracking-wider uppercase text-billboard-inkSoft">Our mission</span>
