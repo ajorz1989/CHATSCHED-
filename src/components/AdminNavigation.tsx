@@ -108,6 +108,7 @@ const GROUPS: NavGroup[] = [
     icon: Wrench,
     items: [
       { key: "aj_creations", label: "AJ: Creations", icon: Sparkles, tone: "success" },
+      { key: "business_onboarding", label: "Business Onboarding", icon: BriefcaseBusiness, tone: "success" },
       { label: "ChatSched Tools", href: "/admin/tools", icon: Wrench },
       { label: "Visual Identity", href: "/admin/visual-identity", icon: Sparkles },
     ],
