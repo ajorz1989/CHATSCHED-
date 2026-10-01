@@ -114,27 +114,43 @@ export function EmptyIllustration({ kind }: { kind: EmptyIllustrationKind }) {
   }
 }
 
+export type EmptyMascot = "opportunities" | "campaigns";
+
 export default function EmptyState({
   kind,
   title,
   description,
   action,
   compact = false,
+  mascot,
 }: {
   kind: EmptyIllustrationKind;
   title: string;
   description?: ReactNode;
   action?: ReactNode;
   compact?: boolean;
+  /** Show Schedy (the mascot) instead of the generic illustration. Decorative only — title/description stay live text. */
+  mascot?: EmptyMascot;
 }) {
   return (
     <div
       className={`flex flex-col items-center text-center ${compact ? "py-8 px-4" : "py-16 px-6"}`}
       role="status"
     >
-      <div className={compact ? "w-14 h-14 mb-3" : "w-24 h-24 mb-5"}>
-        <EmptyIllustration kind={kind} />
-      </div>
+      {mascot ? (
+        <img
+          src={`/schedy/schedy-empty-${mascot}.svg`}
+          alt=""
+          width={800}
+          height={360}
+          loading="lazy"
+          className={`h-auto ${compact ? "w-44 mb-3" : "w-64 mb-5"}`}
+        />
+      ) : (
+        <div className={compact ? "w-14 h-14 mb-3" : "w-24 h-24 mb-5"}>
+          <EmptyIllustration kind={kind} />
+        </div>
+      )}
       <h3 className={`font-display ${compact ? "text-base" : "text-xl"} text-billboard-ink mb-1.5`}>{title}</h3>
       {description && (
         <p className={`text-billboard-inkSoft ${compact ? "text-xs" : "text-sm"} max-w-sm`}>{description}</p>

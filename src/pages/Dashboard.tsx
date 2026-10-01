@@ -197,6 +197,7 @@ function BusinessDashboardBody({
                 kind="list"
                 title="No requests yet"
                 description="Browse publishers to book your first campaign."
+                mascot="campaigns"
                 compact
                 action={
                   <Link to="/browse" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition text-sm bg-white">
@@ -225,6 +226,7 @@ function BusinessDashboardBody({
                 kind="list"
                 title="No channel campaigns yet"
                 description="Browse influencers, websites, podcasts and radio channels to get started."
+                mascot="campaigns"
                 compact
                 action={
                   <Link to="/channels" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition text-sm bg-white">

@@ -13,6 +13,7 @@ import CookieConsentBanner from "./components/CookieConsentBanner";
 import CookieConsentScript from "./components/CookieConsentScript";
 import CtaTracker from "./components/CtaTracker";
 import { SkeletonBlock } from "./components/Skeleton";
+import SchedyLoader from "./components/SchedyLoader";
 import Home from "./pages/Home";
 import Browse from "./pages/Browse";
 import PublisherProfile from "./pages/PublisherProfile";
@@ -265,7 +266,7 @@ export default function App() {
                 <Header />
                 <main id="main-content" tabIndex={-1} className="flex-1 pb-bottom-nav outline-none">
                   <ErrorBoundary>
-                    <Suspense fallback={<div className="max-w-6xl mx-auto px-5 py-16"><SkeletonBlock className="h-96" /></div>}>
+                    <Suspense fallback={<SchedyLoader />}>
                       <RoutedContent />
                     </Suspense>
                   </ErrorBoundary>

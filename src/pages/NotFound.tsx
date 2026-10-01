@@ -25,6 +25,7 @@ export default function NotFound() {
   return (
     <div className="max-w-2xl mx-auto px-5 py-24 text-center">
       <Seo title="Page not found — ChatSched" noindex />
+      <img src="/schedy/schedy-404.svg" alt="" width={800} height={360} className="w-full max-w-sm h-auto mx-auto mb-4" />
       <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-4">404</span>
       <h1 className="text-3xl mb-3">Page not found.</h1>
       <p className="text-billboard-inkSoft mb-7">That link's broken or the page has moved — nothing to see here. Try the directory, or reach us on WhatsApp if you were looking for something specific.</p>

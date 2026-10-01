@@ -510,7 +510,7 @@ export default function BusinessOpportunities() {
       )}
 
       {opportunities.length === 0 ? (
-        <EmptyState kind="list" title="No opportunities posted yet" description="Create a draft to prepare your next brief, or publish one for verified publishers to discover." compact />
+        <EmptyState kind="list" title="No opportunities posted yet" description="Create a draft to prepare your next brief, or publish one for verified publishers to discover." mascot="opportunities" compact />
       ) : (
         <div className="space-y-4">
           {opportunities.map((o) => {
