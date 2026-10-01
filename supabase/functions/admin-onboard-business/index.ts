@@ -67,7 +67,7 @@ Deno.serve(async (req) => {
       const { data: authUser, error: authError } = await admin.auth.admin.getUserById(businessId);
       const targetEmail = authUser?.user?.email;
       if (authError || !targetEmail) return json({ error: "Could not find that account's email" }, 404);
-      const siteUrl = Deno.env.get("SITE_URL");
+      const siteUrl = Deno.env.get("SITE_URL")?.trim().replace(/\/+$/, "");
       const { data: link, error: linkError } = await admin.auth.admin.generateLink({
         type: "recovery",
         email: targetEmail,
@@ -141,7 +141,7 @@ Deno.serve(async (req) => {
     // One-time "choose your password" link. Supabase doesn't email this for
     // admin-created users, so it's returned for the admin to send.
     let setupLink: string | null = null;
-    const siteUrl = Deno.env.get("SITE_URL");
+    const siteUrl = Deno.env.get("SITE_URL")?.trim().replace(/\/+$/, "");
     const { data: link, error: linkError } = await admin.auth.admin.generateLink({
       type: "recovery",
       email,

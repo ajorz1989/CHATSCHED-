@@ -28,7 +28,9 @@
 // visible CORS errors in the browser console instead of a silently wide-
 // open API. Set SITE_URL to your real domain once deployed, same as
 // DEPLOY.md already says to.
-const SITE_URL = Deno.env.get("SITE_URL");
+// Trailing slashes are stripped: a browser's Origin header never has one, so a
+// SITE_URL saved as "https://example.com/" would otherwise fail every CORS preflight.
+const SITE_URL = Deno.env.get("SITE_URL")?.trim().replace(/\/+$/, "");
 
 export const corsHeaders = {
   "Access-Control-Allow-Origin": SITE_URL || "http://localhost:5173",
