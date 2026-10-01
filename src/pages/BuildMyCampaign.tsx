@@ -606,6 +606,7 @@ export default function BuildMyCampaign() {
 
         <header className="bg-billboard-yellow border-b-[3px] border-billboard-ink py-16">
           <div className="max-w-3xl mx-auto px-5 text-center">
+            <img src="/schedy/schedy-on-it.svg" alt="" width={512} height={512} className="w-32 h-32 mx-auto -mb-1" />
             <span className="inline-block bg-billboard-greenDeep text-white font-mono text-xs font-bold uppercase px-3 py-1 rounded border-2 border-billboard-ink mb-4 shadow-blockSm">
               <span className="inline-flex items-center gap-1.5"><CheckIcon className="w-3.5 h-3.5" /> Campaign Brief Received</span>
             </span>
@@ -690,7 +691,7 @@ export default function BuildMyCampaign() {
               <h3 className="font-display text-base mb-3">What happens next?</h3>
               <ol className="space-y-3 text-xs md:text-sm text-billboard-inkSoft">
                 <li className="flex items-start gap-2.5">
-                  <span className="w-5 h-5 rounded-full bg-billboard-ink text-white font-mono text-xs flex items-center justify-center shrink-0 mt-0.5">
+                  <span className="w-5 h-5 rounded bg-billboard-ink text-white font-mono text-xs flex items-center justify-center shrink-0 mt-0.5">
                     1
                   </span>
                   <span>
@@ -699,7 +700,7 @@ export default function BuildMyCampaign() {
                   </span>
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <span className="w-5 h-5 rounded-full bg-billboard-ink text-white font-mono text-xs flex items-center justify-center shrink-0 mt-0.5">
+                  <span className="w-5 h-5 rounded bg-billboard-ink text-white font-mono text-xs flex items-center justify-center shrink-0 mt-0.5">
                     2
                   </span>
                   <span>
@@ -708,7 +709,7 @@ export default function BuildMyCampaign() {
                   </span>
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <span className="w-5 h-5 rounded-full bg-billboard-ink text-white font-mono text-xs flex items-center justify-center shrink-0 mt-0.5">
+                  <span className="w-5 h-5 rounded bg-billboard-ink text-white font-mono text-xs flex items-center justify-center shrink-0 mt-0.5">
                     3
                   </span>
                   <span>
@@ -796,7 +797,7 @@ export default function BuildMyCampaign() {
                   aria-current={isCurrent ? "step" : undefined}
                   onClick={() => setCurrentStep(step.num as WizardStep)}
                   className={
-                    "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition " +
+                    "flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-semibold whitespace-nowrap transition " +
                     (isCurrent
                       ? "bg-billboard-ink text-white shadow-blockSm"
                       : isDone
@@ -807,7 +808,7 @@ export default function BuildMyCampaign() {
                 >
                   <span
                     className={
-                      "w-5 h-5 rounded-full flex items-center justify-center text-xs font-mono " +
+                      "w-5 h-5 rounded flex items-center justify-center text-xs font-mono " +
                       (isCurrent
                         ? "bg-billboard-yellow text-billboard-ink font-bold"
                         : isDone
@@ -970,7 +971,7 @@ export default function BuildMyCampaign() {
                           onClick={() => toggleCity(city)}
                           aria-pressed={active}
                           className={
-                            "inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold border-2 transition " +
+                            "inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded text-xs font-semibold border-2 transition " +
                             (active
                               ? "border-billboard-ink bg-billboard-ink text-white shadow-blockSm"
                               : "border-billboard-ink/30 bg-white text-billboard-ink hover:border-billboard-ink")
@@ -1132,7 +1133,7 @@ export default function BuildMyCampaign() {
                           onClick={() => toggleLanguage(language)}
                           aria-pressed={active}
                           className={
-                            "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border-2 transition " +
+                            "inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-semibold border-2 transition " +
                             (active
                               ? "border-billboard-ink bg-billboard-ink text-white"
                               : "border-billboard-ink/30 bg-white hover:border-billboard-ink")
@@ -1493,7 +1494,7 @@ export default function BuildMyCampaign() {
                         {filled}/{fields.length} added
                       </span>
                     </div>
-                    <div className="h-2 rounded-full bg-white border border-billboard-ink/20 overflow-hidden">
+                    <div className="h-2 rounded bg-white border border-billboard-ink/20 overflow-hidden">
                       <div
                         className="h-full bg-billboard-green transition-all"
                         style={{ width: pct + "%" }}
@@ -1798,6 +1799,15 @@ export default function BuildMyCampaign() {
                       className="border-2 border-billboard-red bg-white text-billboard-red rounded p-3 text-xs font-semibold"
                     >
                       {submissionError}
+                    </div>
+                  )}
+
+                  {submitting && (
+                    <div role="status" className="flex flex-col items-center text-center">
+                      <picture>
+                        <source media="(prefers-reduced-motion: reduce)" srcSet="/schedy/schedy-loading-preview.png" />
+                        <img src="/schedy/schedy-loading-animated.svg" alt="" width={800} height={440} className="w-full max-w-[200px] h-auto" />
+                      </picture>
                     </div>
                   )}
 
