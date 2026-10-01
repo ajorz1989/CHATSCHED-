@@ -6,6 +6,15 @@ import LanguageSwitcher from "./LanguageSwitcher";
 
 const WHATSAPP_LINK = whatsappLink("Hi, I'd like to know more");
 
+const SOCIAL_LINKS = [
+  { label: "Pinterest", mark: "P", href: "https://za.pinterest.com/chatsched/" },
+  { label: "Facebook", mark: "F", href: "https://facebook.com/chatsched" },
+  { label: "TikTok", mark: "T", href: "https://www.tiktok.com/@chatsched" },
+  { label: "YouTube", mark: "Y", href: "https://www.youtube.com/@chatsched" },
+  { label: "LinkedIn", mark: "in", href: "https://www.linkedin.com/company/chatsched/" },
+  { label: "Instagram", mark: "IG", href: "https://www.instagram.com/chatsched/" },
+] as const;
+
 const LINK_CLASS = "block text-sm mb-2 hover:text-billboard-yellow transition-colors break-words";
 const HEADING_CLASS = "font-mono text-xs uppercase tracking-wider text-[#8A8272] mb-3";
 
@@ -21,6 +30,21 @@ export default function Footer() {
           <div className="col-span-2 sm:col-span-3 lg:col-span-2 pr-4">
             <img src="/brand/logo-horizontal-dark.svg" alt="ChatSched" className="h-9 w-auto mb-2" />
             <p className="text-sm max-w-[32ch] mb-4">{t("footer.tagline")}</p>
+            <div aria-label="ChatSched social media" className="flex flex-wrap gap-2 mb-5">
+              {SOCIAL_LINKS.map((social) => (
+                <a
+                  key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`ChatSched on ${social.label}`}
+                  title={`ChatSched on ${social.label}`}
+                  className="inline-flex items-center justify-center min-w-9 h-9 px-2 border-2 border-billboard-paperDim/30 rounded bg-billboard-inkSoft/10 text-billboard-paper font-mono text-[10px] font-semibold hover:bg-billboard-yellow hover:text-billboard-ink hover:border-billboard-yellow transition-colors"
+                >
+                  <span aria-hidden="true">{social.mark}</span>
+                </a>
+              ))}
+            </div>
             <LanguageSwitcher compact />
           </div>
 
