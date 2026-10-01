@@ -11,6 +11,7 @@ import Seo from "../components/Seo";
 import ToolIcon from "../components/ToolIcon";
 import { HeroTopBand } from "../components/HomeHeroBands";
 import HomeOpenOpportunities from "../components/HomeOpenOpportunities";
+import HomeInventoryWall from "../components/HomeInventoryWall";
 import LazyLoopVideo from "../components/LazyLoopVideo";
 import type { Tool } from "../lib/types";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
@@ -253,6 +254,8 @@ export default function Home() {
   return (
     <>
       <Seo title={t("seo.title")} description={t("seo.description")} />
+      {/* Marketplace inventory leads the page; the hero and everything below are unchanged. */}
+      <HomeInventoryWall />
       {/* Hero and video are one continuous yellow section. */}
       <HeroTopBand loaded={loaded}>
         <div className={`max-w-3xl mx-auto px-4 sm:px-5 flex justify-center transition-all duration-700 ${loaded ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}>

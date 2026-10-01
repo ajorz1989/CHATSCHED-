@@ -84,7 +84,7 @@ export function HeroTopBand({ loaded = true, children }: { loaded?: boolean; chi
   return (
     <section className="bg-billboard-yellow border-b-[3px] border-billboard-ink overflow-hidden pt-10 sm:pt-12 md:pt-14 pb-12 sm:pb-14 md:pb-16" aria-labelledby="hero-top-title">
       <div className="max-w-4xl mx-auto px-4 sm:px-5 text-center">
-        <h1
+        <h2
           id="hero-top-title"
           className={`text-4xl sm:text-5xl md:text-7xl leading-[.98] mb-4 transition-all duration-700 ${loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
         >
@@ -93,7 +93,7 @@ export function HeroTopBand({ loaded = true, children }: { loaded?: boolean; chi
           <span className="inline-block bg-billboard-ink text-billboard-yellow px-3 sm:px-4 pb-1 mt-2 -rotate-1 box-decoration-clone">
             {t("heroBands.top.title2", { defaultValue: "Or get paid for yours." })}
           </span>
-        </h1>
+        </h2>
 
         <p className="text-lg md:text-xl text-billboard-inkSoft max-w-2xl mx-auto mb-6 leading-relaxed">
           {t("heroBands.top.subtitle", {
