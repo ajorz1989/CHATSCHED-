@@ -177,7 +177,7 @@ export default function AJListingsManager({ refreshKey }: { refreshKey: number }
       )}
       {bulkError && (
         <div role="alert" className="mx-5 md:mx-6 mt-3 text-xs font-semibold text-billboard-red">{bulkError}</div>
-      )
+      )}
 
       {loadError ? (
         <div role="alert" className="p-5 md:p-6 text-sm text-billboard-red">
