@@ -48,7 +48,11 @@ export default function Login() {
       <Seo title="Log In · ChatSched" noindex />
       <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">Log in</span>
       <h1 className="text-3xl mb-2">Welcome back.</h1>
-      <p className="text-billboard-inkSoft mb-8">Log in to track your requests and book campaigns.</p>
+      <p className="text-billboard-inkSoft mb-8">
+        {nextPath.startsWith("/opportunities")
+          ? "Log in to view and respond to advertising opportunities."
+          : "Log in to track your requests and book campaigns."}
+      </p>
 
       <form onSubmit={handleSubmit} className="border-[3px] border-billboard-ink rounded p-6">
         <div className="mb-4">

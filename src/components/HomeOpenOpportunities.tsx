@@ -6,6 +6,7 @@ import { getEnabledChannels } from "../lib/channelRegistry";
 import type { ChannelSlug } from "../lib/channelTypes";
 import { useReveal } from "../hooks/useReveal";
 import { usePauseOffscreen } from "../hooks/usePauseOffscreen";
+import { usePostOpportunityHref } from "../hooks/usePostOpportunityHref";
 
 /**
  * "Open opportunities" band on the homepage.
@@ -204,6 +205,7 @@ export default function HomeOpenOpportunities() {
   const { t } = useTranslation("home");
   const { ref, revealed } = useReveal<HTMLDivElement>();
   const sectionRef = usePauseOffscreen<HTMLElement>();
+  const postHref = usePostOpportunityHref();
 
   const title = t("heroBands.bottom.title", { defaultValue: "Your next booking is one brief away." });
   const words = title.split(" ");
@@ -245,7 +247,7 @@ export default function HomeOpenOpportunities() {
 
 
             <div {...rv(4)} className={`flex flex-col sm:flex-row gap-3 ${rv(4).className}`}>
-              <Link to="/opportunities" data-cta="opps-post" className="brand-button yellow">
+              <Link to={postHref} data-cta="opps-post" className="brand-button yellow">
                 {t("heroBands.bottom.ctaPrimary", { defaultValue: "Post an opportunity →" })}
               </Link>
               <Link to="/register?role=publisher" data-cta="opps-publisher" className="brand-button light">

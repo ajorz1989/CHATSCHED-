@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import ChannelIcon from "./ChannelIcon";
+import { usePostOpportunityHref } from "../hooks/usePostOpportunityHref";
 import { getEnabledChannels } from "../lib/channelRegistry";
 import type { ChannelSlug } from "../lib/channelTypes";
 
@@ -79,6 +80,7 @@ function ChannelNetwork({ liveCount }: { liveCount: number }) {
 export function HeroTopBand({ loaded = true, children }: { loaded?: boolean; children?: ReactNode }) {
   const { t } = useTranslation("home");
   const liveCount = getEnabledChannels().length;
+  const postHref = usePostOpportunityHref();
   return (
     <section className="bg-billboard-yellow border-b-[3px] border-billboard-ink overflow-hidden pt-10 sm:pt-12 md:pt-14 pb-12 sm:pb-14 md:pb-16" aria-labelledby="hero-top-title">
       <div className="max-w-4xl mx-auto px-4 sm:px-5 text-center">
@@ -110,7 +112,7 @@ export function HeroTopBand({ loaded = true, children }: { loaded?: boolean; chi
 
         <p className="text-sm sm:text-base text-billboard-inkSoft mt-3">
           {t("heroBands.top.selfServe", { defaultValue: "Rather pick the placements yourself?" })}{" "}
-          <Link to="/opportunities" data-cta="hero-post" className="whitespace-nowrap font-bold text-billboard-ink underline underline-offset-4 decoration-2 hover:decoration-4 transition-all">
+          <Link to={postHref} data-cta="hero-post" className="whitespace-nowrap font-bold text-billboard-ink underline underline-offset-4 decoration-2 hover:decoration-4 transition-all">
             {t("heroBands.top.ctaPost", { defaultValue: "Post an opportunity →" })}
           </Link>
         </p>

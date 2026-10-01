@@ -62,6 +62,7 @@ export default function Opportunities() {
   const next = searchParams.get("next") || "/opportunities/feed";
   const loginHref = `/login?next=${encodeURIComponent(next)}`;
   const opportunitiesHref = user && profile ? "/opportunities/feed" : loginHref;
+  const exploreLabel = user && profile ? "Go to opportunities →" : "Log in to explore →";
   const businessCtaHref = profile?.role === "business" || profile?.role === "admin"
     ? "/opportunities/feed"
     : profile?.role === "publisher"
@@ -109,13 +110,13 @@ export default function Opportunities() {
         <div className="max-w-6xl mx-auto px-5">
           <div className="grid lg:grid-cols-[1.08fr_0.92fr] gap-12 items-center">
             <div>
-              <span className="inline-flex items-center gap-2 font-mono text-xs font-semibold uppercase tracking-wider border-2 border-billboard-yellow text-billboard-yellow px-3 py-1.5 rounded mb-5">
+              <span className="inline-flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider border-2 border-billboard-ink bg-billboard-yellow text-billboard-ink px-3 py-1.5 rounded mb-5">
                 Opportunity marketplace
               </span>
               <h1 className="font-display text-5xl md:text-7xl leading-[.96] mb-5">
                 Turn a marketing need into a matched advertising opportunity.
               </h1>
-              <p className="text-lg md:text-xl text-white/80 max-w-2xl mb-8">
+              <p className="text-lg md:text-xl text-white/90 max-w-2xl mb-8">
                 Businesses publish structured advertising and sponsorship briefs. Verified publishers discover opportunities matched to their channel, audience and location. ChatSched keeps the proposal and booking process inside the platform.
               </p>
               <div className="flex flex-wrap gap-3">
@@ -123,7 +124,7 @@ export default function Opportunities() {
                   to={opportunitiesHref}
                   className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition"
                 >
-                  Explore opportunities →
+                  {exploreLabel}
                 </Link>
                 <Link
                   to={businessCtaHref}
@@ -137,7 +138,7 @@ export default function Opportunities() {
                 {["15 opportunity types", "Smart publisher matching", "Deadlines + campaign windows", "On-platform proposals"].map((item) => (
                   <span
                     key={item}
-                    className="font-mono text-[10px] uppercase tracking-wide border border-white/30 bg-white/10 rounded-full px-3 py-1.5"
+                    className="font-mono text-[11px] uppercase tracking-wide border border-white/40 bg-white/10 rounded-full px-3 py-1.5"
                   >
                     {item}
                   </span>
@@ -146,10 +147,10 @@ export default function Opportunities() {
             </div>
 
             <div className="relative">
-              <div className="border-[3px] border-billboard-yellow rounded-xl bg-white/5 p-5 shadow-block rotate-1">
+              <div className="border-[3px] border-billboard-yellow rounded-xl bg-billboard-ink p-5 shadow-block rotate-1">
                 <div className="flex items-center justify-between mb-4">
-                  <span className="font-mono text-[10px] uppercase tracking-wider text-white/70">Opportunity brief</span>
-                  <span className="font-mono text-[10px] font-bold uppercase bg-billboard-yellow text-billboard-ink px-2 py-1 rounded">
+                  <span className="font-mono text-[11px] uppercase tracking-wider text-white/70">Example brief</span>
+                  <span className="shrink-0 whitespace-nowrap font-mono text-[11px] font-bold uppercase bg-billboard-yellow text-billboard-ink px-2 py-1 rounded">
                     OPEN
                   </span>
                 </div>
@@ -159,39 +160,39 @@ export default function Opportunities() {
                     <div>
                       <div className="flex items-center gap-2 mb-1.5">
                         <span className="text-xs font-mono text-billboard-yellow">BUSINESS BRIEF</span>
-                        <span className="font-mono text-[9px] uppercase border border-white/20 text-white/55 px-1.5 py-0.5 rounded">Cape Town</span>
+                        <span className="font-mono text-[11px] uppercase border border-white/20 text-white/70 px-1.5 py-0.5 rounded">Cape Town</span>
                       </div>
                       <div className="font-display text-xl">Local event brand partner</div>
                     </div>
-                    <span className="font-mono text-[9px] font-bold uppercase border border-billboard-yellow text-billboard-yellow px-2 py-1 rounded">
+                    <span className="shrink-0 whitespace-nowrap font-mono text-[11px] font-bold uppercase border border-billboard-yellow text-billboard-yellow px-2 py-1 rounded">
                       OPEN
                     </span>
                   </div>
 
                   <div className="grid grid-cols-2 gap-2 mt-4 text-xs">
                     <div className="rounded-md border border-white/10 bg-white/[0.03] p-2.5">
-                      <div className="font-mono text-[8px] text-white/45 uppercase">Deliverables</div>
+                      <div className="font-mono text-[11px] text-white/70 uppercase">Deliverables</div>
                       <div className="mt-1 text-white/80">2 social posts + event mention</div>
                     </div>
                     <div className="rounded-md border border-white/10 bg-white/[0.03] p-2.5">
-                      <div className="font-mono text-[8px] text-white/45 uppercase">Budget</div>
+                      <div className="font-mono text-[11px] text-white/70 uppercase">Budget</div>
                       <div className="mt-1 text-white/80">R5k–R12k</div>
                     </div>
                     <div className="rounded-md border border-white/10 bg-white/[0.03] p-2.5">
-                      <div className="font-mono text-[8px] text-white/45 uppercase">Publisher fit</div>
+                      <div className="font-mono text-[11px] text-white/70 uppercase">Publisher fit</div>
                       <div className="mt-1 text-white/80">Events + local audience</div>
                     </div>
                     <div className="rounded-md border border-white/10 bg-white/[0.03] p-2.5">
-                      <div className="font-mono text-[8px] text-white/45 uppercase">Apply by</div>
-                      <div className="mt-1 text-white/80">14 Oct · 3 days left</div>
+                      <div className="font-mono text-[11px] text-white/70 uppercase">Apply by</div>
+                      <div className="mt-1 text-white/80">3 days left</div>
                     </div>
                   </div>
                 </div>
 
                 <div className="border-2 border-white/15 rounded-lg p-3 bg-white/[0.03]">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="font-mono text-[9px] uppercase tracking-wide text-white/50">Publisher applications</span>
-                    <span className="font-mono text-[9px] font-bold text-billboard-yellow">03</span>
+                    <span className="font-mono text-[11px] uppercase tracking-wide text-white/70">Publisher applications</span>
+                    <span className="font-mono text-[11px] font-bold text-billboard-yellow">03</span>
                   </div>
                   <div className="space-y-2">
                     {[
@@ -201,24 +202,57 @@ export default function Opportunities() {
                       <div key={name} className="flex items-center justify-between gap-3 border border-white/10 rounded-md px-3 py-2">
                         <div className="min-w-0">
                           <div className="font-semibold text-xs truncate">{name}</div>
-                          <div className="font-mono text-[8px] text-white/45 uppercase mt-0.5">{status}</div>
+                          <div className="font-mono text-[11px] text-white/70 uppercase mt-0.5">{status}</div>
                         </div>
-                        <div className="font-mono text-[10px] text-billboard-yellow shrink-0">{price}</div>
+                        <div className="font-mono text-[11px] text-billboard-yellow shrink-0">{price}</div>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <div className="mt-3 flex items-center justify-between gap-3 text-[9px] font-mono uppercase tracking-wide text-white/45">
+                <div className="mt-3 flex items-center justify-between gap-3 text-[11px] font-mono uppercase tracking-wide text-white/70">
                   <span>Brief → proposal → booking</span>
                   <span>Private contact details</span>
                 </div>
               </div>
 
-              <div className="absolute -bottom-4 -right-2 border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink rounded-lg px-4 py-2 font-mono text-[10px] font-bold uppercase -rotate-2">
+              <div className="absolute -bottom-4 -right-2 border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink rounded-lg px-4 py-2 font-mono text-[11px] font-bold uppercase -rotate-2">
                 Private contact details stay private
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-10 bg-white border-b-[3px] border-billboard-ink" aria-labelledby="opp-start-title">
+        <div className="max-w-6xl mx-auto px-5">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-3 mb-6">
+            <div>
+              <span className="font-mono text-xs font-bold uppercase tracking-wider">Before you start</span>
+              <h2 id="opp-start-title" className="font-display text-2xl md:text-3xl mt-1">What you need to get started.</h2>
+            </div>
+            <p className="text-sm text-billboard-inkSoft max-w-md">
+              Access is for verified members, so the marketplace stays free of spam. Activation is paid once, with no renewal.{" "}
+              <Link to="/pricing" className="font-bold underline underline-offset-4 text-billboard-ink">See pricing</Link>
+            </p>
+          </div>
+          <div className="grid lg:grid-cols-2 gap-4">
+            {[
+              { who: "Businesses", steps: ["Create an account", "Get your business verified", "Activate once", "Post briefs"], tone: "bg-billboard-yellow" },
+              { who: "Publishers", steps: ["Create an account", "Apply and get approved", "Activate once", "Send proposals"], tone: "bg-billboard-paperDim" },
+            ].map((row) => (
+              <div key={row.who} className="border-[3px] border-billboard-ink rounded-xl p-5 bg-billboard-paper">
+                <span className={`inline-block font-mono text-[11px] font-bold uppercase tracking-wide border-2 border-billboard-ink rounded px-2 py-1 mb-4 ${row.tone}`}>{row.who}</span>
+                <ol className="grid sm:grid-cols-4 gap-3">
+                  {row.steps.map((step, i) => (
+                    <li key={step} className="flex sm:flex-col items-center sm:items-start gap-3 sm:gap-2">
+                      <span className="grid place-items-center w-8 h-8 shrink-0 rounded-full bg-billboard-ink text-billboard-yellow font-mono text-xs font-bold">{i + 1}</span>
+                      <span className="text-sm font-semibold leading-snug">{step}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -246,7 +280,7 @@ export default function Opportunities() {
                 key={label}
                 className="border-[2px] border-billboard-ink rounded-lg p-4 bg-billboard-paper hover:-translate-y-0.5 transition"
               >
-                <div className="font-mono text-[10px] text-billboard-green font-bold mb-1">
+                <div className="font-mono text-[11px] text-billboard-green font-bold mb-1">
                   {String(index + 1).padStart(2, "0")}
                 </div>
                 <div className="font-semibold">{label}</div>
@@ -323,9 +357,9 @@ export default function Opportunities() {
       <section className="py-16 bg-billboard-green text-white border-b-[3px] border-billboard-ink">
         <div className="max-w-5xl mx-auto px-5">
           <div className="max-w-2xl mb-9">
-            <span className="font-mono text-xs font-bold uppercase tracking-wider text-billboard-yellow">Workflow</span>
+            <span className="inline-block font-mono text-xs font-bold uppercase tracking-wider bg-billboard-yellow text-billboard-ink border-2 border-billboard-ink rounded px-2 py-1">Workflow</span>
             <h2 className="font-display text-3xl md:text-4xl mt-2 mb-3">One brief. Relevant supply. One tracked conversation.</h2>
-            <p className="text-white/75">
+            <p className="text-white/90">
               Opportunities complement the normal request and channel booking flows. The public page explains the system; verified members access the actual briefs.
             </p>
           </div>
@@ -340,7 +374,7 @@ export default function Opportunities() {
               <div key={number} className="border-[2px] border-white/25 rounded-lg p-5 bg-white/5">
                 <div className="font-display text-3xl text-billboard-yellow mb-3">{number}</div>
                 <h3 className="font-bold mb-1.5">{title}</h3>
-                <p className="text-sm text-white/70">{body}</p>
+                <p className="text-sm text-white/90">{body}</p>
               </div>
             ))}
           </div>
@@ -358,7 +392,7 @@ export default function Opportunities() {
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Link to={opportunitiesHref} className="inline-flex border-[3px] border-billboard-ink bg-billboard-yellow text-billboard-ink font-bold px-6 py-3 rounded">
-              Log in to Opportunities →
+              {exploreLabel}
             </Link>
             <Link to="/for-publishers" className="inline-flex border-[3px] border-white/40 text-white font-semibold px-6 py-3 rounded">
               See publisher benefits

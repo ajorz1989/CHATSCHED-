@@ -163,7 +163,7 @@ export default function OpportunityGate({ business, publisher }: { business: Rea
   }
 
   if (!user || !profile) {
-    return <Navigate to={`/opportunities?next=${encodeURIComponent(location.pathname)}`} replace />;
+    return <Navigate to={`/login?next=${encodeURIComponent(location.pathname)}`} replace />;
   }
 
   if (profile.role === "admin") {
