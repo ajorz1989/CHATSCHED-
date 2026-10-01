@@ -81,10 +81,12 @@ begin
     raise exception 'Not your listing.';
   end if;
 
+  -- (pgcrypto lives in the `extensions` schema on Supabase and this function's
+  -- search_path is public, pg_catalog, so the call must be schema-qualified.)
   -- CS-XXXXX, uppercase base36 from random bytes — short enough to type
   -- into a bio field, long enough that guessing it isn't a realistic path
   -- to a false-positive verification.
-  v_code := 'CS-' || upper(substr(encode(gen_random_bytes(5), 'hex'), 1, 5));
+  v_code := 'CS-' || upper(substr(encode(extensions.gen_random_bytes(5), 'hex'), 1, 5));
 
   update public.publishers
   set
@@ -205,8 +207,7 @@ declare
   v_is_social boolean := false;
   v_requires_check boolean := false;
   v_checks_valid boolean := false;
-  v_has_proof boolean := false;
-  v_is_becoming_approved boolean := false;
+  v_proof_valid boolean := false;
 begin
   if public.is_admin() or (select auth.uid()) is null then
     return new;
@@ -219,21 +220,22 @@ begin
 
   v_is_social := new.channel_slug = 'social-media';
 
-  v_is_becoming_approved :=
-    (tg_op = 'INSERT' and (new.status = 'approved' or new.verified = true))
-    or (
-      tg_op = 'UPDATE'
-      and (
-        (old.status is distinct from 'approved' and new.status = 'approved')
-        or (old.verified is distinct from true and new.verified = true)
-        or (
-          old.channel_slug is distinct from new.channel_slug
-          and (new.status = 'approved' or new.verified = true)
+  v_requires_check :=
+    v_requires_verification
+    and (
+      (tg_op = 'INSERT' and (new.status = 'approved' or new.verified = true))
+      or (
+        tg_op = 'UPDATE'
+        and (
+          (old.status is distinct from 'approved' and new.status = 'approved')
+          or (old.verified is distinct from true and new.verified = true)
+          or (
+            old.channel_slug is distinct from new.channel_slug
+            and (new.status = 'approved' or new.verified = true)
+          )
         )
       )
     );
-
-  v_requires_check := v_requires_verification and v_is_becoming_approved;
 
   if v_requires_check then
     select exists (
@@ -252,7 +254,21 @@ begin
     )
     into v_checks_valid;
 
-    v_has_proof := coalesce(array_length(new.verification_proof_urls, 1), 0) > 0;
+    -- Proof files must actually exist in storage (migration
+    -- 20260926000423_publisher_verification_proof_storage_check) -- kept as-is.
+    select
+      coalesce(array_length(new.verification_proof_urls, 1), 0) > 0
+      and not exists (
+        select 1
+        from unnest(coalesce(new.verification_proof_urls, '{}'::text[])) as submitted(path)
+        where not exists (
+          select 1
+          from storage.objects o
+          where o.bucket_id = 'publisher-verification-proof'
+            and o.name = submitted.path
+        )
+      )
+    into v_proof_valid;
 
     if not v_checks_valid then
       raise exception using
@@ -260,14 +276,23 @@ begin
         message = 'High-trust channel verification is incomplete. Every required verification check must be confirmed before this publisher can be approved or verified.';
     end if;
 
-    if not v_has_proof then
+    if not v_proof_valid then
       raise exception using
         errcode = '23514',
-        message = 'High-trust channel verification requires at least one verification evidence file before this publisher can be approved or verified.';
+        message = 'High-trust channel verification requires at least one uploaded verification evidence file before this publisher can be approved or verified.';
     end if;
   end if;
 
-  if v_is_social and v_is_becoming_approved then
+  if v_is_social and (
+    (tg_op = 'INSERT' and (new.status = 'approved' or new.verified = true))
+    or (
+      tg_op = 'UPDATE'
+      and (
+        (old.status is distinct from 'approved' and new.status = 'approved')
+        or (old.verified is distinct from true and new.verified = true)
+      )
+    )
+  ) then
     if jsonb_typeof(new.social_verification_links) <> 'array'
        or jsonb_array_length(new.social_verification_links) = 0 then
       raise exception using
@@ -289,8 +314,7 @@ begin
 
     -- The new bar: an admin must have confirmed the bio code and
     -- screenshot for the *current* code (confirmation is reset by
-    -- generate_social_verification_code on every regenerate, so this
-    -- can't be stale).
+    -- generate_social_verification_code on every regenerate).
     if not coalesce(new.social_verification_confirmed, false) then
       raise exception using
         errcode = '23514',
@@ -551,46 +575,15 @@ create or replace view public.publishers_public
 with (security_invoker = false)
 as
 select
-  id,
-  user_id,
-  name,
-  city,
-  province,
-  suburb,
-  category,
-  platforms,
-  placement_types,
-  accepted_ad_formats,
-  channel_slug,
-  channel_metadata,
-  followers,
-  engagement,
-  price_per_post,
-  rating,
-  reviews,
-  verified,
-  bio,
-  audience,
-  initials,
-  swatch,
-  created_at,
-  languages,
-  level,
-  trust_score,
-  publisher_score,
-  avg_response_hours,
-  response_count,
-  last_active_at,
-  ai_audience_summary,
-  ai_audience_summary_generated_at,
-  intro_video_url,
-  portfolio_images,
-  profile_image_url,
-  featured,
-  featured_until,
-  completed_campaigns,
-  resolved_campaigns,
-  status,
+  id, user_id, name, city, province, suburb, category, platforms, placement_types,
+  accepted_ad_formats, channel_slug, channel_metadata, followers, engagement,
+  price_per_post, rating, reviews, verified, bio, audience, initials, swatch,
+  created_at, languages, level, trust_score, publisher_score, avg_response_hours,
+  response_count, last_active_at, ai_audience_summary, ai_audience_summary_generated_at,
+  intro_video_url, portfolio_images, profile_image_url, featured, featured_until,
+  completed_campaigns, resolved_campaigns, status, acceptance_rate, acceptance_sample_size,
+  -- new column must be appended LAST: CREATE OR REPLACE VIEW cannot reorder or drop
+  -- existing columns (acceptance_* were added by 20260925221123_publisher_acceptance_rate).
   social_verification_confirmed
 from public.publishers
 where status = 'approved';
