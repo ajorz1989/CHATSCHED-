@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Trash2, Inbox, RefreshCw } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
 import { formatSupabaseError } from "../lib/supabaseErrors";
+import { formatCurrency } from "../lib/currency";
 import { invalidatePublishersCache } from "../hooks/usePublishers";
 import {
   CATEGORIES,
@@ -43,10 +44,20 @@ interface AJListing {
   channel_slug: string | null;
   status: string | null;
   created_at: string;
+  admin_notes: string | null;
+}
+
+interface AJRequest {
+  id: string;
+  business_id: string;
+  campaign_message: string;
+  budget: number | null;
+  status: "pending" | "contacted" | "confirmed" | "declined" | "completed";
+  created_at: string;
 }
 
 const LISTING_COLUMNS =
-  "id, user_id, name, category, province, city, suburb, bio, audience, mobile_number, business_name, company_registration, vat_number, profile_image_url, intro_video_url, portfolio_images, initials, swatch, channel_slug, status, created_at";
+  "id, user_id, name, category, province, city, suburb, bio, audience, mobile_number, business_name, company_registration, vat_number, profile_image_url, intro_video_url, portfolio_images, initials, swatch, channel_slug, status, created_at, admin_notes";
 
 const MIME_TO_EXT: Record<string, string> = {
   "image/jpeg": "jpg",
@@ -70,6 +81,8 @@ export default function AJListingsManager({ refreshKey }: { refreshKey: number }
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
+  const [bulkDeleting, setBulkDeleting] = useState(false);
+  const [bulkError, setBulkError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -91,6 +104,37 @@ export default function AJListingsManager({ refreshKey }: { refreshKey: number }
     load();
   }, [load, refreshKey]);
 
+  const mockupCount = listings.filter(
+    (listing) => listing.admin_notes === "AJ_DEMO_SOCIAL_POST_20261001_V1"
+  ).length;
+
+  async function deleteMockupBatch() {
+    if (bulkDeleting || mockupCount === 0) return;
+    if (!window.confirm(
+      `Delete all ${mockupCount} ChatSched demo social-media publisher mockups? This only targets the AJ demo batch and cannot be undone.`
+    )) return;
+
+    setBulkDeleting(true);
+    setBulkError(null);
+
+    const { error } = await supabase
+      .from("publishers")
+      .delete()
+      .eq("creation_source", "aj_creations")
+      .eq("admin_notes", "AJ_DEMO_SOCIAL_POST_20261001_V1");
+
+    setBulkDeleting(false);
+
+    if (error) {
+      setBulkError(formatSupabaseError(error, "Couldn't delete the demo publisher batch"));
+      return;
+    }
+
+    setOpenId(null);
+    invalidatePublishersCache();
+    await load();
+  }
+
   return (
     <section className="rounded-xl border border-white/10 bg-billboard-ink text-white overflow-hidden scroll-mt-4">
       <div className="p-5 md:p-6 flex items-start justify-between gap-4 border-b border-white/10">
@@ -101,15 +145,39 @@ export default function AJListingsManager({ refreshKey }: { refreshKey: number }
             Add a profile photo and edit the profile details, the same as a creator can from their own dashboard.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={load}
-          disabled={loading}
-          className="font-mono text-[10px] uppercase tracking-wider text-white/50 hover:text-white transition disabled:opacity-50 shrink-0"
-        >
-          {loading ? "Loading…" : "Refresh"}
-        </button>
+        <div className="flex items-center gap-3 shrink-0">
+          {mockupCount > 0 && (
+            <button
+              type="button"
+              onClick={deleteMockupBatch}
+              disabled={bulkDeleting}
+              className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-billboard-red/90 hover:text-billboard-red transition disabled:opacity-50"
+            >
+              <Trash2 size={13} />
+              {bulkDeleting ? "Deleting…" : `Delete demo mockups (${mockupCount})`}
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={load}
+            disabled={loading}
+            className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-white/50 hover:text-white transition disabled:opacity-50"
+          >
+            <RefreshCw size={12} />
+            {loading ? "Loading…" : "Refresh"}
+          </button>
+        </div>
       </div>
+
+      {mockupCount > 0 && (
+        <div className="mx-5 md:mx-6 mt-4 rounded-lg border border-billboard-yellow/30 bg-billboard-yellow/10 px-4 py-3 text-xs text-white/70 flex items-start gap-2">
+          <span className="font-mono text-[9px] uppercase tracking-wider text-billboard-yellow font-bold shrink-0 mt-0.5">Demo batch</span>
+          <span>{mockupCount} temporary social-media post publisher profiles are tagged internally for this marketplace mockup. They can be edited here or removed before launch.</span>
+        </div>
+      )}
+      {bulkError && (
+        <div role="alert" className="mx-5 md:mx-6 mt-3 text-xs font-semibold text-billboard-red">{bulkError}</div>
+      )
 
       {loadError ? (
         <div role="alert" className="p-5 md:p-6 text-sm text-billboard-red">
@@ -151,7 +219,14 @@ export default function AJListingsManager({ refreshKey }: { refreshKey: number }
                     section, so it sets its own text colour or everything inherits white. */}
                 {open && (
                   <div className="bg-white text-billboard-ink p-5 md:p-6 border-t border-white/10">
-                    <ListingEditor listing={listing} onChanged={load} />
+                    <ListingEditor
+                      listing={listing}
+                      onChanged={load}
+                      onDeleted={async () => {
+                        setOpenId(null);
+                        await load();
+                      }}
+                    />
                   </div>
                 )}
               </li>
@@ -163,7 +238,7 @@ export default function AJListingsManager({ refreshKey }: { refreshKey: number }
   );
 }
 
-function ListingEditor({ listing, onChanged }: { listing: AJListing; onChanged: () => void }) {
+function ListingEditor({ listing, onChanged, onDeleted }: { listing: AJListing; onChanged: () => void; onDeleted: () => void | Promise<void> }) {
   const { user } = useAuth();
 
   const [editing, setEditing] = useState(false);
@@ -182,6 +257,10 @@ function ListingEditor({ listing, onChanged }: { listing: AJListing; onChanged: 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [requests, setRequests] = useState<AJRequest[]>([]);
+  const [requestsLoading, setRequestsLoading] = useState(true);
+  const [requestsError, setRequestsError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const [photoUploading, setPhotoUploading] = useState(false);
   const [photoRemoving, setPhotoRemoving] = useState(false);
@@ -189,6 +268,73 @@ function ListingEditor({ listing, onChanged }: { listing: AJListing; onChanged: 
   const photoInputRef = useRef<HTMLInputElement | null>(null);
 
   const maxMb = (MAX_PROFILE_IMAGE_BYTES / (1024 * 1024)).toFixed(0);
+
+  const loadRequests = useCallback(async () => {
+    setRequestsLoading(true);
+    setRequestsError(null);
+
+    const { data, error } = await supabase
+      .from("requests")
+      .select("id,business_id,campaign_message,budget,status,created_at")
+      .eq("publisher_id", listing.id)
+      .order("created_at", { ascending: false });
+
+    setRequestsLoading(false);
+
+    if (error) {
+      setRequestsError(formatSupabaseError(error, "Couldn't load incoming booking requests"));
+      return;
+    }
+
+    setRequests((data ?? []) as AJRequest[]);
+  }, [listing.id]);
+
+  useEffect(() => {
+    loadRequests();
+  }, [loadRequests]);
+
+  async function updateRequestStatus(id: string, status: AJRequest["status"]) {
+    const { error } = await supabase
+      .from("requests")
+      .update({ status })
+      .eq("id", id);
+
+    if (error) {
+      setRequestsError(formatSupabaseError(error, "Couldn't update the request status"));
+      return;
+    }
+
+    await loadRequests();
+  }
+
+  async function deleteListing() {
+    if (deleting) return;
+
+    const warning = requests.length > 0
+      ? `Delete “${listing.name}”? This listing has ${requests.length} booking request${requests.length === 1 ? "" : "s"} attached. Deleting the publisher can also remove linked request data.`
+      : `Delete “${listing.name}”? This cannot be undone.`;
+
+    if (!window.confirm(warning)) return;
+
+    setDeleting(true);
+    setError(null);
+
+    const { error } = await supabase
+      .from("publishers")
+      .delete()
+      .eq("id", listing.id)
+      .eq("creation_source", "aj_creations");
+
+    setDeleting(false);
+
+    if (error) {
+      setError(formatSupabaseError(error, "Couldn't delete this AJ: Creations listing"));
+      return;
+    }
+
+    invalidatePublishersCache();
+    await onDeleted();
+  }
 
   async function handlePhoto(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -556,6 +702,77 @@ function ListingEditor({ listing, onChanged }: { listing: AJListing; onChanged: 
         </div>
       )}
       <div className="mt-6 pt-6 border-t-2 border-billboard-paperDim">
+        <div className="flex items-center justify-between gap-3 mb-3">
+          <div>
+            <p className="flex items-center gap-2 text-xs font-semibold text-billboard-ink uppercase tracking-wide">
+              <Inbox size={14} /> Incoming booking requests
+            </p>
+            <p className="text-[11px] text-billboard-inkSoft mt-1">
+              Businesses can send normal Social Media Post booking requests to this listing. AJ mockups have no publisher login, so requests are surfaced here for admin handling.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={loadRequests}
+            disabled={requestsLoading}
+            className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-wider text-billboard-inkSoft hover:text-billboard-ink disabled:opacity-50"
+          >
+            <RefreshCw size={12} /> Refresh
+          </button>
+        </div>
+
+        {requestsError && (
+          <p role="alert" className="text-xs font-semibold text-billboard-red mb-2">{requestsError}</p>
+        )}
+
+        {requestsLoading ? (
+          <p className="text-xs text-billboard-inkSoft">Checking for requests…</p>
+        ) : requests.length === 0 ? (
+          <div className="border-2 border-billboard-ink/15 rounded-lg bg-billboard-paperDim p-3 text-xs text-billboard-inkSoft">
+            No booking requests yet.
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {requests.map((request) => (
+              <div key={request.id} className="border-2 border-billboard-ink/15 rounded-lg p-3 bg-white">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-xs font-bold text-billboard-ink">Business booking request</p>
+                    <p className="text-[10px] font-mono text-billboard-inkSoft mt-0.5">
+                      {new Date(request.created_at).toLocaleDateString("en-ZA")} · {request.business_id.slice(0, 8)}
+                    </p>
+                  </div>
+                  <span className="font-mono text-[10px] uppercase tracking-wider px-2 py-1 border border-billboard-ink/20 rounded bg-billboard-paperDim">
+                    {request.status}
+                  </span>
+                </div>
+                <p className="text-sm text-billboard-inkSoft mt-2 leading-relaxed">{request.campaign_message}</p>
+                <div className="flex flex-wrap items-center gap-3 mt-3 pt-3 border-t border-billboard-paperDim">
+                  {request.budget != null && (
+                    <span className="text-xs font-semibold">Budget {formatCurrency(Number(request.budget))}</span>
+                  )}
+                  <label className="ml-auto flex items-center gap-2 text-xs font-semibold">
+                    Status
+                    <select
+                      value={request.status}
+                      onChange={(e) => updateRequestStatus(request.id, e.target.value as AJRequest["status"])}
+                      className="border-2 border-billboard-ink rounded px-2 py-1 bg-white text-xs"
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="contacted">Contacted</option>
+                      <option value="confirmed">Confirmed</option>
+                      <option value="declined">Declined</option>
+                      <option value="completed">Completed</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="mt-6 pt-6 border-t-2 border-billboard-paperDim">
         <PortfolioManager
           publisher={{
             id: listing.id,
@@ -566,6 +783,20 @@ function ListingEditor({ listing, onChanged }: { listing: AJListing; onChanged: 
           storagePathPrefix={user ? `${user.id}/aj-${listing.id}` : undefined}
         />
       </div>
+
+      <div className="mt-6 pt-5 border-t-2 border-billboard-paperDim flex items-center justify-between gap-3">
+        <p className="text-[11px] text-billboard-inkSoft">
+          Delete removes this AJ-created publisher listing from the marketplace.
+        </p>
+        <button
+          type="button"
+          onClick={deleteListing}
+          disabled={deleting}
+          className="inline-flex items-center gap-2 border-2 border-billboard-red text-billboard-red font-semibold px-3 py-2 rounded text-xs hover:bg-billboard-red/5 disabled:opacity-50"
+        >
+          <Trash2 size={14} />
+          {deleting ? "Deleting…" : "Delete listing"}
+        </button>
+      </div>
     </div>
   );
-}
