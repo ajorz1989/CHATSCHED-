@@ -15,7 +15,7 @@ const TOP_CITIES = [
   "Johannesburg",
   "Durban",
   "Pretoria",
-  "Gqeberha (PE)",
+  "Gqeberha",
   "Bloemfontein",
   "Stellenbosch",
   "East London",
@@ -82,7 +82,12 @@ interface CampaignDraft {
 function loadDraft(): CampaignDraft {
   try {
     const raw = localStorage.getItem(DRAFT_STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as CampaignDraft) : {};
+    const parsed = raw ? (JSON.parse(raw) as CampaignDraft) : {};
+    // Older drafts stored this city as "Gqeberha (PE)", which never matched a publisher's city.
+    if (parsed.selectedCities) {
+      parsed.selectedCities = parsed.selectedCities.map((c) => (c === "Gqeberha (PE)" ? "Gqeberha" : c));
+    }
+    return parsed;
   } catch {
     return {};
   }
@@ -131,13 +136,17 @@ function getReachEstimate(
     );
   });
 
-  const pool = geographyFiltered.length >= 2 ? geographyFiltered : verifiedInventory;
+  // With fewer than 2 verified publishers in the chosen area we fall back to all verified
+  // inventory so the estimate isn't empty — but the UI must say so (usedFallback).
+  const usedFallback = targetScope !== "national" && geographyFiltered.length < 2;
+  const pool = usedFallback ? verifiedInventory : geographyFiltered;
 
   if (!Number.isFinite(budget) || budget <= 0) {
     return {
       reach: "Enter a budget to estimate reach",
       placements: "—",
       inventory: pool.length,
+      usedFallback,
       basis: "Planning estimate uses current verified publisher inventory. Final reach depends on selected placements and availability.",
     };
   }
@@ -147,6 +156,7 @@ function getReachEstimate(
       reach: "Reach estimate pending inventory",
       placements: "—",
       inventory: 0,
+      usedFallback,
       basis: "A campaign manager will confirm available publisher inventory before the schedule is finalized.",
     };
   }
@@ -160,6 +170,7 @@ function getReachEstimate(
       reach: "Pending inventory review",
       placements: "Below current median placement level",
       inventory: pool.length,
+      usedFallback,
       basis: "Your budget is recorded exactly as entered. Reach will be finalized once ChatSched confirms the available publisher mix.",
     };
   }
@@ -171,6 +182,7 @@ function getReachEstimate(
     reach: lower.toLocaleString() + " – " + upper.toLocaleString() + " estimated impressions",
     placements: placements.toLocaleString() + " placement" + (placements === 1 ? "" : "s"),
     inventory: pool.length,
+    usedFallback,
     basis: "Planning estimate based on current verified publisher inventory; it is not a guaranteed result.",
   };
 }
@@ -279,8 +291,22 @@ export default function BuildMyCampaign() {
     () => draft.urgency ?? "standard",
   );
 
+  // The site header is sticky (z-50); the stepper must stick directly below it, not behind it.
+  const [headerHeight, setHeaderHeight] = useState<number>(0);
+  useEffect(() => {
+    const header = document.querySelector("header");
+    if (!header) return;
+    const measure = () => setHeaderHeight(Math.round(header.getBoundingClientRect().height));
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(header);
+    return () => observer.disconnect();
+  }, []);
+
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState<boolean>(false);
   const [submittedLeadId, setSubmittedLeadId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -292,7 +318,7 @@ export default function BuildMyCampaign() {
   }, [profile, user]);
 
   useEffect(() => {
-    if (submittedLeadId) return;
+    if (submitted) return;
 
     const toSave: CampaignDraft = {
       currentStep,
@@ -327,7 +353,7 @@ export default function BuildMyCampaign() {
       // Draft saving is best-effort.
     }
   }, [
-    submittedLeadId,
+    submitted,
     currentStep,
     goalId,
     customGoal,
@@ -475,6 +501,7 @@ export default function BuildMyCampaign() {
       "Budget: " + formatCurrency(requestedBudget),
       "Planning Reach: " + reachEstimate.reach,
       "Planning Placements: " + reachEstimate.placements,
+      reachEstimate.usedFallback ? "Estimate basis: nationwide verified inventory (few or no publishers listed in the chosen area)" : null,
       "Location: " + locationSummary,
       "Audience Categories: " + audienceLabels.join(", "),
       "Preferred Languages: " + targetLanguages.join(", "),
@@ -509,7 +536,8 @@ export default function BuildMyCampaign() {
         return;
       }
 
-      setSubmittedLeadId(result.id ?? "Received");
+      setSubmittedLeadId(result.id ?? null);
+      setSubmitted(true);
       supabase.functions
         .invoke("notify", { body: { kind: "new_agency_lead", lead_id: result.id ?? null } })
         .catch(() => {});
@@ -531,7 +559,7 @@ export default function BuildMyCampaign() {
     }
   }
 
-  if (submittedLeadId) {
+  if (submitted) {
     return (
       <div className="min-h-screen bg-billboard-paper pb-24">
         <Seo
@@ -541,7 +569,7 @@ export default function BuildMyCampaign() {
 
         <header className="bg-billboard-yellow border-b-[3px] border-billboard-ink py-16">
           <div className="max-w-3xl mx-auto px-5 text-center">
-            <span className="inline-block bg-billboard-greenDeep text-white font-mono text-xs font-bold uppercase px-3 py-1 rounded border-2 border-billboard-ink mb-4 shadow-block-sm">
+            <span className="inline-block bg-billboard-greenDeep text-white font-mono text-xs font-bold uppercase px-3 py-1 rounded border-2 border-billboard-ink mb-4 shadow-blockSm">
               ✓ Campaign Brief Received
             </span>
             <h1 className="text-3xl md:text-5xl font-display leading-tight mb-3">
@@ -554,8 +582,9 @@ export default function BuildMyCampaign() {
           </div>
         </header>
 
-        <main className="max-w-3xl mx-auto px-5 -mt-6">
+        <div className="max-w-3xl mx-auto px-5 -mt-6">
           <div className="bg-white border-[3px] border-billboard-ink rounded-lg p-6 md:p-8 shadow-block space-y-6">
+            {submittedLeadId && (
             <div className="border-2 border-billboard-green/40 bg-[#EAF3EC] rounded p-4 text-xs md:text-sm text-billboard-inkSoft flex items-center justify-between gap-4">
               <div>
                 <span className="font-bold text-billboard-greenDeep block mb-0.5">
@@ -569,6 +598,7 @@ export default function BuildMyCampaign() {
                 Brief Received
               </span>
             </div>
+            )}
 
             <div>
               <h2 className="font-display text-xl mb-3">Campaign Summary</h2>
@@ -667,7 +697,7 @@ export default function BuildMyCampaign() {
               </Link>
             </div>
           </div>
-        </main>
+        </div>
       </div>
     );
   }
@@ -681,7 +711,7 @@ export default function BuildMyCampaign() {
 
       <header className="bg-billboard-yellow border-b-[3px] border-billboard-ink py-16">
         <div className="max-w-4xl mx-auto px-5 text-center">
-          <span className="inline-block font-mono text-xs font-bold tracking-wider uppercase border-2 border-billboard-ink bg-white px-3 py-1 rounded mb-3 shadow-block-sm">
+          <span className="inline-block font-mono text-xs font-bold tracking-wider uppercase border-2 border-billboard-ink bg-white px-3 py-1 rounded mb-3 shadow-blockSm">
             Agency Campaign Builder
           </span>
           <h1 className="text-3xl md:text-5xl font-display leading-tight mb-3">
@@ -694,7 +724,7 @@ export default function BuildMyCampaign() {
         </div>
       </header>
 
-      <div className="bg-white border-b-2 border-billboard-ink/15 sticky top-0 z-20 shadow-sm">
+      <div className="bg-white">
         <div className="max-w-4xl mx-auto px-5 pt-8">
           <div className="border-2 border-billboard-ink/15 rounded-lg px-4 py-3 bg-billboard-paperDim flex flex-wrap items-center justify-between gap-3">
             <p className="text-xs text-billboard-inkSoft">
@@ -707,6 +737,12 @@ export default function BuildMyCampaign() {
           </div>
         </div>
 
+      </div>
+
+      <div
+        className="bg-white border-b-2 border-billboard-ink/15 sticky z-20 shadow-sm"
+        style={{ top: headerHeight }}
+      >
         <div className="max-w-4xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between overflow-x-auto gap-2">
             {CAMPAIGN_WIZARD_STEPS.map((step) => {
@@ -719,11 +755,12 @@ export default function BuildMyCampaign() {
                   key={step.num}
                   type="button"
                   disabled={!canVisit}
+                  aria-current={isCurrent ? "step" : undefined}
                   onClick={() => setCurrentStep(step.num as WizardStep)}
                   className={
                     "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition " +
                     (isCurrent
-                      ? "bg-billboard-ink text-white shadow-block-sm"
+                      ? "bg-billboard-ink text-white shadow-blockSm"
                       : isDone
                         ? "bg-billboard-green/20 text-billboard-greenDeep font-bold"
                         : "text-billboard-inkSoft") +
@@ -750,7 +787,7 @@ export default function BuildMyCampaign() {
         </div>
       </div>
 
-      <main className="max-w-4xl mx-auto px-5 py-8 md:py-16">
+      <div className="max-w-4xl mx-auto px-5 py-8 md:py-16">
         <div className="bg-white border-[3px] border-billboard-ink rounded-lg p-6 md:p-10 shadow-block">
           {currentStep === 1 && (
             <div className="space-y-6">
@@ -801,10 +838,11 @@ export default function BuildMyCampaign() {
               </div>
 
               <div className="border-t-2 border-billboard-ink/10 pt-4">
-                <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5">
+                <label htmlFor="cb-custom-goal" className="block text-xs font-semibold uppercase tracking-wide mb-1.5">
                   Add a specific campaign goal (Optional)
                 </label>
                 <input
+ id="cb-custom-goal"
                   type="text"
                   value={customGoal}
                   onChange={(e) => setCustomGoal(e.target.value)}
@@ -851,10 +889,11 @@ export default function BuildMyCampaign() {
                     key={scope.id}
                     type="button"
                     onClick={() => setTargetScope(scope.id as "national" | "province" | "city" | "hyperlocal")}
+                    aria-pressed={targetScope === scope.id}
                     className={
                       "p-3 text-left rounded-lg border-2 transition " +
                       (targetScope === scope.id
-                        ? "border-billboard-ink bg-billboard-yellow font-bold shadow-block-sm"
+                        ? "border-billboard-ink bg-billboard-yellow font-bold shadow-blockSm"
                         : "border-billboard-ink/20 bg-billboard-paperDim hover:bg-white")
                     }
                   >
@@ -869,10 +908,10 @@ export default function BuildMyCampaign() {
 
               {(targetScope === "city" || targetScope === "hyperlocal") && (
                 <div className="space-y-2 border-t-2 border-billboard-ink/10 pt-4">
-                  <label className="block text-xs font-semibold uppercase tracking-wide">
+                  <span id="cb-cities-label" className="block text-xs font-semibold uppercase tracking-wide">
                     Select Target Cities (Multi-select)
-                  </label>
-                  <div className="flex flex-wrap gap-2">
+                  </span>
+                  <div role="group" aria-labelledby="cb-cities-label" className="flex flex-wrap gap-2">
                     {TOP_CITIES.map((city) => {
                       const active = selectedCities.includes(city);
                       return (
@@ -880,10 +919,11 @@ export default function BuildMyCampaign() {
                           key={city}
                           type="button"
                           onClick={() => toggleCity(city)}
+                          aria-pressed={active}
                           className={
                             "px-3.5 py-1.5 rounded-full text-xs font-semibold border-2 transition " +
                             (active
-                              ? "border-billboard-ink bg-billboard-ink text-white shadow-block-sm"
+                              ? "border-billboard-ink bg-billboard-ink text-white shadow-blockSm"
                               : "border-billboard-ink/30 bg-white text-billboard-ink hover:border-billboard-ink")
                           }
                         >
@@ -898,10 +938,10 @@ export default function BuildMyCampaign() {
 
               {targetScope === "province" && (
                 <div className="space-y-2 border-t-2 border-billboard-ink/10 pt-4">
-                  <label className="block text-xs font-semibold uppercase tracking-wide">
+                  <span id="cb-provinces-label" className="block text-xs font-semibold uppercase tracking-wide">
                     Select Target Provinces (Multi-select)
-                  </label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  </span>
+                  <div role="group" aria-labelledby="cb-provinces-label" className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {PROVINCES.map((province) => {
                       const active = selectedProvinces.includes(province);
                       return (
@@ -909,10 +949,11 @@ export default function BuildMyCampaign() {
                           key={province}
                           type="button"
                           onClick={() => toggleProvince(province)}
+                          aria-pressed={active}
                           className={
                             "p-2.5 text-left rounded border-2 text-xs font-semibold transition " +
                             (active
-                              ? "border-billboard-ink bg-billboard-yellow font-bold shadow-block-sm"
+                              ? "border-billboard-ink bg-billboard-yellow font-bold shadow-blockSm"
                               : "border-billboard-ink/20 bg-white hover:border-billboard-ink")
                           }
                         >
@@ -927,10 +968,11 @@ export default function BuildMyCampaign() {
 
               {targetScope === "hyperlocal" && (
                 <div className="space-y-2 border-t-2 border-billboard-ink/10 pt-4">
-                  <label className="block text-xs font-semibold uppercase tracking-wide">
+                  <label htmlFor="cb-hyperlocal-area" className="block text-xs font-semibold uppercase tracking-wide">
                     Specific Suburbs / Communities
                   </label>
                   <input
+ id="cb-hyperlocal-area"
                     type="text"
                     value={hyperlocalArea}
                     onChange={(e) => setHyperlocalArea(e.target.value)}
@@ -980,10 +1022,10 @@ export default function BuildMyCampaign() {
 
               <div className="space-y-5">
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wide mb-2">
+                  <span id="cb-industries-label" className="block text-xs font-semibold uppercase tracking-wide mb-2">
                     Industries & Interests
-                  </label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  </span>
+                  <div role="group" aria-labelledby="cb-industries-label" className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {CATEGORIES.map((category) => {
                       const active = targetCategories.includes(category.slug);
                       return (
@@ -995,7 +1037,7 @@ export default function BuildMyCampaign() {
                           className={
                             "p-3 text-left rounded border-2 text-xs font-semibold transition flex items-center justify-between " +
                             (active
-                              ? "border-billboard-ink bg-billboard-yellow font-bold shadow-block-sm"
+                              ? "border-billboard-ink bg-billboard-yellow font-bold shadow-blockSm"
                               : "border-billboard-ink/20 bg-billboard-paperDim hover:bg-white")
                           }
                         >
@@ -1008,10 +1050,10 @@ export default function BuildMyCampaign() {
                 </div>
 
                 <div className="border-t-2 border-billboard-ink/10 pt-5">
-                  <label className="block text-xs font-semibold uppercase tracking-wide mb-2">
+                  <span id="cb-profiles-label" className="block text-xs font-semibold uppercase tracking-wide mb-2">
                     Customer Profiles
-                  </label>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  </span>
+                  <div role="group" aria-labelledby="cb-profiles-label" className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {CUSTOMER_PROFILE_OPTIONS.map((category) => {
                       const active = targetCategories.includes(category.id);
                       return (
@@ -1023,7 +1065,7 @@ export default function BuildMyCampaign() {
                           className={
                             "p-3 text-left rounded border-2 text-xs transition " +
                             (active
-                              ? "border-billboard-ink bg-billboard-ink text-white font-bold shadow-block-sm"
+                              ? "border-billboard-ink bg-billboard-ink text-white font-bold shadow-blockSm"
                               : "border-billboard-ink/20 bg-white hover:border-billboard-ink")
                           }
                         >
@@ -1036,10 +1078,10 @@ export default function BuildMyCampaign() {
                 </div>
 
                 <div className="border-t-2 border-billboard-ink/10 pt-5">
-                  <label className="block text-xs font-semibold uppercase tracking-wide mb-2">
+                  <span id="cb-languages-label" className="block text-xs font-semibold uppercase tracking-wide mb-2">
                     Preferred Languages
-                  </label>
-                  <div className="flex flex-wrap gap-2">
+                  </span>
+                  <div role="group" aria-labelledby="cb-languages-label" className="flex flex-wrap gap-2">
                     {LANGUAGES.map((language) => {
                       const active = targetLanguages.includes(language);
                       return (
@@ -1064,10 +1106,11 @@ export default function BuildMyCampaign() {
                 </div>
 
                 <div className="border-t-2 border-billboard-ink/10 pt-5">
-                  <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5">
+                  <label htmlFor="cb-customer-notes" className="block text-xs font-semibold uppercase tracking-wide mb-1.5">
                     Describe your ideal buyer or audience (Optional)
                   </label>
                   <input
+ id="cb-customer-notes"
                     type="text"
                     value={customerNotes}
                     onChange={(e) => setCustomerNotes(e.target.value)}
@@ -1113,7 +1156,7 @@ export default function BuildMyCampaign() {
               </div>
 
               <div className="border-[3px] border-billboard-ink rounded-lg p-6 bg-billboard-paperDim">
-                <label className="block text-xs font-mono font-bold uppercase tracking-wide mb-2">
+                <label htmlFor="cb-budget" className="block text-xs font-mono font-bold uppercase tracking-wide mb-2">
                   Total Campaign Budget (ZAR)
                 </label>
                 <div className="relative max-w-xl">
@@ -1121,6 +1164,7 @@ export default function BuildMyCampaign() {
                     R
                   </span>
                   <input
+ id="cb-budget"
                     type="number"
                     min="0"
                     step="1"
@@ -1172,7 +1216,7 @@ export default function BuildMyCampaign() {
                   </div>
                   <div className="border-2 border-billboard-ink/10 rounded p-3 bg-billboard-paperDim">
                     <span className="text-[10px] font-mono uppercase text-billboard-inkSoft block">
-                      Verified inventory in scope
+                      {reachEstimate.usedFallback ? "Verified inventory (all areas)" : "Verified inventory in scope"}
                     </span>
                     <strong className="font-mono text-sm">
                       {publishersLoading ? "…" : reachEstimate.inventory}
@@ -1182,6 +1226,8 @@ export default function BuildMyCampaign() {
 
                 <p className="text-[10px] text-billboard-inkSoft mt-3">
                   {reachEstimate.basis}
+                  {reachEstimate.usedFallback &&
+                    " Few or no verified publishers are listed in your chosen area yet, so this estimate uses verified publishers from all areas."}
                 </p>
               </div>
 
@@ -1278,7 +1324,7 @@ export default function BuildMyCampaign() {
                       className={
                         "text-left p-4 rounded-lg border-2 transition " +
                         (selected
-                          ? "border-billboard-ink bg-billboard-yellow font-bold shadow-block-sm"
+                          ? "border-billboard-ink bg-billboard-yellow font-bold shadow-blockSm"
                           : "border-billboard-ink/20 bg-billboard-paperDim hover:bg-white")
                       }
                     >
@@ -1296,10 +1342,10 @@ export default function BuildMyCampaign() {
               </div>
 
               <div className="border-t-2 border-billboard-ink/10 pt-4">
-                <label className="block text-xs font-semibold uppercase tracking-wide mb-2">
+                <span id="cb-duration-label" className="block text-xs font-semibold uppercase tracking-wide mb-2">
                   Flight Duration
-                </label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                </span>
+                <div role="group" aria-labelledby="cb-duration-label" className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                   {[
                     { id: "7_days", label: "7-Day Sprint", desc: "Short, focused push" },
                     { id: "14_days", label: "14-Day Flight", desc: "Two-phase campaign" },
@@ -1318,7 +1364,7 @@ export default function BuildMyCampaign() {
                       className={
                         "p-3 text-left rounded border-2 text-xs transition " +
                         (durationOption === duration.id
-                          ? "border-billboard-ink bg-billboard-ink text-white font-bold shadow-block-sm"
+                          ? "border-billboard-ink bg-billboard-ink text-white font-bold shadow-blockSm"
                           : "border-billboard-ink/20 bg-white hover:border-billboard-ink")
                       }
                     >
@@ -1339,10 +1385,11 @@ export default function BuildMyCampaign() {
               </div>
 
               <div className="border-t-2 border-billboard-ink/10 pt-4">
-                <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5">
+                <label htmlFor="cb-timing-dates" className="block text-xs font-semibold uppercase tracking-wide mb-1.5">
                   Specific Launch Dates or Event Deadline (Optional)
                 </label>
                 <input
+ id="cb-timing-dates"
                   type="text"
                   value={customTimingDates}
                   onChange={(e) => setCustomTimingDates(e.target.value)}
@@ -1419,10 +1466,11 @@ export default function BuildMyCampaign() {
 
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5">
+                  <label htmlFor="cb-brand-website" className="block text-xs font-semibold uppercase tracking-wide mb-1.5">
                     Brand website or social link (Optional)
                   </label>
                   <input
+ id="cb-brand-website"
                     type="url"
                     value={brandWebsite}
                     onChange={(e) => setBrandWebsite(e.target.value)}
@@ -1431,10 +1479,11 @@ export default function BuildMyCampaign() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5">
+                  <label htmlFor="cb-tagline" className="block text-xs font-semibold uppercase tracking-wide mb-1.5">
                     Tagline or slogan (Optional)
                   </label>
                   <input
+ id="cb-tagline"
                     type="text"
                     value={tagline}
                     onChange={(e) => setTagline(e.target.value)}
@@ -1445,10 +1494,11 @@ export default function BuildMyCampaign() {
               </div>
 
               <div className="border-t-2 border-billboard-ink/10 pt-4">
-                <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5">
+                <label htmlFor="cb-brand-style" className="block text-xs font-semibold uppercase tracking-wide mb-1.5">
                   Brand colors, tone & style (Optional)
                 </label>
                 <input
+ id="cb-brand-style"
                   type="text"
                   value={brandStyleNotes}
                   onChange={(e) => setBrandStyleNotes(e.target.value)}
@@ -1458,10 +1508,11 @@ export default function BuildMyCampaign() {
               </div>
 
               <div className="border-t-2 border-billboard-ink/10 pt-4">
-                <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5">
+                <label htmlFor="cb-creative-notes" className="block text-xs font-semibold uppercase tracking-wide mb-1.5">
                   Creative instructions, do's & don'ts, or talking points (Optional)
                 </label>
                 <textarea
+ id="cb-creative-notes"
                   rows={4}
                   value={creativeBriefNotes}
                   onChange={(e) => setCreativeBriefNotes(e.target.value)}
@@ -1602,10 +1653,11 @@ export default function BuildMyCampaign() {
                 <form onSubmit={handleFinalSubmit} className="space-y-4">
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-mono font-semibold uppercase tracking-wide mb-1">
+                      <label htmlFor="cb-business-name" className="block text-xs font-mono font-semibold uppercase tracking-wide mb-1">
                         Business / Brand Name *
                       </label>
                       <input
+ id="cb-business-name"
                         required
                         type="text"
                         value={businessName}
@@ -1615,10 +1667,11 @@ export default function BuildMyCampaign() {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-mono font-semibold uppercase tracking-wide mb-1">
+                      <label htmlFor="cb-contact-name" className="block text-xs font-mono font-semibold uppercase tracking-wide mb-1">
                         Contact Person Name
                       </label>
                       <input
+ id="cb-contact-name"
                         type="text"
                         value={contactName}
                         onChange={(e) => setContactName(e.target.value)}
@@ -1630,10 +1683,11 @@ export default function BuildMyCampaign() {
 
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-mono font-semibold uppercase tracking-wide mb-1">
+                      <label htmlFor="cb-contact-email" className="block text-xs font-mono font-semibold uppercase tracking-wide mb-1">
                         Email Address *
                       </label>
                       <input
+ id="cb-contact-email"
                         required
                         type="email"
                         value={contactEmail}
@@ -1643,10 +1697,11 @@ export default function BuildMyCampaign() {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-mono font-semibold uppercase tracking-wide mb-1">
+                      <label htmlFor="cb-contact-phone" className="block text-xs font-mono font-semibold uppercase tracking-wide mb-1">
                         Phone / WhatsApp Number
                       </label>
                       <input
+ id="cb-contact-phone"
                         type="tel"
                         value={contactPhone}
                         onChange={(e) => setContactPhone(e.target.value)}
@@ -1658,10 +1713,10 @@ export default function BuildMyCampaign() {
 
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-mono font-semibold uppercase tracking-wide mb-1.5">
+                      <span id="cb-contact-method-label" className="block text-xs font-mono font-semibold uppercase tracking-wide mb-1.5">
                         Preferred Contact Method
-                      </label>
-                      <div className="flex flex-wrap gap-2">
+                      </span>
+                      <div role="group" aria-labelledby="cb-contact-method-label" className="flex flex-wrap gap-2">
                         {CONTACT_METHODS.map((method) => (
                           <button
                             key={method.id}
@@ -1683,10 +1738,10 @@ export default function BuildMyCampaign() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-mono font-semibold uppercase tracking-wide mb-1.5">
+                      <span id="cb-urgency-label" className="block text-xs font-mono font-semibold uppercase tracking-wide mb-1.5">
                         How Urgent Is This?
-                      </label>
-                      <div className="flex flex-col gap-1.5">
+                      </span>
+                      <div role="group" aria-labelledby="cb-urgency-label" className="flex flex-col gap-1.5">
                         {URGENCY_LEVELS.map((level) => (
                           <button
                             key={level.id}
@@ -1731,7 +1786,7 @@ export default function BuildMyCampaign() {
             </div>
           )}
         </div>
-      </main>
+      </div>
     </div>
   );
 }
