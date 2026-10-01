@@ -23,6 +23,7 @@ import AdminCompliance from "./AdminCompliance";
 import AdminMessageSafety from "./AdminMessageSafety";
 import AdminCareersManager from "./AdminCareersManager";
 import AdminAJCreations from "./AdminAJCreations";
+import AdminBusinessOnboarding from "../components/AdminBusinessOnboarding";
 import AdminNavigation from "../components/AdminNavigation";
 import PayoutComplianceHint from "../components/PayoutComplianceHint";
 import { CATEGORIES, PROVINCES, PLATFORMS, SWATCHES, PUBLISHER_SHARE, PAYOUT_DUE_DAYS, FEATURED_DURATION_DAYS, WORK_WITH_US_CATEGORIES, WORK_WITH_US_ATTACHMENT_BUCKET, PARTNER_CATEGORIES, PARTNER_TYPES, ADVERTISE_PRODUCTS, COMMUNITY_EVENT_TYPES, COMMUNITY_QUESTION_CATEGORIES } from "../lib/constants";
@@ -42,7 +43,7 @@ import type { Publisher, PublisherRequest, ContactMessage, RequestStatus, Platfo
 // view's own request shape rather than reopening the shared type.
 type AdminRequestRow = PublisherRequest & { business: (Pick<Profile, "full_name" | "company_name" | "phone">) | null };
 
-export type AdminTab = "requests" | "applications" | "publishers" | "businesses" | "messages" | "analytics" | "payouts" | "channel_requests" | "reports" | "disputes" | "security" | "compliance" | "safety" | "leads" | "clients" | "campaigns" | "audit_log" | "opportunities" | "work_with_us" | "partners" | "advertise" | "community" | "careers" | "aj_creations";
+export type AdminTab = "requests" | "applications" | "publishers" | "businesses" | "messages" | "analytics" | "payouts" | "channel_requests" | "reports" | "disputes" | "security" | "compliance" | "safety" | "leads" | "clients" | "campaigns" | "audit_log" | "opportunities" | "work_with_us" | "partners" | "advertise" | "community" | "careers" | "aj_creations" | "business_onboarding";
 const STATUSES: RequestStatus[] = ["pending", "contacted", "confirmed", "declined", "completed"];
 const WWU_STATUSES: WorkWithUsStatus[] = ["new", "contacted", "archived"];
 const WWU_STATUS_LABEL: Record<WorkWithUsStatus, string> = { new: "New", contacted: "Contacted", archived: "Archived" };
@@ -615,6 +616,8 @@ export default function Admin() {
             <AdminCareersManager />
           ) : tab === "aj_creations" ? (
             <AdminAJCreations />
+          ) : tab === "business_onboarding" ? (
+            <AdminBusinessOnboarding />
           ) : (
             <MessagesTab messages={messages} />
           )}
