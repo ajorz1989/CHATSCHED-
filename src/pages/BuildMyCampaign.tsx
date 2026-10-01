@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { submitPublicForm } from "../lib/publicFormSubmit";
@@ -7,6 +7,11 @@ import { usePublishers } from "../hooks/usePublishers";
 import { useAuth } from "../hooks/useAuth";
 import Seo from "../components/Seo";
 import MarketingIcon, { type MarketingIconName } from "../components/MarketingIcon";
+import CategoryIcon from "../components/CategoryIcon";
+import Button from "../components/Button";
+import { WhatsAppChannelIcon } from "../components/PlatformIcons";
+import { CheckIcon, ArrowRightIcon, ArrowLeftIcon, PlusIcon } from "../components/UiIcons";
+import { MIN_PRICE_PER_POST } from "../lib/pricingEngine";
 import { CAMPAIGN_GOAL_OPTIONS, CAMPAIGN_WIZARD_STEPS } from "../lib/campaignGoals";
 import { PROVINCES, CATEGORIES, LANGUAGES } from "../lib/constants";
 
@@ -26,11 +31,11 @@ const CUSTOMER_PROFILE_OPTIONS: Array<{
   label: string;
   icon: MarketingIconName;
 }> = [
-  { id: "students_young_adults", label: "Students & Young Adults", icon: "people" },
+  { id: "students_young_adults", label: "Students & Young Adults", icon: "graduation" },
   { id: "working_professionals", label: "Working Professionals", icon: "briefcase" },
   { id: "parents_families", label: "Parents & Families", icon: "people" },
   { id: "homeowners_renters", label: "Homeowners & Renters", icon: "building" },
-  { id: "business_owners", label: "Business Owners & Decision Makers", icon: "briefcase" },
+  { id: "business_owners", label: "Business Owners & Decision Makers", icon: "store" },
   { id: "shoppers_deal_seekers", label: "Shoppers & Deal Seekers", icon: "bag" },
   { id: "travellers_visitors", label: "Travellers & Visitors", icon: "globe" },
   { id: "event_goers", label: "Event-Goers & Entertainment Audiences", icon: "event" },
@@ -39,7 +44,7 @@ const CUSTOMER_PROFILE_OPTIONS: Array<{
 const CONTACT_METHODS = [
   { id: "email", label: "Email", icon: "mail" as const },
   { id: "whatsapp", label: "WhatsApp", icon: "chat" as const },
-  { id: "phone_call", label: "Phone call", icon: "microphone" as const },
+  { id: "phone_call", label: "Phone call", icon: "phone" as const },
 ] as const;
 
 const URGENCY_LEVELS = [
@@ -54,6 +59,7 @@ type WizardStep = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
 interface CampaignDraft {
   currentStep?: WizardStep;
+  maxStep?: WizardStep;
   goalId?: string;
   customGoal?: string;
   targetScope?: "national" | "province" | "city" | "hyperlocal";
@@ -224,6 +230,10 @@ export default function BuildMyCampaign() {
     return restored && restored >= 1 && restored <= 7 ? restored : 1;
   });
 
+  const [maxStep, setMaxStep] = useState<WizardStep>(() => {
+    const restored = draft.maxStep ?? draft.currentStep;
+    return restored && restored >= 1 && restored <= 7 ? restored : 1;
+  });
   const [goalId, setGoalId] = useState<string>(() => {
     const fromQuery = searchParams.get("goal");
     if (fromQuery && CAMPAIGN_GOAL_OPTIONS.some((goal) => goal.id === fromQuery)) return fromQuery;
@@ -235,15 +245,15 @@ export default function BuildMyCampaign() {
     () => draft.targetScope ?? "city",
   );
   const [selectedProvinces, setSelectedProvinces] = useState<string[]>(
-    () => draft.selectedProvinces ?? ["Western Cape"],
+    () => draft.selectedProvinces ?? [],
   );
   const [selectedCities, setSelectedCities] = useState<string[]>(
-    () => draft.selectedCities ?? ["Cape Town"],
+    () => draft.selectedCities ?? [],
   );
   const [hyperlocalArea, setHyperlocalArea] = useState<string>(() => draft.hyperlocalArea ?? "");
 
   const [targetCategories, setTargetCategories] = useState<string[]>(
-    () => draft.targetCategories ?? ["food", "local-lifestyle", "working_professionals"],
+    () => draft.targetCategories ?? [],
   );
   const [targetLanguages, setTargetLanguages] = useState<string[]>(
     () => draft.targetLanguages ?? ["English"],
@@ -253,7 +263,7 @@ export default function BuildMyCampaign() {
   const [customBudgetValue, setCustomBudgetValue] = useState<string>(
     () => draft.customBudgetValue ?? "",
   );
-  const [budgetError, setBudgetError] = useState<string | null>(null);
+  const [stepError, setStepError] = useState<string | null>(null);
 
   const [timingPreference, setTimingPreference] = useState<
     "immediate" | "two_weeks" | "next_month" | "custom_dates"
@@ -273,16 +283,16 @@ export default function BuildMyCampaign() {
   );
 
   const [businessName, setBusinessName] = useState<string>(
-    () => draft.businessName ?? profile?.company_name ?? "",
+    () => profile?.company_name ?? "",
   );
   const [contactName, setContactName] = useState<string>(
-    () => draft.contactName ?? profile?.full_name ?? "",
+    () => profile?.full_name ?? "",
   );
   const [contactEmail, setContactEmail] = useState<string>(
-    () => draft.contactEmail ?? user?.email ?? "",
+    () => user?.email ?? "",
   );
   const [contactPhone, setContactPhone] = useState<string>(
-    () => draft.contactPhone ?? profile?.phone ?? "",
+    () => profile?.phone ?? "",
   );
   const [contactMethod, setContactMethod] = useState<(typeof CONTACT_METHODS)[number]["id"]>(
     () => draft.contactMethod ?? "email",
@@ -322,6 +332,7 @@ export default function BuildMyCampaign() {
 
     const toSave: CampaignDraft = {
       currentStep,
+      maxStep,
       goalId,
       customGoal,
       targetScope,
@@ -339,10 +350,6 @@ export default function BuildMyCampaign() {
       brandStyleNotes,
       tagline,
       creativeBriefNotes,
-      businessName,
-      contactName,
-      contactEmail,
-      contactPhone,
       contactMethod,
       urgency,
     };
@@ -355,6 +362,7 @@ export default function BuildMyCampaign() {
   }, [
     submitted,
     currentStep,
+    maxStep,
     goalId,
     customGoal,
     targetScope,
@@ -372,13 +380,32 @@ export default function BuildMyCampaign() {
     brandStyleNotes,
     tagline,
     creativeBriefNotes,
-    businessName,
-    contactName,
-    contactEmail,
-    contactPhone,
     contactMethod,
     urgency,
   ]);
+
+  const panelRef = useRef<HTMLDivElement>(null);
+  const firstRender = useRef(true);
+  useEffect(() => {
+    setMaxStep((previous) => (currentStep > previous ? currentStep : previous));
+    setStepError(null);
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
+    }
+    document.getElementById("cb-step-" + currentStep)?.scrollIntoView({ inline: "center", block: "nearest" });
+    panelRef.current?.focus({ preventScroll: true });
+  }, [currentStep]);
+
+  function startOver() {
+    if (!window.confirm("Clear everything you've entered and start this brief again?")) return;
+    try {
+      localStorage.removeItem(DRAFT_STORAGE_KEY);
+    } catch {
+      // best-effort
+    }
+    window.location.assign("/build-my-campaign");
+  }
 
   const requestedBudget = Number(customBudgetValue);
 
@@ -416,14 +443,33 @@ export default function BuildMyCampaign() {
     return selectedCities.join(", ") || "Selected cities";
   }, [targetScope, selectedProvinces, selectedCities, hyperlocalArea]);
 
-  function nextStep() {
-    if (currentStep === 4) {
-      if (!Number.isFinite(requestedBudget) || requestedBudget <= 0) {
-        setBudgetError("Enter a valid campaign budget before continuing.");
-        return;
+  function getStepError(step: number): string | null {
+    if (step === 2) {
+      if (targetScope === "province" && selectedProvinces.length === 0) return "Select at least one province to continue.";
+      if ((targetScope === "city" || targetScope === "hyperlocal") && selectedCities.length === 0) {
+        return "Select at least one city to continue.";
       }
-      setBudgetError(null);
     }
+    if (step === 3) {
+      if (targetCategories.length === 0) return "Select at least one industry or customer profile to continue.";
+      if (targetLanguages.length === 0) return "Select at least one language to continue.";
+    }
+    if (step === 4) {
+      if (!Number.isFinite(requestedBudget) || requestedBudget <= 0) return "Enter a valid campaign budget before continuing.";
+      if (requestedBudget < MIN_PRICE_PER_POST) {
+        return "The minimum budget is " + formatCurrency(MIN_PRICE_PER_POST) + " — the lowest price a publisher can list a single placement at.";
+      }
+    }
+    return null;
+  }
+
+  function nextStep() {
+    const error = getStepError(currentStep);
+    if (error) {
+      setStepError(error);
+      return;
+    }
+    setStepError(null);
 
     if (currentStep < 7) {
       setCurrentStep((prev) => (prev + 1) as WizardStep);
@@ -439,42 +485,30 @@ export default function BuildMyCampaign() {
   }
 
   function toggleProvince(province: string) {
+    setStepError(null);
     setSelectedProvinces((previous) =>
-      previous.includes(province)
-        ? previous.length > 1
-          ? previous.filter((item) => item !== province)
-          : previous
-        : [...previous, province],
+      previous.includes(province) ? previous.filter((item) => item !== province) : [...previous, province],
     );
   }
 
   function toggleCity(city: string) {
+    setStepError(null);
     setSelectedCities((previous) =>
-      previous.includes(city)
-        ? previous.length > 1
-          ? previous.filter((item) => item !== city)
-          : previous
-        : [...previous, city],
+      previous.includes(city) ? previous.filter((item) => item !== city) : [...previous, city],
     );
   }
 
   function toggleCategory(categoryId: string) {
+    setStepError(null);
     setTargetCategories((previous) =>
-      previous.includes(categoryId)
-        ? previous.length > 1
-          ? previous.filter((item) => item !== categoryId)
-          : previous
-        : [...previous, categoryId],
+      previous.includes(categoryId) ? previous.filter((item) => item !== categoryId) : [...previous, categoryId],
     );
   }
 
   function toggleLanguage(language: string) {
+    setStepError(null);
     setTargetLanguages((previous) =>
-      previous.includes(language)
-        ? previous.length > 1
-          ? previous.filter((item) => item !== language)
-          : previous
-        : [...previous, language],
+      previous.includes(language) ? previous.filter((item) => item !== language) : [...previous, language],
     );
   }
 
@@ -486,10 +520,13 @@ export default function BuildMyCampaign() {
       return;
     }
 
-    if (!Number.isFinite(requestedBudget) || requestedBudget <= 0) {
-      setSubmissionError("Please provide a valid campaign budget before submitting.");
-      setCurrentStep(4);
-      return;
+    for (const step of [2, 3, 4]) {
+      const error = getStepError(step);
+      if (error) {
+        setStepError(error);
+        setCurrentStep(step as WizardStep);
+        return;
+      }
     }
 
     setSubmitting(true);
@@ -570,7 +607,7 @@ export default function BuildMyCampaign() {
         <header className="bg-billboard-yellow border-b-[3px] border-billboard-ink py-16">
           <div className="max-w-3xl mx-auto px-5 text-center">
             <span className="inline-block bg-billboard-greenDeep text-white font-mono text-xs font-bold uppercase px-3 py-1 rounded border-2 border-billboard-ink mb-4 shadow-blockSm">
-              ✓ Campaign Brief Received
+              <span className="inline-flex items-center gap-1.5"><CheckIcon className="w-3.5 h-3.5" /> Campaign Brief Received</span>
             </span>
             <h1 className="text-3xl md:text-5xl font-display leading-tight mb-3">
               Your brief is with ChatSched.
@@ -604,13 +641,13 @@ export default function BuildMyCampaign() {
               <h2 className="font-display text-xl mb-3">Campaign Summary</h2>
               <div className="grid sm:grid-cols-2 gap-4 text-xs md:text-sm">
                 <div className="border-2 border-billboard-ink/10 rounded p-3 bg-billboard-paperDim">
-                  <span className="text-billboard-inkSoft block text-[11px] uppercase font-semibold">
+                  <span className="text-billboard-inkSoft block text-xs uppercase font-semibold">
                     Goal
                   </span>
                   <strong className="text-billboard-ink text-sm">{selectedGoal.title}</strong>
                 </div>
                 <div className="border-2 border-billboard-ink/10 rounded p-3 bg-billboard-paperDim">
-                  <span className="text-billboard-inkSoft block text-[11px] uppercase font-semibold">
+                  <span className="text-billboard-inkSoft block text-xs uppercase font-semibold">
                     Budget
                   </span>
                   <strong className="text-billboard-ink text-sm">
@@ -618,19 +655,19 @@ export default function BuildMyCampaign() {
                   </strong>
                 </div>
                 <div className="border-2 border-billboard-ink/10 rounded p-3 bg-billboard-paperDim">
-                  <span className="text-billboard-inkSoft block text-[11px] uppercase font-semibold">
+                  <span className="text-billboard-inkSoft block text-xs uppercase font-semibold">
                     Est. Reach
                   </span>
                   <strong className="text-billboard-ink text-sm">{reachEstimate.reach}</strong>
                 </div>
                 <div className="border-2 border-billboard-ink/10 rounded p-3 bg-billboard-paperDim">
-                  <span className="text-billboard-inkSoft block text-[11px] uppercase font-semibold">
+                  <span className="text-billboard-inkSoft block text-xs uppercase font-semibold">
                     Location
                   </span>
                   <strong className="text-billboard-ink text-sm">{locationSummary}</strong>
                 </div>
                 <div className="border-2 border-billboard-ink/10 rounded p-3 bg-billboard-paperDim">
-                  <span className="text-billboard-inkSoft block text-[11px] uppercase font-semibold">
+                  <span className="text-billboard-inkSoft block text-xs uppercase font-semibold">
                     Timing
                   </span>
                   <strong className="text-billboard-ink text-sm">
@@ -638,7 +675,7 @@ export default function BuildMyCampaign() {
                   </strong>
                 </div>
                 <div className="border-2 border-billboard-ink/10 rounded p-3 bg-billboard-paperDim">
-                  <span className="text-billboard-inkSoft block text-[11px] uppercase font-semibold">
+                  <span className="text-billboard-inkSoft block text-xs uppercase font-semibold">
                     Preferred Contact
                   </span>
                   <strong className="text-billboard-ink text-sm">
@@ -653,7 +690,7 @@ export default function BuildMyCampaign() {
               <h3 className="font-display text-base mb-3">What happens next?</h3>
               <ol className="space-y-3 text-xs md:text-sm text-billboard-inkSoft">
                 <li className="flex items-start gap-2.5">
-                  <span className="w-5 h-5 rounded-full bg-billboard-ink text-white font-mono text-[11px] flex items-center justify-center shrink-0 mt-0.5">
+                  <span className="w-5 h-5 rounded-full bg-billboard-ink text-white font-mono text-xs flex items-center justify-center shrink-0 mt-0.5">
                     1
                   </span>
                   <span>
@@ -662,7 +699,7 @@ export default function BuildMyCampaign() {
                   </span>
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <span className="w-5 h-5 rounded-full bg-billboard-ink text-white font-mono text-[11px] flex items-center justify-center shrink-0 mt-0.5">
+                  <span className="w-5 h-5 rounded-full bg-billboard-ink text-white font-mono text-xs flex items-center justify-center shrink-0 mt-0.5">
                     2
                   </span>
                   <span>
@@ -671,7 +708,7 @@ export default function BuildMyCampaign() {
                   </span>
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <span className="w-5 h-5 rounded-full bg-billboard-ink text-white font-mono text-[11px] flex items-center justify-center shrink-0 mt-0.5">
+                  <span className="w-5 h-5 rounded-full bg-billboard-ink text-white font-mono text-xs flex items-center justify-center shrink-0 mt-0.5">
                     3
                   </span>
                   <span>
@@ -687,7 +724,7 @@ export default function BuildMyCampaign() {
                 to="/dashboard"
                 className="flex-1 inline-flex justify-center items-center gap-2 bg-billboard-yellow border-[3px] border-billboard-ink font-bold py-3 px-4 rounded hover:-translate-y-0.5 transition shadow-block text-sm"
               >
-                Go to Dashboard →
+                Go to Dashboard <ArrowRightIcon />
               </Link>
               <Link
                 to="/browse"
@@ -732,7 +769,7 @@ export default function BuildMyCampaign() {
               sports and venue distribution.
             </p>
             <Link to="/case-studies" className="text-xs font-bold underline shrink-0">
-              View case studies →
+              <span className="inline-flex items-center gap-1">View case studies <ArrowRightIcon className="w-3 h-3" /></span>
             </Link>
           </div>
         </div>
@@ -748,11 +785,12 @@ export default function BuildMyCampaign() {
             {CAMPAIGN_WIZARD_STEPS.map((step) => {
               const isCurrent = currentStep === step.num;
               const isDone = currentStep > step.num;
-              const canVisit = step.num <= currentStep;
+              const canVisit = step.num <= maxStep;
 
               return (
                 <button
                   key={step.num}
+                  id={"cb-step-" + step.num}
                   type="button"
                   disabled={!canVisit}
                   aria-current={isCurrent ? "step" : undefined}
@@ -769,7 +807,7 @@ export default function BuildMyCampaign() {
                 >
                   <span
                     className={
-                      "w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-mono " +
+                      "w-5 h-5 rounded-full flex items-center justify-center text-xs font-mono " +
                       (isCurrent
                         ? "bg-billboard-yellow text-billboard-ink font-bold"
                         : isDone
@@ -777,7 +815,7 @@ export default function BuildMyCampaign() {
                           : "bg-billboard-paperDim text-billboard-inkSoft")
                     }
                   >
-                    {isDone ? "✓" : step.num}
+                    {isDone ? <CheckIcon className="w-3 h-3" /> : step.num}
                   </span>
                   <span>{step.label}</span>
                 </button>
@@ -788,7 +826,22 @@ export default function BuildMyCampaign() {
       </div>
 
       <div className="max-w-4xl mx-auto px-5 py-8 md:py-16">
-        <div className="bg-white border-[3px] border-billboard-ink rounded-lg p-6 md:p-10 shadow-block">
+        {maxStep > 1 && (
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <p className="text-xs text-billboard-inkSoft">
+              Your progress is saved on this device. Contact details are never saved.
+            </p>
+            <Button size="sm" onClick={startOver}>Start over</Button>
+          </div>
+        )}
+        <div
+          ref={panelRef}
+          tabIndex={-1}
+          className="bg-white border-[3px] border-billboard-ink rounded-lg p-6 md:p-10 shadow-block outline-none"
+        >
+          <p className="sr-only" aria-live="polite">
+            Step {currentStep} of 7: {CAMPAIGN_WIZARD_STEPS.find((step) => step.num === currentStep)?.label}
+          </p>
           {currentStep === 1 && (
             <div className="space-y-6">
               <div>
@@ -829,7 +882,7 @@ export default function BuildMyCampaign() {
                           {goal.tagline}
                         </p>
                       </div>
-                      <div className="mt-4 text-[10px] font-mono font-bold uppercase text-billboard-greenDeep">
+                      <div className="mt-4 text-xs font-mono font-bold uppercase text-billboard-greenDeep">
                         Focus: {goal.focus}
                       </div>
                     </button>
@@ -852,13 +905,9 @@ export default function BuildMyCampaign() {
               </div>
 
               <div className="flex justify-end pt-4 border-t-2 border-billboard-ink/10">
-                <button
-                  type="button"
-                  onClick={nextStep}
-                  className="bg-billboard-ink text-white font-bold px-6 py-3 rounded hover:-translate-y-0.5 transition shadow-block text-sm"
-                >
-                  Next: Where? →
-                </button>
+                <Button variant="primary" onClick={nextStep} className="shadow-block">
+                  Next: Where? <ArrowRightIcon />
+                </Button>
               </div>
             </div>
           )}
@@ -882,7 +931,7 @@ export default function BuildMyCampaign() {
                 {[
                   { id: "national", label: "National", icon: "globe" as const, desc: "All South Africa" },
                   { id: "city", label: "Specific Cities", icon: "building" as const, desc: "Metro hubs" },
-                  { id: "province", label: "Provinces", icon: "location" as const, desc: "Regional focus" },
+                  { id: "province", label: "Provinces", icon: "map" as const, desc: "Regional focus" },
                   { id: "hyperlocal", label: "Hyperlocal", icon: "pin" as const, desc: "Suburbs & areas" },
                 ].map((scope) => (
                   <button
@@ -901,7 +950,7 @@ export default function BuildMyCampaign() {
                       <MarketingIcon name={scope.icon} className="w-5 h-5" />
                       {scope.label}
                     </div>
-                    <div className="text-[11px] text-billboard-inkSoft">{scope.desc}</div>
+                    <div className="text-xs text-billboard-inkSoft">{scope.desc}</div>
                   </button>
                 ))}
               </div>
@@ -921,13 +970,13 @@ export default function BuildMyCampaign() {
                           onClick={() => toggleCity(city)}
                           aria-pressed={active}
                           className={
-                            "px-3.5 py-1.5 rounded-full text-xs font-semibold border-2 transition " +
+                            "inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold border-2 transition " +
                             (active
                               ? "border-billboard-ink bg-billboard-ink text-white shadow-blockSm"
                               : "border-billboard-ink/30 bg-white text-billboard-ink hover:border-billboard-ink")
                           }
                         >
-                          {active ? "✓ " : "+ "}
+                          {active ? <CheckIcon className="w-3 h-3" /> : <PlusIcon className="w-3 h-3" />}
                           {city}
                         </button>
                       );
@@ -951,13 +1000,13 @@ export default function BuildMyCampaign() {
                           onClick={() => toggleProvince(province)}
                           aria-pressed={active}
                           className={
-                            "p-2.5 text-left rounded border-2 text-xs font-semibold transition " +
+                            "flex items-center gap-1.5 p-2.5 text-left rounded border-2 text-xs font-semibold transition " +
                             (active
                               ? "border-billboard-ink bg-billboard-yellow font-bold shadow-blockSm"
                               : "border-billboard-ink/20 bg-white hover:border-billboard-ink")
                           }
                         >
-                          {active ? "✓ " : ""}
+                          {active && <CheckIcon className="w-3 h-3" />}
                           {province}
                         </button>
                       );
@@ -979,7 +1028,7 @@ export default function BuildMyCampaign() {
                     placeholder="e.g. Camps Bay & Sea Point, Sandton CBD, Umhlanga Ridge"
                     className="w-full border-2 border-billboard-ink rounded px-3.5 py-2.5 text-sm bg-white"
                   />
-                  <p className="text-[11px] text-billboard-inkSoft">
+                  <p className="text-xs text-billboard-inkSoft">
                     Add any suburb, community or venue catchment you want the campaign manager to
                     consider.
                   </p>
@@ -987,20 +1036,12 @@ export default function BuildMyCampaign() {
               )}
 
               <div className="flex justify-between pt-4 border-t-2 border-billboard-ink/10">
-                <button
-                  type="button"
-                  onClick={prevStep}
-                  className="border-2 border-billboard-ink px-4 py-2.5 rounded font-bold text-xs hover:bg-billboard-paperDim transition"
-                >
-                  ← Back
-                </button>
-                <button
-                  type="button"
-                  onClick={nextStep}
-                  className="bg-billboard-ink text-white font-bold px-6 py-3 rounded hover:-translate-y-0.5 transition shadow-block text-sm"
-                >
-                  Next: Customers →
-                </button>
+                <Button onClick={prevStep}>
+                  <ArrowLeftIcon /> Back
+                </Button>
+                <Button variant="primary" onClick={nextStep} className="shadow-block">
+                  Next: Customers <ArrowRightIcon />
+                </Button>
               </div>
             </div>
           )}
@@ -1041,8 +1082,8 @@ export default function BuildMyCampaign() {
                               : "border-billboard-ink/20 bg-billboard-paperDim hover:bg-white")
                           }
                         >
-                          <span className="pr-2">{category.name}</span>
-                          {active && <span className="font-mono text-[10px]">✓</span>}
+                          <span className="flex items-center gap-2 pr-2 min-w-0"><CategoryIcon name={category.icon} className="w-4 h-4 shrink-0" />{category.name}</span>
+                          {active && <CheckIcon className="w-3.5 h-3.5 shrink-0" />}
                         </button>
                       );
                     })}
@@ -1091,13 +1132,13 @@ export default function BuildMyCampaign() {
                           onClick={() => toggleLanguage(language)}
                           aria-pressed={active}
                           className={
-                            "px-3 py-1.5 rounded-full text-xs font-semibold border-2 transition " +
+                            "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border-2 transition " +
                             (active
                               ? "border-billboard-ink bg-billboard-ink text-white"
                               : "border-billboard-ink/30 bg-white hover:border-billboard-ink")
                           }
                         >
-                          {active ? "✓ " : ""}
+                          {active && <CheckIcon className="w-3 h-3" />}
                           {language}
                         </button>
                       );
@@ -1121,20 +1162,12 @@ export default function BuildMyCampaign() {
               </div>
 
               <div className="flex justify-between pt-4 border-t-2 border-billboard-ink/10">
-                <button
-                  type="button"
-                  onClick={prevStep}
-                  className="border-2 border-billboard-ink px-4 py-2.5 rounded font-bold text-xs hover:bg-billboard-paperDim transition"
-                >
-                  ← Back
-                </button>
-                <button
-                  type="button"
-                  onClick={nextStep}
-                  className="bg-billboard-ink text-white font-bold px-6 py-3 rounded hover:-translate-y-0.5 transition shadow-block text-sm"
-                >
-                  Next: Budget →
-                </button>
+                <Button onClick={prevStep}>
+                  <ArrowLeftIcon /> Back
+                </Button>
+                <Button variant="primary" onClick={nextStep} className="shadow-block">
+                  Next: Budget <ArrowRightIcon />
+                </Button>
               </div>
             </div>
           )}
@@ -1166,30 +1199,52 @@ export default function BuildMyCampaign() {
                   <input
  id="cb-budget"
                     type="number"
-                    min="0"
+                    min={MIN_PRICE_PER_POST}
                     step="1"
+                    onWheel={(e) => e.currentTarget.blur()}
                     inputMode="decimal"
                     value={customBudgetValue}
                     onChange={(e) => {
                       setCustomBudgetValue(e.target.value);
-                      setBudgetError(null);
+                      setStepError(null);
                     }}
                     placeholder="Enter your own campaign budget"
-                    aria-invalid={Boolean(budgetError)}
+                    aria-invalid={Boolean(stepError)}
                     className="w-full border-[3px] border-billboard-ink rounded-lg pl-10 pr-4 py-4 text-2xl font-mono font-bold bg-white"
                   />
                 </div>
-                <p className="text-[11px] text-billboard-inkSoft mt-2 max-w-xl">
+                <div role="group" aria-label="Quick budget amounts" className="flex flex-wrap gap-2 mt-3 max-w-xl">
+                  {[1000, 2500, 5000, 10000, 25000].map((amount) => (
+                    <button
+                      key={amount}
+                      type="button"
+                      aria-pressed={Number(customBudgetValue) === amount}
+                      onClick={() => {
+                        setCustomBudgetValue(String(amount));
+                        setStepError(null);
+                      }}
+                      className={
+                        "px-3 py-1.5 rounded border-2 text-xs font-mono font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-billboard-ink focus-visible:ring-offset-2 " +
+                        (Number(customBudgetValue) === amount
+                          ? "border-billboard-ink bg-billboard-yellow shadow-blockSm"
+                          : "border-billboard-ink/30 bg-white hover:border-billboard-ink")
+                      }
+                    >
+                      {formatCurrency(amount)}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-xs text-billboard-inkSoft mt-2 max-w-xl">
                   Your budget is a planning input, not a package purchase. Publisher inventory,
                   placement mix and final dates are confirmed with you before any campaign spend is
                   committed.
                 </p>
-                {budgetError && (
+                {stepError && (
                   <div
                     role="alert"
                     className="mt-3 border-2 border-billboard-red bg-billboard-red/10 text-billboard-red rounded p-3 text-xs font-semibold"
                   >
-                    {budgetError}
+                    {stepError}
                   </div>
                 )}
               </div>
@@ -1197,7 +1252,7 @@ export default function BuildMyCampaign() {
               <div className="border-2 border-billboard-ink rounded-lg p-5 bg-white">
                 <div className="flex items-center justify-between gap-3 mb-4">
                   <div>
-                    <span className="text-[11px] font-mono uppercase text-billboard-inkSoft block">
+                    <span className="text-xs font-mono uppercase text-billboard-inkSoft block">
                       Estimated reach
                     </span>
                     <strong className="font-display text-xl text-billboard-greenDeep">
@@ -1209,13 +1264,13 @@ export default function BuildMyCampaign() {
 
                 <div className="grid sm:grid-cols-2 gap-3">
                   <div className="border-2 border-billboard-ink/10 rounded p-3 bg-billboard-paperDim">
-                    <span className="text-[10px] font-mono uppercase text-billboard-inkSoft block">
+                    <span className="text-xs font-mono uppercase text-billboard-inkSoft block">
                       Planning placements
                     </span>
                     <strong className="font-mono text-sm">{reachEstimate.placements}</strong>
                   </div>
                   <div className="border-2 border-billboard-ink/10 rounded p-3 bg-billboard-paperDim">
-                    <span className="text-[10px] font-mono uppercase text-billboard-inkSoft block">
+                    <span className="text-xs font-mono uppercase text-billboard-inkSoft block">
                       {reachEstimate.usedFallback ? "Verified inventory (all areas)" : "Verified inventory in scope"}
                     </span>
                     <strong className="font-mono text-sm">
@@ -1224,7 +1279,7 @@ export default function BuildMyCampaign() {
                   </div>
                 </div>
 
-                <p className="text-[10px] text-billboard-inkSoft mt-3">
+                <p className="text-xs text-billboard-inkSoft mt-3">
                   {reachEstimate.basis}
                   {reachEstimate.usedFallback &&
                     " Few or no verified publishers are listed in your chosen area yet, so this estimate uses verified publishers from all areas."}
@@ -1234,7 +1289,7 @@ export default function BuildMyCampaign() {
               {Number.isFinite(requestedBudget) && requestedBudget > 0 && (
                 <div className="border-2 border-billboard-green/40 bg-[#EAF3EC] rounded-lg p-4 flex items-center justify-between gap-4">
                   <div>
-                    <span className="text-[10px] font-mono uppercase text-billboard-greenDeep block">
+                    <span className="text-xs font-mono uppercase text-billboard-greenDeep block">
                       Your budget
                     </span>
                     <strong className="font-display text-xl">{formatCurrency(requestedBudget)}</strong>
@@ -1246,20 +1301,12 @@ export default function BuildMyCampaign() {
               )}
 
               <div className="flex justify-between pt-4 border-t-2 border-billboard-ink/10">
-                <button
-                  type="button"
-                  onClick={prevStep}
-                  className="border-2 border-billboard-ink px-4 py-2.5 rounded font-bold text-xs hover:bg-billboard-paperDim transition"
-                >
-                  ← Back
-                </button>
-                <button
-                  type="button"
-                  onClick={nextStep}
-                  className="bg-billboard-ink text-white font-bold px-6 py-3 rounded hover:-translate-y-0.5 transition shadow-block text-sm"
-                >
-                  Next: Timing →
-                </button>
+                <Button onClick={prevStep}>
+                  <ArrowLeftIcon /> Back
+                </Button>
+                <Button variant="primary" onClick={nextStep} className="shadow-block">
+                  Next: Timing <ArrowRightIcon />
+                </Button>
               </div>
             </div>
           )}
@@ -1291,7 +1338,7 @@ export default function BuildMyCampaign() {
                   {
                     id: "two_weeks",
                     title: "Next 2–4 Weeks",
-                    icon: "event" as const,
+                    icon: "clock" as const,
                     sub: "Standard Window",
                     desc: "Time for creative briefing and publisher confirmation",
                   },
@@ -1305,7 +1352,7 @@ export default function BuildMyCampaign() {
                   {
                     id: "custom_dates",
                     title: "Specific Dates",
-                    icon: "pin" as const,
+                    icon: "calendarCheck" as const,
                     sub: "Event or Deadline",
                     desc: "Best when a fixed launch or event date matters",
                   },
@@ -1335,7 +1382,7 @@ export default function BuildMyCampaign() {
                       <div className="text-xs font-mono font-bold text-billboard-greenDeep mb-1.5">
                         {timing.sub}
                       </div>
-                      <div className="text-[11px] text-billboard-inkSoft">{timing.desc}</div>
+                      <div className="text-xs text-billboard-inkSoft">{timing.desc}</div>
                     </button>
                   );
                 })}
@@ -1371,7 +1418,7 @@ export default function BuildMyCampaign() {
                       <div className="font-bold">{duration.label}</div>
                       <div
                         className={
-                          "text-[10px] " +
+                          "text-xs " +
                           (durationOption === duration.id
                             ? "text-billboard-yellow"
                             : "text-billboard-inkSoft")
@@ -1399,7 +1446,7 @@ export default function BuildMyCampaign() {
               </div>
 
               <div className="border-2 border-billboard-ink/10 rounded-lg p-4 bg-billboard-paperDim">
-                <span className="text-[10px] font-mono uppercase text-billboard-inkSoft block mb-1">
+                <span className="text-xs font-mono uppercase text-billboard-inkSoft block mb-1">
                   Current timing
                 </span>
                 <strong className="font-display text-lg">
@@ -1408,20 +1455,12 @@ export default function BuildMyCampaign() {
               </div>
 
               <div className="flex justify-between pt-4 border-t-2 border-billboard-ink/10">
-                <button
-                  type="button"
-                  onClick={prevStep}
-                  className="border-2 border-billboard-ink px-4 py-2.5 rounded font-bold text-xs hover:bg-billboard-paperDim transition"
-                >
-                  ← Back
-                </button>
-                <button
-                  type="button"
-                  onClick={nextStep}
-                  className="bg-billboard-yellow text-billboard-ink border-[3px] border-billboard-ink font-bold px-6 py-3 rounded hover:-translate-y-0.5 transition shadow-block text-sm"
-                >
-                  Next: Brand & Creative →
-                </button>
+                <Button onClick={prevStep}>
+                  <ArrowLeftIcon /> Back
+                </Button>
+                <Button variant="primary" onClick={nextStep} className="shadow-block">
+                  Next: Brand & Creative <ArrowRightIcon />
+                </Button>
               </div>
             </div>
           )}
@@ -1448,7 +1487,7 @@ export default function BuildMyCampaign() {
 
                 return (
                   <div className="border-2 border-billboard-ink/15 rounded-lg p-3 bg-billboard-paperDim">
-                    <div className="flex items-center justify-between text-[11px] font-mono uppercase mb-1.5">
+                    <div className="flex items-center justify-between text-xs font-mono uppercase mb-1.5">
                       <span className="text-billboard-inkSoft">Brief completeness</span>
                       <span className="font-bold text-billboard-ink">
                         {filled}/{fields.length} added
@@ -1522,20 +1561,12 @@ export default function BuildMyCampaign() {
               </div>
 
               <div className="flex justify-between pt-4 border-t-2 border-billboard-ink/10">
-                <button
-                  type="button"
-                  onClick={prevStep}
-                  className="border-2 border-billboard-ink px-4 py-2.5 rounded font-bold text-xs hover:bg-billboard-paperDim transition"
-                >
-                  ← Back
-                </button>
-                <button
-                  type="button"
-                  onClick={nextStep}
-                  className="bg-billboard-yellow text-billboard-ink border-[3px] border-billboard-ink font-bold px-6 py-3 rounded hover:-translate-y-0.5 transition shadow-block text-sm"
-                >
-                  Review & Submit →
-                </button>
+                <Button onClick={prevStep}>
+                  <ArrowLeftIcon /> Back
+                </Button>
+                <Button variant="primary" onClick={nextStep} className="shadow-block">
+                  Review & Submit <ArrowRightIcon />
+                </Button>
               </div>
             </div>
           )}
@@ -1557,61 +1588,61 @@ export default function BuildMyCampaign() {
               <div className="border-2 border-billboard-ink rounded-lg p-5 bg-billboard-paperDim">
                 <div className="flex items-center justify-between gap-3 mb-4">
                   <h3 className="font-display text-lg font-bold">Campaign brief</h3>
-                  <span className="text-[10px] font-mono uppercase bg-white border border-billboard-ink px-2 py-1 rounded">
+                  <span className="text-xs font-mono uppercase bg-white border border-billboard-ink px-2 py-1 rounded">
                     No package selected
                   </span>
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-3 text-xs md:text-sm">
                   <div className="border-2 border-billboard-ink/10 rounded p-3 bg-white">
-                    <span className="text-[10px] font-mono uppercase text-billboard-inkSoft block mb-1">
+                    <span className="text-xs font-mono uppercase text-billboard-inkSoft block mb-1">
                       Goal
                     </span>
                     <strong>{selectedGoal.title}</strong>
                     {customGoal.trim() && (
-                      <span className="block text-[11px] text-billboard-inkSoft mt-1">
+                      <span className="block text-xs text-billboard-inkSoft mt-1">
                         {customGoal.trim()}
                       </span>
                     )}
                   </div>
 
                   <div className="border-2 border-billboard-ink/10 rounded p-3 bg-white">
-                    <span className="text-[10px] font-mono uppercase text-billboard-inkSoft block mb-1">
+                    <span className="text-xs font-mono uppercase text-billboard-inkSoft block mb-1">
                       Budget
                     </span>
                     <strong>{formatCurrency(requestedBudget)}</strong>
                   </div>
 
                   <div className="border-2 border-billboard-ink/10 rounded p-3 bg-white">
-                    <span className="text-[10px] font-mono uppercase text-billboard-inkSoft block mb-1">
+                    <span className="text-xs font-mono uppercase text-billboard-inkSoft block mb-1">
                       Estimated reach
                     </span>
                     <strong>{reachEstimate.reach}</strong>
                   </div>
 
                   <div className="border-2 border-billboard-ink/10 rounded p-3 bg-white">
-                    <span className="text-[10px] font-mono uppercase text-billboard-inkSoft block mb-1">
+                    <span className="text-xs font-mono uppercase text-billboard-inkSoft block mb-1">
                       Location
                     </span>
                     <strong>{locationSummary}</strong>
                   </div>
 
                   <div className="border-2 border-billboard-ink/10 rounded p-3 bg-white">
-                    <span className="text-[10px] font-mono uppercase text-billboard-inkSoft block mb-1">
+                    <span className="text-xs font-mono uppercase text-billboard-inkSoft block mb-1">
                       Audience
                     </span>
                     <strong>{audienceLabels.join(", ")}</strong>
                   </div>
 
                   <div className="border-2 border-billboard-ink/10 rounded p-3 bg-white">
-                    <span className="text-[10px] font-mono uppercase text-billboard-inkSoft block mb-1">
+                    <span className="text-xs font-mono uppercase text-billboard-inkSoft block mb-1">
                       Languages
                     </span>
                     <strong>{targetLanguages.join(", ")}</strong>
                   </div>
 
                   <div className="border-2 border-billboard-ink/10 rounded p-3 bg-white sm:col-span-2">
-                    <span className="text-[10px] font-mono uppercase text-billboard-inkSoft block mb-1">
+                    <span className="text-xs font-mono uppercase text-billboard-inkSoft block mb-1">
                       Timing
                     </span>
                     <strong>{formatTiming(timingPreference, customTimingDates, durationOption)}</strong>
@@ -1622,24 +1653,20 @@ export default function BuildMyCampaign() {
               <div className="border-2 border-billboard-ink/10 rounded-lg p-4 bg-white text-xs text-billboard-inkSoft">
                 <div className="grid sm:grid-cols-2 gap-3">
                   <div>
-                    <span className="font-mono uppercase text-[10px] block mb-1">Brand link</span>
+                    <span className="font-mono uppercase text-xs block mb-1">Brand link</span>
                     <strong className="text-billboard-ink">{brandWebsite || "Not provided"}</strong>
                   </div>
                   <div>
-                    <span className="font-mono uppercase text-[10px] block mb-1">Tagline</span>
+                    <span className="font-mono uppercase text-xs block mb-1">Tagline</span>
                     <strong className="text-billboard-ink">{tagline || "Not provided"}</strong>
                   </div>
                 </div>
               </div>
 
               <div className="flex justify-between pt-4 border-t-2 border-billboard-ink/10">
-                <button
-                  type="button"
-                  onClick={() => setCurrentStep(6)}
-                  className="border-2 border-billboard-ink px-4 py-2.5 rounded font-bold text-xs hover:bg-billboard-paperDim transition"
-                >
-                  ← Modify Brief
-                </button>
+                <Button onClick={() => setCurrentStep(6)}>
+                  <ArrowLeftIcon /> Modify Brief
+                </Button>
               </div>
 
               <section className="border-[3px] border-billboard-ink rounded-lg p-6 md:p-8 bg-billboard-yellow shadow-block space-y-6">
@@ -1730,7 +1757,7 @@ export default function BuildMyCampaign() {
                                 : "border-billboard-ink/30 bg-white/70 hover:border-billboard-ink")
                             }
                           >
-                            <MarketingIcon name={method.icon} className="w-4 h-4" />
+                            {method.id === "whatsapp" ? <WhatsAppChannelIcon /> : <MarketingIcon name={method.icon} className="w-4 h-4" />}
                             {method.label}
                           </button>
                         ))}
@@ -1756,7 +1783,7 @@ export default function BuildMyCampaign() {
                             }
                           >
                             {level.label}
-                            <span className="block text-[10px] font-normal text-billboard-inkSoft">
+                            <span className="block text-xs font-normal text-billboard-inkSoft">
                               {level.desc}
                             </span>
                           </button>
@@ -1774,15 +1801,24 @@ export default function BuildMyCampaign() {
                     </div>
                   )}
 
-                  <button
+                  <Button
                     type="submit"
+                    variant="dark"
                     disabled={submitting}
-                    className="w-full bg-billboard-ink text-white border-[3px] border-billboard-ink font-bold py-3.5 px-6 rounded hover:-translate-y-0.5 transition shadow-block disabled:opacity-60 text-sm font-display"
+                    className="w-full border-[3px] border-billboard-ink shadow-block !py-3.5 !px-6 !text-sm !normal-case !font-display !font-bold"
                   >
-                    {submitting ? "Submitting Campaign to ChatSched…" : "Submit Campaign Brief →"}
-                  </button>
+                    {submitting ? "Submitting Campaign to ChatSched…" : <>Submit Campaign Brief <ArrowRightIcon /></>}
+                  </Button>
                 </form>
               </section>
+            </div>
+          )}
+          {stepError && (currentStep === 2 || currentStep === 3) && (
+            <div
+              role="alert"
+              className="mt-4 border-2 border-billboard-red bg-billboard-red/10 text-billboard-red rounded p-3 text-xs font-semibold"
+            >
+              {stepError}
             </div>
           )}
         </div>

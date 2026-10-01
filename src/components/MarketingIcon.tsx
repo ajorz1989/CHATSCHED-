@@ -3,7 +3,7 @@ export type MarketingIconName =
   | "document" | "check" | "megaphone" | "money" | "star"
   | "building" | "wave" | "lock" | "shield" | "globe" | "pin"
   | "mail" | "microphone" | "smartphone" | "people" | "bolt" | "camera"
-  | "briefcase" | "link";
+  | "briefcase" | "link" | "phone" | "clock" | "calendarCheck" | "graduation" | "store" | "map";
 
 const common = {
   fill: "none",
@@ -41,5 +41,11 @@ export default function MarketingIcon({ name, className = "w-7 h-7" }: { name: M
     case "camera": return <svg {...base}><path d="M4 7h4l1.5-2h5L16 7h4v12H4z" /><circle cx="12" cy="13" r="3.5" /></svg>;
     case "briefcase": return <svg {...base}><rect x="3" y="7" width="18" height="13" rx="1.5" /><path d="M8 7V5h8v2M3 12h18M10 12v2h4v-2" /></svg>;
     case "link": return <svg {...base}><path d="M9 15 15 9" /><path d="M11 6.5 12.5 5a3.5 3.5 0 0 1 5 5L16 11.5" /><path d="M13 17.5 11.5 19a3.5 3.5 0 0 1-5-5L8 12.5" /></svg>;
+    case "phone": return <svg {...base}><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.9.6 2.8.7a2 2 0 0 1 1.7 2Z" /></svg>;
+    case "clock": return <svg {...base}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>;
+    case "calendarCheck": return <svg {...base}><path d="M4 6h16v14H4z" /><path d="M8 3v6M16 3v6M4 10h16" /><path d="m9 15 2 2 4-4" /></svg>;
+    case "graduation": return <svg {...base}><path d="M2 9l10-5 10 5-10 5-10-5Z" /><path d="M6 11.5V16c0 1.4 2.7 3 6 3s6-1.6 6-3v-4.5M22 9v6" /></svg>;
+    case "store": return <svg {...base}><path d="M3 9l1.5-5h15L21 9" /><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0" /><path d="M5 12v8h14v-8M10 20v-5h4v5" /></svg>;
+    case "map": return <svg {...base}><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z" /><path d="M9 4v14M15 6v14" /></svg>;
   }
 }
