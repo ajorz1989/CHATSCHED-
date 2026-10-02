@@ -49,7 +49,7 @@ function HeroMockup() {
   return (
     <div className="relative w-full">
       <div
-        className="relative w-full overflow-hidden rounded-xl border-[3px] border-billboard-ink bg-billboard-paper shadow-block"
+        className="relative w-full overflow-hidden rounded-xl border-[3px] border-billboard-paper bg-billboard-paper shadow-[8px_8px_0_#F5B700]"
         style={{ aspectRatio: "16 / 9" }}
       >
         <LazyLoopVideo

@@ -48,13 +48,13 @@ function ChannelNetwork({ liveCount }: { liveCount: number }) {
           <path
             key={n.slug}
             d={`M ${n.x} ${n.y + 60} C ${n.x} 165, ${VIEW_W / 2} 150, ${VIEW_W / 2} ${HUB_Y}`}
-            stroke="#1A1712"
+            stroke="#FAF9F5"
             strokeWidth="3"
             strokeLinecap="round"
             strokeDasharray="1 11"
           />
         ))}
-        <circle cx={VIEW_W / 2} cy={HUB_Y} r="9" fill="#1A1712" />
+        <circle cx={VIEW_W / 2} cy={HUB_Y} r="9" fill="#FAF9F5" />
         <circle cx={VIEW_W / 2} cy={HUB_Y} r="3.5" fill="#F5B700" />
       </svg>
 
@@ -66,11 +66,11 @@ function ChannelNetwork({ liveCount }: { liveCount: number }) {
         >
           <span className="sm:hidden"><ChannelIcon slug={n.slug} size="sm" /></span>
           <span className="hidden sm:inline-flex"><ChannelIcon slug={n.slug} size="md" /></span>
-          <span className="hidden sm:block font-mono text-[11px] font-bold uppercase tracking-wide text-billboard-ink mt-2">{n.label}</span>
+          <span className="hidden sm:block font-mono text-[11px] font-bold uppercase tracking-wide text-billboard-paper mt-2">{n.label}</span>
         </div>
       ))}
 
-      <div className="absolute left-1/2 bottom-0 -translate-x-1/2 whitespace-nowrap font-mono text-[11px] font-bold uppercase tracking-wider bg-billboard-ink text-billboard-paper rounded-full px-3 sm:px-4 py-1.5">
+      <div className="absolute left-1/2 bottom-0 -translate-x-1/2 whitespace-nowrap font-mono text-[11px] font-bold uppercase tracking-wider bg-billboard-yellow text-billboard-ink rounded-full px-3 sm:px-4 py-1.5">
         {t("heroBands.network.hub", { defaultValue: "{{channels}} live channels · one workflow", channels: liveCount })}
       </div>
     </div>
@@ -82,7 +82,7 @@ export function HeroTopBand({ loaded = true, children }: { loaded?: boolean; chi
   const liveCount = getEnabledChannels().length;
   const postHref = usePostOpportunityHref();
   return (
-    <section className="bg-billboard-yellow border-b-[3px] border-billboard-ink overflow-hidden pt-10 sm:pt-12 md:pt-14 pb-12 sm:pb-14 md:pb-16" aria-labelledby="hero-top-title">
+    <section className="bg-billboard-ink text-billboard-paper border-b-[3px] border-billboard-ink overflow-hidden pt-10 sm:pt-12 md:pt-14 pb-12 sm:pb-14 md:pb-16" aria-labelledby="hero-top-title">
       <div className="max-w-4xl mx-auto px-4 sm:px-5 text-center">
         <h2
           id="hero-top-title"
@@ -90,12 +90,12 @@ export function HeroTopBand({ loaded = true, children }: { loaded?: boolean; chi
         >
           {t("heroBands.top.title1", { defaultValue: "Buy local attention." })}
           <br />
-          <span className="inline-block bg-billboard-ink text-billboard-yellow px-3 sm:px-4 pb-1 mt-2 -rotate-1 box-decoration-clone">
+          <span className="inline-block bg-billboard-yellow text-billboard-ink px-3 sm:px-4 pb-1 mt-2 -rotate-1 box-decoration-clone">
             {t("heroBands.top.title2", { defaultValue: "Or get paid for yours." })}
           </span>
         </h2>
 
-        <p className="text-lg md:text-xl text-billboard-inkSoft max-w-2xl mx-auto mb-6 leading-relaxed">
+        <p className="text-lg md:text-xl text-billboard-paperDim max-w-2xl mx-auto mb-6 leading-relaxed">
           {t("heroBands.top.subtitle", {
             defaultValue:
               "Tell us your goal, audience and budget and ChatSched builds the campaign. Verified creators, podcasts, radio stations, websites and events send proposals — with the request, payment and proof handled in one place.",
@@ -105,14 +105,14 @@ export function HeroTopBand({ loaded = true, children }: { loaded?: boolean; chi
         {/* One primary action. The self-serve route is named as the alternative
             (so visitors know there are two ways in), and publishers get their own link. */}
         <div className="flex justify-center">
-          <Link to="/build-my-campaign" data-cta="hero-build" className="brand-button dark w-full sm:w-auto">
+          <Link to="/build-my-campaign" data-cta="hero-build" className="brand-button yellow w-full sm:w-auto">
             {t("heroBands.top.ctaBuild", { defaultValue: "Build my campaign →" })}
           </Link>
         </div>
 
-        <p className="text-sm sm:text-base text-billboard-inkSoft mt-3">
+        <p className="text-sm sm:text-base text-billboard-paperDim mt-3">
           {t("heroBands.top.selfServe", { defaultValue: "Rather pick the placements yourself?" })}{" "}
-          <Link to={postHref} data-cta="hero-post" className="whitespace-nowrap font-bold text-billboard-ink underline underline-offset-4 decoration-2 hover:decoration-4 transition-all">
+          <Link to={postHref} data-cta="hero-post" className="whitespace-nowrap font-bold text-billboard-yellow underline underline-offset-4 decoration-2 hover:decoration-4 transition-all">
             {t("heroBands.top.ctaPost", { defaultValue: "Post an opportunity →" })}
           </Link>
         </p>

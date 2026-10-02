@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import HomeInventoryWall from "./HomeInventoryWall";
 import { AuthProvider } from "../contexts/AuthContext";
@@ -28,24 +28,24 @@ function renderWall() {
 describe("HomeInventoryWall", () => {
   const [first, second] = getEnabledChannels().map((c) => c.definition.slug);
 
-  beforeEach(() => mockUsePublishers.mockReset());
-
-  it("renders the headline, real counts and listing cards", () => {
-    mockUsePublishers.mockReturnValue({
-      loading: false,
-      publishers: [
-        makePublisher({ id: "a", name: "Alpha Listing", channel_slug: first, price_per_post: 250 }),
-        makePublisher({ id: "b", name: "Beta Listing", channel_slug: second, price_per_post: 900 }),
-      ],
-    });
-    renderWall();
-    expect(screen.getByRole("heading", { level: 1, name: /Browse live ad inventory/i })).toBeInTheDocument();
-    expect(screen.getByText("Alpha Listing")).toBeInTheDocument();
-    expect(screen.getByText("Beta Listing")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /View all/i })).toHaveAttribute("href", "/browse");
+  beforeEach(() => {
+    mockUsePublishers.mockReset();
+    window.location.hash = "";
   });
 
-  it("filters cards in place when a channel tile is chosen", () => {
+  it("names all three branches, with no live-inventory tag line", () => {
+    mockUsePublishers.mockReturnValue({ loading: false, publishers: [makePublisher({ channel_slug: first })] });
+    renderWall();
+    expect(screen.getByRole("heading", { level: 1 })).toBeInTheDocument();
+    const tabs = screen.getByRole("tablist");
+    expect(within(tabs).getAllByRole("tab")).toHaveLength(3);
+    expect(within(tabs).getByRole("tab", { name: /Marketplace/i })).toHaveAttribute("aria-selected", "true");
+    expect(within(tabs).getByRole("tab", { name: /Agency/i })).toBeInTheDocument();
+    expect(within(tabs).getByRole("tab", { name: /Publisher network/i })).toBeInTheDocument();
+    expect(screen.queryByText(/live marketplace inventory/i)).not.toBeInTheDocument();
+  });
+
+  it("opens on the marketplace with real listings and filters by channel", () => {
     mockUsePublishers.mockReturnValue({
       loading: false,
       publishers: [
@@ -54,20 +54,39 @@ describe("HomeInventoryWall", () => {
       ],
     });
     renderWall();
+    expect(screen.getByText("Alpha Listing")).toBeInTheDocument();
+    expect(screen.getByText("Beta Listing")).toBeInTheDocument();
     const group = screen.getByRole("group", { name: /Filter inventory by channel/i });
-    const tiles = group.querySelectorAll("button");
-    // tiles[0] is "All"; pick the tile that holds the first channel's listing
-    const target = Array.from(tiles).find((b) => b.textContent?.includes("1 live") && b !== tiles[0]);
-    expect(target).toBeTruthy();
-    fireEvent.click(target!);
-    const visibleNames = ["Alpha Listing", "Beta Listing"].filter((n) => screen.queryByText(n));
-    expect(visibleNames).toHaveLength(1);
+    const channelButtons = Array.from(group.querySelectorAll("button")).slice(1);
+    fireEvent.click(channelButtons[0]);
+    expect(["Alpha Listing", "Beta Listing"].filter((n) => screen.queryByText(n))).toHaveLength(1);
   });
 
-  it("hides counters and shows an empty state instead of inventing numbers", () => {
+  it("switches to the agency and publisher network branches", () => {
+    mockUsePublishers.mockReturnValue({ loading: false, publishers: [makePublisher({ id: "a", name: "Alpha Listing", channel_slug: first })] });
+    renderWall();
+
+    fireEvent.click(screen.getByRole("tab", { name: /Agency/i }));
+    expect(screen.getByRole("link", { name: /Build my campaign/i })).toHaveAttribute("href", "/build-my-campaign");
+    expect(screen.queryByText("Alpha Listing")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("tab", { name: /Publisher network/i }));
+    expect(screen.getByRole("link", { name: /Join as a publisher/i })).toHaveAttribute("href", "/register?role=publisher");
+    expect(screen.getByText("Alpha Listing")).toBeInTheDocument();
+  });
+
+  it("supports arrow-key navigation between branches", () => {
     mockUsePublishers.mockReturnValue({ loading: false, publishers: [] });
     renderWall();
-    expect(screen.queryByText(/Verified listings/i)).not.toBeInTheDocument();
+    fireEvent.keyDown(screen.getByRole("tab", { name: /Marketplace/i }), { key: "ArrowRight" });
+    expect(screen.getByRole("tab", { name: /Agency/i })).toHaveAttribute("aria-selected", "true");
+  });
+
+  it("never invents numbers when there is no inventory", () => {
+    mockUsePublishers.mockReturnValue({ loading: false, publishers: [] });
+    renderWall();
+    expect(screen.queryByText(/^\d+ live listings$/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/^\d+ verified publishers$/i)).not.toBeInTheDocument();
     expect(screen.getByText(/Listings are on the way/i)).toBeInTheDocument();
   });
 });
