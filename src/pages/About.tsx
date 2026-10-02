@@ -97,7 +97,7 @@ export default function About() {
           </div>
           <div className="mx-auto w-full max-w-[360px] border-[3px] border-billboard-ink rounded-xl bg-billboard-ink p-2 shadow-block overflow-hidden">
             <video className="block w-full h-auto rounded-lg bg-black" controls playsInline preload="metadata" poster="/brand/schedy-explainer-poster.webp" aria-label="ChatSched explainer video featuring Schedy">
-              <source src="/videos/schedy-explainer.mp4" type="video/mp4" />
+              <source src="/schedy/chatsched-avatar-explainer.mp4" type="video/mp4" />
               Your browser does not support the video element. Please use a modern browser to watch the ChatSched explainer.
             </video>
             <p className="text-center font-mono text-[10px] text-billboard-paper/70 uppercase tracking-wider py-2">Schedy · Advertising for the better</p>
