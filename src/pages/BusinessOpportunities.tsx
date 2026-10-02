@@ -4,7 +4,7 @@ import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
 import { formatSupabaseError } from "../lib/supabaseErrors";
 import Seo from "../components/Seo";
-import EmptyState from "../components/EmptyState";
+import { SchedyEmptyOpportunities } from "../components/schedy";
 import { SkeletonBlock } from "../components/Skeleton";
 import SubscriptionGateNotice from "../components/SubscriptionGateNotice";
 import { hasUsableBusinessSubscription } from "../lib/subscriptionGate";
@@ -510,7 +510,20 @@ export default function BusinessOpportunities() {
       )}
 
       {opportunities.length === 0 ? (
-        <EmptyState kind="list" title="No opportunities posted yet" description="Create a draft to prepare your next brief, or publish one for verified publishers to discover." mascot="opportunities" compact />
+        <SchedyEmptyOpportunities
+          title="No opportunities posted yet"
+          message="Eish, nothing here yet. Create a draft to prepare your next brief, or publish one for verified publishers to discover."
+        >
+          {subscribed !== false && !showForm && (
+            <button
+              type="button"
+              onClick={() => { resetForm(); setPostError(null); setSuccess(null); setShowForm(true); }}
+              className="font-mono text-xs font-semibold uppercase border-2 border-billboard-ink rounded-lg px-4 py-2.5 bg-billboard-yellow hover:-translate-y-0.5 transition"
+            >
+              + Create opportunity
+            </button>
+          )}
+        </SchedyEmptyOpportunities>
       ) : (
         <div className="space-y-4">
           {opportunities.map((o) => {

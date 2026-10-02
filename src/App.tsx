@@ -13,7 +13,7 @@ import CookieConsentBanner from "./components/CookieConsentBanner";
 import CookieConsentScript from "./components/CookieConsentScript";
 import CtaTracker from "./components/CtaTracker";
 import { SkeletonBlock } from "./components/Skeleton";
-import SchedyLoader from "./components/SchedyLoader";
+import { SchedyLoader } from "./components/schedy";
 import Home from "./pages/Home";
 import Browse from "./pages/Browse";
 import PublisherProfile from "./pages/PublisherProfile";

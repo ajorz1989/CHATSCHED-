@@ -4,6 +4,7 @@ import { supabase } from "../lib/supabase";
 import { formatSupabaseError } from "../lib/supabaseErrors";
 import Seo from "../components/Seo";
 import EmptyState from "../components/EmptyState";
+import { SchedyEmptyOpportunities } from "../components/schedy";
 import { SkeletonBlock } from "../components/Skeleton";
 import SubscriptionGateNotice from "../components/SubscriptionGateNotice";
 import { hasUsablePublisherSubscription } from "../lib/subscriptionGate";
@@ -298,7 +299,10 @@ export default function OpportunityFeed() {
           {error && <p className="text-billboard-red text-xs font-semibold mb-4" role="alert">{error}</p>}
 
           {visible.length === 0 ? (
-            <EmptyState kind="list" title="No open opportunities match your filters" description="Try widening the channel or location filters, or check back when new briefs are posted." compact />
+            <SchedyEmptyOpportunities
+              title="No open opportunities match your filters"
+              message="Eish, nothing matches right now. Try widening the channel or location filters, or check back when new briefs are posted."
+            />
           ) : (
             <div className="space-y-4">
               {visible.map(({ opportunity: o, match }) => {

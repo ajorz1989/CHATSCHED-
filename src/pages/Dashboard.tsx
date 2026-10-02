@@ -20,7 +20,7 @@ import CampaignRollup from "../components/CampaignRollup";
 import ManagedCampaignsSection from "../components/ManagedCampaignsSection";
 import Seo from "../components/Seo";
 import { SkeletonRows, SkeletonBlock } from "../components/Skeleton";
-import EmptyState from "../components/EmptyState";
+import { SchedyEmptyCampaigns } from "../components/schedy";
 import { computeVerificationLevel } from "../lib/businessVerification";
 import TrustBadge from "../components/TrustBadge";
 import { computeBusinessChecklist } from "../lib/onboardingChecklist";
@@ -193,18 +193,14 @@ function BusinessDashboardBody({
             <SkeletonRows count={2} />
           ) : requests.length === 0 ? (
             <div className="border-[3px] border-dashed border-billboard-ink rounded">
-              <EmptyState
-                kind="list"
+              <SchedyEmptyCampaigns
                 title="No requests yet"
-                description="Browse publishers to book your first campaign."
-                mascot="campaigns"
-                compact
-                action={
-                  <Link to="/browse" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition text-sm bg-white">
+                message="Nothing booked yet. Browse publishers to book your first campaign."
+              >
+                <Link to="/browse" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition text-sm bg-white">
                     Browse publishers
                   </Link>
-                }
-              />
+              </SchedyEmptyCampaigns>
             </div>
           ) : (
             <div className="space-y-4">
@@ -222,18 +218,14 @@ function BusinessDashboardBody({
             <SkeletonRows count={1} />
           ) : channelRequests.length === 0 ? (
             <div className="border-[3px] border-dashed border-billboard-ink rounded">
-              <EmptyState
-                kind="list"
+              <SchedyEmptyCampaigns
                 title="No channel campaigns yet"
-                description="Browse influencers, websites, podcasts and radio channels to get started."
-                mascot="campaigns"
-                compact
-                action={
-                  <Link to="/channels" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition text-sm bg-white">
+                message="Nothing booked yet. Browse influencers, websites, podcasts and radio channels to get started."
+              >
+                <Link to="/channels" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition text-sm bg-white">
                     Browse channels
                   </Link>
-                }
-              />
+              </SchedyEmptyCampaigns>
             </div>
           ) : (
             <div className="space-y-4">

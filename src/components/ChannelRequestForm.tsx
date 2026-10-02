@@ -9,6 +9,7 @@ import { getChannelBySlug } from "../lib/channelRegistry";
 import { CREATOR_APPROVAL_WINDOW_DAYS, BUSINESS_PAYMENT_WINDOW_DAYS, CREATOR_PAYOUT_WINDOW_HOURS, PLATFORM_COMMISSION_RATE } from "../lib/constants";
 import { hasUsableBusinessSubscription } from "../lib/subscriptionGate";
 import SubscriptionGateNotice from "./SubscriptionGateNotice";
+import { SchedySticker } from "./schedy";
 import { REQUEST_FIELD_LABELS } from "../lib/channelRequestFieldSchemas";
 import type { Publisher } from "../lib/types";
 
@@ -176,8 +177,9 @@ export default function ChannelRequestForm({ publisher }: { publisher: Publisher
 
   if (sent) {
     return (
-      <div className="border-2 border-billboard-greenDeep bg-[#EAF3EC] text-billboard-greenDeep rounded p-4 text-sm font-semibold">
-        Request sent — {publisher.name} has {CREATOR_APPROVAL_WINDOW_DAYS} days to respond. Track it from your dashboard.
+      <div className="border-2 border-billboard-greenDeep bg-[#EAF3EC] text-billboard-greenDeep rounded p-4 text-sm font-semibold flex items-center gap-3">
+        <SchedySticker name="sharp" size={72} className="shrink-0" />
+        <p>Request sent — {publisher.name} has {CREATOR_APPROVAL_WINDOW_DAYS} days to respond. Track it from your dashboard.</p>
       </div>
     );
   }
