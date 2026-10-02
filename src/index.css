@@ -118,10 +118,3 @@ select:focus-visible {
 .pause-offscreen[data-offscreen="true"] *,
 .pause-offscreen[data-offscreen="true"] *::before,
 .pause-offscreen[data-offscreen="true"] *::after { animation-play-state: paused !important; }
-
-/* Homepage billboard ticker (HomeInventoryWall). Slow, pauses off-screen via
-   .pause-offscreen, and is switched off entirely for reduced-motion users. */
-@keyframes wall-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-.wall-marquee-track { animation: wall-marquee 55s linear infinite; }
-.wall-marquee:hover .wall-marquee-track { animation-play-state: paused; }
-@media (prefers-reduced-motion:reduce) { .wall-marquee-track { animation: none; } }

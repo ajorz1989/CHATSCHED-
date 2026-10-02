@@ -3,8 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { usePublishers } from "../hooks/usePublishers";
 import { usePostOpportunityHref } from "../hooks/usePostOpportunityHref";
-import { usePauseOffscreen } from "../hooks/usePauseOffscreen";
 import PublisherCard from "./PublisherCard";
+import RecentlyViewedStrip from "./RecentlyViewedStrip";
 import PublisherAvatar from "./PublisherAvatar";
 import { PublisherCardSkeleton } from "./Skeleton";
 import EmptyState from "./EmptyState";
@@ -24,8 +24,7 @@ import type { ChannelSlug } from "../lib/channelTypes";
  * section is the logo's billboard (a face on two posts standing on the page
  * baseline), each branch icon is a variant of the logo mark (same 26x22 grid,
  * same square-cut 2.4 stroke, same yellow tile with hard offset shadow), the
- * rail buttons "press in" like the brand buttons, and the strip on top is the
- * billboard's LED ticker.
+ * rail buttons "press in" like the brand buttons.
  *
  * Every number shown comes from approved listings (usePublishers — the same
  * cached query Browse and the rest of the homepage use) or the channel
@@ -120,7 +119,6 @@ export default function HomeInventoryWall() {
   const navigate = useNavigate();
   const postHref = usePostOpportunityHref();
   const { publishers, loading } = usePublishers();
-  const sectionRef = usePauseOffscreen<HTMLElement>();
 
   const [branch, setBranch] = useState<Branch>(initialBranch);
   const [selected, setSelected] = useState<ChannelSlug | "all">("all");
@@ -221,34 +219,15 @@ export default function HomeInventoryWall() {
     },
   ];
 
-  const tickerNames = enabledChannels.map((c) => c.definition.name);
-
   return (
-    <section ref={sectionRef} className="pause-offscreen relative bg-billboard-yellow text-billboard-ink border-b-[3px] border-billboard-ink overflow-hidden" aria-labelledby="inventory-wall-title">
-      {tickerNames.length > 0 && (
-        <div className="wall-marquee bg-billboard-ink text-billboard-yellow border-b-[3px] border-billboard-ink overflow-hidden" aria-hidden="true">
-          <div className="wall-marquee-track flex w-max whitespace-nowrap py-2.5 font-mono text-[11px] sm:text-xs font-bold uppercase tracking-[0.14em]">
-            {[0, 1].map((copy) => (
-              <div key={copy} className="flex shrink-0 items-center">
-                {tickerNames.map((n) => (
-                  <span key={`${copy}-${n}`} className="flex items-center">
-                    <span className="px-5">{n}</span>
-                    <span className="inline-block w-2 h-2 bg-billboard-paper" />
-                  </span>
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <svg viewBox="0 0 26 22" className="hidden lg:block pointer-events-none absolute -right-16 top-24 w-[34rem] text-billboard-ink opacity-[0.07]" fill="none" aria-hidden="true">
+    <section className="relative bg-billboard-yellow text-billboard-ink border-b-[3px] border-billboard-ink overflow-hidden" aria-labelledby="inventory-wall-title">
+      <svg viewBox="0 0 26 22" className="hidden lg:block pointer-events-none absolute -right-16 top-10 w-[34rem] text-billboard-ink opacity-[0.07]" fill="none" aria-hidden="true">
         <rect x="1" y="1" width="24" height="14" stroke="currentColor" strokeWidth="1.2" />
         <line x1="8" y1="15" x2="8" y2="21" stroke="currentColor" strokeWidth="1.2" />
         <line x1="18" y1="15" x2="18" y2="21" stroke="currentColor" strokeWidth="1.2" />
       </svg>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 pt-12 md:pt-16">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 pt-14 md:pt-20">
         <h1 id="inventory-wall-title" className="text-4xl sm:text-5xl md:text-6xl xl:text-7xl leading-[.98] mb-5">
           {t("inventoryWall.title1", { defaultValue: "Buy local attention." })}
           <br />
@@ -285,7 +264,7 @@ export default function HomeInventoryWall() {
                     data-cta={`wall-tab-${tab.id}`}
                     onClick={() => selectBranch(tab.id)}
                     onKeyDown={(e) => onTabKeyDown(e, tab.id)}
-                    className={`group min-w-0 w-full text-left rounded-xl border-[3px] border-billboard-ink p-2.5 lg:p-4 flex flex-col lg:flex-row lg:items-center gap-2.5 lg:gap-4 transition-all duration-150 ${
+                    className={`group min-w-0 w-full text-left rounded-xl border-[3px] border-billboard-ink p-2.5 lg:p-4 flex flex-col lg:flex-row lg:items-center gap-2.5 lg:gap-4 transition-all duration-150 motion-reduce:transition-none motion-reduce:transform-none ${
                       active
                         ? "bg-billboard-ink text-billboard-paper translate-x-[5px] translate-y-[5px] shadow-none"
                         : "bg-billboard-paper text-billboard-ink shadow-[5px_5px_0_#1A1712] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[7px_7px_0_#1A1712]"
@@ -422,7 +401,11 @@ export default function HomeInventoryWall() {
                     )}
                   </div>
 
-                  <div className="mt-7 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  <div className="mt-8">
+                    <RecentlyViewedStrip />
+                  </div>
+
+                  <div className="mt-2 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div className="flex flex-col sm:flex-row gap-3">
                       <Link to={browseHref} data-cta="inventory-wall-browse" className="brand-button yellow">
                         {selected === "all" || !selectedName
@@ -433,9 +416,14 @@ export default function HomeInventoryWall() {
                         {t("inventoryWall.post", { defaultValue: "Post an opportunity" })}
                       </Link>
                     </div>
-                    <button type="button" onClick={() => selectBranch("agency", true)} className="text-left font-bold text-sm underline underline-offset-4 decoration-2 hover:decoration-4">
-                      {t("inventoryWall.preferUs", { defaultValue: "Rather have us handle it? See the agency →" })}
-                    </button>
+                    <div className="flex flex-col items-start md:items-end gap-2">
+                      <button type="button" onClick={() => selectBranch("agency", true)} className="text-left font-bold text-sm underline underline-offset-4 decoration-2 hover:decoration-4">
+                        {t("inventoryWall.preferUs", { defaultValue: "Rather have us handle it? See the agency →" })}
+                      </button>
+                      <Link to="/audience-finder" data-cta="inventory-wall-audience-finder" className="font-bold text-sm underline underline-offset-4 decoration-2 hover:decoration-4">
+                        {t("local.cta", { defaultValue: "Find your local audience →" })}
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </Panel>
