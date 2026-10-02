@@ -8,6 +8,7 @@ import { useAuth } from "../hooks/useAuth";
 import Seo from "../components/Seo";
 import MarketingIcon, { type MarketingIconName } from "../components/MarketingIcon";
 import CategoryIcon from "../components/CategoryIcon";
+import GoalIcon from "../components/GoalIcon";
 import Button from "../components/Button";
 import { WhatsAppChannelIcon } from "../components/PlatformIcons";
 import { CheckIcon, ArrowRightIcon, ArrowLeftIcon, PlusIcon } from "../components/UiIcons";
@@ -875,7 +876,7 @@ export default function BuildMyCampaign() {
                       }
                     >
                       <div>
-                        <MarketingIcon name={goal.icon} className="w-8 h-8 mb-2" />
+                        <GoalIcon id={goal.id} fallback={goal.icon} className="w-14 h-14 mb-3" />
                         <h3 className="font-display text-base font-bold text-billboard-ink mb-1">
                           {goal.title}
                         </h3>
