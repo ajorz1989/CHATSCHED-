@@ -88,10 +88,10 @@ export function HeroTopBand({ loaded = true, children }: { loaded?: boolean; chi
           id="hero-top-title"
           className={`text-4xl sm:text-5xl md:text-7xl leading-[.98] mb-4 transition-all duration-700 ${loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
         >
-          {t("heroBands.top.title1", { defaultValue: "Buy local attention." })}
+          {t("heroBands.top.title1", { defaultValue: "Tell us what you need." })}
           <br />
           <span className="inline-block bg-billboard-yellow text-billboard-ink px-3 sm:px-4 pb-1 mt-2 -rotate-1 box-decoration-clone">
-            {t("heroBands.top.title2", { defaultValue: "Or get paid for yours." })}
+            {t("heroBands.top.title2", { defaultValue: "We build the campaign." })}
           </span>
         </h2>
 

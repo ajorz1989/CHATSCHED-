@@ -36,7 +36,9 @@ describe("HomeInventoryWall", () => {
   it("names all three branches, with no live-inventory tag line", () => {
     mockUsePublishers.mockReturnValue({ loading: false, publishers: [makePublisher({ channel_slug: first })] });
     renderWall();
-    expect(screen.getByRole("heading", { level: 1 })).toBeInTheDocument();
+    const h1 = screen.getByRole("heading", { level: 1 });
+    expect(h1).toHaveTextContent(/Buy local attention\./);
+    expect(h1).toHaveTextContent(/Or get paid for yours\./);
     const tabs = screen.getByRole("tablist");
     expect(within(tabs).getAllByRole("tab")).toHaveLength(3);
     expect(within(tabs).getByRole("tab", { name: /Marketplace/i })).toHaveAttribute("aria-selected", "true");
