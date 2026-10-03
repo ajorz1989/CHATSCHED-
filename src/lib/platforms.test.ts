@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { ALL_PLATFORMS, allPlatformsLabel, platformChoices, countFollowerPlatforms, getTotalFollowers, getAdPlatforms, getFollowersByPlatform, platformHeadline, platformFromOnboardingKey, joinPlatforms } from "./platforms";
+import { getPackagePrice, ALL_PLATFORMS, allPlatformsLabel, platformChoices, countFollowerPlatforms, getTotalFollowers, getAdPlatforms, getFollowersByPlatform, platformHeadline, platformFromOnboardingKey, joinPlatforms } from "./platforms";
 import type { Publisher } from "./types";
 
 type P = Pick<Publisher, "platforms" | "channel_slug" | "channel_metadata">;
@@ -54,5 +54,11 @@ describe("platforms", () => {
     expect(multi.map((c) => c.value)).toEqual(["Instagram", "Facebook Page", "TikTok", ALL_PLATFORMS]);
     expect(multi[3].label).toBe("All 3 platforms — package");
     expect(allPlatformsLabel(["Instagram", "TikTok"])).toBe("All platforms (Instagram and TikTok)");
+  });
+
+  it("reads the all-platforms package price from onboarding metadata", () => {
+    expect(getPackagePrice(base({ channel_metadata: { allPlatformsPackagePrice: 2500 } }))).toBe(2500);
+    expect(getPackagePrice(base({ channel_metadata: {} }))).toBeNull();
+    expect(getPackagePrice(base({ channel_slug: "radio", channel_metadata: { allPlatformsPackagePrice: 2500 } }))).toBeNull();
   });
 });

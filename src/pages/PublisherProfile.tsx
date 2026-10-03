@@ -23,7 +23,7 @@ import { formatCurrency } from "../lib/currency";
 import { fetchReviewAuthors } from "../lib/businessContact";
 import RateCardDisplay from "../components/RateCardDisplay";
 import AdPlatformSection from "../components/AdPlatformSection";
-import { ALL_PLATFORMS, allPlatformsLabel, getAdPlatforms, getTotalFollowers, platformChoices } from "../lib/platforms";
+import { ALL_PLATFORMS, allPlatformsLabel, getAdPlatforms, getPackagePrice, getTotalFollowers, platformChoices } from "../lib/platforms";
 import PublisherCard from "../components/PublisherCard";
 
 // 12-Channel Audit fix C4 — same set as PublisherCard.tsx's own copy; see
@@ -660,7 +660,7 @@ export default function PublisherProfile() {
                       )}
                       {adPlatform === ALL_PLATFORMS && (
                         <p className="text-[11px] text-billboard-inkSoft mt-1.5">
-                          One request covers {allPlatformsLabel(adPlatforms).replace("All platforms ", "")}. {publisher.name} will confirm the package price — see the package line under "Where your ad runs".
+                          One request covers {allPlatformsLabel(adPlatforms).replace("All platforms ", "")}. {getPackagePrice(publisher) != null ? `The publisher\u2019s package price is ${formatCurrency(getPackagePrice(publisher) as number)}.` : `${publisher.name} will confirm the package price.`}
                         </p>
                       )}
                     </div>
@@ -730,7 +730,7 @@ export default function PublisherProfile() {
                         3. Proposed Budget (ZAR)
                       </label>
                       <span className="text-[11px] text-billboard-inkSoft font-mono">
-                        Rate: {formatCurrency(publisher.price_per_post)}
+                        {adPlatform === ALL_PLATFORMS && getPackagePrice(publisher) != null ? `Package: ${formatCurrency(getPackagePrice(publisher) as number)}` : `Rate: ${formatCurrency(publisher.price_per_post)}`}
                       </span>
                     </div>
                     <input
@@ -738,7 +738,7 @@ export default function PublisherProfile() {
                       min={1}
                       value={budget}
                       onChange={(e) => setBudget(e.target.value)}
-                      placeholder={`e.g. ${publisher.price_per_post}`}
+                      placeholder={`e.g. ${adPlatform === ALL_PLATFORMS ? getPackagePrice(publisher) ?? publisher.price_per_post : publisher.price_per_post}`}
                       className="w-full border-2 border-billboard-ink rounded px-3 py-2 bg-white text-xs"
                     />
                   </div>

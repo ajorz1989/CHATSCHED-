@@ -143,6 +143,7 @@ interface FormState {
   smFollowerCounts: string; // "facebook:1200, instagram:3400" — parsed into Record<string,number> on submit
   smBestFormat: string;
   smPostsPerWeek: string;
+  packagePrice: string; // optional all-platforms package price (ZAR), social media on 2+ platforms
   smAudienceCountry: string;
   webDomain: string;
   webMonthlyVisitors: string;
@@ -217,7 +218,7 @@ const initialState: FormState = {
   podcastDownloads: "", podcastFrequency: "", podcastEpisodeLength: "", podcastHostingPlatform: "", podcastAdSlots: [], podcastRegions: "", podcastShowUrl: "", podcastPeakTimes: "",
   retailFootTraffic: "", retailTradingHours: "", retailHasTill: false, retailHasWhatsapp: false, retailWhatsappSize: "", retailLandmark: "", retailPriceMin: "", retailPriceMax: "", retailPeakHours: "", retailMunicipalRegistrationConfirmed: false,
   sportsSport: "", sportsLevel: "", sportsLeague: "", sportsSeason: "", sportsSquadSize: "", sportsAttendance: "", sportsVenue: "", sportsAuthorityRole: "",
-  smPrimaryPlatform: "", smSecondaryPlatforms: [], smSocialLinks: {}, smFollowerCounts: "", smBestFormat: "", smPostsPerWeek: "", smAudienceCountry: "",
+  smPrimaryPlatform: "", smSecondaryPlatforms: [], smSocialLinks: {}, smFollowerCounts: "", smBestFormat: "", smPostsPerWeek: "", smAudienceCountry: "", packagePrice: "",
   webDomain: "", webMonthlyVisitors: "", webNiche: "", webCms: "", webPlacements: [], webAvgSessionSeconds: "",
   infPrimaryPlatform: "", infNiche: "", infContentFormats: [], infEngagementRate: "", infPastCollabs: "", infOffersUsageRights: false,
   radioStationName: "", radioFrequency: "", radioCoverageArea: "", radioLanguages: "", radioListenership: "", radioSlotLengths: [], radioShowSponsorship: false, radioIcasaLicence: "", radioPeakTimes: "",
@@ -289,6 +290,7 @@ function buildChannelMetadata(channelSlug: ChannelSlug, form: FormState): Record
       bestPerformingFormat: (form.smBestFormat || "static_post") as SocialMediaOnboardingFields["bestPerformingFormat"],
       postsPerWeek: Number(form.smPostsPerWeek) || 0,
       audienceCountry: form.smAudienceCountry || "South Africa",
+      ...(Number(form.packagePrice) > 0 && form.platforms.length > 1 ? { allPlatformsPackagePrice: Number(form.packagePrice) } : {}),
     };
     return fields as unknown as Record<string, unknown>;
   }
@@ -443,6 +445,7 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
   // Admin creation opens directly on the editable profile step; public applications retain the eligibility gate.
   const [step, setStep] = useState<Step>(() => adminMode ? (startStep ?? "details") : "eligibility");
   const [form, setForm] = useState<FormState>(initialState);
+  const packagePriceTooLow = channelSlug === "social-media" && form.platforms.length > 1 && Number(form.packagePrice) > 0 && Number(form.packagePrice) < (Number(form.pricePerPost) || MIN_PRICE_PER_POST);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // 12-Channel Audit fix A1/B1 — proof-of-claim upload, gated to channels
@@ -1626,10 +1629,24 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
               placeholder={`Minimum ${formatCurrency(MIN_PRICE_PER_POST)}`}
               className={inputClass}
             />
-            {form.platforms.length > 1 && (
-              <p className="text-xs text-billboard-inkSoft mt-1.5">
-                This is your price for a post on <strong>one</strong> platform. Businesses can also book all {form.platforms.length} of your platforms as a package — after approval, add an "All platforms" line to your rate card in your dashboard to set that price.
-              </p>
+            {channelSlug === "social-media" && form.platforms.length > 1 && (
+              <div className="mt-4 border-2 border-billboard-ink rounded p-3 bg-billboard-paperDim">
+                <label className={labelClass}>All-platforms package price (ZAR) — optional</label>
+                <p className="text-xs text-billboard-inkSoft mb-2">
+                  The price above is for a post on <strong>one</strong> platform. Businesses can also book all {form.platforms.length} of your platforms ({form.platforms.join(", ")}) as one package. What do you charge for that? Leave blank and businesses will see "price on request".
+                </p>
+                <input
+                  type="number" min={Number(form.pricePerPost) || MIN_PRICE_PER_POST} value={form.packagePrice}
+                  onChange={(e) => update("packagePrice", e.target.value)}
+                  placeholder={`At least ${formatCurrency(Number(form.pricePerPost) || MIN_PRICE_PER_POST)}`}
+                  className={inputClass}
+                />
+                {packagePriceTooLow && (
+                  <p className="text-billboard-red text-xs font-semibold mt-1.5">
+                    The package covers {form.platforms.length} platforms, so it can't be less than your single-platform price of {formatCurrency(Number(form.pricePerPost))}.
+                  </p>
+                )}
+              </div>
             )}
             {Number(form.pricePerPost) > 0 && Number(form.pricePerPost) < MIN_PRICE_PER_POST && (
               <p className="text-billboard-red text-xs font-semibold mt-1.5">Price must be at least {formatCurrency(MIN_PRICE_PER_POST)}.</p>
@@ -1672,7 +1689,7 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
             <button onClick={() => setStep("details")} className={backClass}>Back</button>
             <button
               onClick={() => setStep(LOW_BARRIER_CHANNELS.includes(channelSlug) ? "review" : "business")}
-              disabled={!adminMode && Number(form.pricePerPost) < MIN_PRICE_PER_POST}
+              disabled={!adminMode && (Number(form.pricePerPost) < MIN_PRICE_PER_POST || packagePriceTooLow)}
               className={`${continueClass} disabled:opacity-60`}
             >
               Continue

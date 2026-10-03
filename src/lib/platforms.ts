@@ -142,3 +142,9 @@ export function platformChoices(platforms: Platform[]): Array<{ value: string; l
   if (platforms.length < 2) return singles;
   return [...singles, { value: ALL_PLATFORMS, label: `All ${platforms.length} platforms — package` }];
 }
+
+/** The publisher's own all-platforms package price from onboarding, if they set one. */
+export function getPackagePrice(publisher: Pick<Publisher, "channel_slug" | "channel_metadata">): number | null {
+  const price = Number(getSocialMediaMetadata(publisher)?.allPlatformsPackagePrice);
+  return Number.isFinite(price) && price > 0 ? price : null;
+}

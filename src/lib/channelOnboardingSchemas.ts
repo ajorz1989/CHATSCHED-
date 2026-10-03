@@ -109,6 +109,8 @@ export interface SocialMediaOnboardingFields {
   bestPerformingFormat: SocialMediaContentFormat;
   postsPerWeek: number;
   audienceCountry: string; // most pages are SA-focused, but not assumed — free text, not hardcoded to South Africa
+  /** ZAR price for one booking that runs the ad on every platform listed (primary + secondary). Optional: only asked of publishers on 2+ platforms. */
+  allPlatformsPackagePrice?: number;
 }
 
 // ── Website ──────────────────────────────────────────────────────────────

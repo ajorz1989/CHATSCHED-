@@ -2,7 +2,7 @@ import type { Platform, Publisher } from "../lib/types";
 import { PLATFORM_ICONS } from "./PlatformIcons";
 import { formatCurrency } from "../lib/currency";
 import { useRateCardItems } from "../hooks/useRateCardItems";
-import { ALL_PLATFORMS, countFollowerPlatforms, getFollowersByPlatform, getProfileUrlForPlatform, getTotalFollowers, platformHeadline } from "../lib/platforms";
+import { ALL_PLATFORMS, countFollowerPlatforms, getPackagePrice, getFollowersByPlatform, getProfileUrlForPlatform, getTotalFollowers, platformHeadline } from "../lib/platforms";
 
 function formatFollowers(n: number) {
   if (n >= 1000) return (n / 1000).toFixed(n % 1000 === 0 ? 0 : 1) + "k";
@@ -77,7 +77,11 @@ export default function AdPlatformSection({ publisher, platforms }: { publisher:
                 <p className="text-xs text-billboard-inkSoft">One booking that runs your ad on every platform above.</p>
               </div>
               <p className="font-mono text-xs font-semibold text-billboard-greenDeep shrink-0">
-                {pkg.length > 0 ? `from ${formatCurrency(Math.min(...pkg))}` : "price on request"}
+                {pkg.length > 0
+                  ? `from ${formatCurrency(Math.min(...pkg))}`
+                  : getPackagePrice(publisher) != null
+                    ? formatCurrency(getPackagePrice(publisher) as number)
+                    : "price on request"}
               </p>
             </div>
           );
