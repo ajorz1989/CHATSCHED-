@@ -23,7 +23,7 @@ import { formatCurrency } from "../lib/currency";
 import { fetchReviewAuthors } from "../lib/businessContact";
 import RateCardDisplay from "../components/RateCardDisplay";
 import AdPlatformSection from "../components/AdPlatformSection";
-import { getAdPlatforms, getTotalFollowers } from "../lib/platforms";
+import { ALL_PLATFORMS, allPlatformsLabel, getAdPlatforms, getTotalFollowers, platformChoices } from "../lib/platforms";
 import PublisherCard from "../components/PublisherCard";
 
 // 12-Channel Audit fix C4 — same set as PublisherCard.tsx's own copy; see
@@ -298,7 +298,7 @@ export default function PublisherProfile() {
     const requestPlatforms = getAdPlatforms(publisher);
     const resolvedPlatform = requestPlatforms.length === 1 ? requestPlatforms[0] : adPlatform;
     if (requestPlatforms.length > 1 && !resolvedPlatform) {
-      setFormError("Please choose which platform you want your ad to run on.");
+      setFormError("Please choose a platform, or the all-platforms package, for your ad.");
       return;
     }
 
@@ -306,7 +306,7 @@ export default function PublisherProfile() {
     setFormError(null);
 
     const formattedMessage = [
-      resolvedPlatform ? `Platform: ${resolvedPlatform}${requestPlatforms.length === 1 ? " (only)" : ""}` : null,
+      resolvedPlatform ? `Platform: ${resolvedPlatform === ALL_PLATFORMS ? allPlatformsLabel(requestPlatforms) : resolvedPlatform}${requestPlatforms.length === 1 ? " (only)" : ""}` : null,
       `Goal: ${resolvedGoal}`,
       `Target Dates: ${resolvedDates}`,
       `Deliverables: ${resolvedDeliverables}`,
@@ -597,7 +597,7 @@ export default function PublisherProfile() {
                   ChatSched is reviewing your brief and will coordinate directly with <strong>{publisher.name}</strong>.
                 </p>
                 <div className="border-2 border-billboard-green/40 rounded p-3 bg-white text-xs text-billboard-inkSoft mb-4 space-y-1">
-                  {adPlatforms.length > 0 && <p><strong className="text-billboard-ink">Platform:</strong> {adPlatforms.length === 1 ? adPlatforms[0] : adPlatform}</p>}
+                  {adPlatforms.length > 0 && <p><strong className="text-billboard-ink">Platform:</strong> {adPlatforms.length === 1 ? adPlatforms[0] : adPlatform === ALL_PLATFORMS ? allPlatformsLabel(adPlatforms) : adPlatform}</p>}
                   <p><strong className="text-billboard-ink">Goal:</strong> {goal === "Other (Custom)" && customGoal ? customGoal : goal}</p>
                   <p><strong className="text-billboard-ink">Dates:</strong> {targetDates === "Specific dates" && customDates ? customDates : targetDates}</p>
                   <p><strong className="text-billboard-ink">Deliverables:</strong> {deliverables === "Custom Deliverable" && customDeliverables ? customDeliverables : deliverables}</p>
@@ -639,7 +639,7 @@ export default function PublisherProfile() {
                   {adPlatforms.length > 0 && (
                     <div>
                       <label className="block text-xs font-semibold uppercase tracking-wide mb-1">
-                        Platform for your ad
+                        Platform or package for your ad
                       </label>
                       {adPlatforms.length === 1 ? (
                         <p className="text-xs border-2 border-billboard-ink rounded px-3 py-2 bg-billboard-yellow font-semibold">
@@ -652,11 +652,16 @@ export default function PublisherProfile() {
                           required
                           className="w-full border-2 border-billboard-ink rounded px-3 py-2 bg-white text-xs"
                         >
-                          <option value="">Choose a platform…</option>
-                          {adPlatforms.map((p) => (
-                            <option key={p} value={p}>{p}</option>
+                          <option value="">Choose a platform or package…</option>
+                          {platformChoices(adPlatforms).map((c) => (
+                            <option key={c.value} value={c.value}>{c.label}</option>
                           ))}
                         </select>
+                      )}
+                      {adPlatform === ALL_PLATFORMS && (
+                        <p className="text-[11px] text-billboard-inkSoft mt-1.5">
+                          One request covers {allPlatformsLabel(adPlatforms).replace("All platforms ", "")}. {publisher.name} will confirm the package price — see the package line under "Where your ad runs".
+                        </p>
                       )}
                     </div>
                   )}

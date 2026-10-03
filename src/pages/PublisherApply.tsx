@@ -1626,6 +1626,11 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
               placeholder={`Minimum ${formatCurrency(MIN_PRICE_PER_POST)}`}
               className={inputClass}
             />
+            {form.platforms.length > 1 && (
+              <p className="text-xs text-billboard-inkSoft mt-1.5">
+                This is your price for a post on <strong>one</strong> platform. Businesses can also book all {form.platforms.length} of your platforms as a package — after approval, add an "All platforms" line to your rate card in your dashboard to set that price.
+              </p>
+            )}
             {Number(form.pricePerPost) > 0 && Number(form.pricePerPost) < MIN_PRICE_PER_POST && (
               <p className="text-billboard-red text-xs font-semibold mt-1.5">Price must be at least {formatCurrency(MIN_PRICE_PER_POST)}.</p>
             )}

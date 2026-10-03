@@ -5,6 +5,7 @@ import { MIN_PRICE_PER_POST } from "../lib/pricingEngine";
 import { PLATFORM_COMMISSION_RATE, PUBLISHER_SHARE } from "../lib/constants";
 import { formatCurrency } from "../lib/currency";
 import type { Platform, PublisherRateCard } from "../lib/types";
+import { platformChoices } from "../lib/platforms";
 
 const MAX_ITEMS = 8;
 
@@ -40,7 +41,7 @@ export default function RateCardManager({ publisherId, platforms = [], onChange 
       return;
     }
     if (platforms.length > 0 && !platform) {
-      setError("Choose which platform this price is for.");
+      setError("Choose which platform this price is for — or \"All platforms\" for a package.");
       return;
     }
     setSaving(true);
@@ -93,7 +94,7 @@ export default function RateCardManager({ publisherId, platforms = [], onChange 
             <div key={item.id} className="flex items-center justify-between gap-3 border-2 border-billboard-ink/15 rounded px-3 py-2">
               <div className="min-w-0">
                 <p className="text-sm font-semibold">{item.label} <span className="font-mono text-billboard-greenDeep">{formatCurrency(item.price)}</span></p>
-                <p className="font-mono text-[10px] uppercase text-billboard-greenDeep">{item.platform ?? "Any platform — edit by removing and re-adding with a platform"}</p>
+                <p className="font-mono text-[10px] uppercase text-billboard-greenDeep">{item.platform === "All platforms" ? "All platforms — package" : item.platform ?? "Any platform — edit by removing and re-adding with a platform"}</p>
                 {item.description && <p className="text-xs text-billboard-inkSoft">{item.description}</p>}
               </div>
               <button
@@ -121,7 +122,7 @@ export default function RateCardManager({ publisherId, platforms = [], onChange 
               <label className="block text-[10px] font-mono uppercase text-billboard-inkSoft mb-1">Platform</label>
               <select value={platform} onChange={(e) => setPlatform(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-2.5 py-1.5 text-sm bg-white">
                 <option value="">Choose a platform…</option>
-                {platforms.map((p) => <option key={p} value={p}>{p}</option>)}
+                {platformChoices(platforms).map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
               </select>
             </div>
           )}

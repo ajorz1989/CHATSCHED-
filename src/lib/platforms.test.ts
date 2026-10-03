@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { countFollowerPlatforms, getTotalFollowers, getAdPlatforms, getFollowersByPlatform, platformHeadline, platformFromOnboardingKey, joinPlatforms } from "./platforms";
+import { ALL_PLATFORMS, allPlatformsLabel, platformChoices, countFollowerPlatforms, getTotalFollowers, getAdPlatforms, getFollowersByPlatform, platformHeadline, platformFromOnboardingKey, joinPlatforms } from "./platforms";
 import type { Publisher } from "./types";
 
 type P = Pick<Publisher, "platforms" | "channel_slug" | "channel_metadata">;
@@ -46,5 +46,13 @@ describe("platforms", () => {
     const p = { ...base({ platforms: ["WhatsApp Channel"], channel_metadata: { followerCountByPlatform: {} } }), followers: 49997 };
     expect(getTotalFollowers(p)).toBe(49997);
     expect(countFollowerPlatforms(p)).toBe(0);
+  });
+
+  it("offers an all-platforms package only when there is more than one platform", () => {
+    expect(platformChoices(["WhatsApp Channel"]).map((c) => c.value)).toEqual(["WhatsApp Channel"]);
+    const multi = platformChoices(["Instagram", "Facebook Page", "TikTok"]);
+    expect(multi.map((c) => c.value)).toEqual(["Instagram", "Facebook Page", "TikTok", ALL_PLATFORMS]);
+    expect(multi[3].label).toBe("All 3 platforms — package");
+    expect(allPlatformsLabel(["Instagram", "TikTok"])).toBe("All platforms (Instagram and TikTok)");
   });
 });

@@ -10,8 +10,8 @@ export interface PublisherRateCard {
   label: string;
   price: number;
   description: string | null;
-  /** Which platform this price is for; null on legacy items from before per-platform pricing. */
-  platform: Platform | null;
+  /** Which platform this price is for, or "All platforms" for a package covering every platform; null on legacy items from before per-platform pricing. */
+  platform: Platform | "All platforms" | null;
   sort_order: number;
   created_at: string;
 }

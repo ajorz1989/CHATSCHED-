@@ -2,7 +2,7 @@ import type { Platform, Publisher } from "../lib/types";
 import { PLATFORM_ICONS } from "./PlatformIcons";
 import { formatCurrency } from "../lib/currency";
 import { useRateCardItems } from "../hooks/useRateCardItems";
-import { countFollowerPlatforms, getFollowersByPlatform, getProfileUrlForPlatform, getTotalFollowers, platformHeadline } from "../lib/platforms";
+import { ALL_PLATFORMS, countFollowerPlatforms, getFollowersByPlatform, getProfileUrlForPlatform, getTotalFollowers, platformHeadline } from "../lib/platforms";
 
 function formatFollowers(n: number) {
   if (n >= 1000) return (n / 1000).toFixed(n % 1000 === 0 ? 0 : 1) + "k";
@@ -33,7 +33,7 @@ export default function AdPlatformSection({ publisher, platforms }: { publisher:
       <p className="text-xs text-billboard-inkSoft mb-3">
         {single
           ? `${publisher.name} sells advertising on ${platforms[0]} only. Your ad will not appear anywhere else.`
-          : `${publisher.name} sells advertising on these platforms. Choose which one you want when you send your request.`}
+          : `${publisher.name} sells advertising on these platforms. Choose one platform, or the all-platforms package, when you send your request.`}
       </p>
       {breakdownCount > 1 && (
         <p className="text-sm font-semibold mb-2 border-2 border-billboard-ink rounded px-3 py-2 bg-billboard-yellow">
@@ -67,6 +67,21 @@ export default function AdPlatformSection({ publisher, platforms }: { publisher:
             </div>
           );
         })}
+        {(() => {
+          const pkg = (rateCards ?? []).filter((r) => r.platform === ALL_PLATFORMS).map((r) => r.price);
+          if (platforms.length < 2) return null;
+          return (
+            <div className="flex items-center justify-between gap-3 border-2 border-billboard-ink rounded px-3 py-2.5 bg-billboard-yellow">
+              <div className="min-w-0">
+                <p className="text-sm font-bold leading-tight">All {platforms.length} platforms — package</p>
+                <p className="text-xs text-billboard-inkSoft">One booking that runs your ad on every platform above.</p>
+              </div>
+              <p className="font-mono text-xs font-semibold text-billboard-greenDeep shrink-0">
+                {pkg.length > 0 ? `from ${formatCurrency(Math.min(...pkg))}` : "price on request"}
+              </p>
+            </div>
+          );
+        })()}
       </div>
     </section>
   );

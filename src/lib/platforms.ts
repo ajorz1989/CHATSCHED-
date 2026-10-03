@@ -123,3 +123,22 @@ export function joinPlatforms(platforms: Platform[]): string {
 export function sellsOnSocialPlatforms(publisher: Pick<Publisher, "platforms" | "channel_slug" | "channel_metadata">): boolean {
   return getAdPlatforms(publisher).length > 0;
 }
+
+/**
+ * Value used for "one booking that covers every platform the publisher sells
+ * on" — a package. Used by the request forms (as the chosen platform) and by
+ * rate cards (as the platform a package price belongs to).
+ */
+export const ALL_PLATFORMS = "All platforms" as const;
+
+/** Text written into a request / shown on a rate card line for the package. */
+export function allPlatformsLabel(platforms: Platform[]): string {
+  return `${ALL_PLATFORMS} (${joinPlatforms(platforms)})`;
+}
+
+/** The "pick a platform or the package" options, in display order. */
+export function platformChoices(platforms: Platform[]): Array<{ value: string; label: string }> {
+  const singles = platforms.map((p) => ({ value: p as string, label: p as string }));
+  if (platforms.length < 2) return singles;
+  return [...singles, { value: ALL_PLATFORMS, label: `All ${platforms.length} platforms — package` }];
+}

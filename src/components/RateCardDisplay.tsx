@@ -34,7 +34,7 @@ export default function RateCardDisplay({ publisherId, fallbackPrice, platforms 
           <div key={item.id} className="flex items-baseline justify-between gap-2 border-t border-billboard-ink/10 pt-1.5 first:border-t-0 first:pt-0">
             <div className="min-w-0">
               <p className="text-sm font-semibold leading-tight">{item.label}</p>
-              <p className="font-mono text-[10px] uppercase text-billboard-greenDeep leading-tight">{item.platform ?? "Any platform"}</p>
+              <p className="font-mono text-[10px] uppercase text-billboard-greenDeep leading-tight">{item.platform === "All platforms" ? "All platforms — package" : item.platform ?? "Any platform"}</p>
               {item.description && <p className="text-xs text-billboard-inkSoft leading-tight">{item.description}</p>}
             </div>
             <p className="font-mono text-sm font-semibold text-billboard-greenDeep shrink-0">{formatCurrency(item.price)}</p>
