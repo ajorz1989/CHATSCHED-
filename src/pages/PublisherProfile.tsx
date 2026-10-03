@@ -625,8 +625,8 @@ export default function PublisherProfile() {
                 <fieldset disabled={!subscriptionChecked || !canUseBusinessFeature} className="border-0 p-0 m-0 min-w-0 disabled:opacity-50 space-y-3">
                   <div className="border-b-2 border-billboard-ink/10 pb-2.5">
                     <div className="flex items-center justify-between gap-2 mb-1">
-                      <h3 className="font-display text-base">Start Campaign Request</h3>
-                      <span className="bg-billboard-greenDeep text-white text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded">
+                      <h3 className="font-display text-base min-w-0">Start Campaign Request</h3>
+                      <span className="shrink-0 whitespace-nowrap bg-billboard-greenDeep text-white text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded">
                         Managed
                       </span>
                     </div>
