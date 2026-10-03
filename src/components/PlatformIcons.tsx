@@ -8,105 +8,49 @@
  * that came with the download. The marks are the platforms' own logos, used
  * here only to identify the platform a publisher sells ads on.
  *
- * Every icon is a single-colour glyph drawn in `currentColor`, in a fixed
- * 20x20 box (same footprint as the old badge icons), so they inherit the
- * surrounding ink colour and line up with text at any size. Facebook Page and
- * Facebook Group share the Facebook mark; the name written next to the icon
- * is what tells them apart, so no caller relies on the icon alone.
+ * The path data lives in lib/platformIconPaths.ts so the PDF media kit draws
+ * exactly the same artwork. Every icon is a single-colour glyph drawn in
+ * `currentColor`, in a fixed 20x20 box, so they inherit the surrounding ink
+ * colour and line up with text at any size. Facebook Page and Facebook Group
+ * share the Facebook mark; the name written next to the icon is what tells
+ * them apart, so no caller relies on the icon alone.
  */
-import type { ComponentType, ReactNode } from "react";
+import type { ComponentType } from "react";
+import { ICON_PATHS, type IconKey } from "../lib/platformIconPaths";
 
-function Glyph({ viewBox, label, children }: { viewBox: string; label: string; children: ReactNode }) {
-  return (
-    <svg
-      viewBox={viewBox}
-      width="20"
-      height="20"
-      fill="currentColor"
-      role="img"
-      aria-label={label}
-      className="inline-block w-5 h-5 shrink-0 align-middle"
-    >
-      {children}
-    </svg>
-  );
+function makeIcon(key: IconKey): ComponentType {
+  const { viewBox, paths } = ICON_PATHS[key];
+  function Icon() {
+    return (
+      <svg
+        viewBox={viewBox}
+        width="20"
+        height="20"
+        fill="currentColor"
+        role="img"
+        aria-label={key}
+        className="inline-block w-5 h-5 shrink-0 align-middle"
+      >
+        {paths.map((path) => (
+          <path key={path.d} fillRule={path.evenodd ? "evenodd" : "nonzero"} d={path.d} />
+        ))}
+      </svg>
+    );
+  }
+  Icon.displayName = `${key}Icon`;
+  return Icon;
 }
 
-function YouTubeGlyph() {
-  return (
-    <Glyph viewBox="199 202 325 325" label="YouTube">
-      <path fillRule="nonzero" d="M 332.4 408.8 L 332.4 320.2 L 409.1 364.5 Z M 503.4 293.4 C 500 280.7 490 270.7 477.3 267.3 C 454.3 261.1 361.9 261.1 361.9 261.1 C 361.9 261.1 269.6 261.1 246.6 267.3 C 233.8 270.7 223.8 280.7 220.4 293.4 C 214.3 316.4 214.3 364.5 214.3 364.5 C 214.3 364.5 214.3 412.5 220.4 435.6 C 223.8 448.3 233.8 458.3 246.6 461.7 C 269.6 467.9 361.9 467.9 361.9 467.9 C 361.9 467.9 454.3 467.9 477.3 461.7 C 490 458.3 500 448.3 503.4 435.6 C 509.6 412.5 509.6 364.5 509.6 364.5 C 509.6 364.5 509.6 316.4 503.4 293.4" />
-    </Glyph>
-  );
-}
-
-function FacebookGlyph() {
-  return (
-    <Glyph viewBox="768 203 324 324" label="Facebook">
-      <path fillRule="nonzero" d="M 1077.1 365 C 1077.1 283.8 1011.3 217.9 930 217.9 C 848.8 217.9 783 283.8 783 365 C 783 434 830.4 491.9 894.5 507.8 L 894.5 410 L 864.1 410 L 864.1 365 L 894.5 365 L 894.5 345.6 C 894.5 295.6 917.1 272.4 966.3 272.4 C 975.6 272.4 991.6 274.2 998.2 276 L 998.2 316.8 C 994.7 316.4 988.7 316.2 981.2 316.2 C 957.1 316.2 947.8 325.4 947.8 349.1 L 947.8 365 L 995.9 365 L 987.6 409.9 L 947.9 409.9 L 947.9 511 C 1020.7 502.2 1077.1 440.2 1077.1 365" />
-    </Glyph>
-  );
-}
-
-function InstagramGlyph() {
-  return (
-    <Glyph viewBox="1337 203 322 322" label="Instagram">
-      <path fillRule="nonzero" d="M 1576.3 268.7 C 1566.6 268.7 1558.8 276.5 1558.8 286.3 C 1558.8 296 1566.6 303.8 1576.3 303.8 C 1586.1 303.8 1593.9 296 1593.9 286.3 C 1593.9 276.5 1586.1 268.7 1576.3 268.7 Z M 1498.1 413.3 C 1471.1 413.3 1449.3 391.5 1449.3 364.5 C 1449.3 337.5 1471.1 315.6 1498.1 315.6 C 1525.1 315.6 1547 337.5 1547 364.5 C 1547 391.5 1525.1 413.3 1498.1 413.3 Z M 1498.1 289.2 C 1456.6 289.2 1422.9 322.9 1422.9 364.5 C 1422.9 406 1456.6 439.7 1498.1 439.7 C 1539.7 439.7 1573.4 406 1573.4 364.5 C 1573.4 322.9 1539.7 289.2 1498.1 289.2 Z M 1498.1 217.9 C 1458.3 217.9 1453.3 218.1 1437.7 218.8 C 1425.5 219.1 1413.5 221.4 1402.1 225.6 C 1392.4 229.3 1383.5 235.1 1376.2 242.5 C 1368.7 249.9 1362.9 258.7 1359.3 268.5 C 1355 279.9 1352.7 291.9 1352.5 304.1 C 1351.7 319.7 1351.6 324.7 1351.6 364.5 C 1351.6 404.3 1351.8 409.3 1352.5 424.9 C 1352.7 437 1355 449.1 1359.3 460.5 C 1362.9 470.2 1368.7 479.1 1376.2 486.4 C 1383.5 493.9 1392.4 499.6 1402.1 503.3 C 1413.5 507.6 1425.5 509.9 1437.7 510.1 C 1453.3 510.8 1458.3 511 1498.1 511 C 1537.9 511 1542.9 510.8 1558.5 510.1 C 1570.7 509.9 1582.7 507.6 1594.1 503.3 C 1613.8 495.7 1629.4 480.1 1637 460.5 C 1641.2 449.1 1643.5 437 1643.8 424.9 C 1644.5 409.3 1644.7 404.3 1644.7 364.5 C 1644.7 324.7 1644.5 319.7 1643.8 304.1 C 1643.5 291.9 1641.2 279.9 1637 268.5 C 1633.3 258.7 1627.5 249.8 1620.1 242.5 C 1612.7 235.1 1603.9 229.3 1594.1 225.6 C 1582.7 221.4 1570.7 219.1 1558.5 218.8 C 1542.9 218.1 1537.9 217.9 1498.1 217.9 Z M 1498.1 244.3 C 1537.2 244.3 1541.9 244.5 1557.3 245.2 C 1566.6 245.3 1575.8 247 1584.5 250.2 C 1590.9 252.6 1596.7 256.3 1601.4 261.2 C 1606.3 265.9 1610 271.7 1612.4 278.1 C 1615.6 286.8 1617.3 296 1617.4 305.3 C 1618.1 320.7 1618.3 325.4 1618.3 364.5 C 1618.3 403.6 1618.1 408.2 1617.4 423.7 C 1617.3 433 1615.6 442.2 1612.4 450.9 C 1607.4 463.7 1597.3 473.8 1584.5 478.7 C 1575.8 481.9 1566.6 483.6 1557.3 483.8 C 1541.9 484.5 1537.2 484.6 1498.1 484.6 C 1459 484.6 1454.4 484.5 1438.9 483.8 C 1429.6 483.6 1420.4 481.9 1411.7 478.7 C 1405.3 476.4 1399.6 472.6 1394.8 467.7 C 1390 463 1386.2 457.3 1383.9 450.9 C 1380.7 442.2 1378.9 433 1378.8 423.7 C 1378.1 408.2 1378 403.6 1378 364.5 C 1378 325.4 1378.1 320.7 1378.8 305.3 C 1378.9 296 1380.7 286.8 1383.9 278.1 C 1386.2 271.7 1390 265.9 1394.8 261.2 C 1399.6 256.3 1405.3 252.6 1411.7 250.2 C 1420.4 247 1429.6 245.3 1438.9 245.2 C 1454.4 244.5 1459 244.3 1498.1 244.3" />
-    </Glyph>
-  );
-}
-
-function XGlyph() {
-  return (
-    <Glyph viewBox="2465 195 338 338" label="X">
-      <path fillRule="nonzero" d="M 2706.2 475.2 L 2732.3 475.2 L 2563.7 252.3 L 2535.6 252.3 Z M 2722.7 225.5 L 2769.8 225.5 L 2666.8 343.2 L 2788 503.4 L 2693.1 503.4 L 2618.8 406.3 L 2533.8 503.4 L 2486.7 503.4 L 2596.8 377.5 L 2480.6 225.5 L 2577.9 225.5 L 2645 314.3 L 2722.7 225.5" />
-    </Glyph>
-  );
-}
-
-function LinkedInGlyph() {
-  return (
-    <Glyph viewBox="204 774 317 317" label="LinkedIn">
-      <path fillRule="nonzero" d="M 461.6 1032.2 L 417.3 1032.2 L 417.3 959.4 C 417.3 938 409.7 931.5 397.5 931.5 C 393.9 931.5 390.4 932.3 387.2 933.8 C 384 935.3 381.1 937.5 378.8 940.2 C 376.5 942.9 374.8 946 373.8 949.4 C 372.8 952.8 372.5 956.4 373 959.9 L 373 1032.2 L 328.7 1032.2 L 328.7 899.3 L 370.2 899.3 L 370.2 918.3 C 374.7 911.3 380.9 905.5 388.3 901.6 C 395.6 897.6 403.8 895.5 412.1 895.6 C 436.2 895.6 461.6 909.4 461.6 949.8 Z M 307.5 864.5 C 306.2 867.5 304.4 870.3 302.1 872.5 C 299.7 874.8 297 876.6 294 877.8 C 290.9 879 287.7 879.5 284.4 879.4 C 279.5 879.4 274.7 878 270.6 875.2 C 266.4 872.4 263.3 868.5 261.4 863.9 C 259.5 859.3 259.1 854.3 260.1 849.5 C 261.1 844.6 263.5 840.2 267 836.7 C 270.6 833.2 275.1 830.9 279.9 830 C 284.8 829.1 289.8 829.7 294.4 831.7 C 298.9 833.6 302.8 836.9 305.4 841.1 C 308.1 845.3 309.5 850.1 309.4 855.1 C 309.4 858.3 308.7 861.5 307.5 864.5 Z M 306.6 1032.2 L 262.3 1032.2 L 262.3 899.3 L 306.6 899.3 Z M 499.4 795.1 C 495.2 791 489.6 788.6 483.7 788.6 L 240.2 788.6 C 234.3 788.6 228.7 791 224.5 795.1 C 220.4 799.3 218 804.9 218 810.8 L 218 1054.3 C 218 1060.2 220.4 1065.8 224.5 1070 C 228.7 1074.1 234.3 1076.5 240.2 1076.5 L 483.7 1076.5 C 489.6 1076.5 495.2 1074.1 499.4 1070 C 503.5 1065.8 505.9 1060.2 505.9 1054.3 L 505.9 810.8 C 505.9 804.9 503.5 799.3 499.4 795.1" />
-    </Glyph>
-  );
-}
-
-function WhatsAppGlyph() {
-  return (
-    <Glyph viewBox="1336 771 324 324" label="WhatsApp">
-      <path fillRule="nonzero" d="M 1498.6 1052.8 C 1473.9 1052.8 1451 1045.4 1431.9 1032.8 L 1386.5 1044.9 L 1398.5 1000.1 C 1385.1 980.5 1377.2 956.9 1377.2 931.4 C 1377.2 864.3 1431.5 810 1498.6 810 C 1565.6 810 1620 864.3 1620 931.4 C 1620 998.4 1565.6 1052.8 1498.6 1052.8 Z M 1498.6 785.3 C 1417.9 785.3 1352.5 850.7 1352.5 931.4 C 1352.5 957.8 1359.6 982.6 1371.9 1004 L 1351.6 1079.8 L 1428.1 1059.3 C 1449 1070.9 1473 1077.4 1498.6 1077.4 C 1579.3 1077.4 1644.7 1012 1644.7 931.4 C 1644.7 850.7 1579.3 785.3 1498.6 785.3" />
-      <path fillRule="evenodd" d="M 1453.1 863.7 C 1458.8 863.7 1460.1 866.8 1462.2 871.1 C 1464 874.9 1470.6 891.9 1472.1 895.3 C 1474.8 901 1474.3 901.2 1471.6 906.8 C 1470.7 908.7 1465.6 914.4 1463.5 916.6 C 1461.3 919 1460.9 920.8 1462.8 923.9 C 1474.3 943.1 1488.8 957.2 1512.1 966.8 C 1516.3 968.5 1517.7 968.4 1519.6 966.4 C 1521.5 964.4 1528.6 955.6 1531.9 951.2 C 1534.4 947.9 1537.3 948.7 1539.8 949.7 C 1541.9 950.6 1562.9 960.8 1568 963.2 C 1572.5 965.3 1572.3 966.2 1572.3 970.1 C 1572.3 972.9 1571.2 980.8 1568.8 985.1 C 1567 988.1 1557.3 1001.2 1537.8 1001.2 C 1530.3 1001.2 1495.7 996.9 1465.8 968.5 C 1430.4 934.8 1423.9 910.2 1423.9 899 C 1423.9 885.5 1429.3 876.1 1436 868.9 C 1441.2 863.3 1445.3 863.7 1447.8 863.7 C 1450.2 863.7 1453.1 863.7 1453.1 863.7" />
-    </Glyph>
-  );
-}
-
-function TikTokGlyph() {
-  return (
-    <Glyph viewBox="201 1771 321 321" label="TikTok">
-      <path fillRule="nonzero" d="M 488.1 1855.1 L 488.1 1906.7 C 462.6 1906.7 438.9 1898.6 419.4 1884.9 L 419.4 1984.5 C 419.4 2035.6 378.2 2077.1 327.6 2077.1 C 305.6 2077.1 285.4 2069.3 269.5 2056.2 C 248.9 2039.2 235.8 2013.4 235.8 1984.5 C 235.8 1933.5 277 1892 327.6 1892 C 332 1892 336.3 1892.3 340.6 1892.9 L 340.6 1945.7 C 336.5 1944.3 332.1 1943.6 327.6 1943.6 C 305.4 1943.6 287.4 1961.9 287.4 1984.5 C 287.4 1999.2 295 2012.1 306.3 2019.3 C 312.5 2023.3 319.8 2025.5 327.6 2025.5 C 349.8 2025.5 367.8 2007.2 367.8 1984.5 L 367.8 1785.4 L 419.4 1785.4 C 419.4 1789.6 419.8 1793.8 420.5 1797.8 C 423.6 1815.3 433.2 1830.5 446.6 1840.9 C 458.1 1849.8 472.5 1855.1 488.1 1855.1" />
-    </Glyph>
-  );
-}
-
-function PinterestGlyph() {
-  return (
-    <Glyph viewBox="1338 1771 321 321" label="Pinterest">
-      <path fillRule="nonzero" d="M 1352.2 1931.2 C 1352.2 1993.5 1391.3 2046.7 1446.2 2067.6 C 1444.9 2056.2 1443.4 2037.4 1446.5 2024.3 C 1449.2 2012.9 1463.5 1952.1 1463.5 1952.1 C 1463.5 1952.1 1459.2 1943.4 1459.2 1930.5 C 1459.2 1910.3 1470.9 1895.2 1485.5 1895.2 C 1497.9 1895.2 1503.9 1904.5 1503.9 1915.7 C 1503.9 1928.2 1495.9 1946.8 1491.8 1964.1 C 1488.4 1978.5 1499.1 1990.3 1513.3 1990.3 C 1539.1 1990.3 1559 1963.1 1559 1923.8 C 1559 1889 1534 1864.7 1498.3 1864.7 C 1457 1864.7 1432.8 1895.7 1432.8 1927.7 C 1432.8 1940.2 1437.6 1953.6 1443.6 1960.9 C 1444.6 1962 1445 1963.6 1444.6 1965 C 1443.5 1969.6 1441 1979.5 1440.5 1981.5 C 1439.9 1984.2 1438.4 1984.7 1435.7 1983.4 C 1417.5 1975 1406.2 1948.5 1406.2 1927.2 C 1406.2 1881.4 1439.5 1839.3 1502.1 1839.3 C 1552.5 1839.3 1591.7 1875.2 1591.7 1923.2 C 1591.7 1973.2 1560.1 2013.5 1516.3 2013.5 C 1501.6 2013.5 1487.8 2005.9 1483 1996.8 C 1483 1996.8 1475.8 2024.6 1474 2031.4 C 1470.6 2044.5 1461.1 2061.2 1455.2 2070.7 C 1468.8 2074.9 1483.2 2077.1 1498.1 2077.1 C 1578.7 2077.1 1644 2011.8 1644 1931.2 C 1644 1850.7 1578.7 1785.4 1498.1 1785.4 C 1417.6 1785.4 1352.2 1850.7 1352.2 1931.2" />
-    </Glyph>
-  );
-}
-
-export function FacebookPageIcon() { return <FacebookGlyph />; }
-export function FacebookGroupIcon() { return <FacebookGlyph />; }
-export function InstagramIcon() { return <InstagramGlyph />; }
-export function TikTokIcon() { return <TikTokGlyph />; }
-export function WhatsAppChannelIcon() { return <WhatsAppGlyph />; }
-export function XPlatformIcon() { return <XGlyph />; }
-export function LinkedInIcon() { return <LinkedInGlyph />; }
-export function YouTubeIcon() { return <YouTubeGlyph />; }
+export const FacebookPageIcon = makeIcon("Facebook");
+export const FacebookGroupIcon = makeIcon("Facebook");
+export const InstagramIcon = makeIcon("Instagram");
+export const TikTokIcon = makeIcon("TikTok");
+export const WhatsAppChannelIcon = makeIcon("WhatsApp");
+export const XPlatformIcon = makeIcon("X");
+export const LinkedInIcon = makeIcon("LinkedIn");
+export const YouTubeIcon = makeIcon("YouTube");
 // Not an ad platform publishers sell on, so it is not in PLATFORM_ICONS — used by the site footer only.
-export function PinterestIcon() { return <PinterestGlyph />; }
+export const PinterestIcon = makeIcon("Pinterest");
 
 export const PLATFORM_ICONS: Record<string, ComponentType> = {
   "Facebook Page": FacebookPageIcon,
