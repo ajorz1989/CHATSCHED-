@@ -3,16 +3,19 @@ import { useTranslation } from "react-i18next";
 import { CONTACT_EMAIL, CONTACT_ADDRESS_LINES, WHATSAPP_NUMBER_DISPLAY, whatsappLink } from "../lib/constants";
 import InstallAppButton from "./InstallAppButton";
 import LanguageSwitcher from "./LanguageSwitcher";
+import {
+  FacebookPageIcon, InstagramIcon, LinkedInIcon, PinterestIcon, TikTokIcon, YouTubeIcon,
+} from "./PlatformIcons";
 
 const WHATSAPP_LINK = whatsappLink("Hi, I'd like to know more");
 
 const SOCIAL_LINKS = [
-  { label: "Pinterest", mark: "P", href: "https://za.pinterest.com/chatsched/" },
-  { label: "Facebook", mark: "F", href: "https://facebook.com/chatsched" },
-  { label: "TikTok", mark: "T", href: "https://www.tiktok.com/@chatsched" },
-  { label: "YouTube", mark: "Y", href: "https://www.youtube.com/@chatsched" },
-  { label: "LinkedIn", mark: "in", href: "https://www.linkedin.com/company/chatsched/" },
-  { label: "Instagram", mark: "IG", href: "https://www.instagram.com/chatsched/" },
+  { label: "Pinterest", Icon: PinterestIcon, href: "https://za.pinterest.com/chatsched/" },
+  { label: "Facebook", Icon: FacebookPageIcon, href: "https://facebook.com/chatsched" },
+  { label: "TikTok", Icon: TikTokIcon, href: "https://www.tiktok.com/@chatsched" },
+  { label: "YouTube", Icon: YouTubeIcon, href: "https://www.youtube.com/@chatsched" },
+  { label: "LinkedIn", Icon: LinkedInIcon, href: "https://www.linkedin.com/company/chatsched/" },
+  { label: "Instagram", Icon: InstagramIcon, href: "https://www.instagram.com/chatsched/" },
 ] as const;
 
 const LINK_CLASS = "block text-sm mb-2 hover:text-billboard-yellow transition-colors break-words";
@@ -39,9 +42,9 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   aria-label={`ChatSched on ${social.label}`}
                   title={`ChatSched on ${social.label}`}
-                  className="inline-flex items-center justify-center min-w-9 h-9 px-2 border-2 border-billboard-paperDim/30 rounded bg-billboard-inkSoft/10 text-billboard-paper font-mono text-[10px] font-semibold hover:bg-billboard-yellow hover:text-billboard-ink hover:border-billboard-yellow transition-colors"
+                  className="inline-flex items-center justify-center w-9 h-9 border-2 border-billboard-paperDim/30 rounded bg-billboard-inkSoft/10 text-billboard-paper hover:bg-billboard-yellow hover:text-billboard-ink hover:border-billboard-yellow transition-colors"
                 >
-                  <span aria-hidden="true">{social.mark}</span>
+                  <span aria-hidden="true" className="inline-flex"><social.Icon /></span>
                 </a>
               ))}
             </div>

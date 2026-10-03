@@ -1,6 +1,6 @@
 /**
  * Platform icons for the Browse filter, the publisher card, the publisher
- * profile ("Where your ad runs") and the request forms.
+ * profile ("Where your ad runs"), the request forms and the site footer.
  *
  * Vector artwork from the Vecteezy "20 most famous social media icon set"
  * (resource 34880961). Their free licence asks for attribution to
@@ -89,6 +89,14 @@ function TikTokGlyph() {
   );
 }
 
+function PinterestGlyph() {
+  return (
+    <Glyph viewBox="1338 1771 321 321" label="Pinterest">
+      <path fillRule="nonzero" d="M 1352.2 1931.2 C 1352.2 1993.5 1391.3 2046.7 1446.2 2067.6 C 1444.9 2056.2 1443.4 2037.4 1446.5 2024.3 C 1449.2 2012.9 1463.5 1952.1 1463.5 1952.1 C 1463.5 1952.1 1459.2 1943.4 1459.2 1930.5 C 1459.2 1910.3 1470.9 1895.2 1485.5 1895.2 C 1497.9 1895.2 1503.9 1904.5 1503.9 1915.7 C 1503.9 1928.2 1495.9 1946.8 1491.8 1964.1 C 1488.4 1978.5 1499.1 1990.3 1513.3 1990.3 C 1539.1 1990.3 1559 1963.1 1559 1923.8 C 1559 1889 1534 1864.7 1498.3 1864.7 C 1457 1864.7 1432.8 1895.7 1432.8 1927.7 C 1432.8 1940.2 1437.6 1953.6 1443.6 1960.9 C 1444.6 1962 1445 1963.6 1444.6 1965 C 1443.5 1969.6 1441 1979.5 1440.5 1981.5 C 1439.9 1984.2 1438.4 1984.7 1435.7 1983.4 C 1417.5 1975 1406.2 1948.5 1406.2 1927.2 C 1406.2 1881.4 1439.5 1839.3 1502.1 1839.3 C 1552.5 1839.3 1591.7 1875.2 1591.7 1923.2 C 1591.7 1973.2 1560.1 2013.5 1516.3 2013.5 C 1501.6 2013.5 1487.8 2005.9 1483 1996.8 C 1483 1996.8 1475.8 2024.6 1474 2031.4 C 1470.6 2044.5 1461.1 2061.2 1455.2 2070.7 C 1468.8 2074.9 1483.2 2077.1 1498.1 2077.1 C 1578.7 2077.1 1644 2011.8 1644 1931.2 C 1644 1850.7 1578.7 1785.4 1498.1 1785.4 C 1417.6 1785.4 1352.2 1850.7 1352.2 1931.2" />
+    </Glyph>
+  );
+}
+
 export function FacebookPageIcon() { return <FacebookGlyph />; }
 export function FacebookGroupIcon() { return <FacebookGlyph />; }
 export function InstagramIcon() { return <InstagramGlyph />; }
@@ -97,6 +105,8 @@ export function WhatsAppChannelIcon() { return <WhatsAppGlyph />; }
 export function XPlatformIcon() { return <XGlyph />; }
 export function LinkedInIcon() { return <LinkedInGlyph />; }
 export function YouTubeIcon() { return <YouTubeGlyph />; }
+// Not an ad platform publishers sell on, so it is not in PLATFORM_ICONS — used by the site footer only.
+export function PinterestIcon() { return <PinterestGlyph />; }
 
 export const PLATFORM_ICONS: Record<string, ComponentType> = {
   "Facebook Page": FacebookPageIcon,
