@@ -16,7 +16,7 @@ export default function ProfileBanner({ swatch }: { swatch: string }) {
       <img
         src="/brand/mark-ink.svg"
         alt=""
-        className="absolute -right-6 -bottom-10 h-64 w-64 md:h-72 md:w-72 opacity-[0.09] select-none pointer-events-none"
+        className="absolute right-6 md:right-16 top-1/2 -translate-y-1/2 h-24 md:h-32 w-auto opacity-[0.22] select-none pointer-events-none"
         draggable={false}
       />
     </div>

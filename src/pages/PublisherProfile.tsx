@@ -355,7 +355,7 @@ export default function PublisherProfile() {
       />
       <ProfileBanner swatch={publisher.swatch} />
 
-      <div className="max-w-5xl mx-auto px-5">
+      <div className="relative z-10 max-w-5xl mx-auto px-5">
         <div className="flex flex-col md:flex-row gap-8 -mt-12 mb-10">
           <PublisherAvatar
             imageUrl={publisher.profile_image_url}
