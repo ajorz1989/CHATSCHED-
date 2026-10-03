@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getAdPlatforms, getFollowersByPlatform, platformHeadline, platformFromOnboardingKey, joinPlatforms } from "./platforms";
+import { countFollowerPlatforms, getTotalFollowers, getAdPlatforms, getFollowersByPlatform, platformHeadline, platformFromOnboardingKey, joinPlatforms } from "./platforms";
 import type { Publisher } from "./types";
 
 type P = Pick<Publisher, "platforms" | "channel_slug" | "channel_metadata">;
@@ -33,5 +33,18 @@ describe("platforms", () => {
   it("splits followers per platform", () => {
     const p = base({ platforms: ["Instagram", "WhatsApp Channel"], channel_metadata: { followerCountByPlatform: { instagram: 4000, whatsapp_channel: 8000 } } });
     expect(getFollowersByPlatform(p)).toEqual({ Instagram: 4000, "WhatsApp Channel": 8000 });
+  });
+
+  it("totals followers across all platforms instead of showing only the biggest account", () => {
+    // Joburg City Finds: followers column stores only the Instagram figure.
+    const p = { ...base({ platforms: ["Instagram", "Facebook Page", "TikTok"], channel_metadata: { followerCountByPlatform: { tiktok: 18300, facebook: 22100, instagram: 45700 } } }), followers: 45700 };
+    expect(getTotalFollowers(p)).toBe(86100);
+    expect(countFollowerPlatforms(p)).toBe(3);
+  });
+
+  it("falls back to the stored followers when there is no per-platform breakdown", () => {
+    const p = { ...base({ platforms: ["WhatsApp Channel"], channel_metadata: { followerCountByPlatform: {} } }), followers: 49997 };
+    expect(getTotalFollowers(p)).toBe(49997);
+    expect(countFollowerPlatforms(p)).toBe(0);
   });
 });

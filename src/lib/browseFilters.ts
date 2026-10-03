@@ -2,6 +2,7 @@ import type { Platform, Publisher } from "./types";
 import type { ChannelSlug } from "./channelTypes";
 import { formatCurrency } from "./currency";
 import { matchesChannelMetadataFilters } from "./channelMetadataFilters";
+import { getTotalFollowers } from "./platforms";
 
 /**
  * Shared with Browse.tsx (the source this was extracted from) and
@@ -110,8 +111,8 @@ export function matchesFilters(p: Publisher, f: Filters, rateCardPublisherIds?: 
   if (f.platforms.length && !f.platforms.some((pl) => p.platforms.includes(pl))) return false;
   if (f.verifiedOnly && !p.verified) return false;
   if (f.minRating > 0 && (p.rating ?? 0) < f.minRating) return false;
-  if (f.minFollowers && p.followers < Number(f.minFollowers)) return false;
-  if (f.maxFollowers && p.followers > Number(f.maxFollowers)) return false;
+  if (f.minFollowers && getTotalFollowers(p) < Number(f.minFollowers)) return false;
+  if (f.maxFollowers && getTotalFollowers(p) > Number(f.maxFollowers)) return false;
   if (f.minMonthlyReach && (p.monthly_reach ?? 0) < Number(f.minMonthlyReach)) return false;
   if (f.minEngagement && p.engagement < Number(f.minEngagement)) return false;
   if (p.price_per_post > f.maxPrice) return false;
@@ -158,7 +159,7 @@ function isCurrentlyFeatured(p: Publisher): boolean {
 export function applySort(list: Publisher[], sortBy: string): Publisher[] {
   const s = [...list];
   switch (sortBy) {
-    case "followers_desc": return s.sort((a, b) => b.followers - a.followers);
+    case "followers_desc": return s.sort((a, b) => getTotalFollowers(b) - getTotalFollowers(a));
     case "price_asc": return s.sort((a, b) => a.price_per_post - b.price_per_post);
     case "price_desc": return s.sort((a, b) => b.price_per_post - a.price_per_post);
     case "rating_desc": return s.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));

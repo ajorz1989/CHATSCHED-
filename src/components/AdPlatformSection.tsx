@@ -2,7 +2,7 @@ import type { Platform, Publisher } from "../lib/types";
 import { PLATFORM_ICONS } from "./PlatformIcons";
 import { formatCurrency } from "../lib/currency";
 import { useRateCardItems } from "../hooks/useRateCardItems";
-import { getFollowersByPlatform, getProfileUrlForPlatform, platformHeadline } from "../lib/platforms";
+import { countFollowerPlatforms, getFollowersByPlatform, getProfileUrlForPlatform, getTotalFollowers, platformHeadline } from "../lib/platforms";
 
 function formatFollowers(n: number) {
   if (n >= 1000) return (n / 1000).toFixed(n % 1000 === 0 ? 0 : 1) + "k";
@@ -20,6 +20,7 @@ export default function AdPlatformSection({ publisher, platforms }: { publisher:
 
   const followersByPlatform = getFollowersByPlatform(publisher);
   const single = platforms.length === 1;
+  const breakdownCount = countFollowerPlatforms(publisher);
 
   return (
     <section className="mb-8" aria-labelledby="ad-platforms-heading">
@@ -34,6 +35,11 @@ export default function AdPlatformSection({ publisher, platforms }: { publisher:
           ? `${publisher.name} sells advertising on ${platforms[0]} only. Your ad will not appear anywhere else.`
           : `${publisher.name} sells advertising on these platforms. Choose which one you want when you send your request.`}
       </p>
+      {breakdownCount > 1 && (
+        <p className="text-sm font-semibold mb-2 border-2 border-billboard-ink rounded px-3 py-2 bg-billboard-yellow">
+          Combined reach: {getTotalFollowers(publisher).toLocaleString()} followers across {breakdownCount} platforms
+        </p>
+      )}
       <div className="flex flex-col gap-2">
         {platforms.map((p) => {
           const Icon = PLATFORM_ICONS[p];

@@ -3,6 +3,7 @@ import { LEVEL_META, scoreLabel } from "./publisherDisplay";
 import { getChannelBySlug } from "./channelRegistry";
 import { formatCurrency as formatCurrencyShared } from "./currency";
 import type { Publisher, Review } from "./types";
+import { getTotalFollowers } from "./platforms";
 
 // Generates a branded, multi-page media kit PDF entirely client-side — same
 // approach as invoice.ts (lazy-loaded jsPDF, no server round trip, nothing
@@ -310,7 +311,7 @@ export async function buildAndDownloadMediaKit(input: MediaKitInput) {
   // ── Audience ────────────────────────────────────────────────────────
   drawSectionHeading(doc, cursor, "Audience");
   const audienceStats = [
-    { label: "Followers", value: p.followers.toLocaleString() },
+    { label: "Followers (combined)", value: getTotalFollowers(p).toLocaleString() },
     { label: "Engagement rate", value: `${p.engagement}%` },
   ];
   if (p.monthly_reach != null) audienceStats.push({ label: "Monthly reach", value: p.monthly_reach.toLocaleString() });

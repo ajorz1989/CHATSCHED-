@@ -74,6 +74,23 @@ export function getFollowersByPlatform(publisher: Pick<Publisher, "platforms" | 
   return out;
 }
 
+/**
+ * Combined followers across every platform the publisher sells on.
+ * `publishers.followers` only stores the single biggest account (the primary
+ * platform), so a three-platform publisher looked like it had one platform's
+ * audience. Falls back to that stored number when there is no per-platform
+ * breakdown (single-platform publishers, older rows, other channels).
+ */
+export function getTotalFollowers(publisher: Pick<Publisher, "followers" | "platforms" | "channel_slug" | "channel_metadata">): number {
+  const sum = Object.values(getFollowersByPlatform(publisher)).reduce((a, b) => a + (b ?? 0), 0);
+  return sum > 0 ? sum : publisher.followers;
+}
+
+/** How many platforms the total is summed over (1 when there is no breakdown). */
+export function countFollowerPlatforms(publisher: Pick<Publisher, "platforms" | "channel_slug" | "channel_metadata">): number {
+  return Object.keys(getFollowersByPlatform(publisher)).length;
+}
+
 /** Public profile URL the publisher gave for a platform, if any. */
 export function getProfileUrlForPlatform(
   publisher: Pick<Publisher, "platforms" | "social_verification_links">,

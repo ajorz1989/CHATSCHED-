@@ -1,3 +1,4 @@
+import { countFollowerPlatforms, getTotalFollowers } from "../lib/platforms";
 import {
   getPodcastMetadata, getInformalRetailMetadata, getSportsMetadata,
   getSocialMediaMetadata, getWebsiteMetadata, getInfluencerMetadata, getRadioMetadata,
@@ -102,13 +103,13 @@ function buildProfileContent(publisher: Publisher, liveRating: number | null, li
 
   const socialMedia = getSocialMediaMetadata(publisher);
   if (socialMedia) {
-    const platformCounts = Object.values(socialMedia.followerCountByPlatform ?? {}).filter((n) => Number(n) > 0);
-    const totalFollowers = platformCounts.reduce((a, b) => a + b, 0);
-    // Summing across platforms inflates reach, so say so when it's a sum.
-    const followersLabel = platformCounts.length > 1 ? `Combined followers (${platformCounts.length} platforms)` : "Followers";
+    const platformCount = countFollowerPlatforms(publisher);
+    const totalFollowers = getTotalFollowers(publisher);
+    // Summing across platforms can double-count people on more than one, so say it is a sum.
+    const followersLabel = platformCount > 1 ? `Combined followers (${platformCount} platforms)` : "Followers";
     return {
       stats: [
-        { value: totalFollowers > 0 ? totalFollowers.toLocaleString() : publisher.followers.toLocaleString(), label: followersLabel },
+        { value: totalFollowers.toLocaleString(), label: followersLabel },
         { value: `${socialMedia.postsPerWeek}/wk`, label: "Posting frequency" },
         ratingStat,
       ],
@@ -251,7 +252,7 @@ function buildProfileContent(publisher: Publisher, liveRating: number | null, li
   // does have a typed schema (e.g. an account created before this session).
   return {
     stats: [
-      { value: publisher.followers.toLocaleString(), label: "Followers" },
+      { value: getTotalFollowers(publisher).toLocaleString(), label: "Followers" },
       { value: `${publisher.engagement}%`, label: "Engagement rate" },
       ratingStat,
     ],

@@ -12,7 +12,7 @@ import ChannelIcon from "./ChannelIcon";
 import ResponseTimeBadge from "./ResponseTimeBadge";
 import type { Publisher } from "../lib/types";
 import AdPlatformBadges from "./AdPlatformBadges";
-import { getAdPlatforms } from "../lib/platforms";
+import { countFollowerPlatforms, getAdPlatforms, getTotalFollowers } from "../lib/platforms";
 
 function formatFollowers(n: number) {
   if (n >= 1000) return (n / 1000).toFixed(n % 1000 === 0 ? 0 : 1) + "k";
@@ -107,7 +107,10 @@ export default function PublisherCard({ publisher, matchReason = null }: { publi
           <ResponseTimeBadge avgResponseHours={publisher.avg_response_hours} responseCount={publisher.response_count} className="inline-flex items-center gap-1 font-mono text-[10px] font-semibold text-billboard-greenDeep mb-1" />
           <div className="flex items-center justify-between text-sm mt-3 pt-3 border-t border-billboard-paperDim">
             <div>
-              <div className="font-semibold">{formatFollowers(publisher.followers)} followers</div>
+              <div className="font-semibold">{formatFollowers(getTotalFollowers(publisher))} followers</div>
+              {countFollowerPlatforms(publisher) > 1 && (
+                <div className="font-mono text-[10px] uppercase text-billboard-inkSoft">combined · {countFollowerPlatforms(publisher)} platforms</div>
+              )}
               <div className="text-billboard-inkSoft text-xs">{publisher.engagement}% engagement</div>
             </div>
             <div className="text-right">

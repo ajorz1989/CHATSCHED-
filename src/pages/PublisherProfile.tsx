@@ -23,7 +23,7 @@ import { formatCurrency } from "../lib/currency";
 import { fetchReviewAuthors } from "../lib/businessContact";
 import RateCardDisplay from "../components/RateCardDisplay";
 import AdPlatformSection from "../components/AdPlatformSection";
-import { getAdPlatforms } from "../lib/platforms";
+import { getAdPlatforms, getTotalFollowers } from "../lib/platforms";
 import PublisherCard from "../components/PublisherCard";
 
 // 12-Channel Audit fix C4 — same set as PublisherCard.tsx's own copy; see
@@ -350,7 +350,7 @@ export default function PublisherProfile() {
     <div>
       <Seo
         title={`${publisher.name} · ChatSched`}
-        description={`${publisher.name} in ${publisher.city}, ${publisher.province} — ${publisher.followers.toLocaleString()} followers, ${formatCurrency(publisher.price_per_post)}/post. ${publisher.bio}`.slice(0, 160)}
+        description={`${publisher.name} in ${publisher.city}, ${publisher.province} — ${getTotalFollowers(publisher).toLocaleString()} followers, ${formatCurrency(publisher.price_per_post)}/post. ${publisher.bio}`.slice(0, 160)}
       />
       <div className={`h-56 md:h-64 bg-gradient-to-br ${publisher.swatch} border-b-[3px] border-billboard-ink`} />
 
