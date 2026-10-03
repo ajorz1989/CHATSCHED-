@@ -307,68 +307,78 @@ export interface InVenueScreensOnboardingFields {
 import type { Publisher } from "./types";
 import { formatCurrencyRange } from "./currency";
 
+/**
+ * A listing created without channel-specific onboarding fields (e.g. a
+ * business-created listing) stores no metadata, or an empty object. Treat
+ * both as "none" so profile views use their no-metadata fallback instead of
+ * reading fields off {} and crashing.
+ */
+function hasMetadata(m: unknown): boolean {
+  return !!m && typeof m === "object" && Object.keys(m as object).length > 0;
+}
+
 export function getPodcastMetadata(p: Pick<Publisher, "channel_slug" | "channel_metadata">): PodcastOnboardingFields | null {
-  if (p.channel_slug !== "podcast" || !p.channel_metadata) return null;
+  if (p.channel_slug !== "podcast" || !hasMetadata(p.channel_metadata)) return null;
   return p.channel_metadata as unknown as PodcastOnboardingFields;
 }
 
 export function getInformalRetailMetadata(p: Pick<Publisher, "channel_slug" | "channel_metadata">): InformalRetailOnboardingFields | null {
-  if (p.channel_slug !== "informal-retail" || !p.channel_metadata) return null;
+  if (p.channel_slug !== "informal-retail" || !hasMetadata(p.channel_metadata)) return null;
   return p.channel_metadata as unknown as InformalRetailOnboardingFields;
 }
 
 export function getSportsMetadata(p: Pick<Publisher, "channel_slug" | "channel_metadata">): SportsOnboardingFields | null {
-  if (p.channel_slug !== "sports" || !p.channel_metadata) return null;
+  if (p.channel_slug !== "sports" || !hasMetadata(p.channel_metadata)) return null;
   return p.channel_metadata as unknown as SportsOnboardingFields;
 }
 
 export function getSocialMediaMetadata(p: Pick<Publisher, "channel_slug" | "channel_metadata">): SocialMediaOnboardingFields | null {
-  if (p.channel_slug !== "social-media" || !p.channel_metadata) return null;
+  if (p.channel_slug !== "social-media" || !hasMetadata(p.channel_metadata)) return null;
   return p.channel_metadata as unknown as SocialMediaOnboardingFields;
 }
 
 export function getWebsiteMetadata(p: Pick<Publisher, "channel_slug" | "channel_metadata">): WebsiteOnboardingFields | null {
-  if (p.channel_slug !== "website" || !p.channel_metadata) return null;
+  if (p.channel_slug !== "website" || !hasMetadata(p.channel_metadata)) return null;
   return p.channel_metadata as unknown as WebsiteOnboardingFields;
 }
 
 export function getInfluencerMetadata(p: Pick<Publisher, "channel_slug" | "channel_metadata">): InfluencerOnboardingFields | null {
-  if (p.channel_slug !== "influencer" || !p.channel_metadata) return null;
+  if (p.channel_slug !== "influencer" || !hasMetadata(p.channel_metadata)) return null;
   return p.channel_metadata as unknown as InfluencerOnboardingFields;
 }
 
 export function getRadioMetadata(p: Pick<Publisher, "channel_slug" | "channel_metadata">): RadioOnboardingFields | null {
-  if (p.channel_slug !== "radio" || !p.channel_metadata) return null;
+  if (p.channel_slug !== "radio" || !hasMetadata(p.channel_metadata)) return null;
   return p.channel_metadata as unknown as RadioOnboardingFields;
 }
 
 export function getEventsMetadata(p: Pick<Publisher, "channel_slug" | "channel_metadata">): EventsOnboardingFields | null {
-  if (p.channel_slug !== "events" || !p.channel_metadata) return null;
+  if (p.channel_slug !== "events" || !hasMetadata(p.channel_metadata)) return null;
   return p.channel_metadata as unknown as EventsOnboardingFields;
 }
 
 export function getCommunityMetadata(p: Pick<Publisher, "channel_slug" | "channel_metadata">): CommunityOnboardingFields | null {
-  if (p.channel_slug !== "community" || !p.channel_metadata) return null;
+  if (p.channel_slug !== "community" || !hasMetadata(p.channel_metadata)) return null;
   return p.channel_metadata as unknown as CommunityOnboardingFields;
 }
 
 export function getTransportMetadata(p: Pick<Publisher, "channel_slug" | "channel_metadata">): TransportOnboardingFields | null {
-  if (p.channel_slug !== "transport" || !p.channel_metadata) return null;
+  if (p.channel_slug !== "transport" || !hasMetadata(p.channel_metadata)) return null;
   return p.channel_metadata as unknown as TransportOnboardingFields;
 }
 
 export function getAssociationsMetadata(p: Pick<Publisher, "channel_slug" | "channel_metadata">): AssociationsOnboardingFields | null {
-  if (p.channel_slug !== "associations" || !p.channel_metadata) return null;
+  if (p.channel_slug !== "associations" || !hasMetadata(p.channel_metadata)) return null;
   return p.channel_metadata as unknown as AssociationsOnboardingFields;
 }
 
 export function getRestaurantsMetadata(p: Pick<Publisher, "channel_slug" | "channel_metadata">): RestaurantsOnboardingFields | null {
-  if (p.channel_slug !== "restaurants" || !p.channel_metadata) return null;
+  if (p.channel_slug !== "restaurants" || !hasMetadata(p.channel_metadata)) return null;
   return p.channel_metadata as unknown as RestaurantsOnboardingFields;
 }
 
 export function getInVenueScreensMetadata(p: Pick<Publisher, "channel_slug" | "channel_metadata">): InVenueScreensOnboardingFields | null {
-  if (p.channel_slug !== "in-venue-screens" || !p.channel_metadata) return null;
+  if (p.channel_slug !== "in-venue-screens" || !hasMetadata(p.channel_metadata)) return null;
   return p.channel_metadata as unknown as InVenueScreensOnboardingFields;
 }
 
