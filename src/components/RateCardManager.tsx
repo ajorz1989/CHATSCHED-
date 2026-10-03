@@ -4,16 +4,17 @@ import { reportError } from "../lib/errorTracking";
 import { MIN_PRICE_PER_POST } from "../lib/pricingEngine";
 import { PLATFORM_COMMISSION_RATE, PUBLISHER_SHARE } from "../lib/constants";
 import { formatCurrency } from "../lib/currency";
-import type { PublisherRateCard } from "../lib/types";
+import type { Platform, PublisherRateCard } from "../lib/types";
 
 const MAX_ITEMS = 8;
 
-export default function RateCardManager({ publisherId, onChange }: { publisherId: string; onChange?: () => void }) {
+export default function RateCardManager({ publisherId, platforms = [], onChange }: { publisherId: string; platforms?: Platform[]; onChange?: () => void }) {
   const [items, setItems] = useState<PublisherRateCard[] | null>(null);
   const [adding, setAdding] = useState(false);
   const [label, setLabel] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
+  const [platform, setPlatform] = useState<string>(platforms.length === 1 ? platforms[0] : "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -38,6 +39,10 @@ export default function RateCardManager({ publisherId, onChange }: { publisherId
       setError(`Price must be at least ${formatCurrency(MIN_PRICE_PER_POST)}.`);
       return;
     }
+    if (platforms.length > 0 && !platform) {
+      setError("Choose which platform this price is for.");
+      return;
+    }
     setSaving(true);
     setError(null);
     const { error: insertError } = await supabase.from("publisher_rate_cards").insert({
@@ -45,6 +50,7 @@ export default function RateCardManager({ publisherId, onChange }: { publisherId
       label: label.trim(),
       price: priceNum,
       description: description.trim() || null,
+      platform: platform || null,
       sort_order: items?.length ?? 0,
     });
     setSaving(false);
@@ -55,6 +61,7 @@ export default function RateCardManager({ publisherId, onChange }: { publisherId
     setLabel("");
     setPrice("");
     setDescription("");
+    setPlatform(platforms.length === 1 ? platforms[0] : "");
     setAdding(false);
     await load();
     onChange?.();
@@ -86,6 +93,7 @@ export default function RateCardManager({ publisherId, onChange }: { publisherId
             <div key={item.id} className="flex items-center justify-between gap-3 border-2 border-billboard-ink/15 rounded px-3 py-2">
               <div className="min-w-0">
                 <p className="text-sm font-semibold">{item.label} <span className="font-mono text-billboard-greenDeep">{formatCurrency(item.price)}</span></p>
+                <p className="font-mono text-[10px] uppercase text-billboard-greenDeep">{item.platform ?? "Any platform — edit by removing and re-adding with a platform"}</p>
                 {item.description && <p className="text-xs text-billboard-inkSoft">{item.description}</p>}
               </div>
               <button
@@ -108,6 +116,15 @@ export default function RateCardManager({ publisherId, onChange }: { publisherId
         )
       ) : (
         <div className="border-2 border-billboard-ink rounded p-3 bg-billboard-paperDim">
+          {platforms.length > 0 && (
+            <div className="mb-2">
+              <label className="block text-[10px] font-mono uppercase text-billboard-inkSoft mb-1">Platform</label>
+              <select value={platform} onChange={(e) => setPlatform(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-2.5 py-1.5 text-sm bg-white">
+                <option value="">Choose a platform…</option>
+                {platforms.map((p) => <option key={p} value={p}>{p}</option>)}
+              </select>
+            </div>
+          )}
           <div className="grid sm:grid-cols-2 gap-2 mb-2">
             <div>
               <label className="block text-[10px] font-mono uppercase text-billboard-inkSoft mb-1">Name</label>

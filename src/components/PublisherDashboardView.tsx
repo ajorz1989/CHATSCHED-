@@ -31,6 +31,7 @@ import SocialVerificationPanel from "./SocialVerificationPanel";
 import PublisherTractionPanel from "./PublisherTractionPanel";
 import PublisherActivationNudge from "./PublisherActivationNudge";
 import RateCardManager from "./RateCardManager";
+import { getAdPlatforms } from "../lib/platforms";
 import ContentApprovalPanel from "./ContentApprovalPanel";
 import { invalidatePublishersCache } from "../hooks/usePublishers";
 import { fetchBusinessContacts } from "../lib/businessContact";
@@ -767,7 +768,7 @@ function PricingPanel({ publisher, onChange }: { publisher: Publisher; onChange:
         <p className="text-xs text-billboard-inkSoft mb-3">
           Optional — break your pricing down by format (Story, Feed post, Reel, a bundle) instead of one number. Once you add an item, the starting price above updates automatically to match your cheapest one, and businesses see the full breakdown on your profile.
         </p>
-        <RateCardManager publisherId={publisher.id} onChange={onChange} />
+        <RateCardManager publisherId={publisher.id} platforms={getAdPlatforms(publisher)} onChange={onChange} />
       </div>
     </div>
   );

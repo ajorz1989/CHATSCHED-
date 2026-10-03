@@ -12,6 +12,7 @@ import SubscriptionGateNotice from "./SubscriptionGateNotice";
 import { SchedySticker } from "./schedy";
 import { REQUEST_FIELD_LABELS } from "../lib/channelRequestFieldSchemas";
 import type { Publisher } from "../lib/types";
+import { getAdPlatforms } from "../lib/platforms";
 
 type MetaFieldKind = "text" | "date" | "number" | "checkbox";
 
@@ -110,6 +111,8 @@ export default function ChannelRequestForm({ publisher }: { publisher: Publisher
     ? ch.advertisingMethods.filter((m) => publisher.accepted_ad_formats!.includes(m.label))
     : ch?.advertisingMethods ?? [];
 
+  const adPlatforms = getAdPlatforms(publisher);
+  const [adPlatform, setAdPlatform] = useState(adPlatforms.length === 1 ? adPlatforms[0] : "");
   const [method, setMethod] = useState(availableMethods[0]?.label ?? "");
   const [message, setMessage] = useState(() => takeContentStudioDraft() ?? "");
   const [amount, setAmount] = useState("");
@@ -150,6 +153,10 @@ export default function ChannelRequestForm({ publisher }: { publisher: Publisher
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!user || !method || !amount || !acceptedPaymentTerms || !metaValid) return;
+    if (adPlatforms.length > 0 && !adPlatform) {
+      setFormError("Please choose which platform you want your ad to run on.");
+      return;
+    }
     setSending(true);
     setFormError(null);
     const requestMetadata = metaFields.length > 0
@@ -165,7 +172,7 @@ export default function ChannelRequestForm({ publisher }: { publisher: Publisher
       channel_slug: publisher.channel_slug,
       creator_id: publisher.id,
       business_id: user.id,
-      campaign_message: message,
+      campaign_message: adPlatform ? `Platform: ${adPlatform}${adPlatforms.length === 1 ? " (only)" : ""}\n\n${message}` : message,
       advertising_method: method,
       proposed_amount: Number(amount),
       request_metadata: requestMetadata,
@@ -203,6 +210,25 @@ export default function ChannelRequestForm({ publisher }: { publisher: Publisher
       </div>
 
       <fieldset disabled={!subscriptionChecked || !canUseBusinessFeature} className="border-0 p-0 m-0 min-w-0 disabled:opacity-50">
+      {adPlatforms.length > 0 && (
+        <div className="mb-3">
+          <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5">Platform for your ad</label>
+          {adPlatforms.length === 1 ? (
+            <p className="text-xs border-2 border-billboard-ink rounded px-3 py-2 bg-billboard-yellow font-semibold">
+              {adPlatforms[0]} only — {publisher.name} doesn't sell ads on any other platform.
+            </p>
+          ) : (
+            <select
+              required value={adPlatform} onChange={(e) => setAdPlatform(e.target.value)}
+              className="w-full border-2 border-billboard-ink rounded px-3 py-2 bg-white text-sm"
+            >
+              <option value="">Choose a platform…</option>
+              {adPlatforms.map((p) => <option key={p} value={p}>{p}</option>)}
+            </select>
+          )}
+        </div>
+      )}
+
       <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5">Advertising method</label>
       <select
         required value={method} onChange={(e) => setMethod(e.target.value)}

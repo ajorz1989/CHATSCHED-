@@ -22,6 +22,8 @@ import PublisherTrustStrip from "../components/PublisherTrustStrip";
 import { formatCurrency } from "../lib/currency";
 import { fetchReviewAuthors } from "../lib/businessContact";
 import RateCardDisplay from "../components/RateCardDisplay";
+import AdPlatformSection from "../components/AdPlatformSection";
+import { getAdPlatforms } from "../lib/platforms";
 import PublisherCard from "../components/PublisherCard";
 
 // 12-Channel Audit fix C4 — same set as PublisherCard.tsx's own copy; see
@@ -96,6 +98,7 @@ export default function PublisherProfile() {
   const saveRef = useRef<HTMLDivElement>(null);
 
   // Agency-first Campaign Brief States (Goal, Dates, Budget, Deliverables, Requirements)
+  const [adPlatform, setAdPlatform] = useState("");
   const [goal, setGoal] = useState("Brand Awareness");
   const [customGoal, setCustomGoal] = useState("");
   const [targetDates, setTargetDates] = useState("Next 2–3 weeks");
@@ -268,6 +271,7 @@ export default function PublisherProfile() {
   const liveReviewCount = reviews.length > 0 ? reviews.length : publisher.reviews;
   const comparing = isComparing(publisher.id);
   const saved = isInAnyList(publisher.id);
+  const adPlatforms = getAdPlatforms(publisher);
 
   // Is the logged-in user the owner of this publisher profile?
   const isOwner = profile?.role === "publisher" && publisher.user_id === user?.id;
@@ -291,11 +295,18 @@ export default function PublisherProfile() {
       setFormError("Please fill in the campaign goal, dates, deliverables, and requirements.");
       return;
     }
+    const requestPlatforms = getAdPlatforms(publisher);
+    const resolvedPlatform = requestPlatforms.length === 1 ? requestPlatforms[0] : adPlatform;
+    if (requestPlatforms.length > 1 && !resolvedPlatform) {
+      setFormError("Please choose which platform you want your ad to run on.");
+      return;
+    }
 
     setSending(true);
     setFormError(null);
 
     const formattedMessage = [
+      resolvedPlatform ? `Platform: ${resolvedPlatform}${requestPlatforms.length === 1 ? " (only)" : ""}` : null,
       `Goal: ${resolvedGoal}`,
       `Target Dates: ${resolvedDates}`,
       `Deliverables: ${resolvedDeliverables}`,
@@ -449,14 +460,16 @@ export default function PublisherProfile() {
         <div className="grid md:grid-cols-[1fr_320px] gap-10 pb-20">
           {/* ── Left column ── */}
           <div>
-            <div className="flex flex-wrap gap-2 mb-6">
-              {publisher.platforms.map(p => (
-                <span key={p} className="font-mono text-xs border-2 border-billboard-ink rounded-full px-3 py-1 bg-billboard-paperDim">{p}</span>
-              ))}
-              {publisher.languages?.length > 0 && publisher.languages.map(l => (
-                <span key={l} className="font-mono text-xs border-2 border-billboard-inkSoft rounded-full px-3 py-1 bg-white text-billboard-inkSoft">{l}</span>
-              ))}
-            </div>
+            {publisher.languages?.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2 mb-6">
+                <span className="font-mono text-[10px] uppercase tracking-wide text-billboard-inkSoft">Languages</span>
+                {publisher.languages.map(l => (
+                  <span key={l} className="font-mono text-xs border-2 border-billboard-inkSoft rounded-full px-3 py-1 bg-white text-billboard-inkSoft">{l}</span>
+                ))}
+              </div>
+            )}
+
+            <AdPlatformSection publisher={publisher} platforms={adPlatforms} />
 
             <PortfolioGallery introVideoUrl={publisher.intro_video_url} images={publisher.portfolio_images} isOwner={isOwner} />
 
@@ -547,7 +560,7 @@ export default function PublisherProfile() {
                 <div className="text-xs text-billboard-inkSoft mb-5">Propose your budget in the request below — minimum recommended is {formatCurrency(channelDef?.minBudgetZAR ?? 0)}.</div>
               </>
             ) : (
-              <RateCardDisplay publisherId={publisher.id} fallbackPrice={publisher.price_per_post} />
+              <RateCardDisplay publisherId={publisher.id} fallbackPrice={publisher.price_per_post} platforms={adPlatforms} />
             )}
 
             {/* Media kit */}
@@ -584,6 +597,7 @@ export default function PublisherProfile() {
                   ChatSched is reviewing your brief and will coordinate directly with <strong>{publisher.name}</strong>.
                 </p>
                 <div className="border-2 border-billboard-green/40 rounded p-3 bg-white text-xs text-billboard-inkSoft mb-4 space-y-1">
+                  {adPlatforms.length > 0 && <p><strong className="text-billboard-ink">Platform:</strong> {adPlatforms.length === 1 ? adPlatforms[0] : adPlatform}</p>}
                   <p><strong className="text-billboard-ink">Goal:</strong> {goal === "Other (Custom)" && customGoal ? customGoal : goal}</p>
                   <p><strong className="text-billboard-ink">Dates:</strong> {targetDates === "Specific dates" && customDates ? customDates : targetDates}</p>
                   <p><strong className="text-billboard-ink">Deliverables:</strong> {deliverables === "Custom Deliverable" && customDeliverables ? customDeliverables : deliverables}</p>
@@ -620,6 +634,32 @@ export default function PublisherProfile() {
                       ChatSched handles the publisher relationship: briefing, scheduling, verification, and payment protection. Sending a brief doesn't charge you — ChatSched reviews it and confirms with {publisher.name} before anything is booked.
                     </p>
                   </div>
+
+                  {/* 0. Platform — which social platform the ad will run on */}
+                  {adPlatforms.length > 0 && (
+                    <div>
+                      <label className="block text-xs font-semibold uppercase tracking-wide mb-1">
+                        Platform for your ad
+                      </label>
+                      {adPlatforms.length === 1 ? (
+                        <p className="text-xs border-2 border-billboard-ink rounded px-3 py-2 bg-billboard-yellow font-semibold">
+                          {adPlatforms[0]} only — {publisher.name} doesn't sell ads on any other platform.
+                        </p>
+                      ) : (
+                        <select
+                          value={adPlatform}
+                          onChange={(e) => setAdPlatform(e.target.value)}
+                          required
+                          className="w-full border-2 border-billboard-ink rounded px-3 py-2 bg-white text-xs"
+                        >
+                          <option value="">Choose a platform…</option>
+                          {adPlatforms.map((p) => (
+                            <option key={p} value={p}>{p}</option>
+                          ))}
+                        </select>
+                      )}
+                    </div>
+                  )}
 
                   {/* 1. Goal */}
                   <div>

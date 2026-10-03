@@ -102,16 +102,17 @@ function buildProfileContent(publisher: Publisher, liveRating: number | null, li
 
   const socialMedia = getSocialMediaMetadata(publisher);
   if (socialMedia) {
-    const totalFollowers = Object.values(socialMedia.followerCountByPlatform).reduce((a, b) => a + b, 0);
+    const platformCounts = Object.values(socialMedia.followerCountByPlatform ?? {}).filter((n) => Number(n) > 0);
+    const totalFollowers = platformCounts.reduce((a, b) => a + b, 0);
+    // Summing across platforms inflates reach, so say so when it's a sum.
+    const followersLabel = platformCounts.length > 1 ? `Combined followers (${platformCounts.length} platforms)` : "Followers";
     return {
       stats: [
-        { value: totalFollowers > 0 ? totalFollowers.toLocaleString() : publisher.followers.toLocaleString(), label: "Total followers" },
+        { value: totalFollowers > 0 ? totalFollowers.toLocaleString() : publisher.followers.toLocaleString(), label: followersLabel },
         { value: `${socialMedia.postsPerWeek}/wk`, label: "Posting frequency" },
         ratingStat,
       ],
       badges: [
-        { label: socialMedia.primaryPlatform.replace("_", " "), tone: "green" },
-        ...socialMedia.secondaryPlatforms.map((p) => ({ label: p.replace("_", " "), tone: "neutral" as const })),
         { label: socialMedia.bestPerformingFormat.replace(/_/g, " "), tone: "yellow" },
       ],
     };
