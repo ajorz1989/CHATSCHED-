@@ -80,7 +80,7 @@ export default function PublisherCard({ publisher, matchReason = null }: { publi
             </span>
           )}
           <div className="absolute -bottom-6 left-4">
-            <PublisherAvatar imageUrl={publisher.profile_image_url} initials={publisher.initials} name={publisher.name} size="sm" />
+            <PublisherAvatar imageUrl={publisher.profile_image_url} initials={publisher.initials} name={publisher.name} size="sm" shape={publisher.creation_source === "business" ? "tile" : "circle"} />
           </div>
           {isCurrentlyFeatured(publisher) && (
             <span className="absolute bottom-2.5 right-2.5 bg-billboard-yellow text-billboard-ink text-[10px] font-mono font-semibold px-2 py-1 rounded border border-billboard-ink">

@@ -17,20 +17,30 @@ export default function PublisherAvatar({
   initials,
   name,
   size = "md",
+  shape = "circle",
   className = "",
 }: {
   imageUrl: string | null;
   initials: string;
   name: string;
   size?: "sm" | "md" | "lg";
+  /**
+   * "circle" suits a person's photo. "tile" suits a business logo: logos are
+   * usually already round or square with their own border, so cropping them
+   * into a circle (object-cover) produced a doubled ring and clipped edges.
+   * The tile shows the whole logo on white, inside the billboard-style
+   * rounded-square frame.
+   */
+  shape?: "circle" | "tile";
   className?: string;
 }) {
-  const base = `${SIZE_CLASS[size]} rounded-full border-[3px] border-billboard-ink flex items-center justify-center font-display shrink-0 overflow-hidden ${className}`;
+  const tile = shape === "tile";
+  const base = `${SIZE_CLASS[size]} ${tile ? "rounded-xl" : "rounded-full"} border-[3px] border-billboard-ink flex items-center justify-center font-display shrink-0 overflow-hidden ${className}`;
 
   if (imageUrl) {
     return (
-      <div className={base}>
-        <img src={imageUrl} alt={name} className="w-full h-full object-cover" loading="lazy" />
+      <div className={`${base}${tile ? " bg-white" : ""}`}>
+        <img src={imageUrl} alt={name} className={tile ? "w-full h-full object-contain p-1.5" : "w-full h-full object-cover"} loading="lazy" />
       </div>
     );
   }

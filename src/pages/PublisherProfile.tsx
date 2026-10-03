@@ -361,7 +361,8 @@ export default function PublisherProfile() {
             initials={publisher.initials}
             name={publisher.name}
             size="lg"
-            className="shadow-block"
+            shape={publisher.creation_source === "business" ? "tile" : "circle"}
+            className={publisher.creation_source === "business" ? "shadow-blockSm" : "shadow-block"}
           />
           <div className="flex-1 pt-2 md:pt-14">
             <div className="flex flex-wrap items-center gap-2 mb-1">

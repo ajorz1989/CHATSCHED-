@@ -240,7 +240,7 @@ export default function PublisherDashboardView() {
       </p>
 
       <div className="flex flex-wrap items-center gap-3 mb-6">
-        <PublisherAvatar imageUrl={publisher.profile_image_url} initials={publisher.initials} name={publisher.name} size="md" />
+        <PublisherAvatar imageUrl={publisher.profile_image_url} initials={publisher.initials} name={publisher.name} size="md" shape={publisher.creation_source === "business" ? "tile" : "circle"} />
         <PublisherTrustStrip
           level={publisher.level}
           trustScore={publisher.trust_score}
@@ -582,7 +582,7 @@ function ProfileEditPanel({ publisher, onChange }: { publisher: Publisher; onCha
       {/* Profile photo — always visible, editable independently of the
           rest of the form below. */}
       <div className="flex items-center gap-4 mt-4 mb-2">
-        <PublisherAvatar imageUrl={publisher.profile_image_url} initials={publisher.initials} name={publisher.name} size="md" />
+        <PublisherAvatar imageUrl={publisher.profile_image_url} initials={publisher.initials} name={publisher.name} size="md" shape={publisher.creation_source === "business" ? "tile" : "circle"} />
         <div>
           <button
             type="button"
