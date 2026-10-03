@@ -200,7 +200,9 @@ export const SA_CITY_COORDS: Record<string, [number, number]> = {
 
 export const CAPE_TOWN_SUBURBS = SA_CITIES_SUBURBS[0].suburbs;
 
-export const PLATFORM_COMMISSION_RATE = 0.08;
+// 12% of the creator's price, deducted from the creator's side only.
+// Booking fees (business side, on top) live in src/lib/fees.ts.
+export const PLATFORM_COMMISSION_RATE = 0.12;
 export const PUBLISHER_SHARE = 1 - PLATFORM_COMMISSION_RATE;
 
 export const WHATSAPP_NUMBER = "27608973472";
