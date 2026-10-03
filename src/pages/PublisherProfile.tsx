@@ -274,7 +274,7 @@ export default function PublisherProfile() {
   const adPlatforms = getAdPlatforms(publisher);
 
   // Is the logged-in user the owner of this publisher profile?
-  const isOwner = profile?.role === "publisher" && publisher.user_id === user?.id;
+  const isOwner = !!user && publisher.user_id === user.id;
 
   // The 4 request-flow channels replace the directory pricing + PayFast
   // request form with ChannelRequestForm (below). social-media — and any

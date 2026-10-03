@@ -18,6 +18,8 @@ export interface PublisherRateCard {
 
 export interface Publisher {
   id: string;
+  /** 'business' = created by an activated business from its own dashboard. */
+  creation_source?: "standard" | "admin" | "aj_creations" | "business";
   name: string;
   city: string;
   province: string;

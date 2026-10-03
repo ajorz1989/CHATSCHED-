@@ -29,5 +29,16 @@ export async function hasUsablePublisherSubscription(userId: string): Promise<bo
     .select("status")
     .eq("publisher_id", userId)
     .maybeSingle();
-  return data ? isSubscriptionUsable(data.status) : false;
+  if (data && isSubscriptionUsable(data.status)) return true;
+  // A listing a business created from its own dashboard is covered by the
+  // business activation fee — businesses can't buy Publisher Network
+  // activation. Mirrors public.publisher_is_activated() in
+  // 20261003120000_business_publisher_listings.sql, which is the real gate.
+  const { data: own } = await supabase
+    .from("publishers")
+    .select("creation_source")
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (own?.creation_source === "business") return hasUsableBusinessSubscription(userId);
+  return false;
 }

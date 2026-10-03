@@ -1,13 +1,31 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { isSupabaseConfigured } from "../lib/supabase";
+import { isSupabaseConfigured, supabase } from "../lib/supabase";
 import SetupNotice from "./SetupNotice";
 import { SkeletonBlock, SkeletonLine } from "./Skeleton";
 
 export default function RequireAuth({ children, role }: { children: ReactNode; role?: "admin" | "business" | "publisher" }) {
   const { user, profile, loading, aal } = useAuth();
   const location = useLocation();
+
+  // A business that created its own publisher listing (activated-business
+  // feature) may enter publisher-only routes — earnings, relationships —
+  // for that listing. undefined = not checked yet / not needed.
+  const needsListingCheck = role === "publisher" && profile?.role === "business" && !!user;
+  const [ownsBusinessListing, setOwnsBusinessListing] = useState<boolean | undefined>(undefined);
+  useEffect(() => {
+    if (!needsListingCheck || !user) return;
+    let cancelled = false;
+    supabase
+      .from("publishers")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("creation_source", "business")
+      .maybeSingle()
+      .then(({ data }) => { if (!cancelled) setOwnsBusinessListing(!!data); });
+    return () => { cancelled = true; };
+  }, [needsListingCheck, user]);
 
   if (!isSupabaseConfigured) return <SetupNotice />;
 
@@ -25,7 +43,16 @@ export default function RequireAuth({ children, role }: { children: ReactNode; r
     return <Navigate to={`/login${qs}`} replace />;
   }
   // Admins are platform operators: they may enter business/publisher routes without changing their stored role.
-  if (role && profile?.role !== role && profile?.role !== "admin") return <Navigate to="/" replace />;
+  if (needsListingCheck && ownsBusinessListing === undefined) {
+    return (
+      <div className="max-w-md mx-auto px-5 py-24" aria-busy="true" aria-label="Checking your access">
+        <SkeletonLine className="w-1/2 h-6 mb-4 mx-auto" />
+        <SkeletonBlock className="h-24" />
+      </div>
+    );
+  }
+  const businessListingOwner = needsListingCheck && ownsBusinessListing === true;
+  if (role && profile?.role !== role && profile?.role !== "admin" && !businessListingOwner) return <Navigate to="/" replace />;
 
   // Admin controls request approvals, payment confirmation, and payout
   // sign-off for the whole marketplace — one compromised password

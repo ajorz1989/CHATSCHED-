@@ -76,6 +76,10 @@ const CATEGORIES: FaqCategory[] = [
     icon: "building",
     items: [
       {
+        q: "Can my business list itself on the browse page as a publisher?",
+        a: "Yes — once your business account is activated. From your dashboard you can create one publisher listing, covered by your once-off activation fee (no extra charge and no separate Publisher Network subscription). Channels that need no manual verification go live on the browse page straight away; social media and high-trust channels are submitted for ChatSched verification first and appear once approved. Requests for your listing arrive in your dashboard under \"My publisher listing\". You can't book your own listing, and you can have one listing per account. If your activation lapses, your listing can't accept new bookings until you reactivate.",
+      },
+      {
         q: "How do I find the right publisher for my business?",
         a: "Filter Browse by category, location, platform, audience and price, or describe your business in plain language to Audience Finder for a ranked match. You can also save a search and get emailed the moment a new matching publisher joins.",
       },

@@ -13,6 +13,8 @@ import CampaignComplianceStrip from "../components/CampaignComplianceStrip";
 import DisputeSection from "../components/DisputeSection";
 import ChannelCampaignCard from "../components/ChannelCampaignCard";
 import PublisherDashboardView from "../components/PublisherDashboardView";
+import BusinessListingCreator, { BusinessListingStatusLink } from "../components/BusinessListingCreator";
+import { hasUsableBusinessSubscription } from "../lib/subscriptionGate";
 import BusinessHomeSummary from "../components/BusinessHomeSummary";
 import MarketingSuite from "../components/marketingSuite/MarketingSuite";
 import ActivationNudge from "../components/ActivationNudge";
@@ -42,6 +44,26 @@ export default function Dashboard() {
   const [channelRequests, setChannelRequests] = useState<ChannelRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [showBusinessView, setShowBusinessView] = useState(false);
+  // Business accounts can list themselves on browse once activated (see
+  // BusinessListingCreator). `ownListing` is that listing, if any.
+  const [ownListing, setOwnListing] = useState<{ id: string; status: string; creation_source: string } | null>(null);
+  const [businessActivated, setBusinessActivated] = useState(false);
+  const [showListingView, setShowListingView] = useState(false);
+
+  async function loadOwnListing() {
+    if (!user || profile?.role !== "business") return;
+    const [{ data: pub }, activated] = await Promise.all([
+      supabase.from("publishers").select("id, status, creation_source").eq("user_id", user.id).maybeSingle(),
+      hasUsableBusinessSubscription(user.id),
+    ]);
+    setOwnListing((pub ?? null) as { id: string; status: string; creation_source: string } | null);
+    setBusinessActivated(activated);
+  }
+
+  useEffect(() => {
+    loadOwnListing();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, profile?.role]);
 
   async function load() {
     if (!user) return;
@@ -107,10 +129,51 @@ export default function Dashboard() {
     );
   }
 
+  const ownsBusinessListing = profile?.role === "business" && ownListing?.creation_source === "business";
+
+  if (ownsBusinessListing) {
+    return (
+      <div>
+        <div className="max-w-4xl mx-auto px-5 pt-8">
+          <div className="inline-flex border-[3px] border-billboard-ink rounded overflow-hidden">
+            <button
+              type="button"
+              onClick={() => setShowListingView(false)}
+              className={`px-4 py-2 text-sm font-semibold transition ${!showListingView ? "bg-billboard-ink text-white" : "bg-white text-billboard-ink hover:bg-billboard-paperDim"}`}
+            >
+              Business dashboard
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowListingView(true)}
+              className={`px-4 py-2 text-sm font-semibold transition border-l-[3px] border-billboard-ink ${showListingView ? "bg-billboard-ink text-white" : "bg-white text-billboard-ink hover:bg-billboard-paperDim"}`}
+            >
+              My publisher listing
+            </button>
+          </div>
+        </div>
+        {showListingView ? (
+          <PublisherDashboardView />
+        ) : (
+          <div className="max-w-4xl mx-auto px-5 pt-6 pb-14">
+            <Seo title="Your Dashboard · ChatSched" noindex />
+            <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">Your dashboard</span>
+            {ownListing && <div className="mb-6"><BusinessListingStatusLink id={ownListing.id} status={ownListing.status} /></div>}
+            <BusinessDashboardBody profile={profile} requests={requests} channelRequests={channelRequests} loading={loading} user={user} onRefresh={load} />
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-4xl mx-auto px-5 py-16">
       <Seo title="Your Dashboard · ChatSched" noindex />
       <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">Your dashboard</span>
+
+      {profile?.role === "business" && businessActivated && !ownListing && (
+        <BusinessListingCreator onCreated={loadOwnListing} />
+      )}
 
       <BusinessDashboardBody profile={profile} requests={requests} channelRequests={channelRequests} loading={loading} user={user} onRefresh={load} />
     </div>

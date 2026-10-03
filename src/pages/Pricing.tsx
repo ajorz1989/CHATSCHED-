@@ -6,7 +6,8 @@ import { formatCurrency as formatCurrencyShared } from "../lib/currency";
 import { PLATFORM_COMMISSION_RATE, SALES_EMAIL } from "../lib/constants";
 
 const FAQS = [
-  { q: "How do I know a publisher is legitimate?", a: "Every publisher and creator is reviewed before they go live, and carries a visible trust score and level built from campaign history and profile signals — not just follower count." },
+  { q: "Can my business also appear on the browse page as a publisher?", a: "Yes. Once your business account is activated (the once-off R399), you can create one publisher listing from your dashboard — no second fee and no Publisher Network subscription needed. Channels with no manual verification go live on the browse page straight away; social media and high-trust channels are submitted for ChatSched verification first. You can't book your own listing, and before activation the option isn't available." },
+  { q: "How do I know a publisher is legitimate?", a: "Publishers and creators on high-trust channels — and every social media listing — are verified before they go live, and every listing carries a visible trust score and level built from campaign history and profile signals — not just follower count." },
   { q: "Do I need a contract or subscription?", a: "No long-term contract and no recurring membership fee. Browsing and basic listing are free. Sending a booking request needs a one-time ChatSched Business activation of R399, and approving requests as a Publisher needs a one-time R199 activation. Neither renews." },
   { q: "What exactly do I get for the activation fee?", a: "The activation fee unlocks the platform features on your side of the marketplace. Businesses unlock booking, opportunities, campaign tools and their launch credit. Publishers unlock Network access, opportunities, analytics, earnings tools and the ability to approve paid requests." },
   { q: "How does payment actually work?", a: "Payment happens after the booking reaches its required approval stage. The payment method depends on the channel, and payment is tracked through ChatSched before the placement moves live." },
@@ -213,6 +214,7 @@ export default function Pricing() {
                 <BenefitItem>Campaign tracking, booking history and reporting so you can follow the job from request through delivery.</BenefitItem>
                 <BenefitItem>Full Marketing Suite — Match, Reach Planner, Content Studio, Caption Writer, Campaign Builder, Campaign Tracker and ROI Calculator, included with Business activation.</BenefitItem>
                 <BenefitItem>R199 launch credit applied toward an eligible first campaign after activation.</BenefitItem>
+                <BenefitItem>List your own business on the browse page — once activated you can create a publisher listing from your dashboard at no extra charge, and other businesses can book you. One listing per account.</BenefitItem>
               </ul>
             </div>
 
