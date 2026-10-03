@@ -17,6 +17,7 @@ import SimilarPublishers from "../components/SimilarPublishers";
 import NextAvailableTeaser from "../components/NextAvailableTeaser";
 import MarketplaceProfileView from "../components/MarketplaceProfileView";
 import EarnedBadges from "../components/EarnedBadges";
+import ProfileBanner from "../components/ProfileBanner";
 import PublisherAvatar from "../components/PublisherAvatar";
 import PublisherTrustStrip from "../components/PublisherTrustStrip";
 import { formatCurrency } from "../lib/currency";
@@ -352,7 +353,7 @@ export default function PublisherProfile() {
         title={`${publisher.name} · ChatSched`}
         description={`${publisher.name} in ${publisher.city}, ${publisher.province} — ${getTotalFollowers(publisher).toLocaleString()} followers, ${formatCurrency(publisher.price_per_post)}/post. ${publisher.bio}`.slice(0, 160)}
       />
-      <div className={`h-56 md:h-64 bg-gradient-to-br ${publisher.swatch} border-b-[3px] border-billboard-ink`} />
+      <ProfileBanner swatch={publisher.swatch} />
 
       <div className="max-w-5xl mx-auto px-5">
         <div className="flex flex-col md:flex-row gap-8 -mt-12 mb-10">
