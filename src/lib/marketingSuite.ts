@@ -8,6 +8,17 @@
 import type { Publisher } from "./types";
 import { CATEGORIES } from "./constants";
 import { formatCurrency } from "./currency";
+import { formatLeadAudience, getLeadAudience, showsEngagement } from "./leadAudience";
+
+/**
+ * Rough reach per booking. Social/influencer: followers x engagement. Every
+ * other channel has no engagement rate, so its own lead audience number
+ * (visitors, downloads, attendance...) is the reach; 0 when we have none.
+ */
+function leadReach(p: Publisher, multiplier: number): number {
+  if (showsEngagement(p)) return Math.round(p.followers * (Math.max(p.engagement, 1) / 100) * multiplier);
+  return getLeadAudience(p).value ?? 0;
+}
 
 export interface MatchResult {
   publisher: Publisher;
@@ -202,12 +213,15 @@ export function matchPublishers(
     }
 
     // Engagement quality (up to 10)
-    if (p.engagement >= 5) {
-      score += 10;
-      reasons.push(`${p.engagement}% engagement rate`);
-    } else if (p.engagement >= 2) {
-      score += 5;
-      reasons.push(`${p.engagement}% engagement`);
+    // Only social media and influencer have an engagement rate that means anything.
+    if (showsEngagement(p)) {
+      if (p.engagement >= 5) {
+        score += 10;
+        reasons.push(`${p.engagement}% engagement rate`);
+      } else if (p.engagement >= 2) {
+        score += 5;
+        reasons.push(`${p.engagement}% engagement`);
+      }
     }
 
     // Budget fit (up to 10)
@@ -223,9 +237,11 @@ export function matchPublishers(
       }
     }
 
-    // Followers as soft reach signal (up to 5)
-    if (p.followers >= 20000) score += 5;
-    else if (p.followers >= 5000) score += 3;
+    // Followers as soft reach signal (up to 5) - social and influencer only
+    if (showsEngagement(p)) {
+      if (p.followers >= 20000) score += 5;
+      else if (p.followers >= 5000) score += 3;
+    }
 
     score = Math.max(0, Math.min(100, Math.round(score)));
 
@@ -233,10 +249,10 @@ export function matchPublishers(
     const estimatedReach =
       p.monthly_reach && p.monthly_reach > 0
         ? p.monthly_reach
-        : Math.round(p.followers * (Math.max(p.engagement, 1) / 100) * 3);
+        : leadReach(p, 3);
 
     if (reasons.length === 0) {
-      reasons.push(`${p.followers.toLocaleString()} followers · ${p.city}`);
+      reasons.push(`${formatLeadAudience(p, { compact: false })} · ${p.city}`);
     }
 
     return {
@@ -446,7 +462,7 @@ export function estimateRoi(
     const perPost =
       p.monthly_reach && p.monthly_reach > 0
         ? Math.round(p.monthly_reach / 4)
-        : Math.round(p.followers * (Math.max(p.engagement, 1) / 100));
+        : leadReach(p, 1);
     reach += perPost * take;
     used.push(p);
     if (remaining < priced[0].price_per_post) break;

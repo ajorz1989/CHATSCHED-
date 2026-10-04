@@ -24,7 +24,8 @@ import { formatCurrency } from "../lib/currency";
 import { fetchReviewAuthors } from "../lib/businessContact";
 import RateCardDisplay from "../components/RateCardDisplay";
 import AdPlatformSection from "../components/AdPlatformSection";
-import { ALL_PLATFORMS, allPlatformsLabel, getAdPlatforms, getPackagePrice, getTotalFollowers, platformChoices } from "../lib/platforms";
+import { ALL_PLATFORMS, allPlatformsLabel, getAdPlatforms, getPackagePrice, platformChoices } from "../lib/platforms";
+import { getLeadAudience, getPriceUnit } from "../lib/leadAudience";
 import PublisherCard from "../components/PublisherCard";
 
 // 12-Channel Audit fix C4 — same set as PublisherCard.tsx's own copy; see
@@ -347,11 +348,14 @@ export default function PublisherProfile() {
     setShowSave(false);
   }
 
+  const leadAudience = getLeadAudience(publisher);
+  const seoAudience = leadAudience.value ? `${leadAudience.value.toLocaleString()} ${leadAudience.label}, ` : "";
+
   return (
     <div>
       <Seo
         title={`${publisher.name} · ChatSched`}
-        description={`${publisher.name} in ${publisher.city}, ${publisher.province} — ${getTotalFollowers(publisher).toLocaleString()} followers, ${formatCurrency(publisher.price_per_post)}/post. ${publisher.bio}`.slice(0, 160)}
+        description={`${publisher.name} in ${publisher.city}, ${publisher.province} — ${seoAudience}from ${formatCurrency(publisher.price_per_post)} ${getPriceUnit(publisher.channel_slug)}. ${publisher.bio}`.slice(0, 160)}
       />
       <ProfileBanner swatch={publisher.swatch} />
 

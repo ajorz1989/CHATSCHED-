@@ -4,6 +4,7 @@ import { usePublishers } from "../../hooks/usePublishers";
 import { matchPublishers, type MatchResult } from "../../lib/marketingSuite";
 import { formatCurrency } from "../../lib/currency";
 import EmptyState from "../EmptyState";
+import { formatLeadAudience, getPriceUnit, showsEngagement } from "../../lib/leadAudience";
 
 export default function MatchSearch() {
   const { publishers, loading } = usePublishers();
@@ -79,7 +80,7 @@ export default function MatchSearch() {
                   <div>
                     <p className="font-bold">{r.publisher.name}</p>
                     <p className="text-xs text-billboard-inkSoft">
-                      {r.publisher.city}, {r.publisher.province} · {r.publisher.category} · {formatCurrency(r.publisher.price_per_post)}/post
+                      {r.publisher.city}, {r.publisher.province} · {r.publisher.category} · {formatCurrency(r.publisher.price_per_post)} {getPriceUnit(r.publisher.channel_slug)}
                     </p>
                   </div>
                   <span className="font-mono text-xs font-bold bg-billboard-green text-white px-2.5 py-1 rounded shrink-0">
@@ -88,8 +89,8 @@ export default function MatchSearch() {
                 </div>
                 <div className="flex flex-wrap gap-3 text-xs font-mono uppercase text-billboard-inkSoft mt-2 mb-2">
                   <span>~{r.estimatedReach.toLocaleString()} est. reach</span>
-                  <span>{r.engagement}% engagement</span>
-                  <span>{r.publisher.followers.toLocaleString()} followers</span>
+                  {showsEngagement(r.publisher) && r.engagement > 0 && <span>{r.engagement}% engagement</span>}
+                  <span>{formatLeadAudience(r.publisher, { compact: false })}</span>
                 </div>
                 <ul className="text-sm text-billboard-inkSoft list-disc pl-4">
                   {r.reasons.map((reason, i) => (

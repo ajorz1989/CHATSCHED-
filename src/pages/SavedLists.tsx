@@ -9,13 +9,9 @@ import type { Publisher } from "../lib/types";
 import Seo from "../components/Seo";
 import { EmptyIllustration } from "../components/EmptyState";
 import Button from "../components/Button";
+import { formatLeadAudience, getPriceUnit } from "../lib/leadAudience";
 
 const EXAMPLE_NAMES = ["Restaurant Campaign", "Property Campaign", "Christmas Campaign", "Back to School", "Summer Launch"];
-
-function fmt(n: number) {
-  if (n >= 1000) return (n / 1000).toFixed(n % 1000 === 0 ? 0 : 1) + "k";
-  return String(n);
-}
 
 function PublisherRow({ publisher, onRemove, listId }: { publisher: Publisher; onRemove: (listId: string, pubId: string) => void; listId: string }) {
   return (
@@ -28,7 +24,7 @@ function PublisherRow({ publisher, onRemove, listId }: { publisher: Publisher; o
           <Link to={`/browse/${publisher.id}`} className="font-semibold text-sm hover:text-billboard-greenDeep transition">
             {publisher.name}
           </Link>
-          <p className="text-xs text-billboard-inkSoft">{publisher.city} · {fmt(publisher.followers)} followers · {formatCurrency(publisher.price_per_post)}/post</p>
+          <p className="text-xs text-billboard-inkSoft">{publisher.city} · {formatLeadAudience(publisher)} · {formatCurrency(publisher.price_per_post)} {getPriceUnit(publisher.channel_slug)}</p>
         </div>
       </div>
       <div className="flex items-center gap-2 shrink-0">

@@ -4,11 +4,51 @@ import Seo from "../components/Seo";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
 import { CATEGORIES, PROVINCES } from "../lib/constants";
 import Button from "../components/Button";
+import { getLeadAudience, formatAudienceCount, type LeadAudiencePublisher } from "../lib/leadAudience";
+import { getChannelBySlug } from "../lib/channelRegistry";
+
+type ReachRow = LeadAudiencePublisher & { id: string; name: string };
+
+/** One channel's slice of the results. Numbers are never added across channels. */
+interface ChannelReach {
+  slug: string;
+  channelName: string;
+  count: number;
+  /** Sum of the lead audience number, or null when none of these listings has one. */
+  total: number | null;
+  label: string;
+  sample: { id: string; name: string; text: string }[];
+}
 
 interface ReachResult {
   count: number;
-  totalFollowers: number;
-  sample: { id: string; name: string; followers: number }[];
+  groups: ChannelReach[];
+}
+
+function groupByChannel(rows: ReachRow[]): ChannelReach[] {
+  const bySlug = new Map<string, ReachRow[]>();
+  for (const r of rows) {
+    const slug = r.channel_slug || "social-media";
+    bySlug.set(slug, [...(bySlug.get(slug) ?? []), r]);
+  }
+  return [...bySlug.entries()]
+    .map(([slug, list]) => {
+      const audiences = list.map((r) => ({ r, a: getLeadAudience(r) }));
+      const withValue = audiences.filter((x) => x.a.value !== null);
+      return {
+        slug,
+        channelName: getChannelBySlug(slug)?.definition.name ?? slug,
+        count: list.length,
+        total: withValue.length > 0 ? withValue.reduce((sum, x) => sum + (x.a.value ?? 0), 0) : null,
+        label: audiences[0].a.label,
+        sample: audiences.slice(0, 5).map(({ r, a }) => ({
+          id: r.id,
+          name: r.name,
+          text: a.value === null ? "Audience not listed" : `${a.value.toLocaleString()} ${a.label}`,
+        })),
+      };
+    })
+    .sort((a, b) => b.count - a.count);
 }
 
 export default function ReachChecker() {
@@ -30,19 +70,17 @@ export default function ReachChecker() {
     // needing the approved filter since the view bakes it in.
     let query = supabase
       .from("publishers_public")
-      .select("id, name, followers")
+      .select("id, name, followers, channel_slug, channel_metadata, platforms")
       .eq("category", categorySlug)
       .eq("province", province);
     if (suburb.trim()) query = query.ilike("suburb", `%${suburb.trim()}%`);
 
     const { data } = await query.order("followers", { ascending: false }).limit(200);
-    const rows = data ?? [];
-    const totalFollowers = rows.reduce((sum, r) => sum + (r.followers || 0), 0);
+    const rows = (data ?? []) as ReachRow[];
 
     setResult({
       count: rows.length,
-      totalFollowers,
-      sample: rows.slice(0, 5),
+      groups: groupByChannel(rows),
     });
     setLoading(false);
   }
@@ -90,22 +128,28 @@ export default function ReachChecker() {
               <p className="font-display text-4xl mb-1">{result.count}</p>
               <p className="font-mono text-xs uppercase tracking-wide text-white/80">approved {categoryLabel.toLowerCase()} publisher{result.count === 1 ? "" : "s"} in {province}{suburb.trim() ? ` · ${suburb.trim()}` : ""}</p>
             </div>
-            <div className="border-[3px] border-billboard-ink rounded p-6 bg-billboard-paper text-center">
-              <p className="font-display text-2xl mb-1">{result.totalFollowers.toLocaleString()}</p>
-              <p className="font-mono text-xs uppercase tracking-wide text-billboard-inkSoft">combined potential reach{result.count >= 200 ? " (top 200 shown)" : ""}</p>
-            </div>
-            {result.sample.length > 0 && (
-              <div className="border-[3px] border-billboard-ink rounded p-5">
-                <p className="font-mono text-xs uppercase tracking-wide text-billboard-inkSoft mb-3">A few of them</p>
+            {result.groups.map((g) => (
+              <div key={g.slug} className="border-[3px] border-billboard-ink rounded p-5 bg-billboard-paper">
+                <div className="flex items-baseline justify-between gap-3 mb-3">
+                  <p className="font-display text-lg">{g.channelName}</p>
+                  <p className="font-mono text-xs uppercase tracking-wide text-billboard-inkSoft">{g.count} publisher{g.count === 1 ? "" : "s"}</p>
+                </div>
+                <p className="font-display text-2xl mb-0.5">{g.total === null ? "—" : formatAudienceCount(g.total)}</p>
+                <p className="font-mono text-xs uppercase tracking-wide text-billboard-inkSoft mb-4">
+                  {g.total === null ? "audience not listed" : `${g.label} combined`}{result.count >= 200 ? " (top 200 shown)" : ""}
+                </p>
                 <ul className="space-y-1.5 text-sm">
-                  {result.sample.map((p) => (
-                    <li key={p.id} className="flex justify-between">
+                  {g.sample.map((p) => (
+                    <li key={p.id} className="flex justify-between gap-3">
                       <span className="font-semibold">{p.name}</span>
-                      <span className="text-billboard-inkSoft">{p.followers.toLocaleString()} followers</span>
+                      <span className="text-billboard-inkSoft text-right">{p.text}</span>
                     </li>
                   ))}
                 </ul>
               </div>
+            ))}
+            {result.groups.length > 1 && (
+              <p className="text-xs text-billboard-inkSoft text-center">Audience numbers are counted differently on each channel, so they are shown separately and not added together.</p>
             )}
             <Link to={browseUrl} className="block text-center bg-billboard-yellow border-[3px] border-billboard-ink font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition">
               Browse them all →

@@ -8,6 +8,7 @@ import type { Publisher } from "../lib/types";
 import Seo from "../components/Seo";
 import { SkeletonRows } from "../components/Skeleton";
 import EmptyState from "../components/EmptyState";
+import { getLeadAudience, getPriceUnit, showsEngagement } from "../lib/leadAudience";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -179,15 +180,24 @@ export default function ComparePublishers() {
                   ))}
                 </div>
               )} />
-              <MetricRow label="Followers" values={selected} render={p => (
-                <span className="font-display text-xl">{fmt(p.followers)}</span>
-              )} />
+              <MetricRow label="Audience" sub="lead number" values={selected} render={p => {
+                const { value, label } = getLeadAudience(p);
+                return value === null
+                  ? <span className="text-billboard-inkSoft text-xs">Not listed</span>
+                  : (
+                    <div>
+                      <span className="font-display text-xl">{fmt(value)}</span>
+                      <div className="text-[10px] font-mono uppercase text-billboard-inkSoft mt-0.5">{label}</div>
+                    </div>
+                  );
+              }} />
               <MetricRow label="Monthly reach" values={selected} render={p => (
                 p.monthly_reach
                   ? <span className="font-display text-xl">{fmt(p.monthly_reach)}</span>
                   : <span className="text-billboard-inkSoft text-xs">Not provided</span>
               )} />
               <MetricRow label="Engagement" sub="rate" values={selected} render={p => (
+                !showsEngagement(p) ? <span className="text-billboard-inkSoft text-xs">Not applicable</span> :
                 <div>
                   <span className="font-display text-xl">{p.engagement}%</span>
                   <div className="mt-1 bg-billboard-paperDim rounded-full h-1.5 w-24 overflow-hidden">
@@ -195,8 +205,11 @@ export default function ComparePublishers() {
                   </div>
                 </div>
               )} />
-              <MetricRow label="Price per post" values={selected} render={p => (
-                <span className="font-mono font-bold text-billboard-greenDeep text-lg">{formatCurrency(p.price_per_post)}</span>
+              <MetricRow label="Price" sub="from" values={selected} render={p => (
+                <div>
+                  <span className="font-mono font-bold text-billboard-greenDeep text-lg">{formatCurrency(p.price_per_post)}</span>
+                  <div className="text-[10px] font-mono uppercase text-billboard-inkSoft mt-0.5">{getPriceUnit(p.channel_slug)}</div>
+                </div>
               )} />
               <MetricRow label="Rating" sub="avg score" values={selected} render={p => <Stars rating={p.rating} reviews={p.reviews} />} />
               <MetricRow label="Trust score" sub="out of 100" values={selected} render={p => (
