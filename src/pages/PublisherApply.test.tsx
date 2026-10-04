@@ -22,7 +22,7 @@ describe("PublisherApply admin mode", () => {
       </MemoryRouter>,
     );
 
-    const name = screen.getByRole("textbox", { name: /Page\/account name/i });
+    const name = screen.getByRole("textbox", { name: /(Page\/account|Social Media Posts) name/i });
     const metric = screen.getByRole("spinbutton", { name: /follower/i });
 
     expect(name).not.toBeDisabled();
