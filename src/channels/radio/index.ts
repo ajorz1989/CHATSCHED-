@@ -115,7 +115,7 @@ const radioModule: ChannelModule = {
     ],
     publisherRequirements: [
       "Licensed South African community or commercial radio station (ICASA registered)",
-      "Minimum 10 000 weekly listener reach (RAMS report or streaming listener stats)",
+      "Minimum 2 000 weekly listener reach (RAMS report, streaming listener stats, or your own station figures)",
       "Ability to produce ads in-house or refer to a production partner",
       "Defined broadcast area and primary language(s)",
     ],
@@ -139,7 +139,7 @@ const radioModule: ChannelModule = {
     ],
     eligibility: {
       metricLabel: "Weekly listener reach",
-      minValue: 10000,
+      minValue: 2000,
       checks: [
         "My station is ICASA-licensed and currently broadcasting",
         "My listenership is primarily South African",
