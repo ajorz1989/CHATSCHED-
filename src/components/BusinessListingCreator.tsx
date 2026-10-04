@@ -6,11 +6,13 @@
 // saved to channel_metadata so the browse card and profile show the channel's
 // real numbers (visitors, covers, attendance...) instead of a generic
 // "audience size". What happens next is decided server-side by
-// create_business_publisher_listing() (see supabase/migrations): until the
-// ownership checks for digital channels exist, every business listing is
-// created as "pending review" and approved by ChatSched, like a normal
-// application. The database refuses to approve the proof-required channels any
-// other way. This component only collects the fields and shows the outcome.
+// create_business_publisher_listing() (see supabase/migrations): every business
+// listing is created as "pending review" and approved by ChatSched, like a
+// normal application. Social media, influencer and website listings can't be
+// approved until the owner proves ownership with a code (OwnershipVerification,
+// on the "My publisher listing" tab); the proof-required channels can't be
+// approved without their proof. This component only collects the fields and
+// shows the outcome.
 import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
@@ -22,6 +24,7 @@ import { isAuthorityChannel, AUTHORITY_SUBJECT } from "../lib/channelOnboardingS
 import { type FormState, initialState } from "../lib/channelOnboardingForm";
 import { buildBusinessListingPayload, PROOF_REQUIRED_CHANNELS } from "../lib/businessListingPayload";
 import ChannelSpecificFields, { AdFormatsPicker } from "./ChannelSpecificFields";
+import { hasOwnershipCheck } from "./OwnershipVerification";
 import Button from "./Button";
 
 const inputCls = "w-full border-2 border-billboard-ink rounded px-3 py-2 bg-white text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-billboard-ink";
@@ -113,7 +116,7 @@ export default function BusinessListingCreator({ onCreated }: { onCreated: () =>
           {result.live
             ? "It's on the browse page now. Requests for it arrive in your dashboard."
             : result.digital
-              ? "ChatSched checks that you own this channel before it appears on the browse page. We'll notify you once it's approved."
+              ? "ChatSched checks that you own this channel before it appears on the browse page. Open My publisher listing on your dashboard to prove you own it (a short code), and we'll notify you once it's approved."
               : "ChatSched reviews the proof you uploaded before it appears on the browse page. We'll notify you once it's approved."}
         </p>
         {result.live && <Button to={`/browse/${result.id}`} variant="primary" size="sm">View it on browse →</Button>}
@@ -261,11 +264,14 @@ export default function BusinessListingCreator({ onCreated }: { onCreated: () =>
   );
 }
 
-export function BusinessListingStatusLink({ id, status }: { id: string; status: string }) {
+export function BusinessListingStatusLink({ id, status, channelSlug }: { id: string; status: string; channelSlug?: string | null }) {
   return (
     <p className="text-sm text-billboard-inkSoft">
       Your publisher listing is <strong>{status === "approved" ? "live" : status.replace("_", " ")}</strong>.{" "}
       {status === "approved" && <Link to={`/browse/${id}`} className="font-semibold underline">View on browse →</Link>}
+      {status !== "approved" && status !== "rejected" && hasOwnershipCheck(channelSlug) && (
+        <span> Open <strong>My publisher listing</strong> above to prove you own it — we can't approve it until you do.</span>
+      )}
     </p>
   );
 }

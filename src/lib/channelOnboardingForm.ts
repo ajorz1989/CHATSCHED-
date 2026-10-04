@@ -116,6 +116,8 @@ export interface FormState {
   webPlacements: string[];
   webAvgSessionSeconds: string;
   infPrimaryPlatform: string;
+  /** Public profile link the ownership (bio code) check will look at. */
+  infProfileUrl: string;
   infNiche: string;
   infContentFormats: string[];
   infEngagementRate: string;
@@ -181,7 +183,7 @@ export const initialState: FormState = {
   sportsSport: "", sportsLevel: "", sportsLeague: "", sportsSeason: "", sportsSquadSize: "", sportsAttendance: "", sportsVenue: "", sportsAuthorityRole: "",
   smPrimaryPlatform: "", smSecondaryPlatforms: [], smSocialLinks: {}, smFollowerCounts: "", smBestFormat: "", smPostsPerWeek: "", smAudienceCountry: "", packagePrice: "",
   webDomain: "", webMonthlyVisitors: "", webNiche: "", webCms: "", webPlacements: [], webAvgSessionSeconds: "",
-  infPrimaryPlatform: "", infNiche: "", infContentFormats: [], infEngagementRate: "", infPastCollabs: "", infOffersUsageRights: false,
+  infPrimaryPlatform: "", infProfileUrl: "", infNiche: "", infContentFormats: [], infEngagementRate: "", infPastCollabs: "", infOffersUsageRights: false,
   radioStationName: "", radioFrequency: "", radioCoverageArea: "", radioLanguages: "", radioSlotLengths: [], radioShowSponsorship: false, radioIcasaLicence: "", radioPeakTimes: "",
   eventsName: "", eventsType: "", eventsFrequency: "", eventsAttendance: "", eventsNextDate: "", eventsTiers: "", eventsVenueCity: "",
   commGroupType: "", commMemberCount: "", commReachChannels: [], commNewsletterFrequency: "", commGeographicArea: "",
@@ -377,4 +379,11 @@ export function withAuthorityFlag(meta: Record<string, unknown> | null, channelS
 export function getSelectedSocialPlatforms(form: Pick<FormState, "smPrimaryPlatform" | "smSecondaryPlatforms">): SocialMediaPlatform[] {
   const selected = [form.smPrimaryPlatform, ...form.smSecondaryPlatforms].filter(isSocialMediaPlatform);
   return [...new Set(selected)];
+}
+
+/** Influencer profile link for the ownership check: [] when blank or not an http(s) address. */
+export function buildInfluencerLinks(form: Pick<FormState, "infPrimaryPlatform" | "infProfileUrl">): Array<{ platform: string; url: string }> {
+  const url = form.infProfileUrl.trim();
+  if (!/^https?:\/\/\S+$/i.test(url)) return [];
+  return [{ platform: form.infPrimaryPlatform || "other", url }];
 }

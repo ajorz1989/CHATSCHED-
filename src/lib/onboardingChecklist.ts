@@ -84,17 +84,23 @@ export function computePublisherChecklist(
     },
   ];
 
-  // Bio-code verification only applies to the Social Media channel — every
-  // other channel already has its own eligibility/verification checklist
-  // at application time (src/channels/*/index.ts, publisher_verification_checks).
-  // Replaces the old OAuth-based "Connect a social account" step, which
-  // depended on ConnectSocialAccounts.tsx / social_connections
-  // (see migration 20260929120000_social_bio_code_verification.sql).
-  if (publisher.channel_slug === "social-media") {
+  // Ownership check: a code the publisher puts where only the owner can —
+  // a social/influencer bio, or the website itself (meta tag, DNS or file).
+  // Admins (or, for websites, the automatic check) confirm it, and approval
+  // is blocked until then (migration 20261005000000). Podcast and radio don't
+  // have this step yet.
+  if (publisher.channel_slug === "social-media" || publisher.channel_slug === "influencer") {
     items.push({
       id: "social-verify",
       label: "Verify your social account",
-      hint: "A code in your bio plus a screenshot of your own analytics — confirms you actually own the account, and is required before we can approve your listing.",
+      hint: "A code in your bio — confirms you actually own the account, and is required before we can approve your listing.",
+      done: publisher.social_verification_confirmed,
+    });
+  } else if (publisher.channel_slug === "website") {
+    items.push({
+      id: "social-verify",
+      label: "Verify your website",
+      hint: "Add a short code to your site (a meta tag, a DNS record or a small file) — confirms you own it, and is required before we can approve your listing.",
       done: publisher.social_verification_confirmed,
     });
   }

@@ -46,17 +46,17 @@ export default function Dashboard() {
   const [showBusinessView, setShowBusinessView] = useState(false);
   // Business accounts can list themselves on browse once activated (see
   // BusinessListingCreator). `ownListing` is that listing, if any.
-  const [ownListing, setOwnListing] = useState<{ id: string; status: string; creation_source: string } | null>(null);
+  const [ownListing, setOwnListing] = useState<{ id: string; status: string; creation_source: string; channel_slug: string | null } | null>(null);
   const [businessActivated, setBusinessActivated] = useState(false);
   const [showListingView, setShowListingView] = useState(false);
 
   async function loadOwnListing() {
     if (!user || profile?.role !== "business") return;
     const [{ data: pub }, activated] = await Promise.all([
-      supabase.from("publishers").select("id, status, creation_source").eq("user_id", user.id).maybeSingle(),
+      supabase.from("publishers").select("id, status, creation_source, channel_slug").eq("user_id", user.id).maybeSingle(),
       hasUsableBusinessSubscription(user.id),
     ]);
-    setOwnListing((pub ?? null) as { id: string; status: string; creation_source: string } | null);
+    setOwnListing((pub ?? null) as { id: string; status: string; creation_source: string; channel_slug: string | null } | null);
     setBusinessActivated(activated);
   }
 
@@ -158,7 +158,7 @@ export default function Dashboard() {
           <div className="max-w-4xl mx-auto px-5 pt-6 pb-14">
             <Seo title="Your Dashboard · ChatSched" noindex />
             <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">Your dashboard</span>
-            {ownListing && <div className="mb-6"><BusinessListingStatusLink id={ownListing.id} status={ownListing.status} /></div>}
+            {ownListing && <div className="mb-6"><BusinessListingStatusLink id={ownListing.id} status={ownListing.status} channelSlug={ownListing.channel_slug} /></div>}
             <BusinessDashboardBody profile={profile} requests={requests} channelRequests={channelRequests} loading={loading} user={user} onRefresh={load} />
           </div>
         )}

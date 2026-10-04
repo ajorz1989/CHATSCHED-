@@ -2014,3 +2014,20 @@ The message shown to the user is now the function's real reason. Mapping:
 | "Only the campaign's business (or an admin)…" (403) | Signed in as the wrong account — the publisher side can't run it. |
 | "Set the campaign's platform and category…" / "no brief text" (400) | Fill those in first. |
 | "…couldn't be saved" (500) | A database write failed — check the function logs and that phase 39 is applied. |
+
+## Website ownership check (`verify-website-ownership`)
+
+Checks that a website listing's owner has put their ChatSched code on the site
+(a `<meta name="chatsched-verification">` tag, a DNS TXT record
+`chatsched-verification=CODE`, or a file at `/.well-known/chatsched-verification.txt`).
+No secrets to set beyond the usual `SITE_URL`; it uses the injected
+`SUPABASE_URL`, `SUPABASE_ANON_KEY` and `SUPABASE_SERVICE_ROLE_KEY`, and looks
+up DNS through Cloudflare's public DNS-over-HTTPS.
+
+```
+supabase functions deploy verify-website-ownership
+```
+
+Needs migration `20261005000000_digital_channel_ownership_checks.sql` first.
+Until the function is deployed, the "Check my website now" button shows an
+error and an admin can still confirm ownership by hand from the review screen.

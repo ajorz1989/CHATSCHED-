@@ -57,6 +57,9 @@ export default function PublisherProfile() {
   const { lists, addToList, createList, isInAnyList } = useSavedLists();
 
   const publisher = publishers.find(p => p.id === id);
+  // "Ownership Verified" only when an ownership check really happened: the physical-channel
+  // checklist, or a confirmed code (social media, influencer, website).
+  const ownershipChecked = !!publisher && (VERIFICATION_REQUIRED_CHANNELS.has(publisher.channel_slug) || !!publisher.social_verification_confirmed);
 
   const [reportOpen, setReportOpen] = useState(false);
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -357,8 +360,8 @@ export default function PublisherProfile() {
             <div className="flex flex-wrap items-center gap-2 mb-1">
               <h1 className="text-2xl md:text-3xl">{publisher.name}</h1>
               {publisher.verified && (
-                <span className={`text-white text-[11px] font-mono font-semibold px-2 py-1 rounded ${VERIFICATION_REQUIRED_CHANNELS.has(publisher.channel_slug) ? "bg-billboard-greenDeep" : "bg-billboard-ink"}`}>
-                  {VERIFICATION_REQUIRED_CHANNELS.has(publisher.channel_slug) ? "✓ Ownership Verified" : "✓ Verified"}
+                <span className={`text-white text-[11px] font-mono font-semibold px-2 py-1 rounded ${ownershipChecked ? "bg-billboard-greenDeep" : "bg-billboard-ink"}`}>
+                  {ownershipChecked ? "✓ Ownership Verified" : "✓ Verified"}
                 </span>
               )}
               {publisher.level && <TrustBadge kind="publisher" level={publisher.level} />}

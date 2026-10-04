@@ -26,7 +26,7 @@ import CollapsiblePanel from "./CollapsiblePanel";
 import { computePublisherChecklist } from "../lib/onboardingChecklist";
 import { SkeletonBlock, SkeletonLine, StatCardGridSkeleton, SkeletonRows } from "./Skeleton";
 import EmptyState from "./EmptyState";
-import SocialVerificationPanel from "./SocialVerificationPanel";
+import OwnershipVerification, { hasOwnershipCheck, ownershipPanelTitle } from "./OwnershipVerification";
 import PublisherTractionPanel from "./PublisherTractionPanel";
 import RateCardManager from "./RateCardManager";
 import { getAdPlatforms } from "../lib/platforms";
@@ -156,10 +156,10 @@ export default function PublisherDashboardView() {
       <div className="max-w-lg mx-auto px-5 py-16 text-center">
         <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-inkSoft text-billboard-inkSoft px-3 py-1.5 rounded mb-4">Pending review</span>
         <h1 className="text-2xl mb-3">Your application's with us.</h1>
-        <p className="text-billboard-inkSoft mb-10">We review every publisher by hand — we'll email you either way{publisher.channel_slug === "social-media" ? ". In the meantime, verifying your account below gives us something concrete to check instead of self-reported numbers, which tends to speed things up." : "."}</p>
-        {publisher.channel_slug === "social-media" && (
+        <p className="text-billboard-inkSoft mb-10">We review every publisher by hand — we'll email you either way{hasOwnershipCheck(publisher.channel_slug) ? ". Verifying that you own it below is required before we can approve your listing, so doing it now speeds things up." : "."}</p>
+        {hasOwnershipCheck(publisher.channel_slug) && (
           <div className="text-left">
-            <SocialVerificationPanel publisher={publisher} onChange={load} />
+            <OwnershipVerification publisher={publisher} onChange={load} />
           </div>
         )}
       </div>
@@ -340,15 +340,15 @@ export default function PublisherDashboardView() {
 
                   return (
                     <>
-                      {publisher.channel_slug === "social-media" && (
+                      {hasOwnershipCheck(publisher.channel_slug) && (
                         <CollapsiblePanel
-                          title="Verify your account"
+                          title={ownershipPanelTitle(publisher.channel_slug)}
                           status={publisher.social_verification_confirmed ? "Verified" : publisher.social_verification_code ? "Awaiting review" : "Not started"}
                           complete={socialDone}
                           defaultOpen={!socialDone}
                         >
                           <div className="mb-10">
-                            <SocialVerificationPanel publisher={publisher} onChange={load} />
+                            <OwnershipVerification publisher={publisher} onChange={load} />
                           </div>
                         </CollapsiblePanel>
                       )}

@@ -11,7 +11,7 @@ import { getChannelBySlug } from "./channelRegistry";
 import { isAuthorityChannel, AUTHORITY_SUBJECT } from "./channelOnboardingSchemas";
 import { platformFromOnboardingKey } from "./platforms";
 import {
-  type FormState, buildChannelMetadata, withAuthorityFlag, getSelectedSocialPlatforms,
+  type FormState, buildChannelMetadata, buildInfluencerLinks, withAuthorityFlag, getSelectedSocialPlatforms,
   SOCIAL_MEDIA_PLATFORM_LABELS,
 } from "./channelOnboardingForm";
 
@@ -87,9 +87,15 @@ export function buildBusinessListingPayload(
     platforms = picked
       .map((p) => platformFromOnboardingKey(p))
       .filter((p): p is Platform => p !== null);
-  } else if (influencer && form.infPrimaryPlatform) {
-    const p = platformFromOnboardingKey(form.infPrimaryPlatform);
-    if (p) platforms = [p];
+  } else if (influencer) {
+    if (form.infPrimaryPlatform) {
+      const p = platformFromOnboardingKey(form.infPrimaryPlatform);
+      if (p) platforms = [p];
+    }
+    if (form.infProfileUrl.trim() && !isHttpUrl(form.infProfileUrl)) {
+      return { ok: false, error: "The public profile link must start with https://." };
+    }
+    socialLinks = buildInfluencerLinks(form);
   }
   socialLinks = socialLinks.slice(0, 6);
 

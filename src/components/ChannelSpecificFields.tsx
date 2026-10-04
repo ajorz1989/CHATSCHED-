@@ -364,6 +364,11 @@ export default function ChannelSpecificFields({
                 </select>
               </div>
               <div>
+                <label className={labelClass}>Public profile link <span className="font-normal text-billboard-inkSoft">(starts with https://)</span></label>
+                <input type="url" value={form.infProfileUrl} onChange={(e) => update("infProfileUrl", e.target.value)} placeholder="https://" className={inputClass} />
+                <p className="text-xs text-billboard-inkSoft mt-1">We'll ask you to put a short code in this profile's bio to prove it's yours. Required before we can approve your listing.</p>
+              </div>
+              <div>
                 <label className={labelClass}>Niche</label>
                 <select value={form.infNiche} onChange={(e) => update("infNiche", e.target.value)} className={inputClass}>
                   <option value="">Select…</option>

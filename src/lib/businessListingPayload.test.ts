@@ -78,6 +78,21 @@ describe("buildBusinessListingPayload", () => {
     expect(ok.payload.social_verification_links).toEqual([{ platform: "instagram", url: "https://instagram.com/x" }]);
   });
 
+  it("influencer: sends the profile link for the ownership check, rejects a malformed one", () => {
+    const base = { followers: "5000", engagement: "3", infPrimaryPlatform: "instagram" };
+    const ok = buildBusinessListingPayload("influencer", general, form({ ...base, infProfileUrl: "https://instagram.com/me" }));
+    expect(ok.ok).toBe(true);
+    if (ok.ok) expect(ok.payload.social_verification_links).toEqual([{ platform: "instagram", url: "https://instagram.com/me" }]);
+
+    const none = buildBusinessListingPayload("influencer", general, form(base));
+    expect(none.ok).toBe(true);
+    if (none.ok) expect(none.payload.social_verification_links).toEqual([]);
+
+    const bad = buildBusinessListingPayload("influencer", general, form({ ...base, infProfileUrl: "instagram.com/me" }));
+    expect(bad.ok).toBe(false);
+    if (!bad.ok) expect(bad.error).toMatch(/https/i);
+  });
+
   it("proof is required for exactly the authority channels", () => {
     for (const slug of PROOF_REQUIRED_CHANNELS) expect(isAuthorityChannel(slug)).toBe(true);
     expect(PROOF_REQUIRED_CHANNELS).toHaveLength(8);

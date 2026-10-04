@@ -10,7 +10,7 @@ import type { Platform } from "../lib/types";
 import type { SocialMediaPlatform } from "../lib/channelOnboardingSchemas";
 import { isAuthorityChannel, AUTHORITY_SUBJECT } from "../lib/channelOnboardingSchemas";
 import {
-  type FormState, initialState, buildChannelMetadata, withAuthorityFlag,
+  type FormState, initialState, buildChannelMetadata, buildInfluencerLinks, withAuthorityFlag,
   SOCIAL_MEDIA_PLATFORM_LABELS, isSocialMediaPlatform, getSelectedSocialPlatforms,
 } from "../lib/channelOnboardingForm";
 import ChannelSpecificFields, { AdFormatsPicker, inputClass, labelClass } from "../components/ChannelSpecificFields";
@@ -277,7 +277,7 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
         ? getSelectedSocialVerificationPlatforms()
             .map((platform) => ({ platform, url: form.smSocialLinks[platform]?.trim() ?? "" }))
             .filter((link) => link.url)
-        : [],
+        : channelSlug === "influencer" ? buildInfluencerLinks(form) : [],
       platforms: form.platforms,
       placement_types: form.placementTypes.length > 0 ? form.placementTypes : null,
       accepted_ad_formats: form.adFormats.length > 0 ? form.adFormats : null,

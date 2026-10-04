@@ -49,6 +49,7 @@ export default function PublisherCard({ publisher, matchReason = null }: { publi
 
   const comparing = isComparing(publisher.id);
   const saved = isInAnyList(publisher.id);
+  const ownershipChecked = VERIFICATION_REQUIRED_CHANNELS.has(publisher.channel_slug) || !!publisher.social_verification_confirmed;
   const channelModule = publisher.channel_slug ? getChannelBySlug(publisher.channel_slug) : undefined;
 
   function handleNewList(e: FormEvent) {
@@ -71,8 +72,8 @@ export default function PublisherCard({ publisher, matchReason = null }: { publi
             </span>
           )}
           {publisher.verified && (
-            <span className={`absolute top-2.5 right-2.5 text-white text-[10px] font-mono font-semibold px-2 py-1 rounded ${VERIFICATION_REQUIRED_CHANNELS.has(publisher.channel_slug) ? "bg-billboard-greenDeep" : "bg-billboard-ink"}`}>
-              {VERIFICATION_REQUIRED_CHANNELS.has(publisher.channel_slug) ? "✓ Ownership Verified" : "✓ Verified"}
+            <span className={`absolute top-2.5 right-2.5 text-white text-[10px] font-mono font-semibold px-2 py-1 rounded ${ownershipChecked ? "bg-billboard-greenDeep" : "bg-billboard-ink"}`}>
+              {ownershipChecked ? "✓ Ownership Verified" : "✓ Verified"}
             </span>
           )}
           <div className="absolute -bottom-6 left-4">
