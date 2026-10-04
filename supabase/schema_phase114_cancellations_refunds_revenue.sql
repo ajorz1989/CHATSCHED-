@@ -1,5 +1,5 @@
 -- ChatSched — Phase 114: cancellations, refunds, scheduled go-live, revenue
--- NOT APPLIED. Run after schema_phase113. Refund wording is for AJ's accountant.
+-- APPLIED to production (hbqobuecjrxhlfgfhdud) on 2026-10-05. Refund wording is for AJ's accountant.
 --
 -- Refund rules (decided Oct 2026; amounts are paid back by manual bank
 -- transfer, admin marks them paid out):

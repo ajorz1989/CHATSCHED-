@@ -1,5 +1,5 @@
 -- ChatSched — Phase 115: free sign-up + Premium access (R199/month)
--- NOT APPLIED. Run after schema_phase114. No business or creator has ever
+-- APPLIED to production (hbqobuecjrxhlfgfhdud) on 2026-10-05. No business or creator has ever
 -- paid an activation fee (confirmed by AJ), so there is no money to unwind.
 --
 -- What changes
@@ -69,6 +69,10 @@ drop policy if exists opportunities_insert_own on public.opportunities;
 create policy opportunities_insert_own on public.opportunities
   for insert with check (
     business_id = auth.uid()
+    and exists (
+      select 1 from public.profiles
+      where profiles.id = auth.uid() and profiles.role = 'business' and profiles.business_verified = true
+    )
     and public.premium_is_active(auth.uid())
   );
 

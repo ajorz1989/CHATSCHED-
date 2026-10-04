@@ -1,5 +1,5 @@
 -- ChatSched — Phase 113: new booking payment model (Oct 2026)
--- NOT APPLIED. Review, then apply only when AJ says so.
+-- APPLIED to production (hbqobuecjrxhlfgfhdud) on 2026-10-05.
 --
 -- What this does
 --   1. Adds a per-booking money snapshot to channel_requests (creator price,
@@ -15,14 +15,12 @@
 --   4. Creators no longer need an active Publisher Network subscription
 --      to accept a request (sign-up is free).
 --
--- Heads-up: this REPLACES enforce_channel_request_transition() and is built
---   from schema_phase73's version. schema_phase86 (applied later) re-created
---   the function from the older phase71 shape and so silently dropped two
---   things phase73 had restored: the counter-offer transitions
---   (pending -> countered, countered -> awaiting_payment / cancelled) and
---   the "content must be approved before going live" gate. Both are
---   restored here. Refund / cancellation transitions are NOT in this
---   phase; they follow once the refund rules are confirmed.
+-- Heads-up: this REPLACES enforce_channel_request_transition(). The live
+--   function (checked on production before applying) already had the
+--   counter-offer transitions and the content-approval gate; both are kept.
+--   It also had a Publisher Network activation check on creator responses,
+--   which is removed (free sign-up). Cancellation transitions are handled by
+--   schema_phase114's cancel_channel_request().
 --
 -- Fee maths is duplicated from src/lib/fees.ts on purpose: the snapshot has
 --   to be computed where the client can't tamper with it. Keep them in
