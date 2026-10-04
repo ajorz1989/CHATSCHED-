@@ -1,20 +1,13 @@
-// Starts a R399 ONCE-OFF PayFast payment for ChatSched Business
-// activation — no renewal, ever (item 10, schema_phase86). The R199
-// launch credit is INCLUDED in this fee, not a separate purchase; it's
-// still granted by payfast-notify on this payment's COMPLETE, same
-// mechanism as before ("first-ever completed payment" and "the only
-// payment" are now the same event, so nothing about the credit-granting
-// logic itself needed to change). Used to be a R199/month recurring
-// subscription; the recurring-specific PayFast fields (subscription_type/
-// billing_date/recurring_amount/frequency/cycles) are gone, this is now
-// the same shape as a plain payfast-checkout payment.
+// Starts ChatSched Premium access: R199/month, PayFast recurring billing,
+// for both businesses and creators. Unlocks the Opportunities job board and
+// the Marketing Suite. Sign-up and booking are free. payfast-notify marks the
+// subscription active on the first payment and pushes current_period_end a
+// month further on every renewal (schema_phase115).
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders } from "../_shared/cors.ts";
 import { signCheckoutFields, payfastHost } from "../_shared/payfast.ts";
 
-// Keep in sync with BUSINESS_SUBSCRIPTION_PRICE in src/lib/constants.ts —
-// Deno edge functions can't import from the Vite app, so this is the one
-// other place that number lives.
+// Deno edge functions can't import from the Vite app, so the price lives here too.
 // Keep in sync with PREMIUM_ACCESS_PRICE in src/lib/constants.ts and PREMIUM_MONTHLY_PRICE in payfast-notify.
 const PREMIUM_PRICE = 199.0;
 
@@ -40,7 +33,9 @@ Deno.serve(async (req) => {
       .eq("business_id", user.id)
       .maybeSingle();
 
-    if (existing?.status === "active") {
+    const stillPaidUp = existing?.status === "active" &&
+      (!existing.current_period_end || new Date(existing.current_period_end).getTime() > Date.now());
+    if (stillPaidUp) {
       return json({ error: "You already have Premium access" }, 400);
     }
 
@@ -59,7 +54,7 @@ Deno.serve(async (req) => {
         .insert({ business_id: user.id, status: "pending" })
         .select()
         .single();
-      if (createError || !created) return json({ error: "Could not start activation" }, 500);
+      if (createError || !created) return json({ error: "Could not start Premium access" }, 500);
       subscriptionId = created.id;
     }
 
@@ -102,7 +97,7 @@ Deno.serve(async (req) => {
     });
   } catch (err) {
     console.error("business-subscribe: unexpected error", err);
-    return json({ error: "Unexpected error starting activation" }, 500);
+    return json({ error: "Unexpected error starting Premium access" }, 500);
   }
 });
 

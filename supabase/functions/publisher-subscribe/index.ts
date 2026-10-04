@@ -1,17 +1,12 @@
-// Starts a R199 ONCE-OFF PayFast payment for ChatSched Publisher Network
-// activation — no renewal, ever (item 10, schema_phase86). Used to be a
-// R99/month recurring subscription; the recurring-specific PayFast fields
-// (subscription_type/billing_date/recurring_amount/frequency/cycles) are
-// gone, this is now the same shape as a plain payfast-checkout payment,
-// just routed through payfast-notify's publisher_subscription branch
-// instead of the `payments` table.
+// Starts ChatSched Premium access: R199/month, PayFast recurring billing,
+// for both businesses and creators. Unlocks the Opportunities job board and
+// the Marketing Suite. Sign-up and booking are free. payfast-notify marks the
+// subscription active on the first payment and pushes current_period_end a
+// month further on every renewal (schema_phase115).
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders } from "../_shared/cors.ts";
 import { signCheckoutFields, payfastHost } from "../_shared/payfast.ts";
 
-// Keep in sync with PUBLISHER_SUBSCRIPTION_PRICE in src/lib/constants.ts —
-// Deno edge functions can't import from the Vite app, so this is the one
-// other place that number lives.
 // Keep in sync with PREMIUM_ACCESS_PRICE in src/lib/constants.ts and PREMIUM_MONTHLY_PRICE in payfast-notify.
 const PREMIUM_PRICE = 199.0;
 
@@ -29,7 +24,7 @@ Deno.serve(async (req) => {
     if (userError || !user) return json({ error: "Not logged in" }, 401);
 
     const { data: profile } = await supabase.from("profiles").select("role, full_name").eq("id", user.id).maybeSingle();
-    if (!profile || profile.role !== "publisher") return json({ error: "Only publisher accounts can join the Publisher Network" }, 403);
+    if (!profile || profile.role !== "publisher") return json({ error: "Only publisher accounts can buy Premium access here" }, 403);
 
     const { data: existing } = await supabase
       .from("publisher_subscriptions")
@@ -37,8 +32,10 @@ Deno.serve(async (req) => {
       .eq("publisher_id", user.id)
       .maybeSingle();
 
-    if (existing?.status === "active") {
-      return json({ error: "You're already a Publisher Network member" }, 400);
+    const stillPaidUp = existing?.status === "active" &&
+      (!existing.current_period_end || new Date(existing.current_period_end).getTime() > Date.now());
+    if (stillPaidUp) {
+      return json({ error: "You already have Premium access" }, 400);
     }
 
     // service role — this function creates/updates the subscription row
@@ -56,7 +53,7 @@ Deno.serve(async (req) => {
         .insert({ publisher_id: user.id, status: "pending" })
         .select()
         .single();
-      if (createError || !created) return json({ error: "Could not start activation" }, 500);
+      if (createError || !created) return json({ error: "Could not start Premium access" }, 500);
       subscriptionId = created.id;
     }
 
@@ -99,7 +96,7 @@ Deno.serve(async (req) => {
     });
   } catch (err) {
     console.error("publisher-subscribe: unexpected error", err);
-    return json({ error: "Unexpected error starting activation" }, 500);
+    return json({ error: "Unexpected error starting Premium access" }, 500);
   }
 });
 
