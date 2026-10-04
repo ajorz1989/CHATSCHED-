@@ -63,3 +63,34 @@ export function computeBookingBreakdown(creatorPriceCents: number): BookingBreak
 export function computeBookingBreakdownFromRand(creatorPriceRand: number): BookingBreakdown {
   return computeBookingBreakdown(toCents(creatorPriceRand));
 }
+
+/**
+ * The breakdown for a channel request. Uses the database snapshot when it
+ * exists (so rate or fee changes never rewrite history), otherwise
+ * computes from the amount currently on the request.
+ */
+export function channelRequestBreakdown(r: {
+  proposed_amount: number;
+  creator_price_cents?: number | null;
+  commission_rate?: number | null;
+  commission_cents?: number | null;
+  booking_fee_cents?: number | null;
+  total_due_cents?: number | null;
+  creator_payout_cents?: number | null;
+}): BookingBreakdown {
+  if (
+    r.creator_price_cents != null && r.commission_cents != null && r.booking_fee_cents != null &&
+    r.total_due_cents != null && r.creator_payout_cents != null
+  ) {
+    return {
+      creatorPriceCents: r.creator_price_cents,
+      commissionRate: r.commission_rate ?? COMMISSION_BPS / 10_000,
+      commissionCents: r.commission_cents,
+      creatorPayoutCents: r.creator_payout_cents,
+      bookingFeeCents: r.booking_fee_cents,
+      totalDueCents: r.total_due_cents,
+      platformRevenueCents: r.commission_cents + r.booking_fee_cents,
+    };
+  }
+  return computeBookingBreakdownFromRand(r.proposed_amount);
+}

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { getChannelBySlug } from "../lib/channelRegistry";
-import { PLATFORM_COMMISSION_RATE } from "../lib/constants";
+import { computeBookingBreakdownFromRand, fromCents } from "../lib/fees";
 import { formatCurrency } from "../lib/currency";
 import Button from "./Button";
 import type { ChannelSlug } from "../lib/channelTypes";
@@ -303,7 +303,7 @@ export default function CreateRequestForClient({
                   </div>
                   {!isSocialMedia && Number(q.amount) > 0 && (
                     <p className="text-[11px] text-billboard-inkSoft mt-1">
-                      {q.publisher.name} would receive {formatCurrency(Number(q.amount) * (1 - PLATFORM_COMMISSION_RATE), { cents: true })} after commission.
+                      {q.publisher.name} would receive {formatCurrency(fromCents(computeBookingBreakdownFromRand(Number(q.amount)).creatorPayoutCents), { cents: true })} after commission; the client pays {formatCurrency(fromCents(computeBookingBreakdownFromRand(Number(q.amount)).totalDueCents), { cents: true })} including the booking fee.
                     </p>
                   )}
                 </div>

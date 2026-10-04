@@ -7,6 +7,7 @@ import { formatCurrency } from "../lib/currency";
 import { formatSupabaseError } from "../lib/supabaseErrors";
 import { getChannelBySlug } from "../lib/channelRegistry";
 import { CREATOR_APPROVAL_WINDOW_DAYS, BUSINESS_PAYMENT_WINDOW_DAYS, CREATOR_PAYOUT_WINDOW_HOURS, PLATFORM_COMMISSION_RATE } from "../lib/constants";
+import { computeBookingBreakdownFromRand, fromCents } from "../lib/fees";
 import { hasUsableBusinessSubscription } from "../lib/subscriptionGate";
 import SubscriptionGateNotice from "./SubscriptionGateNotice";
 import { SchedySticker } from "./schedy";
@@ -291,7 +292,7 @@ export default function ChannelRequestForm({ publisher }: { publisher: Publisher
       />
       {Number(amount) > 0 && (
         <p className="text-xs text-billboard-inkSoft mb-3">
-          {publisher.name} receives {formatCurrency(Number(amount) * (1 - PLATFORM_COMMISSION_RATE), { cents: true })} after the platform's {Math.round(PLATFORM_COMMISSION_RATE * 100)}% commission.
+          {publisher.name} receives {formatCurrency(fromCents(computeBookingBreakdownFromRand(Number(amount)).creatorPayoutCents), { cents: true })} after the platform's {Math.round(PLATFORM_COMMISSION_RATE * 100)}% commission. A {formatCurrency(fromCents(computeBookingBreakdownFromRand(Number(amount)).bookingFeeCents))} booking fee is added to your total, so you'd pay {formatCurrency(fromCents(computeBookingBreakdownFromRand(Number(amount)).totalDueCents), { cents: true })} once {publisher.name} accepts.
         </p>
       )}
 

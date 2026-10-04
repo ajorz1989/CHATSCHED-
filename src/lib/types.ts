@@ -573,6 +573,17 @@ export interface ChannelRequest {
   duration_days: number | null;
   request_metadata: Record<string, unknown> | null;
   agency_campaign_id: string | null;
+  // Money snapshot written by the database when the booking enters
+  // awaiting_payment (schema_phase113). Null on older rows; use
+  // channelRequestBreakdown() in lib/fees.ts rather than reading directly.
+  creator_price_cents?: number | null;
+  commission_rate?: number | null;
+  commission_cents?: number | null;
+  booking_fee_cents?: number | null;
+  total_due_cents?: number | null;
+  creator_payout_cents?: number | null;
+  payment_reference?: string | null;
+  funds_cleared_at?: string | null;
   creator?: Pick<Publisher, "id" | "name" | "city" | "province" | "channel_slug"> | null;
   business?: (Pick<Profile, "full_name" | "company_name"> & { verification_level?: BusinessVerificationLevel | null }) | null;
 }

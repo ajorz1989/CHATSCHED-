@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { PUBLISHER_SHARE } from "../lib/constants";
+import { channelRequestBreakdown, fromCents } from "../lib/fees";
 import { computePublisherChecklist } from "../lib/onboardingChecklist";
 import type { Publisher, PublisherRequest, ChannelRequest, Payment } from "../lib/types";
 import Button from "./Button";
@@ -53,7 +54,7 @@ export default function CreatorHomeSummary({
   // a given publisher, matching how load() above already branches.
   const paidPayments = requests.flatMap((r) => (r.payments ?? []) as Payment[]).filter((p) => p.status === "paid");
   const requestEarnings = paidPayments.reduce((s, p) => s + p.amount * PUBLISHER_SHARE, 0);
-  const channelEarnings = channelRequests.filter((r) => r.paid_at).reduce((s, r) => s + (r.proposed_amount ?? 0) * PUBLISHER_SHARE, 0);
+  const channelEarnings = channelRequests.filter((r) => r.paid_at).reduce((s, r) => s + fromCents(channelRequestBreakdown(r).creatorPayoutCents), 0);
   const totalEarned = requestEarnings + channelEarnings;
 
   return (

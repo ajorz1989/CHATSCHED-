@@ -5,7 +5,7 @@ import { formatSupabaseError } from "../lib/supabaseErrors";
 import { formatCurrency } from "../lib/currency";
 import { SkeletonRows } from "../components/Skeleton";
 import { getChannelBySlug } from "../lib/channelRegistry";
-import { PLATFORM_COMMISSION_RATE } from "../lib/constants";
+import { computeBookingBreakdownFromRand, fromCents } from "../lib/fees";
 import Seo from "../components/Seo";
 import type { PublisherRelationship } from "../lib/types";
 import Button from "../components/Button";
@@ -205,7 +205,7 @@ function RunAgainForm({ publisherId, channelSlug, onDone }: { publisherId: strin
         className="w-full border-2 border-billboard-ink rounded px-3 py-2 text-sm"
       />
       {!isSocialMedia && Number(amount) > 0 && (
-        <p className="text-xs text-billboard-inkSoft">Publisher receives {formatCurrency(Number(amount) * (1 - PLATFORM_COMMISSION_RATE), { cents: true })} after commission.</p>
+        <p className="text-xs text-billboard-inkSoft">Publisher receives {formatCurrency(fromCents(computeBookingBreakdownFromRand(Number(amount)).creatorPayoutCents), { cents: true })} after commission; you pay {formatCurrency(fromCents(computeBookingBreakdownFromRand(Number(amount)).totalDueCents), { cents: true })} including the booking fee.</p>
       )}
       {error && <p className="text-billboard-red text-xs font-semibold">{error}</p>}
       <Button type="submit" variant="dark" size="md" disabled={sending}>

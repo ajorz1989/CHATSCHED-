@@ -4,6 +4,7 @@ import { useAuth } from "../hooks/useAuth";
 import { formatCurrency as formatCurrencyShared } from "../lib/currency";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
 import { PUBLISHER_SHARE } from "../lib/constants";
+import { channelRequestBreakdown, fromCents } from "../lib/fees";
 import { scoreLabel } from "../lib/publisherDisplay";
 import TrustBadge from "../components/TrustBadge";
 import SetupNotice from "../components/SetupNotice";
@@ -40,6 +41,9 @@ interface NormalizedItem {
   agreedAmount: number | null;
   // Set only once money has actually been paid — drives every $ stat.
   paidAmount: number | null;
+  // What the creator actually receives for this booking (after commission).
+  agreedPayout: number | null;
+  paidPayout: number | null;
   paidAt: string | null;
 }
 
@@ -56,7 +60,9 @@ function normalizeRequests(requests: PublisherRequest[]): NormalizedItem[] {
       createdAt: r.created_at,
       bucket,
       agreedAmount: r.agreed_amount,
+      agreedPayout: r.agreed_amount == null ? null : r.agreed_amount * PUBLISHER_SHARE,
       paidAmount: paid ? paid.amount : null,
+      paidPayout: paid ? paid.amount * PUBLISHER_SHARE : null,
       paidAt: paid ? (paid.paid_at ?? paid.created_at) : null,
     };
   });
@@ -69,12 +75,15 @@ function normalizeChannelRequests(requests: ChannelRequest[]): NormalizedItem[] 
       r.status === "awaiting_payment" || r.status === "payment_submitted" ? "awaiting_payment" :
       r.status === "declined" || r.status === "cancelled" ? "declined" : "pending";
     const agreedAmount = bucket === "pending" || bucket === "declined" ? null : r.proposed_amount;
+    const payout = fromCents(channelRequestBreakdown(r).creatorPayoutCents);
     return {
       id: r.id,
       createdAt: r.created_at,
       bucket,
       agreedAmount,
+      agreedPayout: agreedAmount == null ? null : payout,
       paidAmount: r.paid_at ? r.proposed_amount : null,
+      paidPayout: r.paid_at ? payout : null,
       paidAt: r.paid_at,
     };
   });
@@ -174,7 +183,7 @@ export default function EarningsDashboard() {
   // merging means this page works correctly either way instead of quietly
   // assuming social-media.
   const items = [...normalizeRequests(requests), ...normalizeChannelRequests(channelRequests)];
-  const paidItems = items.filter(i => i.paidAmount != null) as (NormalizedItem & { paidAmount: number; paidAt: string })[];
+  const paidItems = items.filter(i => i.paidAmount != null) as (NormalizedItem & { paidAmount: number; paidPayout: number; paidAt: string })[];
 
   const now = new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -185,9 +194,9 @@ export default function EarningsDashboard() {
   const thisMonthPaid = paidItems.filter(p => payDate(p) >= monthStart);
   const thisWeekPaid = paidItems.filter(p => payDate(p) >= weekAgo);
 
-  const totalEarned = paidItems.reduce((s, p) => s + p.paidAmount * PUBLISHER_SHARE, 0);
-  const monthEarned = thisMonthPaid.reduce((s, p) => s + p.paidAmount * PUBLISHER_SHARE, 0);
-  const weekEarned = thisWeekPaid.reduce((s, p) => s + p.paidAmount * PUBLISHER_SHARE, 0);
+  const totalEarned = paidItems.reduce((s, p) => s + p.paidPayout, 0);
+  const monthEarned = thisMonthPaid.reduce((s, p) => s + p.paidPayout, 0);
+  const weekEarned = thisWeekPaid.reduce((s, p) => s + p.paidPayout, 0);
 
   const pendingRequests = items.filter(i => i.bucket === "pending");
   const completedRequests = items.filter(i => i.bucket === "completed");
@@ -211,7 +220,7 @@ export default function EarningsDashboard() {
   // Last 3 months' average for comparison
   const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, 1);
   const last3MonthsPaid = paidItems.filter(p => payDate(p) >= threeMonthsAgo && payDate(p) < monthStart);
-  const avgMonthly3 = last3MonthsPaid.length ? last3MonthsPaid.reduce((s, p) => s + p.paidAmount * PUBLISHER_SHARE, 0) / 3 : 0;
+  const avgMonthly3 = last3MonthsPaid.length ? last3MonthsPaid.reduce((s, p) => s + p.paidPayout, 0) / 3 : 0;
   const forecastBase = avgMonthly3 > 0 ? avgMonthly3 : projectedMonthly;
 
   // Recent 10 earnings entries
@@ -323,7 +332,7 @@ export default function EarningsDashboard() {
                         {formatR(p.paidAmount)}
                       </td>
                       <td className="px-4 py-3 text-right font-mono font-semibold text-billboard-greenDeep">
-                        {formatR(p.paidAmount * PUBLISHER_SHARE)}
+                        {formatR(p.paidPayout)}
                       </td>
                     </tr>
                   ))}
@@ -363,7 +372,7 @@ export default function EarningsDashboard() {
                   {formatR(
                     confirmedRequests
                       .filter(i => i.agreedAmount != null)
-                      .reduce((s, i) => s + (i.agreedAmount ?? 0) * PUBLISHER_SHARE, 0)
+                      .reduce((s, i) => s + (i.agreedPayout ?? 0), 0)
                   )}
                 </p>
                 <p className="text-xs text-billboard-inkSoft mt-1">

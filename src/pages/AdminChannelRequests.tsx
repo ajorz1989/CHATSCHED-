@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { getChannelBySlug } from "../lib/channelRegistry";
-import { PLATFORM_COMMISSION_RATE } from "../lib/constants";
+import { channelRequestBreakdown, computeBookingBreakdownFromRand, fromCents } from "../lib/fees";
 import { formatCurrency } from "../lib/currency";
 import { StatCardGridSkeleton, SkeletonRows } from "../components/Skeleton";
 import ExportCsvButton from "../components/ExportCsvButton";
@@ -29,6 +29,7 @@ function buildChannelRequestRows(requests: ChannelRequest[]): CsvRow[] {
     // actually applies: the counter once one exists, the original
     // proposal otherwise.
     const finalAmount = r.status === "countered" || r.counter_amount != null ? (r.counter_amount ?? r.proposed_amount) : r.proposed_amount;
+    const bd = r.status === "countered" ? computeBookingBreakdownFromRand(finalAmount) : channelRequestBreakdown({ ...r, proposed_amount: finalAmount });
     return {
       Channel: chDef?.name || r.channel_slug,
       Creator: r.creator?.name || "",
@@ -38,8 +39,12 @@ function buildChannelRequestRows(requests: ChannelRequest[]): CsvRow[] {
       "Counter amount (R)": r.counter_amount ?? "",
       "Countered at": r.countered_at ? new Date(r.countered_at).toISOString().slice(0, 10) : "",
       "Final amount (R)": finalAmount,
-      "Platform commission (R)": (finalAmount * PLATFORM_COMMISSION_RATE).toFixed(2),
-      "Creator share (R)": (finalAmount * (1 - PLATFORM_COMMISSION_RATE)).toFixed(2),
+      "Booking fee (R)": fromCents(bd.bookingFeeCents).toFixed(2),
+      "Business pays (R)": fromCents(bd.totalDueCents).toFixed(2),
+      "Platform commission (R)": fromCents(bd.commissionCents).toFixed(2),
+      "Creator share (R)": fromCents(bd.creatorPayoutCents).toFixed(2),
+      "Platform revenue (R)": fromCents(bd.platformRevenueCents).toFixed(2),
+      "Payment reference": r.payment_reference ?? "",
       Status: r.status,
       Created: new Date(r.created_at).toISOString().slice(0, 10),
       "Live at": r.live_at ? new Date(r.live_at).toISOString().slice(0, 10) : "",
@@ -169,7 +174,7 @@ export default function AdminChannelRequests() {
                     {chDef ? <><ChannelIcon slug={chDef.slug} size="sm" /> {chDef.name}</> : r.channel_slug} · {r.creator?.name ?? "Unknown creator"} ← {r.business?.company_name || r.business?.full_name || "Unknown business"}
                   </p>
                   <p className="text-xs text-billboard-inkSoft mt-1">
-                    {r.advertising_method} · {formatCurrency(r.proposed_amount)} (platform {formatCurrency(r.proposed_amount * PLATFORM_COMMISSION_RATE, { cents: true })} · creator {formatCurrency(r.proposed_amount * (1 - PLATFORM_COMMISSION_RATE), { cents: true })}){r.duration_days ? ` · ${r.duration_days} days` : ""} · status: <span className="font-mono">{r.status}</span>
+                    {r.advertising_method} · {formatCurrency(r.proposed_amount)} (business pays {formatCurrency(fromCents(channelRequestBreakdown(r).totalDueCents), { cents: true })} · creator {formatCurrency(fromCents(channelRequestBreakdown(r).creatorPayoutCents), { cents: true })} · platform {formatCurrency(fromCents(channelRequestBreakdown(r).platformRevenueCents), { cents: true })}){r.duration_days ? ` · ${r.duration_days} days` : ""} · status: <span className="font-mono">{r.status}</span>
                     {r.status === "countered" && r.counter_amount != null && <span className="font-mono"> (countered to {formatCurrency(r.counter_amount)})</span>}
                     {isOverdue(r) && <span className="text-billboard-red font-semibold"> · overdue</span>}
                   </p>

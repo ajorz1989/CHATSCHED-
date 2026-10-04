@@ -9,7 +9,8 @@ import TrustBadge from "./TrustBadge";
 import { getChannelBySlug } from "../lib/channelRegistry";
 import { calculateSuggestedPrice, MIN_PRICE_PER_POST } from "../lib/pricingEngine";
 import { buildAndDownloadInvoice } from "../lib/invoice";
-import { CREATOR_APPROVAL_WINDOW_DAYS, CREATOR_PAYOUT_WINDOW_HOURS, PUBLISHER_SHARE, PLACEMENT_TYPES, recommendedPlacementTypes, CATEGORIES, PROVINCES, SA_SUBURBS_AUTOCOMPLETE, CONTACT_ADDRESS_LINES, MAX_PROFILE_IMAGE_BYTES, ALLOWED_PROFILE_IMAGE_MIME_TYPES, MIN_BIO_LENGTH } from "../lib/constants";
+import { channelRequestBreakdown, fromCents } from "../lib/fees";
+import { CREATOR_APPROVAL_WINDOW_DAYS, CREATOR_PAYOUT_WINDOW_HOURS, PLACEMENT_TYPES, recommendedPlacementTypes, CATEGORIES, PROVINCES, SA_SUBURBS_AUTOCOMPLETE, CONTACT_ADDRESS_LINES, MAX_PROFILE_IMAGE_BYTES, ALLOWED_PROFILE_IMAGE_MIME_TYPES, MIN_BIO_LENGTH } from "../lib/constants";
 import { hasUsablePublisherSubscription } from "../lib/subscriptionGate";
 import SubscriptionGateNotice from "./SubscriptionGateNotice";
 import MessageThread from "./MessageThread";
@@ -1089,7 +1090,7 @@ function ChannelRequestCard({ request: r, publisher, onChange }: { request: Chan
                 commission math instead of using the shared constant is
                 exactly the pattern that caused the stale-commission bug
                 already fixed once elsewhere (schema_phase99). */}
-            {r.advertising_method} · {formatCurrency(r.proposed_amount)} proposed · you receive {formatCurrency(r.proposed_amount * PUBLISHER_SHARE, { cents: true })}
+            {r.advertising_method} · {formatCurrency(r.proposed_amount)} proposed · you receive {formatCurrency(fromCents(channelRequestBreakdown(r).creatorPayoutCents), { cents: true })}
           </p>
           <p className="text-sm text-billboard-inkSoft mt-1 max-w-md">{r.campaign_message}</p>
           <RequestMetadataDetails channelSlug={r.channel_slug} metadata={r.request_metadata} />
