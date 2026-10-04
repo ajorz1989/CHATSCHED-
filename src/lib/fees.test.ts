@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { computeBookingBreakdown, bookingFeeCents, computeBookingBreakdownFromRand } from "./fees";
+import { computeBookingBreakdown, bookingFeeCents, computeBookingBreakdownFromRand, businessCancelRefundCents } from "./fees";
 
 describe("booking fee tiers", () => {
   it("charges R30 below R500", () => {
@@ -40,5 +40,21 @@ describe("computeBookingBreakdown", () => {
   it("handles Rand input without float drift", () => {
     expect(computeBookingBreakdownFromRand(299).creatorPayoutCents).toBe(26_312);
     expect(computeBookingBreakdownFromRand(299.99).totalDueCents).toBe(32_999);
+  });
+});
+
+describe("businessCancelRefundCents", () => {
+  const base = { proposed_amount: 299, funds_cleared_at: "2026-10-01T00:00:00Z" };
+  it("refunds the creator price (fee kept) with 48h+ to go-live", () => {
+    expect(businessCancelRefundCents({ ...base, scheduled_live_at: "2026-10-20T09:00:00Z" }, new Date("2026-10-10T00:00:00Z"))).toBe(29900);
+  });
+  it("refunds nothing inside the 48h window", () => {
+    expect(businessCancelRefundCents({ ...base, scheduled_live_at: "2026-10-20T09:00:00Z" }, new Date("2026-10-19T00:00:00Z"))).toBe(0);
+  });
+  it("refunds nothing when funds have not cleared", () => {
+    expect(businessCancelRefundCents({ proposed_amount: 299, scheduled_live_at: null }, new Date())).toBe(0);
+  });
+  it("treats a missing go-live date as safe", () => {
+    expect(businessCancelRefundCents({ ...base, scheduled_live_at: null })).toBe(29900);
   });
 });

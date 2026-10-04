@@ -71,9 +71,38 @@ export default function AdminChannelRequests() {
 
   useEffect(() => { load(); }, []);
 
-  async function confirmPayment(id: string) {
+  const [actionError, setActionError] = useState<string | null>(null);
+
+  // The ONLY way a booking becomes payable/live. Admin confirms after the
+  // money shows as cleared in the bank account, never on a screenshot or on
+  // the business's "I've paid" click. The database stamps funds_cleared_at.
+  async function confirmPayment(r: ChannelRequest) {
+    const due = formatCurrency(fromCents(channelRequestBreakdown(r).totalDueCents), { cents: true });
+    const ref = r.payment_reference ?? `CS-${r.id.slice(0, 8).toUpperCase()}`;
+    if (!window.confirm(`Confirm that ${due} with reference ${ref} has CLEARED in the ChatSched bank account?\n\nOnly confirm once the funds show as cleared, not on a screenshot of proof of payment.`)) return;
+    setActingId(r.id);
+    setActionError(null);
+    const { error } = await supabase.from("channel_requests").update({ status: "paid" }).eq("id", r.id);
+    if (error) setActionError(error.message);
+    setActingId(null);
+    load();
+  }
+
+  async function cancelWithFullRefund(r: ChannelRequest) {
+    if (!window.confirm("Cancel this booking and refund the business in full (including the booking fee)? Use this for creator no-shows or problems on our side.")) return;
+    setActingId(r.id);
+    setActionError(null);
+    const { error } = await supabase.rpc("cancel_channel_request", { p_request_id: r.id, p_reason: "Cancelled by admin" });
+    if (error) setActionError(error.message);
+    setActingId(null);
+    load();
+  }
+
+  async function markRefundPaid(id: string) {
     setActingId(id);
-    await supabase.from("channel_requests").update({ status: "paid" }).eq("id", id);
+    setActionError(null);
+    const { error } = await supabase.rpc("mark_refund_paid_out", { p_request_id: id });
+    if (error) setActionError(error.message);
     setActingId(null);
     load();
   }
@@ -97,7 +126,7 @@ export default function AdminChannelRequests() {
     ((r.status === "pending" || r.status === "countered") && new Date(r.approval_due_at).getTime() < now) ||
     (r.status === "awaiting_payment" && r.payment_due_at != null && new Date(r.payment_due_at).getTime() < now);
 
-  const needsAction = requests.filter((r) => r.status === "payment_submitted" || r.status === "live");
+  const needsAction = requests.filter((r) => r.status === "payment_submitted" || r.status === "live" || (r.status === "cancelled" && r.refund_status === "due"));
   const overdue = requests.filter(isOverdue);
   const visible = filter === "needs_action" ? needsAction : filter === "overdue" ? overdue : requests;
 
@@ -120,9 +149,11 @@ export default function AdminChannelRequests() {
   return (
     <div>
       <p className="text-billboard-inkSoft text-sm mb-6">
-        Influencer, website, podcast, and radio requests. Creators approve, decline, and mark their own posts live —
-        your two jobs here are confirming a business's payment landed, and confirming a creator's payout went out.
+        Every channel's requests, social media included. Creators approve, decline, and mark their own posts live —
+        your jobs here are confirming a business's funds have cleared in the bank (never on a screenshot), paying out creators, and paying back any refunds due.
       </p>
+
+      {actionError && <p className="text-billboard-red text-sm font-semibold mb-3">{actionError}</p>}
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
         <div className="border-2 border-billboard-ink rounded p-3">
@@ -182,9 +213,19 @@ export default function AdminChannelRequests() {
                   <RequestMetadataDetails channelSlug={r.channel_slug} metadata={r.request_metadata} />
                 </div>
                 <div className="flex gap-2 shrink-0">
-                  {r.status === "payment_submitted" && (
-                    <button onClick={() => confirmPayment(r.id)} disabled={actingId === r.id} className="border-[3px] border-billboard-ink bg-billboard-green text-white font-bold px-3 py-1.5 rounded text-xs hover:-translate-y-0.5 transition disabled:opacity-60">
-                      Confirm payment received
+                  {(r.status === "payment_submitted" || r.status === "awaiting_payment") && (
+                    <button onClick={() => confirmPayment(r)} disabled={actingId === r.id} className="border-[3px] border-billboard-ink bg-billboard-green text-white font-bold px-3 py-1.5 rounded text-xs hover:-translate-y-0.5 transition disabled:opacity-60">
+                      Confirm funds cleared
+                    </button>
+                  )}
+                  {(r.status === "paid" || r.status === "live") && (
+                    <button onClick={() => cancelWithFullRefund(r)} disabled={actingId === r.id} className="border-2 border-billboard-red text-billboard-red font-bold px-3 py-1.5 rounded text-xs hover:bg-billboard-red hover:text-white transition disabled:opacity-60">
+                      Cancel + full refund
+                    </button>
+                  )}
+                  {r.status === "cancelled" && r.refund_status === "due" && (
+                    <button onClick={() => markRefundPaid(r.id)} disabled={actingId === r.id} className="border-[3px] border-billboard-ink bg-billboard-yellow font-bold px-3 py-1.5 rounded text-xs hover:-translate-y-0.5 transition disabled:opacity-60">
+                      Refund {formatCurrency(fromCents(r.refund_amount_cents ?? 0), { cents: true })} paid out
                     </button>
                   )}
                   {r.status === "live" && (

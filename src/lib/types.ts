@@ -586,6 +586,9 @@ export interface ChannelRequest {
   funds_cleared_at?: string | null;
   // Set by the creator on acceptance (schema_phase114); drives the 48h refund cutoff.
   scheduled_live_at?: string | null;
+  cancelled_by?: "business" | "creator" | "admin" | null;
+  refund_status?: "none" | "due" | "paid_out" | null;
+  refund_amount_cents?: number | null;
   creator?: Pick<Publisher, "id" | "name" | "city" | "province" | "channel_slug"> | null;
   business?: (Pick<Profile, "full_name" | "company_name"> & { verification_level?: BusinessVerificationLevel | null }) | null;
 }

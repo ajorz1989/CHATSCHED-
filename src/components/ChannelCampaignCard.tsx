@@ -6,7 +6,7 @@ import { formatSupabaseError } from "../lib/supabaseErrors";
 import { formatCurrency } from "../lib/currency";
 import { buildAndDownloadInvoice } from "../lib/invoice";
 import { buildAndDownloadPaymentCard, buildPaymentCardModel } from "../lib/paymentCard";
-import { channelRequestBreakdown, fromCents } from "../lib/fees";
+import { businessCancelRefundCents, channelRequestBreakdown, fromCents } from "../lib/fees";
 import { getChannelBySlug } from "../lib/channelRegistry";
 import BankDetailsPanel from "./BankDetailsPanel";
 import EscrowNote from "./EscrowNote";
@@ -134,6 +134,25 @@ export default function ChannelCampaignCard({ request: r, onChange }: { request:
     onChange();
   }
 
+  const [cancellingBooking, setCancellingBooking] = useState(false);
+  const [confirmingBookingCancel, setConfirmingBookingCancel] = useState(false);
+
+  async function cancelBooking() {
+    setCancellingBooking(true);
+    setError(null);
+    const { error: rpcError } = await supabase.rpc("cancel_channel_request", { p_request_id: r.id, p_reason: "Cancelled by business" });
+    setCancellingBooking(false);
+    setConfirmingBookingCancel(false);
+    if (rpcError) {
+      setError(formatSupabaseError(rpcError, "Couldn't cancel this booking"));
+      return;
+    }
+    onChange();
+  }
+
+  const refundIfCancelled = fromCents(businessCancelRefundCents(r));
+  const bookingFeeKept = fromCents(channelRequestBreakdown(r).bookingFeeCents);
+
   async function respondToCounter(accept: boolean) {
     setRespondingToCounter(true);
     setError(null);
@@ -227,6 +246,40 @@ export default function ChannelCampaignCard({ request: r, onChange }: { request:
             </button>
           </div>
         </div>
+      )}
+
+      {(r.status === "awaiting_payment" || r.status === "payment_submitted" || r.status === "paid") && (
+        <div className="border-t-2 border-billboard-paperDim pt-4 mt-1">
+          {!confirmingBookingCancel ? (
+            <button onClick={() => setConfirmingBookingCancel(true)} className="font-mono text-xs font-semibold uppercase border-2 border-billboard-red text-billboard-red rounded px-3 py-1.5 hover:-translate-y-0.5 transition">
+              Cancel booking
+            </button>
+          ) : (
+            <div className="border-2 border-billboard-red rounded p-3 bg-billboard-red/5">
+              <p className="text-xs font-semibold mb-2">
+                {r.status === "paid"
+                  ? refundIfCancelled > 0
+                    ? `Cancel this booking? You'll be refunded ${formatCurrency(refundIfCancelled, { cents: true })}. The ${formatCurrency(bookingFeeKept)} booking fee is not refundable. Refunds are paid back by bank transfer.`
+                    : "Cancel this booking? It is inside 48 hours of the go-live date, so no automatic refund applies. ChatSched can review exceptional cases."
+                  : "Cancel this booking? No money has cleared yet, so nothing is owed. If you've already paid, contact ChatSched before cancelling."}
+              </p>
+              <div className="flex gap-2">
+                <button onClick={cancelBooking} disabled={cancellingBooking} className="font-mono text-xs font-semibold uppercase bg-billboard-red text-white border-2 border-billboard-red rounded px-3 py-1.5 hover:-translate-y-0.5 transition disabled:opacity-60">
+                  {cancellingBooking ? "Cancelling…" : "Yes, cancel booking"}
+                </button>
+                <button onClick={() => setConfirmingBookingCancel(false)} disabled={cancellingBooking} className="font-mono text-xs font-semibold uppercase border-2 border-billboard-ink rounded px-3 py-1.5 hover:bg-billboard-paperDim transition disabled:opacity-60">
+                  Keep booking
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {r.status === "cancelled" && (r.refund_amount_cents ?? 0) > 0 && (
+        <p className="text-sm text-billboard-inkSoft border-t-2 border-billboard-paperDim pt-4 mt-1">
+          Refund of {formatCurrency(fromCents(r.refund_amount_cents ?? 0), { cents: true })} {r.refund_status === "paid_out" ? "has been paid back to you." : "is being processed. ChatSched pays it back by bank transfer."}
+        </p>
       )}
 
       {r.status === "cancelled" && (

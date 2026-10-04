@@ -94,3 +94,23 @@ export function channelRequestBreakdown(r: {
   }
   return computeBookingBreakdownFromRand(r.proposed_amount);
 }
+
+export const REFUND_CUTOFF_HOURS = 48;
+export const FIRST_BOOKINGS_REVIEW_TARGET = 50;
+
+/**
+ * What a business gets back if it cancels a booking whose funds have cleared.
+ * Mirrors public.cancel_channel_request() in schema_phase114: the creator
+ * price comes back (booking fee kept) when there are at least 48 hours to
+ * go-live, otherwise nothing automatic. A missing go-live date counts as safe.
+ */
+export function businessCancelRefundCents(
+  r: Parameters<typeof channelRequestBreakdown>[0] & { scheduled_live_at?: string | null; funds_cleared_at?: string | null },
+  now: Date = new Date(),
+): number {
+  if (!r.funds_cleared_at) return 0;
+  const bd = channelRequestBreakdown(r);
+  if (!r.scheduled_live_at) return bd.creatorPriceCents;
+  const cutoff = new Date(r.scheduled_live_at).getTime() - REFUND_CUTOFF_HOURS * 3_600_000;
+  return now.getTime() <= cutoff ? bd.creatorPriceCents : 0;
+}

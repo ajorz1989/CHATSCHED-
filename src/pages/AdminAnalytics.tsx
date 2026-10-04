@@ -2,8 +2,19 @@ import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { StatCardGridSkeleton, SkeletonBlock, SkeletonLine } from "../components/Skeleton";
 import Button from "../components/Button";
-import { PLATFORM_COMMISSION_RATE, PUBLISHER_SUBSCRIPTION_PRICE, BUSINESS_SUBSCRIPTION_PRICE } from "../lib/constants";
+import { PUBLISHER_SUBSCRIPTION_PRICE, BUSINESS_SUBSCRIPTION_PRICE } from "../lib/constants";
+import { FIRST_BOOKINGS_REVIEW_TARGET, fromCents } from "../lib/fees";
 import { formatCurrency as formatCurrencyShared } from "../lib/currency";
+
+interface BookingRevenue {
+  cleared_bookings: number;
+  gross_received_cents: number;
+  commission_cents: number;
+  booking_fee_cents: number;
+  refunds_due_cents: number;
+  refunds_paid_cents: number;
+  completed_bookings: number;
+}
 
 interface Overview {
   ok: boolean;
@@ -64,6 +75,7 @@ const RANGE_OPTIONS = [
 
 export default function AdminAnalytics() {
   const [range, setRange] = useState<number>(30);
+  const [bookingRevenue, setBookingRevenue] = useState<BookingRevenue | null>(null);
   const [overview, setOverview] = useState<Overview | null>(null);
   const [gmvSeries, setGmvSeries] = useState<SeriesPoint[]>([]);
   const [reqSeries, setReqSeries] = useState<SeriesPoint[]>([]);
@@ -90,6 +102,9 @@ export default function AdminAnalytics() {
       supabase.rpc("analytics_time_series", { p_metric: "requests", p_interval: interval, p_start: start, p_end: end }),
       supabase.rpc("analytics_segmented_by", { p_kind: "publisher_gmv", p_start: start, p_end: end, p_limit: 10 }),
     ]);
+
+    const { data: br } = await supabase.rpc("admin_booking_revenue");
+    setBookingRevenue((br ?? null) as BookingRevenue | null);
 
     const firstError = oe || ge || re || te;
     if (firstError) setLoadError(firstError.message);
@@ -183,9 +198,14 @@ export default function AdminAnalytics() {
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
-                <p className="text-[10px] font-mono uppercase text-billboard-inkSoft">Commission earned (period)</p>
-                <p className="text-xl font-bold mt-1">{formatCurrency((overview?.total_gmv ?? 0) * PLATFORM_COMMISSION_RATE)}</p>
-                <p className="text-[11px] text-billboard-inkSoft mt-1">{Math.round(PLATFORM_COMMISSION_RATE * 100)}% of {formatCurrency(overview?.total_gmv ?? 0)} GMV</p>
+                <p className="text-[10px] font-mono uppercase text-billboard-inkSoft">ChatSched revenue (cleared funds, lifetime)</p>
+                <p className="text-xl font-bold mt-1">{formatCurrency(fromCents((bookingRevenue?.commission_cents ?? 0) + (bookingRevenue?.booking_fee_cents ?? 0)))}</p>
+                <p className="text-[11px] text-billboard-inkSoft mt-1">{formatCurrency(fromCents(bookingRevenue?.commission_cents ?? 0))} commission + {formatCurrency(fromCents(bookingRevenue?.booking_fee_cents ?? 0))} booking fees, from the stored per-booking figures</p>
+              </div>
+              <div>
+                <p className="text-[10px] font-mono uppercase text-billboard-inkSoft">Completed bookings (first-50 review)</p>
+                <p className="text-xl font-bold mt-1">{bookingRevenue?.completed_bookings ?? 0} of {FIRST_BOOKINGS_REVIEW_TARGET}</p>
+                <p className="text-[11px] text-billboard-inkSoft mt-1">Bank-transfer bookings only. Refunds due {formatCurrency(fromCents(bookingRevenue?.refunds_due_cents ?? 0))}</p>
               </div>
               <div>
                 <p className="text-[10px] font-mono uppercase text-billboard-inkSoft">Activation revenue (lifetime)</p>

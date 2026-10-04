@@ -1066,6 +1066,16 @@ function ChannelRequestCard({ request: r, publisher, onChange }: { request: Chan
     else onChange();
   }
 
+  async function creatorCancelBooking() {
+    if (!window.confirm("Cancel this booking? The business will be refunded in full, including the booking fee. Cancelling often may affect your standing on ChatSched.")) return;
+    setActing(true);
+    setActionError(null);
+    const { error } = await supabase.rpc("cancel_channel_request", { p_request_id: r.id, p_reason: "Cancelled by creator" });
+    setActing(false);
+    if (error) setActionError(formatSupabaseError(error, "Couldn't cancel this booking"));
+    else onChange();
+  }
+
   async function submitCounter() {
     const amount = Number(counterAmount);
     if (!amount || amount <= 0) {
@@ -1221,7 +1231,7 @@ function ChannelRequestCard({ request: r, publisher, onChange }: { request: Chan
       {r.status === "paid" && (
         <div className="mt-4 pt-4 border-t-2 border-billboard-paperDim">
           <p className="text-xs text-billboard-inkSoft mb-3">
-            Payment confirmed. Once your content is approved and {r.advertising_method.toLowerCase()} is live, mark it below — you'll be paid within {CREATOR_PAYOUT_WINDOW_HOURS} hours.
+            Funds have cleared. Once your content is approved and {r.advertising_method.toLowerCase()} is live, mark it below — you'll be paid within {CREATOR_PAYOUT_WINDOW_HOURS} hours.
           </p>
           <ContentApprovalPanel
             channelRequestId={r.id}
@@ -1231,6 +1241,9 @@ function ChannelRequestCard({ request: r, publisher, onChange }: { request: Chan
             advertisingMethod={r.advertising_method}
             onPublished={onChange}
           />
+          <button onClick={creatorCancelBooking} disabled={acting} className="mt-3 font-mono text-xs font-semibold uppercase border-2 border-billboard-red text-billboard-red rounded px-3 py-1.5 hover:-translate-y-0.5 transition disabled:opacity-60">
+            Can't deliver? Cancel booking
+          </button>
         </div>
       )}
 
