@@ -19,7 +19,8 @@ function pub(slug: string | null, metadata: Record<string, unknown> | null, foll
 const WITH_METADATA: Array<[string, Record<string, unknown>, number, string]> = [
   ["podcast", { averageDownloadsPerEpisode: 800 }, 800, "downloads per episode"],
   ["website", { monthlyUniqueVisitors: 12000 }, 12000, "monthly visitors"],
-  ["radio", { averageDailyListenership: 4500 }, 4500, "daily listeners"],
+  ["radio", { weeklyListeners: 30000, averageDailyListenership: 4500 }, 30000, "weekly listeners"],
+  ["radio", { averageDailyListenership: 4500 }, 4500, "daily listeners"], // legacy rows
   ["events", { typicalAttendance: 2500 }, 2500, "typical attendance"],
   ["sports", { averageMatchdayAttendance: 300 }, 300, "matchday attendance"],
   ["community", { memberCount: 1200 }, 1200, "members"],

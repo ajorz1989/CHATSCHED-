@@ -154,7 +154,9 @@ function buildProfileContent(publisher: Publisher, liveRating: number | null, li
   if (radio) {
     return {
       stats: [
-        { value: radio.averageDailyListenership != null ? radio.averageDailyListenership.toLocaleString() : "—", label: "Daily listenership" },
+        radio.weeklyListeners
+          ? { value: radio.weeklyListeners.toLocaleString(), label: "Weekly listeners" }
+          : { value: radio.averageDailyListenership != null ? radio.averageDailyListenership.toLocaleString() : (publisher.followers > 1 ? publisher.followers.toLocaleString() : "—"), label: radio.averageDailyListenership != null ? "Daily listenership" : "Weekly listeners" },
         { value: radio.coverageArea || "—", label: "Coverage area" },
         ratingStat,
       ],

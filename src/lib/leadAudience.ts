@@ -109,7 +109,9 @@ export function getLeadAudience(publisher: LeadAudiencePublisher): LeadAudience 
       break;
     case "radio": {
       const radio = getRadioMetadata(publisher);
-      lead = fromMetadata(radio?.averageDailyListenership, "daily listeners");
+      // New listings store one weekly figure; older ones may only have a separately typed daily figure.
+      lead = fromMetadata(radio?.weeklyListeners, "weekly listeners")
+        ?? fromMetadata(radio?.averageDailyListenership, "daily listeners");
       break;
     }
     case "events":

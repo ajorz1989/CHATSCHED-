@@ -71,6 +71,7 @@ export interface InformalRetailOnboardingFields {
   // know. Optional, additive.
   peakFootTrafficHours: string | null;
   municipalRegistrationConfirmed: boolean;
+  authorityConfirmed?: boolean;
 }
 
 // ── Sports Teams & Leagues ───────────────────────────────────────────────
@@ -91,6 +92,7 @@ export interface SportsOnboardingFields {
   averageMatchdayAttendance: number | null; // null if not tracked/no fixed venue attendance to report
   homeVenue: string;
   sponsorshipAuthorityRole: SponsorshipAuthorityRole;
+  authorityConfirmed?: boolean;
 }
 
 // ── Social Media ─────────────────────────────────────────────────────────
@@ -160,7 +162,14 @@ export interface RadioOnboardingFields {
   frequencyOrStream: string; // e.g. "94.5 FM" or "online-only stream URL" — one free-text field, since not every station has a terrestrial frequency
   coverageArea: string; // e.g. "Cape Town metro", "Eastern Cape province-wide"
   broadcastLanguages: string[]; // e.g. ["isiXhosa", "English"] — South Africa's 11 official languages plus others some community stations use, not a closed enum
-  averageDailyListenership: number | null; // null if not independently measured — many community stations don't have formal ratings data
+  /**
+   * Weekly listener reach - THE radio audience number. It is the same figure the
+   * applicant gives at the eligibility step (and what BRC RAMS reports as P7D), so the
+   * eligibility check and the profile can no longer disagree.
+   */
+  weeklyListeners?: number | null;
+  /** Legacy (before weeklyListeners): separately typed daily figure. Read-only fallback; new applications leave it null. */
+  averageDailyListenership: number | null;
   availableSlotLengths: RadioAdSlotLength[];
   showSponsorshipAvailable: boolean; // whether a specific show/timeslot can be sponsored, vs. only rotation ad spots
   // 12-Channel Audit fix A4 — publisherRequirements for this channel
@@ -187,6 +196,7 @@ export interface EventsOnboardingFields {
   nextEventDate: string | null; // ISO date, null if not yet scheduled — a real annual event between editions still wants to list itself
   sponsorshipTiersOffered: string[]; // e.g. ["Bronze", "Silver", "Gold", "Headline"] — organiser-defined, not a fixed list (schema_phase74's own reasoning: incompatible structures shouldn't be forced to look equivalent)
   venueCity: string;
+  authorityConfirmed?: boolean;
 }
 
 // ── Community ────────────────────────────────────────────────────────────
@@ -203,6 +213,7 @@ export interface CommunityOnboardingFields {
   reachChannels: CommunityReachChannel[];
   newsletterFrequency: PodcastFrequency | "none"; // reusing Podcast's cadence enum plus "none" — "how often does content go out" is genuinely the same shape as episode frequency, and forcing a fourth near-identical enum into existence would be exactly the incompatible-shapes-forced-to-look-equivalent mistake this file's header warns against in the other direction
   geographicArea: string; // e.g. "Sandton", "Stellenbosch" — most community groups are hyper-local
+  authorityConfirmed?: boolean;
 }
 
 // ── Transport ────────────────────────────────────────────────────────────
@@ -268,6 +279,7 @@ export interface RestaurantsOnboardingFields {
   // relevant to anyone buying a waiting-area-screen or table-card slot.
   // Optional, additive.
   peakServiceTimes: string | null;
+  authorityConfirmed?: boolean;
 }
 
 // ── In-Venue Screens & Displays ──────────────────────────────────────────
@@ -293,8 +305,37 @@ export interface InVenueScreensOnboardingFields {
   footTrafficTier: InVenueFootTrafficTier;
   estimatedFootfallPerNight: number;
   hasSoundCapability: boolean; // gates whether a business can submit creative with audio, vs. silent/captioned only
+  authorityConfirmed?: boolean;
   peakTimesOrDays: string; // free text — "Friday & Saturday nights", "weekday mornings (gym rush)" — too varied for a closed list, same reasoning as InformalRetail's tradingHours
 }
+
+// ── Authority channels ───────────────────────────────────────────────────
+// Eight channels sell something the applicant has to be entitled to sell
+// (a club's sponsorship, a venue's screens, a taxi operation). They have no
+// audience "minimum" - the question that matters is "do you own or run this
+// and can you sell advertising on it?". Onboarding asks that as a yes/no and
+// stores it as `authorityConfirmed` in channel_metadata. It is NOT stored in
+// `publishers.followers` (that column used to hold a meaningless typed 1).
+
+export const AUTHORITY_CHANNELS = [
+  "sports", "events", "community", "associations", "restaurants", "in-venue-screens", "transport", "informal-retail",
+] as const;
+
+export function isAuthorityChannel(slug: string | null | undefined): boolean {
+  return !!slug && (AUTHORITY_CHANNELS as readonly string[]).includes(slug);
+}
+
+/** What the applicant is confirming they own or run, per authority channel. */
+export const AUTHORITY_SUBJECT: Record<(typeof AUTHORITY_CHANNELS)[number], string> = {
+  sports: "team, club or league",
+  events: "event",
+  community: "community group",
+  associations: "association",
+  restaurants: "restaurant, café or venue",
+  "in-venue-screens": "venue and its screens",
+  transport: "taxi, vehicle or fleet operation",
+  "informal-retail": "shop or stall",
+};
 
 // ── Discriminated access, not a discriminated union on Publisher itself ──
 // Publisher.channel_metadata stays loosely typed (Record<string, unknown> |
@@ -489,7 +530,9 @@ export function getOnboardingSummaryFields(p: Pick<Publisher, "channel_slug" | "
       { label: "Frequency/stream", value: fmt(radio.frequencyOrStream) },
       { label: "Coverage area", value: fmt(radio.coverageArea) },
       { label: "Broadcast languages", value: fmt(radio.broadcastLanguages) },
-      { label: "Avg. daily listenership", value: fmt(radio.averageDailyListenership) },
+      radio.weeklyListeners
+        ? { label: "Weekly listeners", value: fmt(radio.weeklyListeners) }
+        : { label: "Avg. daily listenership (legacy)", value: fmt(radio.averageDailyListenership) },
       { label: "Slot lengths available", value: fmt(radio.availableSlotLengths.map((s) => `${s}s`)) },
       { label: "Show sponsorship available", value: fmt(radio.showSponsorshipAvailable) },
     ];

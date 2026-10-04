@@ -13,6 +13,7 @@ import type {
   EventsOnboardingFields, CommunityOnboardingFields, TransportOnboardingFields, AssociationsOnboardingFields, RestaurantsOnboardingFields,
   InVenueScreensOnboardingFields,
 } from "../lib/channelOnboardingSchemas";
+import { isAuthorityChannel, AUTHORITY_SUBJECT } from "../lib/channelOnboardingSchemas";
 import Seo from "../components/Seo";
 import ChannelIcon from "../components/ChannelIcon";
 import { formatCurrency, formatCurrencyRange } from "../lib/currency";
@@ -78,6 +79,8 @@ const STEPS: Step[] = ["eligibility", "details", "social", "business", "review"]
 
 interface FormState {
   followers: string;
+  /** Authority channels: "I own or run this and can sell advertising on it". Stored in channel_metadata, never in followers. */
+  authorityConfirmed: boolean;
   check1: boolean;
   check2: boolean;
   check3: boolean;
@@ -161,7 +164,6 @@ interface FormState {
   radioFrequency: string;
   radioCoverageArea: string;
   radioLanguages: string; // comma-separated
-  radioListenership: string;
   radioSlotLengths: string[];
   radioShowSponsorship: boolean;
   // 12-Channel Audit fix A4/B4
@@ -186,14 +188,12 @@ interface FormState {
   transPlacements: string[];
   transPrimaryRank: string;
   transPeakHours: string;
-  transAuthorityConfirmed: boolean; // 12-Channel Audit fix A4/B4
   assocType: string;
   assocMemberCount: string;
   assocSectors: string; // comma-separated
   assocReachChannels: string[];
   assocHasDirectory: boolean;
   assocHostsEvents: boolean;
-  assocAuthorityConfirmed: boolean;
   restVenueType: string;
   restSeatingCapacity: string;
   restDailyCovers: string;
@@ -211,7 +211,7 @@ interface FormState {
 }
 
 const initialState: FormState = {
-  followers: "", check1: false, check2: false, check3: false,
+  followers: "", authorityConfirmed: false, check1: false, check2: false, check3: false,
   name: "", province: "", city: "", suburb: "", platforms: [], placementTypes: [], adFormats: [], category: "", engagement: "", monthlyReach: "",
   audience: "", bio: "", pricePerPost: "", accountAgeMonths: "", postingFrequency: "",
   businessName: "", companyRegistration: "", vatNumber: "", acceptedTerms: false, acceptedPaymentTerms: false,
@@ -221,11 +221,11 @@ const initialState: FormState = {
   smPrimaryPlatform: "", smSecondaryPlatforms: [], smSocialLinks: {}, smFollowerCounts: "", smBestFormat: "", smPostsPerWeek: "", smAudienceCountry: "", packagePrice: "",
   webDomain: "", webMonthlyVisitors: "", webNiche: "", webCms: "", webPlacements: [], webAvgSessionSeconds: "",
   infPrimaryPlatform: "", infNiche: "", infContentFormats: [], infEngagementRate: "", infPastCollabs: "", infOffersUsageRights: false,
-  radioStationName: "", radioFrequency: "", radioCoverageArea: "", radioLanguages: "", radioListenership: "", radioSlotLengths: [], radioShowSponsorship: false, radioIcasaLicence: "", radioPeakTimes: "",
+  radioStationName: "", radioFrequency: "", radioCoverageArea: "", radioLanguages: "", radioSlotLengths: [], radioShowSponsorship: false, radioIcasaLicence: "", radioPeakTimes: "",
   eventsName: "", eventsType: "", eventsFrequency: "", eventsAttendance: "", eventsNextDate: "", eventsTiers: "", eventsVenueCity: "",
   commGroupType: "", commMemberCount: "", commReachChannels: [], commNewsletterFrequency: "", commGeographicArea: "",
-  transOperatorType: "", transVehicleCount: "", transRoutes: "", transDailyPassengers: "", transPlacements: [], transPrimaryRank: "", transPeakHours: "", transAuthorityConfirmed: false,
-  assocType: "", assocMemberCount: "", assocSectors: "", assocReachChannels: [], assocHasDirectory: false, assocHostsEvents: false, assocAuthorityConfirmed: false,
+  transOperatorType: "", transVehicleCount: "", transRoutes: "", transDailyPassengers: "", transPlacements: [], transPrimaryRank: "", transPeakHours: "",
+  assocType: "", assocMemberCount: "", assocSectors: "", assocReachChannels: [], assocHasDirectory: false, assocHostsEvents: false,
   restVenueType: "", restSeatingCapacity: "", restDailyCovers: "", restHasDigitalMenu: false, restPlacements: [], restCuisineType: "", restPeakTimes: "",
   venueScreensVenueType: "", venueScreensCount: "", venueScreensType: "", venueScreensFootTrafficTier: "", venueScreensFootfallPerNight: "", venueScreensHasSound: false, venueScreensPeakTimes: "",
 };
@@ -322,7 +322,9 @@ function buildChannelMetadata(channelSlug: ChannelSlug, form: FormState): Record
       frequencyOrStream: form.radioFrequency,
       coverageArea: form.radioCoverageArea,
       broadcastLanguages: form.radioLanguages.split(",").map((l) => l.trim()).filter(Boolean),
-      averageDailyListenership: form.radioListenership ? Number(form.radioListenership) : null,
+      // One radio audience number: the weekly reach given at the eligibility step.
+      weeklyListeners: Number(form.followers) > 0 ? Number(form.followers) : null,
+      averageDailyListenership: null,
       availableSlotLengths: form.radioSlotLengths.map((s) => Number(s)) as RadioOnboardingFields["availableSlotLengths"],
       showSponsorshipAvailable: form.radioShowSponsorship,
       icasaLicenceNumber: form.radioIcasaLicence || null,
@@ -361,7 +363,7 @@ function buildChannelMetadata(channelSlug: ChannelSlug, form: FormState): Record
       placementTypesAvailable: form.transPlacements as TransportOnboardingFields["placementTypesAvailable"],
       primaryRank: form.transPrimaryRank,
       peakOperatingHours: form.transPeakHours || null,
-      authorityConfirmed: form.transAuthorityConfirmed,
+      authorityConfirmed: form.authorityConfirmed,
     };
     return fields as unknown as Record<string, unknown>;
   }
@@ -373,7 +375,7 @@ function buildChannelMetadata(channelSlug: ChannelSlug, form: FormState): Record
       reachChannels: form.assocReachChannels as AssociationsOnboardingFields["reachChannels"],
       hasMemberDirectory: form.assocHasDirectory,
       hostsRegularEvents: form.assocHostsEvents,
-      authorityConfirmed: form.assocAuthorityConfirmed,
+      authorityConfirmed: form.authorityConfirmed,
     };
     return fields as unknown as Record<string, unknown>;
   }
@@ -402,6 +404,12 @@ function buildChannelMetadata(channelSlug: ChannelSlug, form: FormState): Record
     return fields as unknown as Record<string, unknown>;
   }
   return null;
+}
+
+/** Stamp the ownership confirmation onto an authority channel's metadata. */
+function withAuthorityFlag(meta: Record<string, unknown> | null, channelSlug: ChannelSlug, confirmed: boolean): Record<string, unknown> | null {
+  if (!meta || !isAuthorityChannel(channelSlug)) return meta;
+  return { ...meta, authorityConfirmed: confirmed };
 }
 
 const inputClass = "w-full border-2 border-billboard-ink rounded px-3 py-2.5";
@@ -437,6 +445,10 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
   const channelModule = getChannelBySlug(channelSlug) ?? getChannelBySlug("social-media")!;
   const ch = channelModule.definition;
   const isRequestFlow = ch.bookingFlow === "request";
+  // Authority channels are asked "do you own or run this?", not for a number.
+  const isAuthority = isAuthorityChannel(channelSlug);
+  // Only social media and influencer have an engagement rate and a follower-based reach.
+  const hasEngagement = channelSlug === "social-media" || channelSlug === "influencer";
 
   const minMetric = isRequestFlow && ch.eligibility ? ch.eligibility.minValue : DEFAULT_MIN_FOLLOWERS;
   const metricLabel = isRequestFlow && ch.eligibility ? ch.eligibility.metricLabel : "Follower count";
@@ -593,10 +605,17 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
     // research says self-attestation copy converts better at, not before
     // any value has been shown. Only the quick, legitimate metric
     // threshold still gates here.
-    const metric = Number(form.followers);
-    if (!adminMode && (!metric || metric < minMetric)) {
-      setStep("ineligible");
-      return;
+    if (!adminMode && isAuthority) {
+      if (!form.authorityConfirmed) {
+        setStep("ineligible");
+        return;
+      }
+    } else {
+      const metric = Number(form.followers);
+      if (!adminMode && (!metric || metric < minMetric)) {
+        setStep("ineligible");
+        return;
+      }
     }
     setStep("details");
   }
@@ -635,7 +654,7 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
       city: form.city,
       suburb: form.suburb || null,
       channel_slug: channelSlug,
-      channel_metadata: buildChannelMetadata(channelSlug, form),
+      channel_metadata: withAuthorityFlag(buildChannelMetadata(channelSlug, form), channelSlug, form.authorityConfirmed || adminMode),
       social_verification_links: channelSlug === "social-media"
         ? getSelectedSocialVerificationPlatforms()
             .map((platform) => ({ platform, url: form.smSocialLinks[platform]?.trim() ?? "" }))
@@ -645,9 +664,12 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
       placement_types: form.placementTypes.length > 0 ? form.placementTypes : null,
       accepted_ad_formats: form.adFormats.length > 0 ? form.adFormats : null,
       category: form.category,
-      followers: Number(form.followers) || 0,
-      engagement: Number(form.engagement) || 0,
-      monthly_reach: Number(form.monthlyReach) || null,
+      // Authority channels have no audience number to type: followers stays 0 and the real
+      // size lives in channel_metadata. Engagement/reach exist only for social and influencer;
+      // influencers answer engagement once, in their channel section.
+      followers: isAuthority ? 0 : Number(form.followers) || 0,
+      engagement: !hasEngagement ? 0 : Number(channelSlug === "influencer" ? form.infEngagementRate : form.engagement) || 0,
+      monthly_reach: hasEngagement ? Number(form.monthlyReach) || null : null,
       audience: form.audience,
       bio: form.bio,
       account_age_months: Number(form.accountAgeMonths) || null,
@@ -721,8 +743,9 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
         <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-4">Not quite yet</span>
         <h1 className="text-2xl md:text-3xl mb-3">Not quite eligible yet.</h1>
         <p className="text-billboard-inkSoft mb-8">
-          To apply for {ch.name}, you'll need at least {minMetric.toLocaleString()} {metricLabel.toLowerCase()}.
-          Keep growing and come back — we'd love to have you.
+          {isAuthority
+            ? `To apply for ${ch.name}, you need to own or run the ${AUTHORITY_SUBJECT[channelSlug as keyof typeof AUTHORITY_SUBJECT]} and be able to sell sponsorship and advertising on it. If that's you, tick the confirmation and try again.`
+            : `To apply for ${ch.name}, you'll need at least ${minMetric.toLocaleString()} ${metricLabel.toLowerCase()}. Keep growing and come back — we'd love to have you.`}
         </p>
         <button onClick={() => setStep("eligibility")} className={continueClass}>Check again</button>
       </div>
@@ -793,10 +816,25 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
         <div className="border-[3px] border-billboard-ink rounded p-6 space-y-4">
           <h1 className="text-2xl mb-1">{adminMode ? "Build this channel listing." : "Let's check you're eligible."}</h1>
           <p className="text-sm text-billboard-inkSoft mb-5">{adminMode ? "AJ: Creations uses the same onboarding metric capture as public applications, but admin publishing does not block on the public eligibility threshold." : "Most approved publishers meet these three things — check before you start, so you're not stopped halfway through."}</p>
-          <div>
-            <label className={labelClass}>{metricLabel}</label>
-            <input type="number" value={form.followers} onChange={(e) => update("followers", e.target.value)} className={inputClass} />
-          </div>
+          {isAuthority ? (
+            <label className="flex items-start gap-3 text-sm border-2 border-billboard-ink rounded p-4 bg-billboard-yellow/10 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={form.authorityConfirmed}
+                onChange={(e) => update("authorityConfirmed", e.target.checked)}
+                className="mt-0.5 h-4 w-4"
+              />
+              <span>
+                <span className="font-semibold block">I own or run this {AUTHORITY_SUBJECT[channelSlug as keyof typeof AUTHORITY_SUBJECT]} and can sell sponsorship and advertising on it.</span>
+                <span className="text-billboard-inkSoft block mt-1">You'll describe its size (attendance, members, daily customers and so on) in the next steps. We'll ask for proof of ownership before the listing goes live.</span>
+              </span>
+            </label>
+          ) : (
+            <div>
+              <label htmlFor="eligibility-metric" className={labelClass}>{metricLabel}</label>
+              <input id="eligibility-metric" type="number" value={form.followers} onChange={(e) => update("followers", e.target.value)} className={inputClass} />
+            </div>
+          )}
           {/* 12-Channel Audit fix E3 — a real, if rough, earnings estimate
               shown BEFORE the full commitment of finishing the wizard —
               proven onboarding-conversion lever (show the payoff before
@@ -819,13 +857,14 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
         <div className="border-[3px] border-billboard-ink rounded p-6 space-y-4">
           <h1 className="text-2xl mb-1">Where are you based?</h1>
           <div>
-            <label className={labelClass}>{isRequestFlow ? `${ch.name} name` : "Page/account name"}</label>
-            <input autoFocus={adminMode} value={form.name} onChange={(e) => update("name", e.target.value)} className={inputClass} />
+            <label htmlFor="listing-name" className={labelClass}>{isRequestFlow ? `${ch.name} name` : "Page/account name"}</label>
+            <input id="listing-name" autoFocus={adminMode} value={form.name} onChange={(e) => update("name", e.target.value)} className={inputClass} />
           </div>
-          {adminMode && (
+          {adminMode && !isAuthority && (
             <div className="border-2 border-billboard-yellow bg-billboard-yellow/10 rounded p-3">
-              <label className={labelClass}>{metricLabel}</label>
+              <label htmlFor="admin-metric" className={labelClass}>{metricLabel}</label>
               <input
+                id="admin-metric"
                 type="number"
                 min={0}
                 value={form.followers}
@@ -1272,10 +1311,6 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
                 <input placeholder="e.g. isiXhosa, English" value={form.radioLanguages} onChange={(e) => update("radioLanguages", e.target.value)} className={inputClass} />
               </div>
               <div>
-                <label className={labelClass}>Average daily listenership <span className="font-normal text-billboard-inkSoft">(optional)</span></label>
-                <input type="number" min={0} value={form.radioListenership} onChange={(e) => update("radioListenership", e.target.value)} className={inputClass} />
-              </div>
-              <div>
                 <label className={labelClass}>Ad slot lengths you offer</label>
                 <div className="flex flex-wrap gap-2">
                   {(["15", "30", "60"] as const).map((s) => (
@@ -1593,16 +1628,21 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
               {CATEGORIES.map((c) => <option key={c.slug} value={c.name}>{c.name}</option>)}
             </select>
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className={labelClass}>Avg. engagement %</label>
-              <input type="number" step="0.1" value={form.engagement} onChange={(e) => update("engagement", e.target.value)} className={inputClass} />
+          {hasEngagement && (
+            <div className={channelSlug === "influencer" ? "" : "grid grid-cols-2 gap-3"}>
+              {/* Influencers already gave their engagement rate in their channel section above; asking twice produced two answers that could disagree. */}
+              {channelSlug !== "influencer" && (
+                <div>
+                  <label className={labelClass}>Avg. engagement %</label>
+                  <input type="number" step="0.1" value={form.engagement} onChange={(e) => update("engagement", e.target.value)} className={inputClass} />
+                </div>
+              )}
+              <div>
+                <label className={labelClass}>Avg. monthly reach</label>
+                <input type="number" value={form.monthlyReach} onChange={(e) => update("monthlyReach", e.target.value)} className={inputClass} />
+              </div>
             </div>
-            <div>
-              <label className={labelClass}>Avg. monthly reach</label>
-              <input type="number" value={form.monthlyReach} onChange={(e) => update("monthlyReach", e.target.value)} className={inputClass} />
-            </div>
-          </div>
+          )}
           <div>
             <label className={labelClass}>Who's your audience?</label>
             <input value={form.audience} onChange={(e) => update("audience", e.target.value)} placeholder="e.g. Young families in the Southern Suburbs" className={inputClass} />
@@ -1651,10 +1691,10 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
             {Number(form.pricePerPost) > 0 && Number(form.pricePerPost) < MIN_PRICE_PER_POST && (
               <p className="text-billboard-red text-xs font-semibold mt-1.5">Price must be at least {formatCurrency(MIN_PRICE_PER_POST)}.</p>
             )}
-            {(() => {
+            {hasEngagement && (() => {
               const val = calculateSuggestedPrice({
                 followers: Number(form.followers) || 0,
-                engagement: Number(form.engagement) || 0,
+                engagement: Number(channelSlug === "influencer" ? form.infEngagementRate : form.engagement) || 0,
                 monthlyReach: Number(form.monthlyReach) || null,
               });
               return (
@@ -1770,12 +1810,6 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
               <span>I confirm this shop is registered with the relevant local municipality and that I am authorised to offer its advertising inventory through ChatSched.</span>
             </label>
           )}
-          {(channelSlug === "transport" || channelSlug === "associations") && (
-            <label className="flex items-start gap-2 text-sm border-2 border-billboard-yellow bg-billboard-yellow/10 rounded p-3">
-              <input type="checkbox" checked={channelSlug === "transport" ? form.transAuthorityConfirmed : form.assocAuthorityConfirmed} onChange={(e) => channelSlug === "transport" ? update("transAuthorityConfirmed", e.target.checked) : update("assocAuthorityConfirmed", e.target.checked)} className="mt-0.5" />
-              <span>I confirm that I have the authority to accept advertising/sponsorship arrangements for this {channelSlug === "transport" ? "vehicle, fleet, or taxi operation" : "association and its advertising inventory"}.</span>
-            </label>
-          )}
 
           {checks.length > 0 && !adminMode && (
             <div className="space-y-2">
@@ -1804,7 +1838,7 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
           </label>
           <div className="flex justify-between pt-2">
             <button onClick={() => setStep(LOW_BARRIER_CHANNELS.includes(channelSlug) ? "social" : "business")} className={backClass}>Back</button>
-            <button onClick={submitApplication} disabled={!form.acceptedTerms || (!adminMode && isRequestFlow && !form.acceptedPaymentTerms) || (!adminMode && checks.length > 0 && (!form.check1 || !form.check2 || !form.check3)) || (!adminMode && channelSlug === "informal-retail" && !form.retailMunicipalRegistrationConfirmed) || (!adminMode && channelSlug === "transport" && !form.transAuthorityConfirmed) || (!adminMode && channelSlug === "associations" && !form.assocAuthorityConfirmed) || submitting}
+            <button onClick={submitApplication} disabled={!form.acceptedTerms || (!adminMode && isRequestFlow && !form.acceptedPaymentTerms) || (!adminMode && checks.length > 0 && (!form.check1 || !form.check2 || !form.check3)) || (!adminMode && channelSlug === "informal-retail" && !form.retailMunicipalRegistrationConfirmed) || submitting}
               className="bg-billboard-green border-[3px] border-billboard-ink font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition disabled:opacity-60">
               {uploadingProof ? "Uploading proof…" : submitting ? (adminMode ? "Publishing…" : "Submitting…") : adminMode ? "Publish listing now" : "Submit application"}
             </button>
