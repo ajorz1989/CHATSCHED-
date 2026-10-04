@@ -140,6 +140,12 @@ begin
     return new;
   end if;
 
+  -- schema_phase114's cancel_channel_request() sets this transaction-local
+  -- flag after doing its own authorisation and refund maths.
+  if current_setting('app.cancel_rpc', true) = '1' then
+    return new;
+  end if;
+
   is_business := (auth.uid() = old.business_id);
   is_creator := exists (
     select 1 from public.publishers p
