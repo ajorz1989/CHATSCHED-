@@ -56,6 +56,18 @@ export function isSubscriptionEnforcementEnabled(): boolean {
   return import.meta.env.VITE_SUBSCRIPTIONS_ENFORCED === "true";
 }
 
+/**
+ * Whether bookings can be paid online via PayFast. OFF by default: the first
+ * 50 completed bookings are paid by manual bank transfer against a Payment
+ * Card, then AJ decides from the data whether to switch it back on. Only
+ * affects booking checkout; PayFast subscriptions are separate and untouched.
+ * The payfast-checkout edge function enforces the same switch server-side
+ * (BOOKING_PAYFAST_ENABLED secret).
+ */
+export function isBookingPayfastEnabled(): boolean {
+  return import.meta.env.VITE_BOOKING_PAYFAST_ENABLED === "true";
+}
+
 /** Whether the composer pre-scans a message client-side before sending. */
 export function isMessageSafetyPrescanEnabled(): boolean {
   return import.meta.env.VITE_MESSAGE_SAFETY_PRESCAN_ENABLED !== "false";

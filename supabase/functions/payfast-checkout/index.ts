@@ -24,6 +24,14 @@ Deno.serve(async (req) => {
     return new Response("ok", { headers: corsHeaders });
   }
 
+  // Booking checkout is switched off while the first 50 completed bookings
+  // are paid by manual bank transfer. Turn on with:
+  //   supabase secrets set BOOKING_PAYFAST_ENABLED=true
+  // Subscription checkouts use their own functions and are unaffected.
+  if (Deno.env.get("BOOKING_PAYFAST_ENABLED") !== "true") {
+    return json({ error: "Online booking payments are switched off. Pay by bank transfer using your Payment Card." }, 403);
+  }
+
   try {
     const { request_id } = await req.json();
     if (!request_id) return json({ error: "request_id is required" }, 400);

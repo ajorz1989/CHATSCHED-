@@ -4,6 +4,7 @@ import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
 import { formatSupabaseError } from "../lib/supabaseErrors";
 import { redirectToPayfast } from "../lib/payfastRedirect";
+import { isBookingPayfastEnabled } from "../lib/featureFlags";
 import { buildAndDownloadInvoice, chatSchedInvoiceParty } from "../lib/invoice";
 import BankDetailsPanel from "../components/BankDetailsPanel";
 import EscrowNote from "../components/EscrowNote";
@@ -439,7 +440,7 @@ function RequestCard({ request: r, onChange }: { request: PublisherRequest; onCh
             <p className="text-sm text-billboard-inkSoft">
               You confirmed this payment on {new Date(payment.eft_confirmed_by_business_at).toLocaleDateString("en-ZA")} — waiting on ChatSched to verify it's arrived.
             </p>
-          ) : payment?.method === "payfast" && payment.status === "pending" ? (
+          ) : payment?.method === "payfast" && payment.status === "pending" && isBookingPayfastEnabled() ? (
             <div>
               <p className="text-sm text-billboard-inkSoft mb-2">Payment in progress via PayFast — this updates automatically once PayFast confirms it.</p>
               <button type="button" onClick={handlePay} disabled={paying} className="border-[3px] border-billboard-ink font-bold px-4 py-2 rounded text-sm hover:-translate-y-0.5 transition disabled:opacity-60">
@@ -465,7 +466,7 @@ function RequestCard({ request: r, onChange }: { request: PublisherRequest; onCh
               </button>
               {eftError && <p className="text-billboard-red text-xs font-semibold mt-2">{eftError}</p>}
 
-              {!showPayfast ? (
+              {!isBookingPayfastEnabled() ? null : !showPayfast ? (
                 <button type="button" onClick={() => setShowPayfast(true)} className="block mt-3 text-xs font-semibold underline text-billboard-inkSoft hover:text-billboard-ink">
                   Prefer to pay by card via PayFast instead?
                 </button>
