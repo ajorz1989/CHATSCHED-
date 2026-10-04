@@ -124,6 +124,10 @@ export type ChannelRequestMetadata =
  * per channel, since the same field name can mean different things
  * (or not appear at all) on a different channel. */
 export const REQUEST_FIELD_LABELS: Record<string, Record<string, string>> = {
+  "social-media": {
+    preferredPostDate: "Preferred post date",
+    campaignGoal: "Campaign goal",
+  },
   podcast: {
     preferredAirWindow: "Preferred air window",
     scriptProvided: "Script provided by business",

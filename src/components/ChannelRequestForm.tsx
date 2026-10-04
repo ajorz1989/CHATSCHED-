@@ -31,10 +31,13 @@ interface MetaFieldDescriptor {
  * REQUEST_FIELD_LABELS so the two can't drift apart; this table only adds
  * what channelRequestFieldSchemas.ts (a plain data file, no React) can't:
  * the input `kind` and which fields are required to submit. Keyed by
- * channel slug — social-media is absent because it never reaches this
- * form (see PublisherProfile.tsx).
+ * channel slug.
  */
 const META_FIELDS: Record<string, MetaFieldDescriptor[]> = {
+  "social-media": [
+    { key: "preferredPostDate", kind: "date", required: true },
+    { key: "campaignGoal", kind: "text", placeholder: "e.g. more bookings, announce a sale" },
+  ],
   podcast: [
     { key: "preferredAirWindow", kind: "text", required: true, placeholder: "e.g. first two weeks of October" },
     { key: "scriptProvided", kind: "checkbox" },

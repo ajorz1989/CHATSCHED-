@@ -8,6 +8,7 @@
  */
 
 import type { ChannelModule } from "../../lib/channelTypes";
+import { PLACEMENT_TYPES } from "../../lib/constants";
 
 const socialMediaModule: ChannelModule = {
   definition: {
@@ -19,7 +20,10 @@ const socialMediaModule: ChannelModule = {
     emoji: "📱",
     category: "digital",
     isLive: true,
-    bookingFlow: "directory",
+    // Request flow (Oct 2026): the business sends a request, the creator
+    // accepts / counters / declines, then the business pays ChatSched by
+    // bank transfer against a Payment Card. No online checkout.
+    bookingFlow: "request",
     minBudgetZAR: 250,
     pricingModels: [
       {
@@ -35,6 +39,11 @@ const socialMediaModule: ChannelModule = {
         description: "Bundle of posts across a campaign period at an agreed rate.",
       },
     ],
+    advertisingMethods: PLACEMENT_TYPES.map((t) => ({
+      id: t.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, ""),
+      label: t,
+      description: `A ${t.toLowerCase()} on the creator's page or profile.`,
+    })),
     audience: {
       signals: [
         "follower_count",

@@ -1049,10 +1049,18 @@ function ChannelRequestCard({ request: r, publisher, onChange }: { request: Chan
     if (r.status === "pending" && user) hasUsablePublisherSubscription(user.id).then(setSubscribed);
   }, [r.status, user]);
 
+  const [goLiveDate, setGoLiveDate] = useState("");
+
   async function respond(newStatus: "awaiting_payment" | "declined") {
+    if (newStatus === "awaiting_payment" && !goLiveDate) {
+      setActionError("Pick the date your placement will go live. The business can cancel for a refund until 48 hours before it.");
+      return;
+    }
     setActing(true);
     setActionError(null);
-    const { error } = await supabase.from("channel_requests").update({ status: newStatus }).eq("id", r.id);
+    const patch: Record<string, unknown> = { status: newStatus };
+    if (newStatus === "awaiting_payment") patch.scheduled_live_at = new Date(`${goLiveDate}T09:00:00`).toISOString();
+    const { error } = await supabase.from("channel_requests").update(patch).eq("id", r.id);
     setActing(false);
     if (error) setActionError(formatSupabaseError(error, "Couldn't update this request"));
     else onChange();
@@ -1064,11 +1072,15 @@ function ChannelRequestCard({ request: r, publisher, onChange }: { request: Chan
       setActionError("Enter a real amount to counter with.");
       return;
     }
+    if (!goLiveDate) {
+      setActionError("Pick the date your placement will go live (above) before sending a counter-offer.");
+      return;
+    }
     setActing(true);
     setActionError(null);
     const { error } = await supabase
       .from("channel_requests")
-      .update({ status: "countered", counter_amount: amount, counter_note: counterNote.trim() || null })
+      .update({ status: "countered", counter_amount: amount, counter_note: counterNote.trim() || null, scheduled_live_at: new Date(`${goLiveDate}T09:00:00`).toISOString() })
       .eq("id", r.id);
     setActing(false);
     if (error) setActionError(formatSupabaseError(error, "Couldn't send that counter-offer"));
@@ -1110,6 +1122,12 @@ function ChannelRequestCard({ request: r, publisher, onChange }: { request: Chan
             Respond by {formatDue(r.approval_due_at)} ({CREATOR_APPROVAL_WINDOW_DAYS}-day window) — unanswered requests simply expire.
           </p>
           {subscribed === false && <SubscriptionGateNotice role="publisher" />}
+          {subscribed !== false && (
+            <div className="mb-3">
+              <label className="block text-[10px] font-mono uppercase text-billboard-inkSoft mb-1">Go-live date (required to approve)</label>
+              <input type="date" value={goLiveDate} min={new Date().toISOString().slice(0, 10)} onChange={(e) => setGoLiveDate(e.target.value)} className="border-2 border-billboard-ink rounded px-2 py-1.5 text-sm bg-white" />
+            </div>
+          )}
           {!countering ? (
             <div className="flex gap-2 flex-wrap">
               {subscribed !== false && (
