@@ -5,7 +5,7 @@ import { supabase, isSupabaseConfigured } from "../lib/supabase";
 import { exportAccountData, downloadAccountData, downloadAccountDataAsPdf } from "../lib/accountExport";
 import { formatSupabaseError } from "../lib/supabaseErrors";
 import SetupNotice from "../components/SetupNotice";
-import SubscriptionSection from "../components/SubscriptionSection";
+import PremiumAccessSection from "../components/PremiumAccessSection";
 import FeaturedPlacementSection from "../components/FeaturedPlacementSection";
 import Seo from "../components/Seo";
 
@@ -155,7 +155,7 @@ export default function AccountSettings() {
       </p>
 
       {(profile?.role === "business" || profile?.role === "publisher") && (
-        <SubscriptionSection userId={user.id} role={profile.role} />
+        <PremiumAccessSection userId={user.id} role={profile.role} />
       )}
 
       {profile?.role === "publisher" && ownPublisherId && (

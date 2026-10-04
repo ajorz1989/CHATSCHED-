@@ -11,8 +11,6 @@ import { calculateSuggestedPrice, MIN_PRICE_PER_POST } from "../lib/pricingEngin
 import { buildAndDownloadInvoice } from "../lib/invoice";
 import { channelRequestBreakdown, fromCents } from "../lib/fees";
 import { CREATOR_APPROVAL_WINDOW_DAYS, CREATOR_PAYOUT_WINDOW_HOURS, PLACEMENT_TYPES, recommendedPlacementTypes, CATEGORIES, PROVINCES, SA_SUBURBS_AUTOCOMPLETE, CONTACT_ADDRESS_LINES, MAX_PROFILE_IMAGE_BYTES, ALLOWED_PROFILE_IMAGE_MIME_TYPES, MIN_BIO_LENGTH } from "../lib/constants";
-import { hasUsablePublisherSubscription } from "../lib/subscriptionGate";
-import SubscriptionGateNotice from "./SubscriptionGateNotice";
 import MessageThread from "./MessageThread";
 import DisputeSection from "./DisputeSection";
 import CampaignComplianceStrip from "./CampaignComplianceStrip";
@@ -30,7 +28,6 @@ import { SkeletonBlock, SkeletonLine, StatCardGridSkeleton, SkeletonRows } from 
 import EmptyState from "./EmptyState";
 import SocialVerificationPanel from "./SocialVerificationPanel";
 import PublisherTractionPanel from "./PublisherTractionPanel";
-import PublisherActivationNudge from "./PublisherActivationNudge";
 import RateCardManager from "./RateCardManager";
 import { getAdPlatforms } from "../lib/platforms";
 import ContentApprovalPanel from "./ContentApprovalPanel";
@@ -77,21 +74,9 @@ export default function PublisherDashboardView() {
   const [channelRequests, setChannelRequests] = useState<ChannelRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<"requests" | "listing">("requests");
-  const [activated, setActivated] = useState<boolean | undefined>(undefined);
 
   const channelDef = publisher ? getChannelBySlug(publisher.channel_slug)?.definition : undefined;
   const isRequestFlowChannel = channelDef?.bookingFlow === "request";
-
-  useEffect(() => {
-    if (!user) return;
-    let cancelled = false;
-    hasUsablePublisherSubscription(user.id).then((usable) => {
-      if (!cancelled) setActivated(usable);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [user]);
 
   async function load() {
     if (!user) return;
@@ -206,8 +191,6 @@ export default function PublisherDashboardView() {
     <div className="max-w-4xl mx-auto px-5 py-16">
       <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">Your dashboard</span>
 
-      <PublisherActivationNudge />
-
       <CreatorHomeSummary
         firstName={profile?.full_name ? profile.full_name.split(" ")[0] : null}
         publisher={publisher}
@@ -297,14 +280,7 @@ export default function PublisherDashboardView() {
                   </button>
                 )}
 
-                {activated === false ? (
-                  <div className="border-2 border-dashed border-billboard-inkSoft rounded p-4 mb-6 text-sm text-billboard-inkSoft">
-                    Traction analytics unlock once your account is activated.{" "}
-                    <Link to="/account" className="font-semibold underline text-billboard-ink">Activate now →</Link>
-                  </div>
-                ) : (
-                  <PublisherTractionPanel publisherId={publisher.id} totalRequests={activeRequestCount} />
-                )}
+                <PublisherTractionPanel publisherId={publisher.id} totalRequests={activeRequestCount} />
 
                 <h2 className="font-display text-lg mb-4">Requests</h2>
                 {isRequestFlowChannel ? (
@@ -1037,18 +1013,11 @@ function downloadPublisherChannelInvoice(r: ChannelRequest, publisher: Publisher
 }
 
 function ChannelRequestCard({ request: r, publisher, onChange }: { request: ChannelRequest; publisher: Publisher | null; onChange: () => void }) {
-  const { user } = useAuth();
   const [acting, setActing] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [countering, setCountering] = useState(false);
   const [counterAmount, setCounterAmount] = useState("");
   const [counterNote, setCounterNote] = useState("");
-  const [subscribed, setSubscribed] = useState<boolean | undefined>(undefined);
-
-  useEffect(() => {
-    if (r.status === "pending" && user) hasUsablePublisherSubscription(user.id).then(setSubscribed);
-  }, [r.status, user]);
-
   const [goLiveDate, setGoLiveDate] = useState("");
 
   async function respond(newStatus: "awaiting_payment" | "declined") {
@@ -1131,8 +1100,7 @@ function ChannelRequestCard({ request: r, publisher, onChange }: { request: Chan
           <p className="text-xs text-billboard-inkSoft mb-3">
             Respond by {formatDue(r.approval_due_at)} ({CREATOR_APPROVAL_WINDOW_DAYS}-day window) — unanswered requests simply expire.
           </p>
-          {subscribed === false && <SubscriptionGateNotice role="publisher" />}
-          {subscribed !== false && (
+          {(
             <div className="mb-3">
               <label className="block text-[10px] font-mono uppercase text-billboard-inkSoft mb-1">Go-live date (required to approve)</label>
               <input type="date" value={goLiveDate} min={new Date().toISOString().slice(0, 10)} onChange={(e) => setGoLiveDate(e.target.value)} className="border-2 border-billboard-ink rounded px-2 py-1.5 text-sm bg-white" />
@@ -1140,12 +1108,12 @@ function ChannelRequestCard({ request: r, publisher, onChange }: { request: Chan
           )}
           {!countering ? (
             <div className="flex gap-2 flex-wrap">
-              {subscribed !== false && (
+              {(
                 <button onClick={() => respond("awaiting_payment")} disabled={acting} className="border-[3px] border-billboard-ink bg-billboard-green text-white font-bold px-4 py-2 rounded text-sm hover:-translate-y-0.5 transition disabled:opacity-60">
                   Approve at {formatCurrency(r.proposed_amount)}
                 </button>
               )}
-              {subscribed !== false && (
+              {(
                 <button onClick={() => setCountering(true)} disabled={acting} className="border-[3px] border-billboard-ink bg-billboard-yellow font-bold px-4 py-2 rounded text-sm hover:-translate-y-0.5 transition disabled:opacity-60">
                   Propose a different price
                 </button>

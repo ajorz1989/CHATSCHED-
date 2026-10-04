@@ -1,6 +1,6 @@
 // "Create a publisher listing" card for an ACTIVATED business account.
 //
-// A business that has paid its activation fee can list itself (or one of its
+// A business with Premium access can list itself (or one of its
 // own ad spaces) on the browse page. Channels with no manual verification go
 // live straight away; social media and the high-trust channels are created
 // as "pending review" and go through the normal ChatSched verification —
@@ -88,7 +88,7 @@ export default function BusinessListingCreator({ onCreated }: { onCreated: () =>
     <section className="border-[3px] border-billboard-ink rounded bg-white p-5 shadow-blockSm mb-6" aria-labelledby="biz-listing-heading">
       <h2 id="biz-listing-heading" className="font-display text-lg mb-1">List your business on the browse page</h2>
       <p className="text-sm text-billboard-inkSoft mb-3">
-        Your activation fee covers this — no extra charge. Other businesses can find and book you the same way they book any publisher.
+        Included with Premium access — no extra charge. Other businesses can find and book you the same way they book any publisher.
         You can't book your own listing. One listing per account.
       </p>
       {!open ? (

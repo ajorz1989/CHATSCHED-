@@ -9,8 +9,6 @@ import { formatSupabaseError } from "../lib/supabaseErrors";
 import SetupNotice from "../components/SetupNotice";
 import AvailabilityCalendar from "../components/AvailabilityCalendar";
 import ChannelRequestForm from "../components/ChannelRequestForm";
-import { hasUsableBusinessSubscription } from "../lib/subscriptionGate";
-import SubscriptionGateNotice from "../components/SubscriptionGateNotice";
 import PortfolioGallery from "../components/PortfolioGallery";
 import ShareProfileButtons from "../components/ShareProfileButtons";
 import SimilarPublishers from "../components/SimilarPublishers";
@@ -62,19 +60,10 @@ export default function PublisherProfile() {
 
   const [reportOpen, setReportOpen] = useState(false);
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [subscribed, setSubscribed] = useState<boolean | undefined>(undefined);
 
   // Admin is always fully enabled, synchronously — nothing below this
   // ever gates or hides anything from an admin viewer.
   const isAdmin = profile?.role === "admin";
-  // Was `subscribed !== false`, which defaults TRUE while the async
-  // subscription check is still in flight — a non-admin business briefly
-  // saw a fully-enabled form before it flipped to disabled once the real
-  // answer came back. Now nothing is treated as usable until the check
-  // actually resolves (admin still resolves instantly, unaffected).
-  const subscriptionChecked = isAdmin || subscribed !== undefined;
-  const canUseBusinessFeature = isAdmin || subscribed === true;
-
   // Full profiles (bio, availability, portfolio, reviews, the request
   // form) are only for signed-in business/publisher/admin accounts.
   // Computed here rather than only below the early returns so the
@@ -88,11 +77,6 @@ export default function PublisherProfile() {
   // buyers, and shouldn't be able to submit a request against
   // themselves or another publisher.
   const canRequestPlacement = isAdmin || profile?.role === "business";
-
-  useEffect(() => {
-    if (isAdmin) { setSubscribed(true); return; }
-    if (user) hasUsableBusinessSubscription(user.id).then(setSubscribed);
-  }, [user, isAdmin]);
 
   // Save menu
   const [showSave, setShowSave] = useState(false);
@@ -627,8 +611,7 @@ export default function PublisherProfile() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="mb-3">
-                {subscriptionChecked && !canUseBusinessFeature && <SubscriptionGateNotice role="business" />}
-                <fieldset disabled={!subscriptionChecked || !canUseBusinessFeature} className="border-0 p-0 m-0 min-w-0 disabled:opacity-50 space-y-3">
+                <fieldset className="border-0 p-0 m-0 min-w-0 space-y-3">
                   <div className="border-b-2 border-billboard-ink/10 pb-2.5">
                     <div className="flex items-center justify-between gap-2 mb-1">
                       <h3 className="font-display text-base min-w-0">Start Campaign Request</h3>

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
-import { supabase } from "../../lib/supabase";
-import { BUSINESS_SUBSCRIPTION_PRICE } from "../../lib/constants";
-import { isSubscriptionUsable } from "../../lib/subscriptions";
+import { PREMIUM_ACCESS_PRICE } from "../../lib/constants";
+import { formatCurrency } from "../../lib/currency";
+import { hasPremiumAccess } from "../../lib/subscriptionGate";
 import { SkeletonBlock } from "../Skeleton";
 import MatchSearch from "./MatchSearch";
 import ReachPlanner from "./ReachPlanner";
@@ -76,14 +76,10 @@ export default function MarketingSuite() {
         return;
       }
 
-      const { data } = await supabase
-        .from("business_subscriptions")
-        .select("status")
-        .eq("business_id", user.id)
-        .maybeSingle();
+      const premium = await hasPremiumAccess(user.id);
 
       if (!cancelled) {
-        setActivated(Boolean(data && isSubscriptionUsable(data.status)));
+        setActivated(premium);
         setActivationLoaded(true);
       }
     }
@@ -112,9 +108,9 @@ export default function MarketingSuite() {
               Locked
             </span>
           </div>
-          <h2 className="font-display text-xl md:text-2xl mb-2">Your marketing tools are ready when you activate.</h2>
+          <h2 className="font-display text-xl md:text-2xl mb-2">Your marketing tools unlock with Premium access.</h2>
           <p className="text-sm text-billboard-inkSoft max-w-xl mb-5">
-            Your Marketing Suite is included with ChatSched Business. New business accounts can see the suite here, but the tools stay locked until the once-off activation fee is paid.
+            The Marketing Suite is part of Premium access. You can see the suite here, but the tools stay locked until Premium access is active.
           </p>
           <div className="grid sm:grid-cols-2 gap-2 mb-6 text-sm">
             {MODULES.map((m) => (
@@ -125,10 +121,10 @@ export default function MarketingSuite() {
             ))}
           </div>
           <Link
-            to="/activation-fee-info"
+            to="/account#premium"
             className="inline-flex items-center gap-2 bg-billboard-yellow border-[3px] border-billboard-ink font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition"
           >
-            Activate Business — R{BUSINESS_SUBSCRIPTION_PRICE} once-off →
+            Get Premium access — {formatCurrency(PREMIUM_ACCESS_PRICE)}/month →
           </Link>
         </div>
       </section>

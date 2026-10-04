@@ -330,9 +330,13 @@ export const MAX_PROOF_SCREENSHOT_BYTES = 5 * 1024 * 1024;
 export const ALLOWED_PROOF_SCREENSHOT_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 
-export const PUBLISHER_SUBSCRIPTION_PRICE = 199;
-export const BUSINESS_SUBSCRIPTION_PRICE = 399;
-export const BUSINESS_LAUNCH_CREDIT_AMOUNT = 199;
+// Sign-up is free for everyone. Premium access is the one paid tier:
+// R199/month via PayFast, unlocking the Opportunities job board and the
+// Marketing Suite for businesses and creators alike. Keep in sync with
+// PREMIUM_PRICE in the business-/publisher-subscribe edge functions and
+// PREMIUM_MONTHLY_PRICE in payfast-notify.
+export const PREMIUM_ACCESS_PRICE = 199;
+export const PREMIUM_ACCESS_NAME = "Premium access";
 
 export const CONTENT_STUDIO_FREE_MONTHLY_LIMIT = 15;
 export const CONTENT_STUDIO_FREE_DAILY_LIMIT = 5;

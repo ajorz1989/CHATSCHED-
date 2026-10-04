@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import { BadgeCheck, CheckCircle2, ChevronDown, Copy, KeyRound, Loader2, Plus, Search, UserPlus } from "lucide-react";
 import { supabase } from "../lib/supabase";
-import { PROVINCES, BUSINESS_SUBSCRIPTION_PRICE } from "../lib/constants";
+import { PROVINCES, PREMIUM_ACCESS_PRICE } from "../lib/constants";
 import { formatCurrency } from "../lib/currency";
 import { computeVerificationLevel } from "../lib/businessVerification";
 import TrustBadge from "./TrustBadge";
@@ -209,13 +209,13 @@ export default function AdminBusinessOnboarding() {
       return;
     }
     void logAdminAction("business_membership_activated", b.id, { launch_credit_granted: data.launch_credit_granted });
-    setRowMessage({ id: b.id, text: data.launch_credit_granted ? "Activated — R199 launch credit granted." : "Activated.", tone: "ok" });
+    setRowMessage({ id: b.id, text: "Premium access granted for a month.", tone: "ok" });
     void load();
   }
 
   async function revoke(b: Profile) {
     const name = b.company_name || b.full_name || "this business";
-    if (!window.confirm(`Revoke ${name}'s ChatSched Business membership? Any unused launch credit is forfeited.`)) return;
+    if (!window.confirm(`Revoke ${name}'s Premium access?`)) return;
     setBusyId(b.id);
     setRowMessage(null);
     const { data, error } = await invokeAdminFn("cancel-subscription", { role: "business", subject_id: b.id });
@@ -287,7 +287,7 @@ export default function AdminBusinessOnboarding() {
             </div>
             <h1 className="font-display text-3xl md:text-4xl">Business Onboarding</h1>
             <p className="text-sm md:text-base text-white/55 mt-2 leading-relaxed">
-              Create a business account, verify it and activate its {formatCurrency(BUSINESS_SUBSCRIPTION_PRICE)} once-off ChatSched Business membership from one place. This is the business-side counterpart to AJ: Creations — it doesn't change how public signup or PayFast activation work.
+              Create a business account, verify it and optionally grant {formatCurrency(PREMIUM_ACCESS_PRICE)}/month Premium access for the first month from one place. This is the business-side counterpart to AJ: Creations — it doesn't change how public signup or PayFast activation work.
             </p>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 shrink-0">
@@ -413,7 +413,7 @@ export default function AdminBusinessOnboarding() {
                   <label className="flex items-start gap-2"><input type="checkbox" className="mt-1" checked={form.email_confirmed} onChange={(e) => set("email_confirmed", e.target.checked)} /><span><strong>Email confirmed</strong><span className="block text-xs text-billboard-inkSoft">You've confirmed this address belongs to them.</span></span></label>
                   <label className="flex items-start gap-2"><input type="checkbox" className="mt-1" checked={form.phone_verified} onChange={(e) => set("phone_verified", e.target.checked)} /><span><strong>Phone verified</strong><span className="block text-xs text-billboard-inkSoft">Silver level needs email + phone.</span></span></label>
                   <label className="flex items-start gap-2"><input type="checkbox" className="mt-1" checked={form.business_verified} onChange={(e) => set("business_verified", e.target.checked)} /><span><strong>Gold business verified</strong><span className="block text-xs text-billboard-inkSoft">You've checked the business is real.</span></span></label>
-                  <label className="flex items-start gap-2"><input type="checkbox" className="mt-1" checked={form.activate} onChange={(e) => set("activate", e.target.checked)} /><span><strong>Activate membership now</strong><span className="block text-xs text-billboard-inkSoft">Skips PayFast ({formatCurrency(BUSINESS_SUBSCRIPTION_PRICE)} once-off) and grants the R199 launch credit. Use when payment was received by EFT or you're comping them.</span></span></label>
+                  <label className="flex items-start gap-2"><input type="checkbox" className="mt-1" checked={form.activate} onChange={(e) => set("activate", e.target.checked)} /><span><strong>Grant Premium access now</strong><span className="block text-xs text-billboard-inkSoft">Skips PayFast. Gives a month of Premium access (Opportunities and Marketing Suite) as a comp.</span></span></label>
                 </div>
               </fieldset>
 

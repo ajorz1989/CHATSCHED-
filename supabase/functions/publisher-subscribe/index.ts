@@ -12,7 +12,8 @@ import { signCheckoutFields, payfastHost } from "../_shared/payfast.ts";
 // Keep in sync with PUBLISHER_SUBSCRIPTION_PRICE in src/lib/constants.ts —
 // Deno edge functions can't import from the Vite app, so this is the one
 // other place that number lives.
-const ACTIVATION_PRICE = 199.0;
+// Keep in sync with PREMIUM_ACCESS_PRICE in src/lib/constants.ts and PREMIUM_MONTHLY_PRICE in payfast-notify.
+const PREMIUM_PRICE = 199.0;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -79,10 +80,15 @@ Deno.serve(async (req) => {
       name_last: nameLast,
       email_address: user.email ?? "",
       m_payment_id: subscriptionId,
-      amount: ACTIVATION_PRICE.toFixed(2),
-      item_name: "ChatSched Publisher Network activation",
-      item_description: "One-time Publisher Network activation — profile, campaign opportunities, earnings, analytics and marketplace visibility. No renewal, ever.",
+      amount: PREMIUM_PRICE.toFixed(2),
+      item_name: "ChatSched Premium access (monthly)",
+      item_description: "Monthly Premium access: the Opportunities job board and the Marketing Suite. Cancel any time on PayFast.",
       custom_str1: "publisher_subscription",
+      subscription_type: "1",
+      billing_date: new Date().toISOString().slice(0, 10),
+      recurring_amount: PREMIUM_PRICE.toFixed(2),
+      frequency: "3", // PayFast: 3 = monthly
+      cycles: "0", // 0 = until cancelled
     };
 
     const signature = signCheckoutFields(fields, passphrase);

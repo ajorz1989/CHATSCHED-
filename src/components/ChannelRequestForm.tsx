@@ -1,4 +1,4 @@
-import { useState, useEffect, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { takeContentStudioDraft } from "../lib/contentStudioDraft";
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
@@ -8,8 +8,6 @@ import { formatSupabaseError } from "../lib/supabaseErrors";
 import { getChannelBySlug } from "../lib/channelRegistry";
 import { CREATOR_APPROVAL_WINDOW_DAYS, BUSINESS_PAYMENT_WINDOW_DAYS, CREATOR_PAYOUT_WINDOW_HOURS, PLATFORM_COMMISSION_RATE } from "../lib/constants";
 import { computeBookingBreakdownFromRand, fromCents } from "../lib/fees";
-import { hasUsableBusinessSubscription } from "../lib/subscriptionGate";
-import SubscriptionGateNotice from "./SubscriptionGateNotice";
 import { SchedySticker } from "./schedy";
 import { REQUEST_FIELD_LABELS } from "../lib/channelRequestFieldSchemas";
 import type { Publisher } from "../lib/types";
@@ -104,7 +102,7 @@ type MetaValue = string | number | boolean;
  * See PublisherDashboardView for the creator side of this same workflow.
  */
 export default function ChannelRequestForm({ publisher }: { publisher: Publisher }) {
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
   const channelModule = getChannelBySlug(publisher.channel_slug);
   const ch = channelModule?.definition;
 
@@ -124,7 +122,6 @@ export default function ChannelRequestForm({ publisher }: { publisher: Publisher
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
-  const [subscribed, setSubscribed] = useState<boolean | undefined>(undefined);
 
   const metaFields = META_FIELDS[publisher.channel_slug] ?? [];
   const metaLabels = REQUEST_FIELD_LABELS[publisher.channel_slug] ?? {};
@@ -136,21 +133,6 @@ export default function ChannelRequestForm({ publisher }: { publisher: Publisher
   function setMetaValue(key: string, value: MetaValue) {
     setMetaValues((prev) => ({ ...prev, [key]: value }));
   }
-
-  const isAdmin = profile?.role === "admin";
-  // Same fix as PublisherProfile.tsx's identical pattern: was
-  // `subscribed !== false`, which is TRUE by default while the async
-  // subscription check is still in flight, briefly showing a fully
-  // enabled form to a business that turns out not to be subscribed.
-  // Admin resolves synchronously via the isAdmin branch below and is
-  // unaffected either way.
-  const subscriptionChecked = isAdmin || subscribed !== undefined;
-  const canUseBusinessFeature = isAdmin || subscribed === true;
-
-  useEffect(() => {
-    if (isAdmin) { setSubscribed(true); return; }
-    if (user) hasUsableBusinessSubscription(user.id).then(setSubscribed);
-  }, [user, isAdmin]);
 
   if (!ch) return null;
 
@@ -207,13 +189,11 @@ export default function ChannelRequestForm({ publisher }: { publisher: Publisher
 
   return (
     <form onSubmit={handleSubmit} className="mb-3">
-      {subscriptionChecked && !canUseBusinessFeature && <SubscriptionGateNotice role="business" />}
-
       <div className="border-2 border-billboard-ink rounded p-3 mb-3 bg-white text-xs text-billboard-inkSoft">
-        No online checkout for {ch.name.toLowerCase()} — {publisher.name} approves or declines your request, then you pay the platform directly.
+        {publisher.name} approves or declines your request. If they approve, you'll get a Payment Card to pay ChatSched by bank transfer. Nothing is charged until then.
       </div>
 
-      <fieldset disabled={!subscriptionChecked || !canUseBusinessFeature} className="border-0 p-0 m-0 min-w-0 disabled:opacity-50">
+      <fieldset className="border-0 p-0 m-0 min-w-0">
       {adPlatforms.length > 0 && (
         <div className="mb-3">
           <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5">Platform or package for your ad</label>

@@ -5,9 +5,7 @@ import { formatCurrency as formatCurrencyShared } from "../lib/currency";
 import {
   PLATFORM_COMMISSION_RATE,
   PUBLISHER_SHARE,
-  PUBLISHER_SUBSCRIPTION_PRICE,
-  BUSINESS_SUBSCRIPTION_PRICE,
-  BUSINESS_LAUNCH_CREDIT_AMOUNT,
+  PREMIUM_ACCESS_PRICE,
 } from "../lib/constants";
 
 const commissionPct = Math.round(PLATFORM_COMMISSION_RATE * 100);
@@ -103,16 +101,14 @@ function FeeCalculator() {
   );
 }
 
-// BUG FIX: PUBLISHER_SUBSCRIPTION_PRICE replaces the hardcoded "R199" string
-// so this copy stays accurate if the activation price ever changes.
 const FAQS = [
   {
     q: "Do publishers pay to join?",
-    a: `A basic profile is free. Full Publisher Network access — campaign opportunities, analytics, earnings dashboard, and approving requests — needs a one-time ${formatCurrencyShared(PUBLISHER_SUBSCRIPTION_PRICE)} activation, no renewal, ever. The marketplace fee below applies to a completed campaign transaction either way.`,
+    a: `No. Signing up, listing and accepting bookings are free. The 12% marketplace fee below is taken from your price on a completed booking. Premium access (${formatCurrencyShared(PREMIUM_ACCESS_PRICE)}/month, optional) adds the Opportunities job board and the Marketing Suite.`,
   },
   {
     q: "What is the marketplace fee?",
-    a: `A flat ${commissionPct}% on every completed campaign transaction. Same rate on every channel, for every publisher — no tiers, no volume thresholds, nothing that changes as you grow.`,
+    a: `A flat ${commissionPct}% of the creator's price on every completed booking, taken from the creator only. Same rate on every channel — no tiers, no volume thresholds.`,
   },
   {
     q: "What does a publisher earn?",
@@ -124,7 +120,7 @@ const FAQS = [
   },
   {
     q: "Are there business fees?",
-    a: `A business pays the agreed campaign price — nothing added on top. The ${formatCurrencyShared(BUSINESS_SUBSCRIPTION_PRICE)} once-off activation includes a ${formatCurrencyShared(BUSINESS_LAUNCH_CREDIT_AMOUNT)} launch credit toward your first booking. Any payment-processing charges are shown at checkout, before you pay.`,
+    a: `A business pays the creator's price plus a ChatSched booking fee: R30 for bookings under R500, R50 for R500 and over. Nothing else is added, and the total is shown on your Payment Card before you pay. There is no sign-up fee.`,
   },
   {
     q: "When do I see the fees?",
@@ -185,11 +181,7 @@ export default function Fees() {
         <section className="mb-14">
           <h2 className="font-display text-xl mb-2">For Businesses</h2>
           <p className="text-sm text-billboard-inkSoft mb-4">
-            A business pays the agreed campaign price to the publisher — nothing added on top. The{" "}
-            <span className="font-semibold text-billboard-ink">{formatCurrencyShared(BUSINESS_SUBSCRIPTION_PRICE)} once-off activation</span>{" "}
-            includes a{" "}
-            <span className="font-semibold text-billboard-ink">{formatCurrencyShared(BUSINESS_LAUNCH_CREDIT_AMOUNT)} launch credit</span>{" "}
-            toward your first booking. Any payment-processing charges are shown clearly at checkout, before you pay.
+            A business pays the creator's price plus a ChatSched booking fee of R30 (bookings under R500) or R50 (R500 and over). Signing up is free. You pay by bank transfer using the Payment Card you receive when the creator accepts, and your placement goes live once the money has cleared.
           </p>
           <Link
             to="/how-payment-works"
@@ -203,7 +195,7 @@ export default function Fees() {
         <section className="mb-14">
           <h2 className="font-display text-xl mb-2">For Publishers</h2>
           <p className="text-sm text-billboard-inkSoft mb-5">
-            A flat {commissionPct}% marketplace fee on every completed campaign — same rate on every channel,
+            A flat {commissionPct}% marketplace fee, taken from your price on every completed booking — same rate on every channel,
             every time. No tiers, nothing extra deducted at payout. Your actual net payout may also reflect
             any applicable payment or payout processing charges.
           </p>

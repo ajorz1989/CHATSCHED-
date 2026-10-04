@@ -79,15 +79,17 @@ Deno.serve(async (req) => {
 
     const { data: activation } = await supabase
       .from("business_subscriptions")
-      .select("status")
+      .select("status, current_period_end")
       .eq("business_id", user.id)
       .maybeSingle();
 
-    const isActivated = activation?.status === "active";
+    // Premium access (R199/month): active and not past its paid period.
+    const isActivated = activation?.status === "active" &&
+      (!activation.current_period_end || new Date(activation.current_period_end).getTime() > Date.now());
 
     if (!isAdmin && !isActivated) {
       return json(
-        { error: "Content Studio is included with an active ChatSched Business activation. There is no separate Content Studio subscription.", needsActivation: true },
+        { error: "Content Studio is part of the Marketing Suite, which comes with Premium access (R199/month).", needsActivation: true },
         402
       );
     }

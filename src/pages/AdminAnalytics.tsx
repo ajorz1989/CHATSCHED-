@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { StatCardGridSkeleton, SkeletonBlock, SkeletonLine } from "../components/Skeleton";
 import Button from "../components/Button";
-import { PUBLISHER_SUBSCRIPTION_PRICE, BUSINESS_SUBSCRIPTION_PRICE } from "../lib/constants";
+import { PREMIUM_ACCESS_PRICE } from "../lib/constants";
 import { FIRST_BOOKINGS_REVIEW_TARGET, fromCents } from "../lib/fees";
 import { formatCurrency as formatCurrencyShared } from "../lib/currency";
 
@@ -194,7 +194,7 @@ export default function AdminAnalytics() {
           <div className="border-[3px] border-billboard-ink rounded p-5 mb-8">
             <div className="flex items-baseline justify-between gap-3 mb-4">
               <p className="font-bold text-sm">Revenue &amp; margin</p>
-              <p className="text-[10px] font-mono uppercase text-billboard-inkSoft">Commission is period-scoped · activation/credit are today's snapshot</p>
+              <p className="text-[10px] font-mono uppercase text-billboard-inkSoft">Booking revenue is lifetime on cleared funds · Premium is today's snapshot</p>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
@@ -208,26 +208,19 @@ export default function AdminAnalytics() {
                 <p className="text-[11px] text-billboard-inkSoft mt-1">Bank-transfer bookings only. Refunds due {formatCurrency(fromCents(bookingRevenue?.refunds_due_cents ?? 0))}</p>
               </div>
               <div>
-                <p className="text-[10px] font-mono uppercase text-billboard-inkSoft">Activation revenue (lifetime)</p>
+                <p className="text-[10px] font-mono uppercase text-billboard-inkSoft">Premium access (monthly, current)</p>
                 <p className="text-xl font-bold mt-1">
-                  {formatCurrency((overview?.active_publisher_subs ?? 0) * PUBLISHER_SUBSCRIPTION_PRICE + (overview?.active_business_subs ?? 0) * BUSINESS_SUBSCRIPTION_PRICE)}
+                  {formatCurrency(((overview?.active_publisher_subs ?? 0) + (overview?.active_business_subs ?? 0)) * PREMIUM_ACCESS_PRICE)}
                 </p>
                 <p className="text-[11px] text-billboard-inkSoft mt-1">
-                  {overview?.active_publisher_subs ?? 0} publisher + {overview?.active_business_subs ?? 0} business — once-off, not recurring (item 10)
+                  {overview?.active_publisher_subs ?? 0} creators + {overview?.active_business_subs ?? 0} businesses at {formatCurrency(PREMIUM_ACCESS_PRICE)}/month, expected recurring
                 </p>
               </div>
               <div>
-                <p className="text-[10px] font-mono uppercase text-billboard-inkSoft">Failed activations</p>
+                <p className="text-[10px] font-mono uppercase text-billboard-inkSoft">Failed Premium sign-ups</p>
                 <p className="text-xl font-bold mt-1">{(overview?.failed_publisher_subs ?? 0) + (overview?.failed_business_subs ?? 0)}</p>
                 <p className="text-[11px] text-billboard-inkSoft mt-1">
-                  {overview?.failed_publisher_subs ?? 0} publisher · {overview?.failed_business_subs ?? 0} business — can retry any time, nothing lapses
-                </p>
-              </div>
-              <div>
-                <p className="text-[10px] font-mono uppercase text-billboard-inkSoft">Launch credit outstanding</p>
-                <p className="text-xl font-bold mt-1">{formatCurrency(overview?.credit_outstanding ?? 0)}</p>
-                <p className="text-[11px] text-billboard-inkSoft mt-1">
-                  {formatCurrency(overview?.credit_granted ?? 0)} granted · {formatCurrency(overview?.credit_applied_in_period ?? 0)} redeemed this period
+                  {overview?.failed_publisher_subs ?? 0} creators · {overview?.failed_business_subs ?? 0} businesses, can retry any time
                 </p>
               </div>
             </div>

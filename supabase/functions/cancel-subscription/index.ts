@@ -1,10 +1,7 @@
 // Admin-only: revokes a publisher's or business's ChatSched membership
 // (e.g. a refund or a policy violation), or a publisher's Featured
 // Placement, by setting the relevant subscription status to 'cancelled'.
-// A business also forfeits any unused launch credit, via
-// forfeitBusinessLaunchCredit (_shared/launchCredit.ts) — confirmed
-// product decision, not an engineering default (see that file's own
-// comment).
+// Launch credit no longer exists (free sign-up, Oct 2026).
 //
 // Used to be self-service (a business or publisher cancelling their own
 // recurring subscription, which also called PayFast's cancel-token API).
@@ -32,7 +29,6 @@
 // rather than left to be discovered later.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders } from "../_shared/cors.ts";
-import { forfeitBusinessLaunchCredit } from "../_shared/launchCredit.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -80,7 +76,6 @@ Deno.serve(async (req) => {
     if (updateError) return json({ error: "Could not cancel subscription" }, 500);
 
     if (role === "business") {
-      await forfeitBusinessLaunchCredit(admin, subject_id);
     }
 
     return json({ cancelled: true });

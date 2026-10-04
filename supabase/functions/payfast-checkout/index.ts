@@ -80,48 +80,8 @@ Deno.serve(async (req) => {
       payment = created;
     }
 
-    // Apply any available ChatSched Business launch credit. Atomic and
-    // row-locked (see reserve_launch_credit_for_payment's own comment) —
-    // recomputed fresh on every checkout attempt (not just when the
-    // payment row is first created) since remaining credit can change
-    // between attempts, e.g. spent on a different campaign in the
-    // meantime; the function itself is idempotent per payment_id, so a
-    // retried call for the same payment never reserves twice.
-    const { data: reserveResult, error: reserveError } = await supabase.rpc("reserve_launch_credit_for_payment", { p_payment_id: payment.id });
-    if (reserveError || !reserveResult?.ok) {
-      console.error("payfast-checkout: reserve_launch_credit_for_payment failed", reserveError, reserveResult);
-      return json({ error: reserveResult?.error ?? "Could not apply launch credit" }, 500);
-    }
-    const creditApplied = Number(reserveResult.credit_applied);
-    const amountDue = Number(reserveResult.amount_due);
-
-    if (amountDue <= 0) {
-      // Fully covered by credit — PayFast doesn't take a R0 checkout, so
-      // this is marked paid directly instead of redirecting there.
-      // reserve_launch_credit_for_payment already reserved (deducted) the
-      // credit atomically above; since a fully-covered payment has no
-      // later PayFast confirmation to wait for, its reservation is
-      // confirmed here in the same request rather than staying 'reserved'
-      // indefinitely. Still guarded with the same .neq("status","paid")
-      // pattern payfast-notify uses, so a duplicate call (e.g. a
-      // double-click) can't mark it paid twice — this remains the one
-      // deliberate exception to "payfast-notify is the only place status
-      // becomes paid" — see the note at the top of that file.
-      const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
-      const { data: updated } = await admin
-        .from("payments")
-        .update({ status: "paid", credit_applied: creditApplied, paid_at: new Date().toISOString() })
-        .eq("id", payment.id)
-        .neq("status", "paid")
-        .select()
-        .maybeSingle();
-
-      if (updated) {
-        await admin.rpc("confirm_launch_credit_redemption", { p_payment_id: payment.id });
-      }
-
-      return json({ fully_covered: true });
-    }
+    // Launch credit was removed (free sign-up, Oct 2026): the full amount is charged.
+    const amountDue = Number(payment.amount);
 
     const mode = (Deno.env.get("PAYFAST_MODE") ?? "sandbox") as "sandbox" | "live";
     const siteUrl = Deno.env.get("SITE_URL")!;

@@ -11,7 +11,7 @@
 //              once, same guard payfast-notify uses.
 //
 // Revoking a membership is NOT done here — cancel-subscription already does
-// that (and forfeits the launch credit), so the UI calls it directly.
+// that, so the UI calls it directly.
 //
 // Safety: the caller's own JWT must belong to an admin profile. The elevated
 // service-role client is only used AFTER that check, never to decide it.
@@ -167,56 +167,23 @@ Deno.serve(async (req) => {
   }
 });
 
-// Mirrors what payfast-notify / confirm_business_activation_eft do on a
-// completed R399 payment, minus the payment: status → active, then the R199
-// launch credit exactly once via the same atomic launch_credit_granted guard.
+// Grants Premium access by hand (a comp, or payment received outside PayFast):
+// status -> active with a period end a month out. Launch credit no longer exists.
 // deno-lint-ignore no-explicit-any
 async function activateMembership(admin: any, businessId: string): Promise<{ error?: string; creditGranted: boolean }> {
-  const now = new Date().toISOString();
+  const now = new Date();
+  const nowIso = now.toISOString();
+  const periodEnd = new Date(now.getTime() + 33 * 24 * 60 * 60 * 1000).toISOString();
 
-  const { data: existing } = await admin.from("business_subscriptions").select("id, launch_credit_granted").eq("business_id", businessId).maybeSingle();
-
-  let subscriptionId: string;
+  const { data: existing } = await admin.from("business_subscriptions").select("id").eq("business_id", businessId).maybeSingle();
   if (existing) {
-    subscriptionId = existing.id;
-    const { error } = await admin.from("business_subscriptions").update({ status: "active", paid_at: now, updated_at: now }).eq("id", existing.id);
-    if (error) return { error: "Could not activate membership", creditGranted: false };
+    const { error } = await admin.from("business_subscriptions").update({ status: "active", paid_at: nowIso, current_period_end: periodEnd, updated_at: nowIso }).eq("id", existing.id);
+    if (error) return { error: "Could not grant Premium access", creditGranted: false };
   } else {
-    const { data: inserted, error } = await admin
-      .from("business_subscriptions")
-      .insert({ business_id: businessId, status: "active", paid_at: now })
-      .select("id")
-      .single();
-    if (error || !inserted) return { error: "Could not activate membership", creditGranted: false };
-    subscriptionId = inserted.id;
+    const { error } = await admin.from("business_subscriptions").insert({ business_id: businessId, status: "active", paid_at: nowIso, current_period_end: periodEnd });
+    if (error) return { error: "Could not grant Premium access", creditGranted: false };
   }
-
-  let creditGranted = false;
-  const { data: wonRace } = await admin
-    .from("business_subscriptions")
-    .update({ launch_credit_granted: true, updated_at: now })
-    .eq("id", subscriptionId)
-    .eq("launch_credit_granted", false)
-    .select("id")
-    .maybeSingle();
-
-  if (wonRace) {
-    const { error: creditError } = await admin.from("business_launch_credits").insert({
-      business_id: businessId,
-      subscription_id: subscriptionId,
-      amount: 199.0,
-      remaining: 199.0,
-    });
-    if (creditError) {
-      // Unique(business_id): a credit already exists (e.g. earlier forfeited
-      // one) — never issue a second. Anything else is logged, not fatal.
-      console.error("admin-onboard-business: launch credit insert skipped", creditError);
-    } else {
-      creditGranted = true;
-    }
-  }
-
-  return { creditGranted };
+  return { creditGranted: false };
 }
 
 function json(body: unknown, status = 200) {

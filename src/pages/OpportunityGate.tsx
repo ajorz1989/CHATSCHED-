@@ -4,7 +4,7 @@ import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
 import { SkeletonBlock } from "../components/Skeleton";
 import { hasUsableBusinessSubscription, hasUsablePublisherSubscription } from "../lib/subscriptionGate";
-import { BUSINESS_SUBSCRIPTION_PRICE, PUBLISHER_SUBSCRIPTION_PRICE } from "../lib/constants";
+import { PREMIUM_ACCESS_PRICE } from "../lib/constants";
 import { formatCurrency } from "../lib/currency";
 
 
@@ -16,7 +16,6 @@ function AccessRequired({
   kind: "activation" | "verification";
 }) {
   const isBusiness = role === "business";
-  const activationPrice = isBusiness ? BUSINESS_SUBSCRIPTION_PRICE : PUBLISHER_SUBSCRIPTION_PRICE;
 
   if (kind === "verification") {
     return (
@@ -44,32 +43,32 @@ function AccessRequired({
     );
   }
 
-  const activationLink = isBusiness ? "/activation-fee-info" : "/account#activation";
+  const activationLink = "/account#premium";
 
   return (
     <div className="max-w-2xl mx-auto px-5 py-16">
       <section className="border-[3px] border-billboard-ink rounded-xl overflow-hidden shadow-blockSm">
         <div className="bg-billboard-yellow p-7 md:p-9">
           <span className="inline-block font-mono text-[10px] font-bold uppercase tracking-wider border-2 border-billboard-ink px-3 py-1.5 rounded bg-white mb-4">
-            Activation required
+            Premium access
           </span>
           <h1 className="font-display text-3xl md:text-4xl mb-3">
-            Activate your account to access Opportunities.
+            Get Premium access to use Opportunities.
           </h1>
           <p className="text-billboard-ink/80 mb-6">
             The Opportunities workspace involves real advertising briefs, publisher proposals and campaign bookings.
-            A once-off {formatCurrency(activationPrice)} activation fee unlocks this part of ChatSched for your {isBusiness ? "business" : "publisher"} account.
+            Premium access ({formatCurrency(PREMIUM_ACCESS_PRICE)}/month) unlocks this part of ChatSched, along with the Marketing Suite, for your {isBusiness ? "business" : "publisher"} account.
           </p>
           <Link
             to={activationLink}
             className="inline-flex border-[3px] border-billboard-ink bg-billboard-ink text-white font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition"
           >
-            Why activation is required & Activate →
+            Get Premium access →
           </Link>
         </div>
 
         <div className="bg-white p-7 md:p-9">
-          <h2 className="font-display text-xl mb-4">What activation unlocks</h2>
+          <h2 className="font-display text-xl mb-4">What Premium access unlocks</h2>
           <div className="grid sm:grid-cols-2 gap-3 text-sm">
             {(
               isBusiness
@@ -93,7 +92,7 @@ function AccessRequired({
             ))}
           </div>
           <p className="text-xs text-billboard-inkSoft mt-5">
-            Activation is once-off — there is no recurring renewal for this access.
+            Billed monthly through PayFast. Cancel any time.
           </p>
         </div>
       </section>

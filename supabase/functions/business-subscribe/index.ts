@@ -15,7 +15,8 @@ import { signCheckoutFields, payfastHost } from "../_shared/payfast.ts";
 // Keep in sync with BUSINESS_SUBSCRIPTION_PRICE in src/lib/constants.ts —
 // Deno edge functions can't import from the Vite app, so this is the one
 // other place that number lives.
-const ACTIVATION_PRICE = 399.0;
+// Keep in sync with PREMIUM_ACCESS_PRICE in src/lib/constants.ts and PREMIUM_MONTHLY_PRICE in payfast-notify.
+const PREMIUM_PRICE = 199.0;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -31,7 +32,7 @@ Deno.serve(async (req) => {
     if (userError || !user) return json({ error: "Not logged in" }, 401);
 
     const { data: profile } = await supabase.from("profiles").select("role, full_name, company_name").eq("id", user.id).maybeSingle();
-    if (!profile || profile.role !== "business") return json({ error: "Only business accounts can activate ChatSched Business" }, 403);
+    if (!profile || profile.role !== "business") return json({ error: "Only business accounts can buy Premium access" }, 403);
 
     const { data: existing } = await supabase
       .from("business_subscriptions")
@@ -40,7 +41,7 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     if (existing?.status === "active") {
-      return json({ error: "You're already activated on ChatSched Business" }, 400);
+      return json({ error: "You already have Premium access" }, 400);
     }
 
     // service role — this function creates/updates the subscription row
@@ -82,10 +83,15 @@ Deno.serve(async (req) => {
       name_last: nameLast,
       email_address: user.email ?? "",
       m_payment_id: subscriptionId,
-      amount: ACTIVATION_PRICE.toFixed(2),
-      item_name: "ChatSched Business activation",
-      item_description: "One-time ChatSched Business activation — marketplace access, managed advertising, campaign tools and reporting. Includes a R199 launch credit. No renewal, ever.",
+      amount: PREMIUM_PRICE.toFixed(2),
+      item_name: "ChatSched Premium access (monthly)",
+      item_description: "Monthly Premium access: the Opportunities job board and the Marketing Suite. Cancel any time on PayFast.",
       custom_str1: "business_subscription",
+      subscription_type: "1",
+      billing_date: new Date().toISOString().slice(0, 10),
+      recurring_amount: PREMIUM_PRICE.toFixed(2),
+      frequency: "3", // PayFast: 3 = monthly
+      cycles: "0", // 0 = until cancelled
     };
 
     const signature = signCheckoutFields(fields, passphrase);

@@ -18,7 +18,6 @@ import BusinessListingCreator, { BusinessListingStatusLink } from "../components
 import { hasUsableBusinessSubscription } from "../lib/subscriptionGate";
 import BusinessHomeSummary from "../components/BusinessHomeSummary";
 import MarketingSuite from "../components/marketingSuite/MarketingSuite";
-import ActivationNudge from "../components/ActivationNudge";
 import CampaignRollup from "../components/CampaignRollup";
 import ManagedCampaignsSection from "../components/ManagedCampaignsSection";
 import Seo from "../components/Seo";
@@ -217,7 +216,6 @@ function BusinessDashboardBody({
 
   return (
     <>
-      <ActivationNudge />
 
       {/* Bug fix: previously rendered nothing while loading, causing a layout
           jump when summary tiles snapped in. Now shows skeleton tiles. */}

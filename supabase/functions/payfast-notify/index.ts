@@ -4,9 +4,8 @@
 // (see supabase/DEPLOY.md). This is the only place a payment that actually
 // goes through PayFast is ever marked "paid" — the /payment/return page
 // the browser lands on is purely informational and never marks anything
-// paid itself. The one deliberate exception is payfast-checkout marking a
-// payment paid directly when it's fully covered by launch credit, since
-// there's no PayFast leg to notify about in that case.
+// paid itself. Launch credit no longer exists, so there is no longer any
+// exception: every online payment is marked paid here.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { signItnFields, payfastHost } from "../_shared/payfast.ts";
 
@@ -58,11 +57,11 @@ Deno.serve(async (req) => {
     if (data.custom_str1 === "publisher_subscription") {
       return handlePublisherSubscriptionItn(admin, data);
     }
-    if (data.custom_str1 === "business_activation_paynow") {
-      return handlePayNowActivationItn(admin, data, "business");
-    }
-    if (data.custom_str1 === "publisher_activation_paynow") {
-      return handlePayNowActivationItn(admin, data, "publisher");
+    // The old once-off R399 / R199 "Pay Now" activation buttons are retired
+    // (free sign-up, Oct 2026). Acknowledge any stray ITN without activating.
+    if (data.custom_str1 === "business_activation_paynow" || data.custom_str1 === "publisher_activation_paynow") {
+      console.warn("payfast-notify: retired Pay Now activation ITN ignored", { payment_id: data.m_payment_id });
+      return new Response("deprecated product", { status: 200 });
     }
     if (data.custom_str1 === "business_subscription") {
       return handleBusinessSubscriptionItn(admin, data);
@@ -98,7 +97,7 @@ Deno.serve(async (req) => {
     // "expected" figure to confirm against, and this was already wrong
     // before that redesign touched anything else here.
     const received = Number.parseFloat(data.amount_gross ?? "0");
-    const expected = Number(payment.amount) - Number(payment.credit_applied ?? 0);
+    const expected = Number(payment.amount);
     if (Math.abs(received - expected) > 0.01) {
       console.error("payfast-notify: amount mismatch", { received, expected, payment_id: payment.id });
       return new Response("amount mismatch", { status: 200 });
@@ -117,23 +116,9 @@ Deno.serve(async (req) => {
         .select()
         .maybeSingle();
 
-      // The actual credit deduction already happened atomically at
-      // checkout time (reserve_launch_credit_for_payment, item 11,
-      // schema_phase88) — this just closes out that reservation as
-      // confirmed. No balance math here anymore; see that function's own
-      // comment for why the deduction couldn't wait until this point for
-      // every case (the fully-covered checkout path has no later
-      // confirmation step to defer to).
-      if (updated && Number(payment.credit_applied) > 0) {
-        await admin.rpc("confirm_launch_credit_redemption", { p_payment_id: payment.id });
-      }
+      void updated;
     } else if (data.payment_status === "FAILED" || data.payment_status === "CANCELLED") {
       await admin.from("payments").update({ status: "failed" }).eq("id", payment.id);
-      // Give back whatever credit this payment had reserved — it never
-      // completed, so the credit shouldn't be spent. release_launch_credit_redemption
-      // is a no-op if nothing was reserved (amount 0, or already
-      // confirmed/released), so this is safe to call unconditionally.
-      await admin.rpc("release_launch_credit_redemption", { p_payment_id: payment.id });
     }
 
     return new Response("ok", { status: 200 });
@@ -147,341 +132,73 @@ Deno.serve(async (req) => {
 
 // deno-lint-ignore no-explicit-any
 async function handlePublisherSubscriptionItn(admin: any, data: Record<string, string>) {
-  const { data: subscription, error: subError } = await admin
-    .from("publisher_subscriptions")
-    .select("*")
-    .eq("id", data.m_payment_id)
-    .maybeSingle();
-  if (subError || !subscription) {
-    console.error("payfast-notify: unknown publisher subscription", data.m_payment_id);
-    return new Response("unknown subscription", { status: 200 });
-  }
-
-  // R199 once-off is fixed — same reasoning as the branches above.
-  const received = Number.parseFloat(data.amount_gross ?? "0");
-  if (Math.abs(received - 199.0) > 0.01 && data.payment_status === "COMPLETE") {
-    console.error("payfast-notify: publisher activation amount mismatch", { received, subscription_id: subscription.id });
-    return new Response("amount mismatch", { status: 200 });
-  }
-
-  if (data.payment_status === "COMPLETE") {
-    // No renewal, ever (item 10) — once this lands the membership is
-    // permanent. Guarded with .neq("status", "active") for the same
-    // reason payments.status is guarded elsewhere: a retried/duplicate
-    // ITN for an already-active membership should be a clean no-op, not
-    // re-set fields that are already correct.
-    await admin.from("publisher_subscriptions")
-      .update({
-        status: "active",
-        payfast_payment_id: data.pf_payment_id ?? null,
-        paid_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", subscription.id)
-      .neq("status", "active");
-  } else if (data.payment_status === "FAILED") {
-    // Can retry any time by starting the activation flow again
-    // (publisher-subscribe resets an existing non-active row back to
-    // 'pending') — there's no grace period or forfeiture to consider for
-    // a payment that never activated anything in the first place.
-    await admin.from("publisher_subscriptions").update({ status: "failed", updated_at: new Date().toISOString() }).eq("id", subscription.id);
-  } else if (data.payment_status === "CANCELLED") {
-    // Not an expected event for a once-off payment (there's no recurring
-    // token for PayFast to report cancelling) — logged rather than acted
-    // on, since guessing at an unexpected transition here risks doing the
-    // wrong thing to a real membership record.
-    console.error("payfast-notify: unexpected CANCELLED for a once-off publisher activation", subscription.id);
-  }
-
-  return new Response("ok", { status: 200 });
+  return handlePremiumItn(admin, data, "publisher_subscriptions");
 }
 
 // deno-lint-ignore no-explicit-any
 async function handleBusinessSubscriptionItn(admin: any, data: Record<string, string>) {
+  return handlePremiumItn(admin, data, "business_subscriptions");
+}
+
+// Premium access: R199/month, PayFast recurring, for businesses and creators.
+// The two tables (business_subscriptions / publisher_subscriptions) are kept
+// as the access records so every existing Opportunities / Marketing Suite
+// gate (status = 'active') keeps working unchanged.
+// Keep PREMIUM_MONTHLY_PRICE in sync with PREMIUM_ACCESS_PRICE in
+// src/lib/constants.ts and the two *-subscribe functions.
+const PREMIUM_MONTHLY_PRICE = 199.0;
+
+// deno-lint-ignore no-explicit-any
+async function handlePremiumItn(admin: any, data: Record<string, string>, table: "business_subscriptions" | "publisher_subscriptions") {
   const { data: subscription, error: subError } = await admin
-    .from("business_subscriptions")
+    .from(table)
     .select("*")
     .eq("id", data.m_payment_id)
     .maybeSingle();
   if (subError || !subscription) {
-    console.error("payfast-notify: unknown business subscription", data.m_payment_id);
+    console.error("payfast-notify: unknown premium subscription", table, data.m_payment_id);
     return new Response("unknown subscription", { status: 200 });
   }
 
-  // R399 once-off is fixed — same reasoning as the branches above.
-  const received = Number.parseFloat(data.amount_gross ?? "0");
-  if (Math.abs(received - 399.0) > 0.01 && data.payment_status === "COMPLETE") {
-    console.error("payfast-notify: business activation amount mismatch", { received, subscription_id: subscription.id });
-    return new Response("amount mismatch", { status: 200 });
-  }
+  const now = new Date();
+  const nowIso = now.toISOString();
 
   if (data.payment_status === "COMPLETE") {
-    await admin.from("business_subscriptions")
+    const received = Number.parseFloat(data.amount_gross ?? "0");
+    if (Math.abs(received - PREMIUM_MONTHLY_PRICE) > 0.01) {
+      console.error("payfast-notify: premium amount mismatch", { received, subscription_id: subscription.id });
+      return new Response("amount mismatch", { status: 200 });
+    }
+    // Runs for the first payment AND every monthly renewal ITN: access is
+    // extended a month (plus a few days' slack) each time money lands.
+    const periodEnd = new Date(now.getTime() + 33 * 24 * 60 * 60 * 1000).toISOString();
+    await admin.from(table)
       .update({
         status: "active",
         payfast_payment_id: data.pf_payment_id ?? null,
-        paid_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        payfast_token: data.token ?? subscription.payfast_token ?? null,
+        paid_at: nowIso,
+        current_period_end: periodEnd,
+        updated_at: nowIso,
       })
-      .eq("id", subscription.id)
-      .neq("status", "active");
-
-    // Launch credit: a one-time grant, included in the R399 activation
-    // fee. "First-ever completed payment" and "the only payment" are now
-    // the same event under the once-off model, so this atomic
-    // check-and-set (unchanged from before item 10) still does exactly
-    // the right thing — a retried/duplicate ITN for that same payment
-    // still can't grant it twice.
-    if (!subscription.launch_credit_granted) {
-      const { data: wonRace } = await admin
-        .from("business_subscriptions")
-        .update({ launch_credit_granted: true })
-        .eq("id", subscription.id)
-        .eq("launch_credit_granted", false)
-        .select()
-        .maybeSingle();
-
-      if (wonRace) {
-        await admin.from("business_launch_credits").insert({
-          business_id: subscription.business_id,
-          subscription_id: subscription.id,
-          amount: 199.0,
-          remaining: 199.0,
-        });
-      }
-    }
+      .eq("id", subscription.id);
   } else if (data.payment_status === "FAILED") {
-    // Can retry any time by starting the activation flow again — a
-    // failed activation payment never granted the launch credit in the
-    // first place (that only happens on COMPLETE, above), so there's
-    // nothing to forfeit here.
-    await admin.from("business_subscriptions").update({ status: "failed", updated_at: new Date().toISOString() }).eq("id", subscription.id);
-  } else if (data.payment_status === "CANCELLED") {
-    // Not an expected event for a once-off payment — see the identical
-    // comment in handlePublisherSubscriptionItn above.
-    console.error("payfast-notify: unexpected CANCELLED for a once-off business activation", subscription.id);
-  }
-
-  return new Response("ok", { status: 200 });
-}
-
-// deno-lint-ignore no-explicit-any
-
-// Primary Pay Now buttons use the merchant receiver directly instead of the
-// server-generated signed checkout. They carry the authenticated account ID
-// in custom_str2 so a confirmed PayFast payment can still be matched to the
-// correct ChatSched membership. The custom fields are treated as routing
-// hints only: the PayFast ITN signature + PayFast validation happen above,
-// the amount/item are checked again here, and the target profile role must
-// match the activation being purchased.
-//
-// deno-lint-ignore no-explicit-any
-async function handlePayNowActivationItn(admin: any, data: Record<string, string>, activationType: "business" | "publisher") {
-  const expectedAmount = activationType === "business" ? 399.0 : 199.0;
-  const expectedItem = activationType === "business"
-    ? "ChatSched Business Activation"
-    : "ChatSched Publisher Network Activation";
-  const paymentStatus = (data.payment_status ?? "").toUpperCase();
-  const pfPaymentId = (data.pf_payment_id ?? "").trim() || null;
-  const mPaymentId = (data.m_payment_id ?? "").trim() || null;
-  const receivedAmount = Number.parseFloat(data.amount_gross ?? "0");
-  const payerEmail = (data.email_address ?? "").trim() || null;
-  const payerName = [data.name_first, data.name_last].filter(Boolean).join(" ").trim() || null;
-
-  const existingQuery = pfPaymentId
-    ? admin.from("payfast_activation_events").select("id").eq("pf_payment_id", pfPaymentId).maybeSingle()
-    : mPaymentId
-    ? admin.from("payfast_activation_events").select("id").eq("m_payment_id", mPaymentId).maybeSingle()
-    : Promise.resolve({ data: null, error: null });
-
-  const { data: existingEvent } = await existingQuery;
-  if (existingEvent) return new Response("ok", { status: 200 });
-
-  let matchedUserId: string | null = null;
-  let matchStatus: "auto_activated" | "already_active" | "action_required" | "failed" | "cancelled" | "ignored" =
-    paymentStatus === "COMPLETE"
-      ? "action_required"
-      : paymentStatus === "FAILED"
-      ? "failed"
-      : paymentStatus === "CANCELLED"
-      ? "cancelled"
-      : "ignored";
-  let note: string | null = null;
-
-  if (paymentStatus === "COMPLETE") {
-    if (Math.abs(receivedAmount - expectedAmount) > 0.01) {
-      note = `Amount mismatch: PayFast reported R${receivedAmount.toFixed(2)}, expected R${expectedAmount.toFixed(2)}.`;
-    } else if ((data.item_name ?? "").trim() !== expectedItem) {
-      note = `Item mismatch: PayFast reported "${data.item_name ?? "missing item name"}".`;
+    // A failed first payment never activated anything. A failed renewal is
+    // retried by PayFast; access lapses via current_period_end if it never lands.
+    if (subscription.status !== "active") {
+      await admin.from(table).update({ status: "failed", updated_at: nowIso }).eq("id", subscription.id);
     } else {
-      const candidateUserId = (data.custom_str2 ?? "").trim();
-
-      if (!candidateUserId) {
-        note = "No ChatSched account identifier was returned by the Pay Now button.";
-      } else {
-        const { data: targetProfile, error: profileError } = await admin
-          .from("profiles")
-          .select("id, role")
-          .eq("id", candidateUserId)
-          .maybeSingle();
-
-        if (profileError || !targetProfile) {
-          note = "The Pay Now payment could not be matched to a ChatSched profile.";
-        } else if (targetProfile.role !== activationType) {
-          note = `The payment target account has role "${targetProfile.role}", not "${activationType}".`;
-        } else if (!payerEmail) {
-          note = "PayFast did not return a payer email, so automatic activation was blocked.";
-        } else {
-          const { data: authUser } = await admin.auth.admin.getUserById(targetProfile.id);
-          const accountEmail = (authUser?.user?.email ?? "").toLowerCase().trim();
-
-          if (!accountEmail || accountEmail !== payerEmail.toLowerCase()) {
-            note = "PayFast payer email does not match the ChatSched account email, so automatic activation was blocked.";
-          } else {
-            matchedUserId = targetProfile.id;
-            const paidAt = new Date().toISOString();
-
-            if (activationType === "business") {
-              const { data: subscription, error: subscriptionError } = await admin
-                .from("business_subscriptions")
-                .select("*")
-                .eq("business_id", targetProfile.id)
-                .maybeSingle();
-
-              if (subscriptionError) {
-                note = "Could not read the business activation record.";
-              } else if (subscription?.status === "active") {
-                matchStatus = "already_active";
-              } else {
-                let subscriptionId = subscription?.id ?? null;
-
-                if (subscriptionId) {
-                  const { error: updateError } = await admin
-                    .from("business_subscriptions")
-                    .update({
-                      status: "active",
-                      payfast_payment_id: pfPaymentId,
-                      paid_at: paidAt,
-                      updated_at: paidAt,
-                    })
-                    .eq("id", subscriptionId);
-                  if (updateError) note = "Payment was confirmed, but the business activation record could not be updated.";
-                } else {
-                  const { data: created, error: createError } = await admin
-                    .from("business_subscriptions")
-                    .insert({
-                      business_id: targetProfile.id,
-                      status: "active",
-                      payfast_payment_id: pfPaymentId,
-                      paid_at: paidAt,
-                      updated_at: paidAt,
-                    })
-                    .select("id")
-                    .single();
-
-                  if (createError || !created) {
-                    note = "Payment was confirmed, but the business activation record could not be created.";
-                  } else {
-                    subscriptionId = created.id;
-                  }
-                }
-
-                if (!note && subscriptionId) {
-                  const { data: creditRace } = await admin
-                    .from("business_subscriptions")
-                    .update({ launch_credit_granted: true, updated_at: paidAt })
-                    .eq("id", subscriptionId)
-                    .eq("launch_credit_granted", false)
-                    .select("id")
-                    .maybeSingle();
-
-                  if (creditRace) {
-                    const { error: creditError } = await admin.from("business_launch_credits").insert({
-                      business_id: targetProfile.id,
-                      subscription_id: subscriptionId,
-                      amount: 199.0,
-                      remaining: 199.0,
-                    });
-                    if (creditError) console.error("payfast-notify: launch credit insert failed", creditError);
-                  }
-
-                  matchStatus = "auto_activated";
-                }
-              }
-            } else {
-              const { data: subscription, error: subscriptionError } = await admin
-                .from("publisher_subscriptions")
-                .select("*")
-                .eq("publisher_id", targetProfile.id)
-                .maybeSingle();
-
-              if (subscriptionError) {
-                note = "Could not read the Publisher Network activation record.";
-              } else if (subscription?.status === "active") {
-                matchStatus = "already_active";
-              } else if (subscription) {
-                const { error: updateError } = await admin
-                  .from("publisher_subscriptions")
-                  .update({
-                    status: "active",
-                    payfast_payment_id: pfPaymentId,
-                    paid_at: paidAt,
-                    updated_at: paidAt,
-                  })
-                  .eq("id", subscription.id);
-
-                if (updateError) {
-                  note = "Payment was confirmed, but the Publisher Network activation record could not be updated.";
-                } else {
-                  matchStatus = "auto_activated";
-                }
-              } else {
-                const { data: created, error: createError } = await admin
-                  .from("publisher_subscriptions")
-                  .insert({
-                    publisher_id: targetProfile.id,
-                    status: "active",
-                    payfast_payment_id: pfPaymentId,
-                    paid_at: paidAt,
-                    updated_at: paidAt,
-                  })
-                  .select("id")
-                  .single();
-
-                if (createError || !created) {
-                  note = "Payment was confirmed, but the Publisher Network activation record could not be created.";
-                } else {
-                  matchStatus = "auto_activated";
-                }
-              }
-            }
-          }
-        }
-      }
+      console.error("payfast-notify: premium renewal FAILED, PayFast will retry", subscription.id);
     }
-  }
-
-  const { error: insertError } = await admin.from("payfast_activation_events").insert({
-    pf_payment_id: pfPaymentId,
-    m_payment_id: mPaymentId,
-    activation_type: activationType,
-    amount: Number.isFinite(receivedAmount) ? receivedAmount : 0,
-    payer_email: payerEmail,
-    payer_name: payerName,
-    payment_status: paymentStatus || "UNKNOWN",
-    matched_user_id: matchedUserId,
-    match_status: matchStatus,
-    note,
-    processed_at: new Date().toISOString(),
-  });
-
-  if (insertError) {
-    console.error("payfast-notify: could not log Pay Now activation event", insertError);
+  } else if (data.payment_status === "CANCELLED") {
+    // The subscriber cancelled on the PayFast side: no more charges.
+    await admin.from(table).update({ status: "cancelled", updated_at: nowIso }).eq("id", subscription.id);
   }
 
   return new Response("ok", { status: 200 });
 }
 
+// deno-lint-ignore no-explicit-any
 async function handleFeaturedPlacementSubscriptionItn(admin: any, data: Record<string, string>) {
   const { data: subscription, error: subError } = await admin
     .from("featured_placement_subscriptions")

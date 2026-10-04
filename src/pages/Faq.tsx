@@ -8,9 +8,7 @@ import {
   PLATFORM_COMMISSION_RATE,
   PUBLISHER_SHARE,
   CONTACT_EMAIL,
-  BUSINESS_SUBSCRIPTION_PRICE,
-  PUBLISHER_SUBSCRIPTION_PRICE,
-  BUSINESS_LAUNCH_CREDIT_AMOUNT,
+  PREMIUM_ACCESS_PRICE,
   FEATURED_PLACEMENT_MONTHLY_PRICE,
   PLATFORM_BANK_DETAILS,
 } from "../lib/constants";
@@ -54,7 +52,7 @@ const CATEGORIES: FaqCategory[] = [
       },
       {
         q: "Do I need to sign a contract or subscribe to something?",
-        a: `No contract either way. Browsing and listing are always free. Sending a request needs a one-time ChatSched Business activation (${formatCurrency(BUSINESS_SUBSCRIPTION_PRICE)}, once-off — no renewal, ever), and approving one needs a one-time Publisher Network activation (${formatCurrency(PUBLISHER_SUBSCRIPTION_PRICE)}, once-off).`,
+        a: `No contract either way. Signing up, browsing, listing and booking are all free. Premium access (${formatCurrency(PREMIUM_ACCESS_PRICE)}/month, cancel any time) is optional and unlocks the Opportunities job board and the Marketing Suite.`,
       },
       {
         q: "Is ChatSched free to use?",
@@ -77,7 +75,7 @@ const CATEGORIES: FaqCategory[] = [
     items: [
       {
         q: "Can my business list itself on the browse page as a publisher?",
-        a: "Yes — once your business account is activated. From your dashboard you can create one publisher listing, covered by your once-off activation fee (no extra charge and no separate Publisher Network subscription). Channels that need no manual verification go live on the browse page straight away; social media and high-trust channels are submitted for ChatSched verification first and appear once approved. Requests for your listing arrive in your dashboard under \"My publisher listing\". You can't book your own listing, and you can have one listing per account. If your activation lapses, your listing can't accept new bookings until you reactivate.",
+        a: "Yes, with Premium access. From your dashboard you can create one publisher listing at no extra charge. Channels that need no manual verification go live on the browse page straight away; social media and high-trust channels are submitted for ChatSched verification first and appear once approved. Requests for your listing arrive in your dashboard under \"My publisher listing\". You can't book your own listing, and you can have one listing per account. If your activation lapses, your listing can't accept new bookings until you reactivate.",
       },
       {
         q: "How do I find the right publisher for my business?",
@@ -113,11 +111,11 @@ const CATEGORIES: FaqCategory[] = [
       },
       {
         q: "What is the AI Content Studio and do I need to pay for it?",
-        a: `Content Studio is included with ChatSched Business activation at no extra charge. It is part of the full Marketing Suite and becomes available when your business activation is active. Fair-use generation limits apply.`
+        a: `Content Studio is part of the Marketing Suite, which comes with Premium access. Fair-use generation limits apply.`
       },
       {
         q: "What is the R199 launch credit I keep seeing mentioned?",
-        a: `When a business activates (${formatCurrency(BUSINESS_SUBSCRIPTION_PRICE)} once-off), a ${formatCurrency(BUSINESS_LAUNCH_CREDIT_AMOUNT)} launch credit is automatically added to the account — it's included in the activation price, not a separate charge. The credit can be used toward any booking on the platform.`,
+        a: `There is no launch credit and no sign-up fee. Booking costs the creator's price plus a small ChatSched booking fee (R30 under R500, R50 from R500), shown on your Payment Card before you pay.`,
       },
       {
         q: "Can I cancel a request?",
@@ -156,7 +154,7 @@ const CATEGORIES: FaqCategory[] = [
       },
       {
         q: "Can I boost my visibility on the platform?",
-        a: `Yes — the Featured Placement subscription (${formatCurrency(FEATURED_PLACEMENT_MONTHLY_PRICE)}/month) gives your profile priority ranking in Browse results and on the homepage. It's separate from the one-off activation fee and entirely optional.`,
+        a: `Yes — the Featured Placement subscription (${formatCurrency(FEATURED_PLACEMENT_MONTHLY_PRICE)}/month) gives your profile priority ranking in Browse results and on the homepage. It's separate from Premium access and entirely optional.`,
       },
       {
         q: "How do I prove my follower count is real, not just typed in?",
