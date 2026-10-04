@@ -1,19 +1,27 @@
-// "Create a publisher listing" card for an ACTIVATED business account.
+// "Create a publisher listing" card for a business account with Premium access.
 //
-// A business with Premium access can list itself (or one of its
-// own ad spaces) on the browse page. Channels with no manual verification go
-// live straight away; social media and the high-trust channels are created
-// as "pending review" and go through the normal ChatSched verification —
-// the database refuses to approve them any other way. All of that is decided
-// server-side by create_business_publisher_listing() (see
-// supabase/migrations/20261003120000_business_publisher_listings.sql); this
-// component only collects the fields and shows the outcome.
+// A business can list itself (or one of its own ad spaces) on the browse page.
+// It is asked the SAME channel questions a normal publisher application asks
+// (shared ChannelSpecificFields + channelOnboardingForm), and the answers are
+// saved to channel_metadata so the browse card and profile show the channel's
+// real numbers (visitors, covers, attendance...) instead of a generic
+// "audience size". What happens next is decided server-side by
+// create_business_publisher_listing() (see supabase/migrations): until the
+// ownership checks for digital channels exist, every business listing is
+// created as "pending review" and approved by ChatSched, like a normal
+// application. The database refuses to approve the proof-required channels any
+// other way. This component only collects the fields and shows the outcome.
 import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { formatSupabaseError } from "../lib/supabaseErrors";
 import { CATEGORIES, PROVINCES } from "../lib/constants";
-import { getPublisherOnboardingChannels } from "../lib/channelRegistry";
+import { getChannelBySlug, getPublisherOnboardingChannels } from "../lib/channelRegistry";
+import type { ChannelSlug } from "../lib/channelTypes";
+import { isAuthorityChannel, AUTHORITY_SUBJECT } from "../lib/channelOnboardingSchemas";
+import { type FormState, initialState } from "../lib/channelOnboardingForm";
+import { buildBusinessListingPayload, PROOF_REQUIRED_CHANNELS } from "../lib/businessListingPayload";
+import ChannelSpecificFields, { AdFormatsPicker } from "./ChannelSpecificFields";
 import Button from "./Button";
 
 const inputCls = "w-full border-2 border-billboard-ink rounded px-3 py-2 bg-white text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-billboard-ink";
@@ -23,50 +31,77 @@ export default function BusinessListingCreator({ onCreated }: { onCreated: () =>
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isSocial, setIsSocial] = useState(false);
-  const [result, setResult] = useState<{ id: string; live: boolean } | null>(null);
+  const [channel, setChannel] = useState<ChannelSlug | "">("");
+  const [form, setForm] = useState<FormState>(initialState);
+  const [proofFiles, setProofFiles] = useState<File[]>([]);
+  const [result, setResult] = useState<{ id: string; live: boolean; digital: boolean } | null>(null);
   const channels = getPublisherOnboardingChannels();
+
+  const update = <K extends keyof FormState>(key: K, value: FormState[K]) =>
+    setForm((f) => ({ ...f, [key]: value }));
+
+  const def = channel ? getChannelBySlug(channel)?.definition : undefined;
+  const authority = channel ? isAuthorityChannel(channel) : false;
+  const hasEngagement = channel === "social-media" || channel === "influencer";
+  const needsProof = channel ? PROOF_REQUIRED_CHANNELS.includes(channel) : false;
 
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+    if (!channel) {
+      setError("Choose a channel.");
+      return;
+    }
     const f = new FormData(e.currentTarget);
     const str = (k: string) => String(f.get(k) ?? "").trim();
-    const channel = str("channel_slug");
-    const links = channel === "social-media"
-      ? str("social_links").split(/\s+/).filter((u) => /^https?:\/\//i.test(u)).slice(0, 6).map((url) => ({ platform: new URL(url).hostname.replace(/^www\./, ""), url }))
-      : [];
-    if (channel === "social-media" && links.length === 0) {
-      setError("Social media listings need at least one public profile link (starting with https://).");
+    if (needsProof && proofFiles.length === 0) {
+      setError(`Add at least one photo or short video that shows the real ${def?.name.toLowerCase() ?? "listing"}. ChatSched reviews it before the listing is approved.`);
+      return;
+    }
+    if (channel === "informal-retail" && !form.retailMunicipalRegistrationConfirmed) {
+      setError("Confirm that the shop is registered with its local municipality.");
+      return;
+    }
+    const built = buildBusinessListingPayload(
+      channel,
+      {
+        name: str("name"), category: str("category"), city: str("city"), province: str("province"),
+        suburb: str("suburb"), price: Number(str("price")), bio: str("bio"), audience: str("audience"),
+      },
+      form,
+    );
+    if (!built.ok) {
+      setError(built.error);
       return;
     }
     setBusy(true);
-    const { data, error: rpcError } = await supabase.rpc("create_business_publisher_listing", {
-      p_listing: {
-        name: str("name"),
-        channel_slug: channel,
-        category: str("category"),
-        city: str("city"),
-        province: str("province"),
-        suburb: str("suburb"),
-        price_per_post: Number(str("price")),
-        followers: str("followers") ? Number(str("followers")) : 0,
-        bio: str("bio"),
-        audience: str("audience"),
-        social_verification_links: links,
-      },
-    });
-    setBusy(false);
+    const { data, error: rpcError } = await supabase.rpc("create_business_publisher_listing", { p_listing: built.payload });
     if (rpcError) {
+      setBusy(false);
       setError(formatSupabaseError(rpcError));
       return;
     }
     const res = data as { ok?: boolean; id?: string; live?: boolean } | null;
     if (!res?.id) {
+      setBusy(false);
       setError("Something went wrong creating your listing. Please try again.");
       return;
     }
-    setResult({ id: res.id, live: !!res.live });
+    // Proof is stored under the real listing id, so it can only be uploaded now.
+    if (proofFiles.length > 0) {
+      const uploaded: string[] = [];
+      for (const file of proofFiles.slice(0, 5)) {
+        const ext = file.name.split(".").pop() || "jpg";
+        const path = `${res.id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+        const { error: uploadErr } = await supabase.storage.from("publisher-verification-proof").upload(path, file, { cacheControl: "3600", upsert: false });
+        if (!uploadErr) uploaded.push(path);
+      }
+      if (uploaded.length > 0) {
+        await supabase.from("publishers").update({ verification_proof_urls: uploaded }).eq("id", res.id);
+      }
+    }
+    setBusy(false);
+    setResult({ id: res.id, live: !!res.live, digital: !authority });
     onCreated();
   }
 
@@ -77,7 +112,9 @@ export default function BusinessListingCreator({ onCreated }: { onCreated: () =>
         <p className="text-sm text-billboard-inkSoft mb-3">
           {result.live
             ? "It's on the browse page now. Requests for it arrive in your dashboard."
-            : "This channel needs ChatSched verification before it appears on the browse page. We'll notify you once it's approved."}
+            : result.digital
+              ? "ChatSched checks that you own this channel before it appears on the browse page. We'll notify you once it's approved."
+              : "ChatSched reviews the proof you uploaded before it appears on the browse page. We'll notify you once it's approved."}
         </p>
         {result.live && <Button to={`/browse/${result.id}`} variant="primary" size="sm">View it on browse →</Button>}
       </div>
@@ -101,7 +138,10 @@ export default function BusinessListingCreator({ onCreated }: { onCreated: () =>
           </div>
           <div>
             <label className={labelCls} htmlFor="bl-channel">Channel</label>
-            <select id="bl-channel" name="channel_slug" required defaultValue="" className={inputCls} onChange={(e) => setIsSocial(e.target.value === "social-media")}>
+            <select
+              id="bl-channel" name="channel_slug" required value={channel} className={inputCls}
+              onChange={(e) => { setChannel(e.target.value as ChannelSlug); setForm(initialState); setProofFiles([]); }}
+            >
               <option value="" disabled>Choose a channel</option>
               {channels.map((c) => <option key={c.definition.slug} value={c.definition.slug}>{c.definition.name}</option>)}
             </select>
@@ -132,10 +172,57 @@ export default function BusinessListingCreator({ onCreated }: { onCreated: () =>
             <label className={labelCls} htmlFor="bl-price">Price per placement (R, min 50)</label>
             <input id="bl-price" name="price" type="number" min={50} step="1" required inputMode="numeric" className={inputCls} />
           </div>
-          <div>
-            <label className={labelCls} htmlFor="bl-followers">Audience size (optional)</label>
-            <input id="bl-followers" name="followers" type="number" min={0} step="1" inputMode="numeric" className={inputCls} />
-          </div>
+
+          {channel && def && (
+            <div className="sm:col-span-2 space-y-4 border-t-2 border-billboard-paperDim pt-4" data-testid="channel-questions">
+              {authority ? (
+                <label className="flex items-start gap-3 text-sm border-2 border-billboard-ink rounded p-3 bg-billboard-yellow/10 cursor-pointer">
+                  <input
+                    type="checkbox" checked={form.authorityConfirmed}
+                    onChange={(e) => update("authorityConfirmed", e.target.checked)} className="mt-0.5 h-4 w-4"
+                  />
+                  <span className="font-semibold">
+                    I own or run this {AUTHORITY_SUBJECT[channel as keyof typeof AUTHORITY_SUBJECT]} and can sell sponsorship and advertising on it.
+                  </span>
+                </label>
+              ) : (
+                <div>
+                  <label className="block text-sm font-semibold mb-1.5" htmlFor="bl-metric">{def.eligibility?.metricLabel ?? "Follower count"}</label>
+                  <input
+                    id="bl-metric" type="number" min={0} inputMode="numeric" value={form.followers}
+                    onChange={(e) => update("followers", e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5"
+                  />
+                  <p className="text-xs text-billboard-inkSoft mt-1">Minimum {(def.eligibility?.minValue ?? 0).toLocaleString()}.</p>
+                </div>
+              )}
+
+              {def.bookingFlow === "request" && <AdFormatsPicker channelSlug={channel} form={form} update={update} />}
+              <ChannelSpecificFields channelSlug={channel} form={form} update={update} />
+
+              {hasEngagement && (
+                <div className={channel === "influencer" ? "" : "grid grid-cols-2 gap-3"}>
+                  {channel !== "influencer" && (
+                    <div>
+                      <label className="block text-sm font-semibold mb-1.5" htmlFor="bl-eng">Avg. engagement %</label>
+                      <input id="bl-eng" type="number" step="0.1" value={form.engagement} onChange={(e) => update("engagement", e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5" />
+                    </div>
+                  )}
+                  <div>
+                    <label className="block text-sm font-semibold mb-1.5" htmlFor="bl-reach">Avg. monthly reach</label>
+                    <input id="bl-reach" type="number" value={form.monthlyReach} onChange={(e) => update("monthlyReach", e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5" />
+                  </div>
+                </div>
+              )}
+
+              {channel === "informal-retail" && (
+                <label className="flex items-start gap-2 text-sm border-2 border-billboard-yellow bg-billboard-yellow/10 rounded p-3">
+                  <input type="checkbox" checked={form.retailMunicipalRegistrationConfirmed} onChange={(e) => update("retailMunicipalRegistrationConfirmed", e.target.checked)} className="mt-0.5" />
+                  <span>I confirm this shop is registered with the relevant local municipality and that I am authorised to offer its advertising inventory through ChatSched.</span>
+                </label>
+              )}
+            </div>
+          )}
+
           <div className="sm:col-span-2">
             <label className={labelCls} htmlFor="bl-bio">About this listing</label>
             <textarea id="bl-bio" name="bio" rows={3} maxLength={1500} className={inputCls} />
@@ -144,13 +231,25 @@ export default function BusinessListingCreator({ onCreated }: { onCreated: () =>
             <label className={labelCls} htmlFor="bl-audience">Who sees it</label>
             <textarea id="bl-audience" name="audience" rows={2} maxLength={1500} className={inputCls} />
           </div>
-          {isSocial && (
-            <div className="sm:col-span-2">
-              <label className={labelCls} htmlFor="bl-links">Public profile links (one per line, up to 6)</label>
-              <textarea id="bl-links" name="social_links" rows={3} className={inputCls} placeholder="https://instagram.com/yourbusiness" />
-              <p className="text-xs text-billboard-inkSoft mt-1">Social media listings are verified by ChatSched before they appear on browse.</p>
+
+          {needsProof && (
+            <div className="sm:col-span-2 border-2 border-billboard-ink rounded p-4 bg-billboard-paperDim">
+              <label className={labelCls} htmlFor="bl-proof">Show us the real thing</label>
+              <p className="text-sm text-billboard-inkSoft mb-3">
+                {def?.name} listings are checked before approval. Add a photo or short video that shows what you described (the venue, the vehicle, the team kit, the shop). Up to 5 files.
+              </p>
+              <input
+                id="bl-proof" type="file" multiple className="text-sm"
+                accept="image/png,image/jpeg,image/webp,video/mp4,video/quicktime"
+                onChange={(e) => setProofFiles(Array.from(e.target.files ?? []).slice(0, 5))}
+              />
+              {proofFiles.length > 0 && <p className="text-xs text-billboard-inkSoft mt-2">{proofFiles.length} file{proofFiles.length === 1 ? "" : "s"} selected — uploaded when you create the listing.</p>}
             </div>
           )}
+          {channel && !needsProof && (
+            <p className="sm:col-span-2 text-xs text-billboard-inkSoft">ChatSched checks that you own this channel before the listing goes on the browse page.</p>
+          )}
+
           {error && <p role="alert" className="sm:col-span-2 text-sm font-semibold text-billboard-red">{error}</p>}
           <div className="sm:col-span-2 flex gap-3 items-center">
             <Button type="submit" variant="primary" size="sm" disabled={busy}>{busy ? "Creating…" : "Create listing"}</Button>
