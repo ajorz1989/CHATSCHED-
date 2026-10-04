@@ -28,12 +28,12 @@ import { ICON_PATHS, type IconKey } from "./platformIconPaths";
 // vector paths the website uses, written straight into the page as PDF path
 // operators. Checks and ratings are vector shapes too, never font glyphs.
 
-const INK = "#1A1712";
-const INK_SOFT = "#4A4335";
-const PAPER = "#FAF9F5";
-const YELLOW = "#F5B700";
-const YELLOW_DEEP = "#D9A400";
-const WHITE = "#FFFFFF";
+export const INK = "#1A1712";
+export const INK_SOFT = "#4A4335";
+export const PAPER = "#FAF9F5";
+export const YELLOW = "#F5B700";
+export const YELLOW_DEEP = "#D9A400";
+export const WHITE = "#FFFFFF";
 const PAGE_W = 210;
 const PAGE_H = 297;
 const MARGIN = 18;
@@ -41,11 +41,11 @@ const CONTENT_W = PAGE_W - MARGIN * 2;
 const FOOTER_H = 11;
 const CONTENT_BOTTOM = PAGE_H - FOOTER_H - 8;
 
-type Doc = import("jspdf").jsPDF;
+export type Doc = import("jspdf").jsPDF;
 
-const DISPLAY = "Archivo";
-const SANS = "PlexSans";
-const MONO = "PlexMono";
+export const DISPLAY = "Archivo";
+export const SANS = "PlexSans";
+export const MONO = "PlexMono";
 
 export interface MediaKitInput {
   publisher: Publisher;
@@ -59,7 +59,7 @@ function rand(n: number): string {
   return formatCurrencyShared(n);
 }
 
-async function registerBrandFonts(doc: Doc) {
+export async function registerBrandFonts(doc: Doc) {
   const f = await import("./mediaKitFonts");
   const add = (file: string, data: string, name: string, style: "normal" | "bold") => {
     doc.addFileToVFS(file, data);
@@ -72,14 +72,14 @@ async function registerBrandFonts(doc: Doc) {
   add("PlexMono-Bold.ttf", f.PLEX_MONO_BOLD, MONO, "bold");
 }
 
-function font(doc: Doc, face: string, style: "normal" | "bold", size: number, color: string) {
+export function font(doc: Doc, face: string, style: "normal" | "bold", size: number, color: string) {
   doc.setFont(face, style);
   doc.setFontSize(size);
   doc.setTextColor(color);
 }
 
 /** Thick-bordered block with the site's hard offset shadow. */
-function hardBlock(doc: Doc, x: number, y: number, w: number, h: number, fill: string, shadow = 1.8, border = 0.7) {
+export function hardBlock(doc: Doc, x: number, y: number, w: number, h: number, fill: string, shadow = 1.8, border = 0.7) {
   if (shadow > 0) {
     doc.setFillColor(INK);
     doc.rect(x + shadow, y + shadow, w, h, "F");
@@ -91,7 +91,7 @@ function hardBlock(doc: Doc, x: number, y: number, w: number, h: number, fill: s
 }
 
 /** Mono label chip; returns its width so callers can lay several in a row. */
-function chip(doc: Doc, x: number, baselineY: number, text: string, opts: { fill?: string; color?: string; border?: boolean } = {}): number {
+export function chip(doc: Doc, x: number, baselineY: number, text: string, opts: { fill?: string; color?: string; border?: boolean } = {}): number {
   font(doc, MONO, "bold", 6.6, opts.color ?? PAPER);
   const label = text.toUpperCase();
   const w = doc.getTextWidth(label) + 5;
@@ -111,7 +111,7 @@ function chip(doc: Doc, x: number, baselineY: number, text: string, opts: { fill
 }
 
 /** The real ChatSched mark (see ChatSchedMark in VisualIdentitySystem.tsx, viewBox 26x22). */
-function drawChatschedMark(doc: Doc, x: number, y: number, h: number, color: string, lineScale = 1): number {
+export function drawChatschedMark(doc: Doc, x: number, y: number, h: number, color: string, lineScale = 1): number {
   const w = h * (26 / 22);
   doc.setDrawColor(color);
   doc.setLineWidth(h * (2.4 / 22) * lineScale);

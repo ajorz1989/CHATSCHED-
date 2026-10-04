@@ -5,6 +5,8 @@ import { supabase } from "../lib/supabase";
 import { formatSupabaseError } from "../lib/supabaseErrors";
 import { formatCurrency } from "../lib/currency";
 import { buildAndDownloadInvoice } from "../lib/invoice";
+import { buildAndDownloadPaymentCard, buildPaymentCardModel } from "../lib/paymentCard";
+import { channelRequestBreakdown, fromCents } from "../lib/fees";
 import { getChannelBySlug } from "../lib/channelRegistry";
 import BankDetailsPanel from "./BankDetailsPanel";
 import EscrowNote from "./EscrowNote";
@@ -240,10 +242,18 @@ export default function ChannelCampaignCard({ request: r, onChange }: { request:
           <p className="text-sm font-semibold text-billboard-ink mb-1">
             {r.creator?.name ?? "The creator"} approved — payment is {dueIn(r.payment_due_at)}.
           </p>
-          <p className="text-xs text-billboard-inkSoft mb-3">Pay by EFT using the details below, using the reference exactly as shown, then confirm below.</p>
+          <p className="text-xs text-billboard-inkSoft mb-3">Pay by bank transfer using the details below, with the reference exactly as shown, then confirm below. Your placement goes live once the money has cleared in our bank account.</p>
           <EscrowNote until="your placement goes live" />
+          <div className="border-[3px] border-billboard-ink bg-billboard-yellow rounded p-4 mb-3 shadow-[4px_4px_0_0_#1A1712]">
+            <p className="font-mono text-[10px] uppercase font-bold">Payment Card</p>
+            <p className="text-sm mt-1">{r.creator?.name ?? "Creator"}: {formatCurrency(r.proposed_amount, { cents: true })} + {formatCurrency(fromCents(channelRequestBreakdown(r).bookingFeeCents))} booking fee</p>
+            <p className="font-display text-2xl">Total due {formatCurrency(fromCents(channelRequestBreakdown(r).totalDueCents), { cents: true })}</p>
+            <Button variant="dark" size="sm" className="mt-3" onClick={() => buildAndDownloadPaymentCard(buildPaymentCardModel(r, profile))}>
+              Download Payment Card (PDF)
+            </Button>
+          </div>
           <div className="mb-3">
-            <BankDetailsPanel amount={r.proposed_amount} reference={reference} />
+            <BankDetailsPanel amount={fromCents(channelRequestBreakdown(r).totalDueCents)} reference={r.payment_reference ?? reference} />
           </div>
           <Button variant="primary" size="md" onClick={confirmPaid} disabled={confirming}>
             {confirming ? "Confirming…" : "I've made this payment"}
