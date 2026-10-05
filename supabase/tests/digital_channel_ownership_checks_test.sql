@@ -32,11 +32,11 @@ begin
     (u_inf, 'own-inf@example.test'), (u_pod, 'own-pod@example.test');
   update public.profiles set role = 'admin' where id = u_admin;
 
-  insert into public.publishers (id, user_id, name, category, channel_slug, city, province, status, channel_metadata) values
-    (p_web,  u_web,  'Site One',   'Retail', 'website',    'Cape Town', 'Western Cape', 'pending_review', '{"domain":"siteone.co.za"}'),
-    (p_web2, u_web2, 'Site Two',   'Retail', 'website',    'Cape Town', 'Western Cape', 'pending_review', '{}'),
-    (p_inf,  u_inf,  'Creator',    'Retail', 'influencer', 'Cape Town', 'Western Cape', 'pending_review', '{}'),
-    (p_pod,  u_pod,  'Pod',        'Media',  'podcast',    'Cape Town', 'Western Cape', 'pending_review', '{}');
+  insert into public.publishers (id, user_id, name, category, channel_slug, city, province, status, channel_metadata, price_per_post) values
+    (p_web,  u_web,  'Site One',   'Retail', 'website',    'Cape Town', 'Western Cape', 'pending_review', '{"domain":"siteone.co.za"}', 500),
+    (p_web2, u_web2, 'Site Two',   'Retail', 'website',    'Cape Town', 'Western Cape', 'pending_review', '{}', 500),
+    (p_inf,  u_inf,  'Creator',    'Retail', 'influencer', 'Cape Town', 'Western Cape', 'pending_review', '{}', 500),
+    (p_pod,  u_pod,  'Pod',        'Media',  'podcast',    'Cape Town', 'Western Cape', 'pending_review', '{}', 500);
 
   -- A. admin cannot approve an unconfirmed website
   perform set_config('request.jwt.claims', json_build_object('sub', u_admin, 'role', 'authenticated')::text, true);
@@ -118,6 +118,7 @@ begin
     else fails := fails + 1; report := report || E'\nFAIL F1 wrong error: ' || sqlerrm; end if;
   end;
   begin
+    perform public.confirm_social_verification(p_inf, true);
     update public.publishers set social_verification_links = '[{"platform":"instagram","url":"https://instagram.com/x"}]'::jsonb where id = p_inf;
     perform public.approve_publisher_application(p_inf, '{}');
     select * into v_pub from public.publishers where id = p_inf;
