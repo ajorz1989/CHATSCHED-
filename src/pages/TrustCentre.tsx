@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Seo from "../components/Seo";
 import TrustBadge from "../components/TrustBadge";
+import { LEVEL_LADDERS } from "../lib/levelLadders";
+import { getChannelBySlug } from "../lib/channelRegistry";
 import MarketingIcon from "../components/MarketingIcon";
 import {
   CREATOR_APPROVAL_WINDOW_DAYS,
@@ -11,10 +13,10 @@ import {
 } from "../lib/constants";
 
 const PUBLISHER_LEVELS = [
-  { key: "rising" as const, label: "Rising", requirement: "3,000+ followers.", className: "bg-billboard-paperDim border-billboard-ink" },
-  { key: "verified" as const, label: "Verified", requirement: "5,000+ followers, phone number confirmed by OTP, and the account is at least 6 months old.", className: "bg-billboard-ink text-white border-billboard-ink" },
-  { key: "premium" as const, label: "Premium", requirement: "20,000+ followers.", className: "bg-billboard-yellow border-billboard-ink" },
-  { key: "elite" as const, label: "Elite", requirement: "100,000+ followers and identity verified.", className: "bg-billboard-green text-white border-billboard-greenDeep" },
+  { key: "rising" as const, label: "Rising", requirement: "Your channel's first audience step (see the table below).", className: "bg-billboard-paperDim border-billboard-ink" },
+  { key: "verified" as const, label: "Verified", requirement: "The second audience step, phone number confirmed by OTP, and the account is at least 6 months old.", className: "bg-billboard-ink text-white border-billboard-ink" },
+  { key: "premium" as const, label: "Premium", requirement: "The third audience step.", className: "bg-billboard-yellow border-billboard-ink" },
+  { key: "elite" as const, label: "Elite", requirement: "The top audience step and identity verified.", className: "bg-billboard-green text-white border-billboard-greenDeep" },
 ];
 
 const BUSINESS_LEVELS = [
@@ -124,8 +126,9 @@ export default function TrustCentre() {
 
         <h3 className="font-display text-base mb-3">Publisher &amp; creator levels</h3>
         <p className="text-sm text-billboard-inkSoft mb-4 max-w-2xl">
-          A publisher's badge reflects follower count plus how much has actually been confirmed — not just how
-          big the audience claims to be.
+          A publisher's badge reflects the size of the audience that matters for their channel — followers, podcast
+          downloads, website visitors, weekly listeners, attendance, members or footfall — plus how much has actually
+          been confirmed, not just how big the audience claims to be.
         </p>
         <div className="grid sm:grid-cols-2 gap-4 mb-8">
           {PUBLISHER_LEVELS.map((l) => (
@@ -136,6 +139,34 @@ export default function TrustCentre() {
               <p className="text-sm text-billboard-inkSoft">{l.requirement}</p>
             </div>
           ))}
+        </div>
+
+        <div className="overflow-x-auto mb-8">
+          <table className="w-full text-sm border-[3px] border-billboard-ink rounded-lg bg-white">
+            <caption className="sr-only">Audience needed for each level, by channel</caption>
+            <thead>
+              <tr className="bg-billboard-paperDim text-left font-mono text-[11px] uppercase">
+                <th scope="col" className="p-2.5">Channel · audience measured</th>
+                <th scope="col" className="p-2.5 text-right">Rising</th>
+                <th scope="col" className="p-2.5 text-right">Verified</th>
+                <th scope="col" className="p-2.5 text-right">Premium</th>
+                <th scope="col" className="p-2.5 text-right">Elite</th>
+              </tr>
+            </thead>
+            <tbody>
+              {LEVEL_LADDERS.map((l) => (
+                <tr key={l.channel} className="border-t-2 border-billboard-paperDim">
+                  <th scope="row" className="p-2.5 text-left font-semibold">
+                    {getChannelBySlug(l.channel)?.definition.name ?? l.channel}
+                    <span className="block font-normal text-billboard-inkSoft">{l.measure}{l.note ? ` · ${l.note}` : ""}</span>
+                  </th>
+                  {l.thresholds.map((t, i) => (
+                    <td key={i} className="p-2.5 text-right font-mono">{t.toLocaleString("en-ZA")}+</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
 
         <h3 className="font-display text-base mb-3">Business verification</h3>

@@ -22,10 +22,10 @@ const STEPS = [
 ];
 
 const LEVELS = [
-  { key: "rising", label: "Rising", emoji: "🌱", requirement: "3,000+ followers.", className: "bg-billboard-paperDim border-billboard-ink" },
-  { key: "verified", label: "Verified", emoji: "✓", requirement: "5,000+ followers, phone number confirmed by OTP, and the account is at least 6 months old.", className: "bg-billboard-ink text-white border-billboard-ink" },
-  { key: "premium", label: "Premium", emoji: "⭐", requirement: "20,000+ followers.", className: "bg-billboard-yellow border-billboard-ink" },
-  { key: "elite", label: "Elite", emoji: "👑", requirement: "100,000+ followers and identity verified.", className: "bg-billboard-green text-white border-billboard-greenDeep" },
+  { key: "rising", label: "Rising", emoji: "🌱", requirement: "Your channel's first audience step — for example 3,000+ followers, 500+ podcast downloads per episode or 3,000+ monthly website visitors.", className: "bg-billboard-paperDim border-billboard-ink" },
+  { key: "verified", label: "Verified", emoji: "✓", requirement: "The second audience step, phone number confirmed by OTP, and the account is at least 6 months old.", className: "bg-billboard-ink text-white border-billboard-ink" },
+  { key: "premium", label: "Premium", emoji: "⭐", requirement: "The third audience step.", className: "bg-billboard-yellow border-billboard-ink" },
+  { key: "elite", label: "Elite", emoji: "👑", requirement: "The top audience step and identity verified.", className: "bg-billboard-green text-white border-billboard-greenDeep" },
 ];
 
 const FEATURES = [
@@ -179,7 +179,7 @@ export default function ForPublishers() {
           </div>
           <div className="mt-4">
             <Link to="/trust" className="inline-flex items-center gap-2 font-semibold underline text-billboard-inkSoft hover:text-billboard-ink">
-              See the full verification process →
+              See the audience needed for every channel →
             </Link>
           </div>
         </div>
