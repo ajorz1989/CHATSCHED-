@@ -2,13 +2,12 @@
 // Onboarding). Two actions:
 //
 //   create   — creates the login account + business profile, optionally
-//              marks verification flags, optionally activates the
-//              R399 once-off ChatSched Business membership, and returns a
+//              marks verification flags, optionally grants a month of
+//              Premium access (R199/month product), and returns a
 //              one-time "set your password" link the admin can send.
-//   activate — activates (or re-activates) an EXISTING business's
-//              membership without a PayFast payment (EFT received, comped,
-//              or onboarded by hand). Grants the R199 launch credit exactly
-//              once, same guard payfast-notify uses.
+//   activate — grants (or re-grants) a month of Premium access to an
+//              EXISTING business without a PayFast payment (comped, or
+//              paid outside PayFast). No launch credit exists any more.
 //
 // Revoking a membership is NOT done here — cancel-subscription already does
 // that, so the UI calls it directly.
@@ -157,7 +156,7 @@ Deno.serve(async (req) => {
       setup_link: setupLink,
       warnings: [
         profileError ? "Account created, but some profile details could not be saved — edit them from the Businesses tab." : null,
-        activateError ? "Account created, but membership could not be activated — use Activate on the business row." : null,
+        activateError ? "Account created, but Premium access could not be granted — use Grant Premium on the business row." : null,
         !setupLink ? "Account created, but the password setup link could not be generated — use Forgot password for that email." : null,
       ].filter(Boolean),
     });

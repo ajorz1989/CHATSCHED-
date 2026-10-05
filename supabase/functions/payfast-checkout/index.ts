@@ -4,17 +4,8 @@
 // computed here, server-side, so the PayFast passphrase never reaches the
 // browser bundle.
 //
-// Launch-credit application (item 11, schema_phase88): used to read
-// business_launch_credits.remaining, compute creditApplied in JS, and
-// write it here with the actual balance deduction deferred to
-// payfast-notify — two separate, non-atomic steps a concurrent checkout
-// for a different payment could race between. Now calls
-// reserve_launch_credit_for_payment(), a single atomic, row-locked
-// Postgres function that reserves (and, for a fully-covered payment,
-// finalizes) the credit application in one transaction. See that
-// function's own comment in schema_phase88_atomic_launch_credit_redemption.sql
-// for the full reasoning, including why this is a reserve/confirm/release
-// pattern rather than a single deduct-at-checkout step.
+// Booking checkout is OFF by default (see the BOOKING_PAYFAST_ENABLED check
+// below). Launch credit no longer exists, so the full amount is charged.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders } from "../_shared/cors.ts";
 import { signCheckoutFields, payfastHost } from "../_shared/payfast.ts";

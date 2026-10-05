@@ -1,32 +1,14 @@
-// Admin-only: revokes a publisher's or business's ChatSched membership
-// (e.g. a refund or a policy violation), or a publisher's Featured
-// Placement, by setting the relevant subscription status to 'cancelled'.
-// Launch credit no longer exists (free sign-up, Oct 2026).
+// Admin-only: revokes a creator's or business's Premium access (e.g. a refund or
+// a policy violation), or a publisher's Featured Placement, by setting the
+// relevant subscription status to 'cancelled'. Launch credit no longer exists.
 //
-// Used to be self-service (a business or publisher cancelling their own
-// recurring subscription, which also called PayFast's cancel-token API).
-// As of schema_phase86_once_off_activation_pricing.sql (item 10),
-// publisher/business membership is a once-off activation fee with no
-// renewal — there is no recurring PayFast token to cancel, and no reason
-// for a fully-paid, permanent membership to have a self-service "cancel"
-// action at all. This is now purely an admin action for revoking access
-// after the fact; there is currently no admin UI wired up to call it for
-// role=business/publisher (a real gap if ChatSched staff need to do this
-// today — see the "claude fixes" writeup for item 10 for why building
-// that UI was left out of this pass).
+// Known gap: this does NOT call PayFast's recurring-cancel API. Marking a
+// Premium or Featured Placement row 'cancelled' stops ChatSched treating the
+// account as paying, but PayFast may still attempt the next monthly charge
+// until the subscriber (or ChatSched on PayFast's dashboard) cancels it there.
+// Re-add the recurring-cancel API call before relying on this for a real payer.
 //
-// role=featured_publisher (schema_phase87_featured_placement_subscriptions.sql)
-// IS genuinely recurring — but this function does NOT call PayFast's
-// recurring-cancel API for it (that code was removed alongside
-// cancelPayfastSubscription when it had no remaining caller; see
-// _shared/payfast.ts's own comment). Marking this table's row 'cancelled'
-// stops ChatSched from treating the listing as Featured, but does NOT by
-// itself stop PayFast from attempting the next recurring charge — a real,
-// known gap, not an oversight papered over. Re-adding a recurring-cancel
-// API call (from PayFast's published docs, same source the removed code
-// cited) is the correct fix before this path is relied on for a real
-// paying publisher; flagged plainly here and in the item 10 writeup
-// rather than left to be discovered later.
+// featured_publisher is keyed by publishers.id; the other two by profiles.id.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders } from "../_shared/cors.ts";
 
@@ -74,9 +56,6 @@ Deno.serve(async (req) => {
       .update({ status: "cancelled", updated_at: new Date().toISOString() })
       .eq("id", existing.id);
     if (updateError) return json({ error: "Could not cancel subscription" }, 500);
-
-    if (role === "business") {
-    }
 
     return json({ cancelled: true });
   } catch (err) {
