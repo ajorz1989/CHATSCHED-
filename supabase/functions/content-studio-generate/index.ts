@@ -1,7 +1,7 @@
 // Generates ready-to-post copy across up to 9 formats from a photo and/or a
 // Text brief. Server-side because the Anthropic API key must never reach
 // the browser, and this costs real money per call — so it is gated behind
-// an active ChatSched Business activation and rate-limited on top of that,
+// active Premium access (R199/month) and rate-limited on top of that,
 // not just behind login.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -12,8 +12,8 @@ const corsHeaders = {
 };
 
 // Content Studio's outputs are short, formulaic marketing copy, so keep
-// the included activation tier on the lowest-cost current Claude model.
-// Keep these limits aligned with the activation-only UI.
+// the included Premium tier on the lowest-cost current Claude model.
+// Keep these limits aligned with the Marketing Suite UI.
 const FREE_MODEL = "claude-haiku-4-5-20251001";
 const FREE_MONTHLY_LIMIT = 15;
 const FREE_DAILY_LIMIT = 5;
