@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { useComparison } from "../contexts/ComparisonContext";
+import { useComparison, comparisonChannelOf } from "../contexts/ComparisonContext";
+import { getChannelBySlug } from "../lib/channelRegistry";
 import { usePublishers } from "../hooks/usePublishers";
 import { scoreLabel } from "../lib/publisherDisplay";
 import TrustBadge from "../components/TrustBadge";
@@ -63,10 +64,20 @@ function MetricRow({ label, sub, values, render }: RowProps) {
 }
 
 export default function ComparePublishers() {
-  const { ids, removePublisher, clearComparison, count } = useComparison();
+  const { ids, removePublisher, clearComparison, count, channel: storedChannel } = useComparison();
   const { publishers, loading } = usePublishers();
 
-  const selected = ids.map(id => publishers.find(p => p.id === id) ?? null);
+  const found = ids.map(id => publishers.find(p => p.id === id) ?? null);
+
+  // One comparison, one channel: a website's visitors and a restaurant's daily
+  // covers are different things, so they are never lined up in one table. New
+  // adds are blocked at the Compare button; this covers a list saved before that.
+  const firstFound = found.find((p): p is Publisher => p !== null);
+  const compareChannel = storedChannel ?? (firstFound ? comparisonChannelOf(firstFound) : null);
+  const selected = found.filter(p => p === null || comparisonChannelOf(p) === compareChannel);
+  const leftOut = found.filter((p): p is Publisher => p !== null && comparisonChannelOf(p) !== compareChannel);
+  const channelName = compareChannel ? (getChannelBySlug(compareChannel)?.definition.name ?? compareChannel.replace(/-/g, " ")) : "";
+  const socialRows = compareChannel === "social-media" || compareChannel === "influencer";
 
   return (
     <div className="max-w-7xl mx-auto px-5 py-16">
@@ -80,7 +91,7 @@ export default function ComparePublishers() {
             <p className="text-billboard-inkSoft max-w-xl">
               {count === 0
                 ? "Add publishers from Browse or Search to compare them here."
-                : `Comparing ${count} publisher${count !== 1 ? "s" : ""} — up to 5 at once.`}
+                : `Comparing ${selected.length} ${channelName ? `${channelName} ` : ""}listing${selected.length !== 1 ? "s" : ""} — up to 5 at once, all from one channel.`}
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -110,6 +121,22 @@ export default function ComparePublishers() {
       ) : loading ? (
         <SkeletonRows count={4} />
       ) : (
+        <>
+        {leftOut.length > 0 && (
+          <div role="status" className="mb-4 border-[3px] border-billboard-ink rounded bg-billboard-yellow/40 p-4 text-sm" data-testid="compare-left-out">
+            <p className="font-semibold mb-2">
+              Listings from different channels can't be compared side by side, so {leftOut.length === 1 ? "this one is" : "these are"} left out of the {channelName} table:
+            </p>
+            <ul className="space-y-1">
+              {leftOut.map(p => (
+                <li key={p.id} className="flex items-center gap-3">
+                  <span>{p.name} <span className="text-billboard-inkSoft">({getChannelBySlug(comparisonChannelOf(p))?.definition.name ?? comparisonChannelOf(p)})</span></span>
+                  <button onClick={() => removePublisher(p.id)} className="text-xs font-semibold underline text-billboard-red">Remove</button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
         <div className="overflow-x-auto rounded border-[3px] border-billboard-ink">
           <table className="w-full border-collapse">
             {/* Publisher header row */}
@@ -173,13 +200,13 @@ export default function ComparePublishers() {
                   ? <TrustBadge kind="publisher" level={p.level} />
                   : <span className="text-billboard-inkSoft text-xs">—</span>
               )} />
-              <MetricRow label="Platforms" values={selected} render={p => (
+              {socialRows && <MetricRow label="Platforms" values={selected} render={p => (
                 <div className="flex flex-wrap gap-1">
                   {p.platforms.map(pl => (
                     <span key={pl} className="font-mono text-[10px] border border-billboard-ink rounded-full px-2 py-0.5 bg-billboard-paperDim whitespace-nowrap">{pl}</span>
                   ))}
                 </div>
-              )} />
+              )} />}
               <MetricRow label="Audience" sub="lead number" values={selected} render={p => {
                 const { value, label } = getLeadAudience(p);
                 return value === null
@@ -191,12 +218,12 @@ export default function ComparePublishers() {
                     </div>
                   );
               }} />
-              <MetricRow label="Monthly reach" values={selected} render={p => (
+              {socialRows && <MetricRow label="Monthly reach" values={selected} render={p => (
                 p.monthly_reach
                   ? <span className="font-display text-xl">{fmt(p.monthly_reach)}</span>
                   : <span className="text-billboard-inkSoft text-xs">Not provided</span>
-              )} />
-              <MetricRow label="Engagement" sub="rate" values={selected} render={p => (
+              )} />}
+              {socialRows && <MetricRow label="Engagement" sub="rate" values={selected} render={p => (
                 !showsEngagement(p) ? <span className="text-billboard-inkSoft text-xs">Not applicable</span> :
                 <div>
                   <span className="font-display text-xl">{p.engagement}%</span>
@@ -204,7 +231,7 @@ export default function ComparePublishers() {
                     <div className="h-full bg-billboard-green rounded-full" style={{ width: `${Math.min(100, p.engagement * 5)}%` }} />
                   </div>
                 </div>
-              )} />
+              )} />}
               <MetricRow label="Price" sub="from" values={selected} render={p => (
                 <div>
                   <span className="font-mono font-bold text-billboard-greenDeep text-lg">{formatCurrency(p.price_per_post)}</span>
@@ -259,6 +286,7 @@ export default function ComparePublishers() {
             </tbody>
           </table>
         </div>
+        </>
       )}
     </div>
   );

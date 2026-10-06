@@ -31,6 +31,7 @@ import { CATEGORIES, PROVINCES, PLATFORMS, SWATCHES, PUBLISHER_SHARE, PAYOUT_DUE
 import { computeVerificationLevel } from "../lib/businessVerification";
 import TrustBadge from "../components/TrustBadge";
 import { computeAuthenticitySignals, SEVERITY_META } from "../lib/authenticitySignals";
+import { formatLeadAudience, showsEngagement } from "../lib/leadAudience";
 import ExportCsvButton from "../components/ExportCsvButton";
 import Button from "../components/Button";
 import type { CsvRow } from "../lib/csvExport";
@@ -1239,7 +1240,8 @@ function ApplicationCard({
           {p.name} <span className="font-normal text-billboard-inkSoft text-sm">· {p.category || "—"} · {p.city}, {p.province}</span>
         </p>
         <p className="text-xs text-billboard-inkSoft mt-1 font-mono">
-          {p.followers.toLocaleString()} followers · {p.engagement}% engagement
+          {formatLeadAudience(p, { compact: false })}
+          {showsEngagement(p) ? ` · ${p.engagement}% engagement` : ""}
           {p.monthly_reach ? ` · ${p.monthly_reach.toLocaleString()} monthly reach` : ""}
         </p>
         {p.platforms.length > 0 && <p className="text-xs text-billboard-inkSoft mt-1 font-mono">{p.platforms.join(", ")}</p>}

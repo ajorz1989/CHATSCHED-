@@ -7,7 +7,8 @@ import { supabase } from "../lib/supabase";
 import { formatSupabaseError } from "../lib/supabaseErrors";
 import TrustBadge from "./TrustBadge";
 import { getChannelBySlug } from "../lib/channelRegistry";
-import { calculateSuggestedPrice, MIN_PRICE_PER_POST } from "../lib/pricingEngine";
+import { suggestedPriceFor, MIN_PRICE_PER_POST } from "../lib/pricingEngine";
+import { getPriceUnit } from "../lib/leadAudience";
 import { buildAndDownloadInvoice } from "../lib/invoice";
 import { channelRequestBreakdown, fromCents } from "../lib/fees";
 import { CREATOR_APPROVAL_WINDOW_DAYS, CREATOR_PAYOUT_WINDOW_HOURS, PLACEMENT_TYPES, recommendedPlacementTypes, CATEGORIES, PROVINCES, SA_SUBURBS_AUTOCOMPLETE, CONTACT_ADDRESS_LINES, MAX_PROFILE_IMAGE_BYTES, ALLOWED_PROFILE_IMAGE_MIME_TYPES, MIN_BIO_LENGTH } from "../lib/constants";
@@ -680,12 +681,8 @@ function PricingPanel({ publisher, onChange }: { publisher: Publisher; onChange:
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const suggestion = calculateSuggestedPrice({
-    followers: publisher.followers,
-    engagement: publisher.engagement,
-    trustScore: publisher.trust_score,
-    monthlyReach: publisher.monthly_reach,
-  });
+  // Only social media and influencer listings get a followers-and-engagement suggestion.
+  const suggestion = suggestedPriceFor(publisher);
 
   async function save() {
     const price = Number(value);
@@ -721,7 +718,7 @@ function PricingPanel({ publisher, onChange }: { publisher: Publisher; onChange:
         <p className="font-mono text-2xl font-bold text-billboard-greenDeep">{formatCurrency(publisher.price_per_post)}<span className="text-sm font-sans font-normal text-billboard-inkSoft"> starting price</span></p>
       ) : (
         <div className="mt-3">
-          <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5">Starting price per post (ZAR)</label>
+          <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5">Starting price {getPriceUnit(publisher.channel_slug)} (ZAR)</label>
           <div className="flex flex-wrap items-center gap-2 mb-2">
             <input
               type="number" min={MIN_PRICE_PER_POST} value={value} onChange={(e) => setValue(e.target.value)}
@@ -733,10 +730,12 @@ function PricingPanel({ publisher, onChange }: { publisher: Publisher; onChange:
             <button onClick={() => { setEditing(false); setError(null); }} className="text-sm font-semibold text-billboard-inkSoft">Cancel</button>
           </div>
           {error && <p className="text-billboard-red text-xs font-semibold mb-2">{error}</p>}
-          <p className="text-xs text-billboard-inkSoft">
-            Suggested price based on your current followers, engagement, and trust score: <strong className="text-billboard-greenDeep">{formatCurrency(suggestion.suggested)}</strong>{" "}
-            <span>(typically {formatCurrencyRange(suggestion.low, suggestion.high)}) — a guide, not a rule.</span>
-          </p>
+          {suggestion && (
+            <p className="text-xs text-billboard-inkSoft">
+              Suggested price based on your current followers, engagement, and trust score: <strong className="text-billboard-greenDeep">{formatCurrency(suggestion.suggested)}</strong>{" "}
+              <span>(typically {formatCurrencyRange(suggestion.low, suggestion.high)}) — a guide, not a rule.</span>
+            </p>
+          )}
         </div>
       )}
 

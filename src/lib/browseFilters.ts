@@ -2,7 +2,8 @@ import type { Platform, Publisher } from "./types";
 import type { ChannelSlug } from "./channelTypes";
 import { formatCurrency } from "./currency";
 import { matchesChannelMetadataFilters } from "./channelMetadataFilters";
-import { getTotalFollowers } from "./platforms";
+import { getLeadAudience, showsEngagement } from "./leadAudience";
+import { getLevelLadder } from "./levelLadders";
 
 /**
  * Shared with Browse.tsx (the source this was extracted from) and
@@ -49,6 +50,23 @@ export interface Filters {
   // and how each kind (select/boolean/min_number) is matched.
   channelFilterValues: Record<string, string>;
   sortBy: string;
+}
+
+/**
+ * Followers, monthly reach and engagement rate only mean something for social
+ * media and influencer listings. The Browse page only offers those filters
+ * once one of those two channels is selected, and everything below ignores
+ * them otherwise — so an old saved search or link can't quietly hide every
+ * website, podcast or venue listing behind a "min followers" number they
+ * were never going to have.
+ */
+export function socialFiltersApply(f: Pick<Filters, "channel">): boolean {
+  return f.channel === "social-media" || f.channel === "influencer";
+}
+
+/** The audience-size number used to order "Largest audience" (see getLeadAudience). */
+function leadValue(p: Publisher): number {
+  return getLeadAudience(p).value ?? -1;
 }
 
 export function makeDefaults(initial: Partial<Filters>): Filters {
@@ -111,10 +129,13 @@ export function matchesFilters(p: Publisher, f: Filters, rateCardPublisherIds?: 
   if (f.platforms.length && !f.platforms.some((pl) => p.platforms.includes(pl))) return false;
   if (f.verifiedOnly && !p.verified) return false;
   if (f.minRating > 0 && (p.rating ?? 0) < f.minRating) return false;
-  if (f.minFollowers && getTotalFollowers(p) < Number(f.minFollowers)) return false;
-  if (f.maxFollowers && getTotalFollowers(p) > Number(f.maxFollowers)) return false;
-  if (f.minMonthlyReach && (p.monthly_reach ?? 0) < Number(f.minMonthlyReach)) return false;
-  if (f.minEngagement && p.engagement < Number(f.minEngagement)) return false;
+  if (socialFiltersApply(f)) {
+    const followers = getLeadAudience(p).value ?? 0;
+    if (f.minFollowers && followers < Number(f.minFollowers)) return false;
+    if (f.maxFollowers && followers > Number(f.maxFollowers)) return false;
+    if (f.minMonthlyReach && (p.monthly_reach ?? 0) < Number(f.minMonthlyReach)) return false;
+    if (f.minEngagement && p.engagement < Number(f.minEngagement)) return false;
+  }
   if (p.price_per_post > f.maxPrice) return false;
   if (f.languages.length && !f.languages.some((l) => p.languages.includes(l))) return false;
   if (!matchesAge(p, f.ageDemographic)) return false;
@@ -141,9 +162,13 @@ export function getMatchReason(p: Publisher): string | null {
   if (p.rating != null && p.rating >= 4.5) return `Rated ${p.rating}★ by businesses`;
   if (p.verified && p.trust_score >= 70) return "Verified, with a strong trust score";
   if (p.avg_response_hours != null && p.avg_response_hours <= 24) return "Responds within a day, on average";
-  if (p.engagement >= 5) return "Above-average engagement";
+  if (showsEngagement(p) && p.engagement >= 5) return "Above-average engagement";
   if (p.trust_score >= 60) return "Strong trust score";
-  if (p.followers >= 20000) return "Large, established audience";
+  // "Large" is judged against the channel's own ladder (Premium level), not a
+  // follower count: 20,000 followers is large, 20,000 restaurant covers a day is not a thing.
+  const audience = getLeadAudience(p).value;
+  const premiumAt = getLevelLadder(p.channel_slug || "social-media")?.thresholds[2];
+  if (audience !== null && premiumAt !== undefined && audience >= premiumAt) return "Large, established audience";
   return null;
 }
 
@@ -159,7 +184,9 @@ function isCurrentlyFeatured(p: Publisher): boolean {
 export function applySort(list: Publisher[], sortBy: string): Publisher[] {
   const s = [...list];
   switch (sortBy) {
-    case "followers_desc": return s.sort((a, b) => getTotalFollowers(b) - getTotalFollowers(a));
+    // "Largest audience": each listing's own headline number (followers, visitors,
+    // downloads, attendance...). Listings with no honest number sort last.
+    case "followers_desc": return s.sort((a, b) => leadValue(b) - leadValue(a));
     case "price_asc": return s.sort((a, b) => a.price_per_post - b.price_per_post);
     case "price_desc": return s.sort((a, b) => b.price_per_post - a.price_per_post);
     case "rating_desc": return s.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
@@ -193,7 +220,7 @@ export function activeCount(f: Filters): number {
   return [
     f.query, f.channel, f.category, f.province, f.city, f.suburb,
     f.platforms.length, f.verifiedOnly, f.minRating,
-    f.minFollowers, f.maxFollowers, f.minMonthlyReach, f.minEngagement,
+    ...(socialFiltersApply(f) ? [f.minFollowers, f.maxFollowers, f.minMonthlyReach, f.minEngagement] : []),
     f.maxPrice < 5000, f.languages.length, f.ageDemographic, f.gender,
     f.hasRateCard, f.hasMedia,
     Object.values(f.channelFilterValues).filter((v) => v !== "").length,
@@ -216,8 +243,10 @@ export function summarizeFilters(f: Filters): string {
   if (f.platforms.length) parts.push(f.platforms.join(" + "));
   if (f.verifiedOnly) parts.push("Verified only");
   if (f.minRating > 0) parts.push(`${f.minRating}+ stars`);
-  if (f.minFollowers) parts.push(`${Number(f.minFollowers).toLocaleString()}+ followers`);
-  if (f.minEngagement) parts.push(`${f.minEngagement}%+ engagement`);
+  if (socialFiltersApply(f)) {
+    if (f.minFollowers) parts.push(`${Number(f.minFollowers).toLocaleString()}+ followers`);
+    if (f.minEngagement) parts.push(`${f.minEngagement}%+ engagement`);
+  }
   if (f.maxPrice < 5000) parts.push(`Under ${formatCurrency(f.maxPrice)}`);
   if (f.languages.length) parts.push(f.languages.join(" + "));
   if (f.hasRateCard) parts.push("Published rate card");

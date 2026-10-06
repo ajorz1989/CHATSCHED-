@@ -4,7 +4,7 @@ import {} from "../lib/publisherDisplay";
 import TrustBadge from "./TrustBadge";
 import PublisherAvatar from "./PublisherAvatar";
 import { formatCurrency } from "../lib/currency";
-import { useComparison } from "../contexts/ComparisonContext";
+import { useComparison, comparisonChannelOf } from "../contexts/ComparisonContext";
 import Button from "./Button";
 import { useSavedLists } from "../contexts/SavedListsContext";
 import { getChannelBySlug } from "../lib/channelRegistry";
@@ -31,7 +31,7 @@ function isCurrentlyFeatured(p: Publisher): boolean {
 const VERIFICATION_REQUIRED_CHANNELS = new Set(["sports", "events", "community", "transport", "informal-retail", "associations", "restaurants", "in-venue-screens"]);
 
 export default function PublisherCard({ publisher, matchReason = null }: { publisher: Publisher; matchReason?: string | null }) {
-  const { isComparing, togglePublisher, isFull } = useComparison();
+  const { isComparing, togglePublisher, isFull, isBlockedByChannel, channel: comparisonChannel } = useComparison();
   const { lists, addToList, createList, isInAnyList } = useSavedLists();
 
   const [showSave, setShowSave] = useState(false);
@@ -48,6 +48,7 @@ export default function PublisherCard({ publisher, matchReason = null }: { publi
   }, [showSave]);
 
   const comparing = isComparing(publisher.id);
+  const otherChannel = !comparing && isBlockedByChannel(comparisonChannelOf(publisher));
   const saved = isInAnyList(publisher.id);
   const ownershipChecked = VERIFICATION_REQUIRED_CHANNELS.has(publisher.channel_slug) || !!publisher.social_verification_confirmed;
   const channelModule = publisher.channel_slug ? getChannelBySlug(publisher.channel_slug) : undefined;
@@ -127,16 +128,18 @@ export default function PublisherCard({ publisher, matchReason = null }: { publi
       <div className="flex gap-2 px-4 pb-4 pt-2.5 border-t-2 border-billboard-paperDim">
         {/* Compare button */}
         <button
-          onClick={() => togglePublisher(publisher.id)}
-          disabled={!comparing && isFull}
-          title={!comparing && isFull ? "Comparison is full (max 5)" : comparing ? "Remove from comparison" : "Add to comparison"}
+          onClick={() => togglePublisher(publisher.id, comparisonChannelOf(publisher))}
+          disabled={!comparing && (isFull || otherChannel)}
+          title={otherChannel
+            ? `Your comparison is for ${(comparisonChannel ?? "").replace(/-/g, " ")} listings. Clear it to compare a different channel.`
+            : !comparing && isFull ? "Comparison is full (max 5)" : comparing ? "Remove from comparison" : "Add to comparison"}
           className={`flex-1 text-xs font-semibold py-1.5 rounded border-2 transition ${
             comparing
               ? "border-billboard-green bg-billboard-green text-white"
               : "border-billboard-ink hover:bg-billboard-paperDim disabled:opacity-40 disabled:cursor-not-allowed"
           }`}
         >
-          {comparing ? "✓ Comparing" : isFull ? "Full" : "⊞ Compare"}
+          {comparing ? "✓ Comparing" : otherChannel ? "Other channel" : isFull ? "Full" : "⊞ Compare"}
         </button>
 
         {/* Save button + dropdown */}

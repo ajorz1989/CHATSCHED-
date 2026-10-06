@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Link, useParams } from "react-router-dom";
 import { usePublishers } from "../hooks/usePublishers";
 import { useAuth } from "../hooks/useAuth";
-import { useComparison } from "../contexts/ComparisonContext";
+import { useComparison, comparisonChannelOf } from "../contexts/ComparisonContext";
 import { useSavedLists } from "../contexts/SavedListsContext";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
 import { formatSupabaseError } from "../lib/supabaseErrors";
@@ -53,7 +53,7 @@ export default function PublisherProfile() {
   const { id } = useParams();
   const { publishers, loading, error: publishersError } = usePublishers();
   const { user, profile } = useAuth();
-  const { isComparing, togglePublisher, isFull } = useComparison();
+  const { isComparing, togglePublisher, isFull, isBlockedByChannel, channel: comparisonChannel } = useComparison();
   const { lists, addToList, createList, isInAnyList } = useSavedLists();
 
   const publisher = publishers.find(p => p.id === id);
@@ -259,6 +259,7 @@ export default function PublisherProfile() {
   const liveRating = reviews.length > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : publisher.rating;
   const liveReviewCount = reviews.length > 0 ? reviews.length : publisher.reviews;
   const comparing = isComparing(publisher.id);
+  const otherChannel = !comparing && isBlockedByChannel(comparisonChannelOf(publisher));
   const saved = isInAnyList(publisher.id);
   const adPlatforms = getAdPlatforms(publisher);
 
@@ -386,15 +387,16 @@ export default function PublisherProfile() {
             {/* Compare + Save actions */}
             <div className="flex flex-wrap items-center gap-2">
               <button
-                onClick={() => togglePublisher(publisher.id)}
-                disabled={!comparing && isFull}
+                onClick={() => togglePublisher(publisher.id, comparisonChannelOf(publisher))}
+                disabled={!comparing && (isFull || otherChannel)}
+                title={otherChannel ? `Your comparison is for ${(comparisonChannel ?? "").replace(/-/g, " ")} listings. Clear it to compare a different channel.` : undefined}
                 className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded border-2 transition ${
                   comparing
                     ? "border-billboard-green bg-billboard-green text-white"
                     : "border-billboard-ink hover:bg-billboard-paperDim disabled:opacity-40"
                 }`}
               >
-                {comparing ? "✓ In comparison" : isFull ? "Comparison full" : "⊞ Compare"}
+                {comparing ? "✓ In comparison" : otherChannel ? "Different channel" : isFull ? "Comparison full" : "⊞ Compare"}
               </button>
               {comparing && (
                 <Link to="/compare" className="text-xs font-semibold underline text-billboard-green">View comparison →</Link>

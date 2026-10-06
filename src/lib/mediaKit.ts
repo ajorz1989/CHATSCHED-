@@ -1,6 +1,7 @@
 import { CONTACT_EMAIL, CONTACT_WEBSITE } from "./constants";
 import { LEVEL_META, scoreLabel } from "./publisherDisplay";
 import { getChannelBySlug } from "./channelRegistry";
+import { getLeadAudience, showsEngagement } from "./leadAudience";
 import { formatCurrency as formatCurrencyShared } from "./currency";
 import type { Platform, Publisher, Review } from "./types";
 import {
@@ -403,16 +404,28 @@ export async function buildAndDownloadMediaKit(input: MediaKitInput) {
   const cardH = 31;
   const cardY = bandH - 11;
   const followers = getTotalFollowers(p);
-  const cards: Array<{ label: string; value: string; sub: string | null; accent: boolean }> = [
-    {
-      label: platformCount > 1 ? "Followers combined" : "Followers",
-      value: followers.toLocaleString(),
-      sub: platformCount > 1 ? `across ${platformCount} platforms` : adPlatforms[0] ?? null,
-      accent: true,
-    },
-    { label: "Engagement rate", value: `${p.engagement}%`, sub: "average per post", accent: false },
-  ];
-  if (p.monthly_reach != null) cards.push({ label: "Monthly reach", value: p.monthly_reach.toLocaleString(), sub: "people per month", accent: false });
+  // Followers and engagement rate only exist for social media and influencer
+  // listings; every other channel leads with its own audience number.
+  const cards: Array<{ label: string; value: string; sub: string | null; accent: boolean }> = showsEngagement(p)
+    ? [
+        {
+          label: platformCount > 1 ? "Followers combined" : "Followers",
+          value: followers.toLocaleString(),
+          sub: platformCount > 1 ? `across ${platformCount} platforms` : adPlatforms[0] ?? null,
+          accent: true,
+        },
+        { label: "Engagement rate", value: `${p.engagement}%`, sub: "average per post", accent: false },
+      ]
+    : (() => {
+        const { value, label } = getLeadAudience(p);
+        return [{
+          label: label.charAt(0).toUpperCase() + label.slice(1),
+          value: value === null ? "Not listed" : value.toLocaleString(),
+          sub: null,
+          accent: true,
+        }];
+      })();
+  if (showsEngagement(p) && p.monthly_reach != null) cards.push({ label: "Monthly reach", value: p.monthly_reach.toLocaleString(), sub: "people per month", accent: false });
   else if (p.trust_score > 0) cards.push({ label: "Trust score", value: `${p.trust_score}/100`, sub: "ChatSched verified", accent: false });
   else cards.push({ label: "Platforms", value: String(adPlatforms.length || 1), sub: adPlatforms.length ? platformHeadline(adPlatforms) : null, accent: false });
   const cardCols = cards.length;

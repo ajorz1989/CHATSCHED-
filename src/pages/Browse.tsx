@@ -14,7 +14,7 @@ import { getEnabledChannels } from "../lib/channelRegistry";
 import { formatCurrency } from "../lib/currency";
 import { CATEGORIES, PROVINCES, PLATFORMS, LANGUAGES, SA_CITIES_SUBURBS } from "../lib/constants";
 import { MIN_PRICE_PER_POST } from "../lib/pricingEngine";
-import { makeDefaults, matchesFilters, applySort, activeCount, getMatchReason, type Filters } from "../lib/browseFilters";
+import { makeDefaults, matchesFilters, applySort, activeCount, getMatchReason, socialFiltersApply, type Filters } from "../lib/browseFilters";
 import { CHANNEL_METADATA_FILTERS } from "../lib/channelMetadataFilters";
 import { filtersToSearchParams, searchParamsToFilters } from "../lib/searchParamsCodec";
 import type { Platform } from "../lib/types";
@@ -44,11 +44,14 @@ const GENDER_OPTIONS = [
   { value: "mixed", label: "Mixed / balanced" },
 ];
 
+// Engagement and reach are only recorded for social media and influencer listings.
+const SOCIAL_ONLY_SORTS = new Set(["engagement_desc", "reach_desc"]);
+
 const SORT_OPTIONS = [
   { value: "score", label: "Best match" },
   { value: "featured_desc", label: "Featured first" },
   { value: "response_asc", label: "Fastest to respond" },
-  { value: "followers_desc", label: "Most followers" },
+  { value: "followers_desc", label: "Largest audience" },
   { value: "price_asc", label: "Lowest price" },
   { value: "price_desc", label: "Highest price" },
   { value: "rating_desc", label: "Highest rated" },
@@ -76,10 +79,11 @@ function buildFilterChips(f: Filters, channels: ReturnType<typeof getEnabledChan
   f.platforms.forEach(pl => chips.push({ key: `platform-${pl}`, label: pl, onRemove: () => update({ platforms: f.platforms.filter(p => p !== pl) }) }));
   if (f.verifiedOnly) chips.push({ key: "verified", label: "Verified only", onRemove: () => update({ verifiedOnly: false }) });
   if (f.minRating > 0) chips.push({ key: "rating", label: `${f.minRating}+ stars`, onRemove: () => update({ minRating: 0 }) });
-  if (f.minFollowers) chips.push({ key: "minFollowers", label: `${Number(f.minFollowers).toLocaleString()}+ followers`, onRemove: () => update({ minFollowers: "" }) });
-  if (f.maxFollowers) chips.push({ key: "maxFollowers", label: `Under ${Number(f.maxFollowers).toLocaleString()} followers`, onRemove: () => update({ maxFollowers: "" }) });
-  if (f.minMonthlyReach) chips.push({ key: "reach", label: `${Number(f.minMonthlyReach).toLocaleString()}+ monthly reach`, onRemove: () => update({ minMonthlyReach: "" }) });
-  if (f.minEngagement) chips.push({ key: "engagement", label: `${f.minEngagement}%+ engagement`, onRemove: () => update({ minEngagement: "" }) });
+  const social = socialFiltersApply(f);
+  if (social && f.minFollowers) chips.push({ key: "minFollowers", label: `${Number(f.minFollowers).toLocaleString()}+ followers`, onRemove: () => update({ minFollowers: "" }) });
+  if (social && f.maxFollowers) chips.push({ key: "maxFollowers", label: `Under ${Number(f.maxFollowers).toLocaleString()} followers`, onRemove: () => update({ maxFollowers: "" }) });
+  if (social && f.minMonthlyReach) chips.push({ key: "reach", label: `${Number(f.minMonthlyReach).toLocaleString()}+ monthly reach`, onRemove: () => update({ minMonthlyReach: "" }) });
+  if (social && f.minEngagement) chips.push({ key: "engagement", label: `${f.minEngagement}%+ engagement`, onRemove: () => update({ minEngagement: "" }) });
   if (f.maxPrice < 5000) chips.push({ key: "price", label: `Under ${formatCurrency(f.maxPrice)}`, onRemove: () => update({ maxPrice: 5000 }) });
   f.languages.forEach(lang => chips.push({ key: `lang-${lang}`, label: lang, onRemove: () => update({ languages: f.languages.filter(l => l !== lang) }) }));
   if (f.ageDemographic) {
@@ -247,6 +251,7 @@ function FilterFields({
   showQuality: boolean;
   onToggleQuality: () => void;
 }) {
+  const social = socialFiltersApply(filters);
   return (
     <>
       <div className="border-[3px] border-billboard-ink rounded p-5 bg-billboard-paperDim">
@@ -354,28 +359,35 @@ function FilterFields({
           label="Audience &amp; Reach"
           open={showAudience}
           onToggle={onToggleAudience}
-          count={[filters.minFollowers, filters.maxFollowers, filters.minMonthlyReach, filters.minEngagement, filters.languages.length, filters.ageDemographic, filters.gender].filter(Boolean).length || undefined}
+          count={[...(social ? [filters.minFollowers, filters.maxFollowers, filters.minMonthlyReach, filters.minEngagement] : []), filters.languages.length, filters.ageDemographic, filters.gender].filter(Boolean).length || undefined}
         />
         {showAudience && (
           <div className="p-5 bg-billboard-paperDim border-t-2 border-billboard-ink space-y-4">
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wide mb-1">Min followers</label>
-                <input type="number" value={filters.minFollowers} onChange={e => update({ minFollowers: e.target.value })} placeholder="0" className="w-full border-2 border-billboard-ink rounded px-2 py-1.5 bg-white text-sm" />
+            {!social && (
+              <p className="text-xs text-billboard-inkSoft" data-testid="social-filters-note">
+                Followers, reach and engagement are only recorded for Social media and Influencer listings. Choose one of those channels above to filter on them.
+              </p>
+            )}
+            <fieldset disabled={!social} className={`space-y-4 border-0 p-0 m-0 min-w-0 ${social ? "" : "opacity-50"}`}>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label htmlFor="f-min-followers" className="block text-xs font-semibold uppercase tracking-wide mb-1">Min followers</label>
+                  <input id="f-min-followers" type="number" value={social ? filters.minFollowers : ""} onChange={e => update({ minFollowers: e.target.value })} placeholder="0" className="w-full border-2 border-billboard-ink rounded px-2 py-1.5 bg-white text-sm" />
+                </div>
+                <div>
+                  <label htmlFor="f-max-followers" className="block text-xs font-semibold uppercase tracking-wide mb-1">Max followers</label>
+                  <input id="f-max-followers" type="number" value={social ? filters.maxFollowers : ""} onChange={e => update({ maxFollowers: e.target.value })} placeholder="Any" className="w-full border-2 border-billboard-ink rounded px-2 py-1.5 bg-white text-sm" />
+                </div>
               </div>
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wide mb-1">Max followers</label>
-                <input type="number" value={filters.maxFollowers} onChange={e => update({ maxFollowers: e.target.value })} placeholder="Any" className="w-full border-2 border-billboard-ink rounded px-2 py-1.5 bg-white text-sm" />
+                <label htmlFor="f-min-reach" className="block text-xs font-semibold uppercase tracking-wide mb-1">Min monthly reach</label>
+                <input id="f-min-reach" type="number" value={social ? filters.minMonthlyReach : ""} onChange={e => update({ minMonthlyReach: e.target.value })} placeholder="e.g. 5000" className="w-full border-2 border-billboard-ink rounded px-2 py-1.5 bg-white text-sm" />
               </div>
-            </div>
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wide mb-1">Min monthly reach</label>
-              <input type="number" value={filters.minMonthlyReach} onChange={e => update({ minMonthlyReach: e.target.value })} placeholder="e.g. 5000" className="w-full border-2 border-billboard-ink rounded px-2 py-1.5 bg-white text-sm" />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wide mb-1">Min engagement rate (%)</label>
-              <input type="number" min={0} max={100} step={0.5} value={filters.minEngagement} onChange={e => update({ minEngagement: e.target.value })} placeholder="e.g. 3" className="w-full border-2 border-billboard-ink rounded px-2 py-1.5 bg-white text-sm" />
-            </div>
+              <div>
+                <label htmlFor="f-min-engagement" className="block text-xs font-semibold uppercase tracking-wide mb-1">Min engagement rate (%)</label>
+                <input id="f-min-engagement" type="number" min={0} max={100} step={0.5} value={social ? filters.minEngagement : ""} onChange={e => update({ minEngagement: e.target.value })} placeholder="e.g. 3" className="w-full border-2 border-billboard-ink rounded px-2 py-1.5 bg-white text-sm" />
+              </div>
+            </fieldset>
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wide mb-2">Languages</label>
               <div className="grid grid-cols-2 gap-1.5">
@@ -462,7 +474,17 @@ export default function Browse() {
   const { publishers, loading, error } = usePublishers();
   const { rateCardPublisherIds } = usePublisherRateCards();
 
-  const update = (patch: Partial<Filters>) => setFilters(prev => ({ ...prev, ...patch }));
+  const update = (patch: Partial<Filters>) => setFilters(prev => {
+    const next = { ...prev, ...patch };
+    // Followers / reach / engagement only exist for social media and influencer
+    // listings; clear them (and the sorts that use them) when the channel changes
+    // to anything else so no hidden filter keeps narrowing the results.
+    if ("channel" in patch && !socialFiltersApply(next)) {
+      next.minFollowers = ""; next.maxFollowers = ""; next.minMonthlyReach = ""; next.minEngagement = "";
+      if (SOCIAL_ONLY_SORTS.has(next.sortBy)) next.sortBy = "score";
+    }
+    return next;
+  });
 
   // Bug fix: previously the cleanup was inside `if (filterSheetOpen)` so
   // overflow:hidden was never cleared if the component unmounted while the
@@ -493,10 +515,14 @@ export default function Browse() {
   const toggleLanguage = (l: string) =>
     update({ languages: filters.languages.includes(l) ? filters.languages.filter(x => x !== l) : [...filters.languages, l] });
 
+  // A link or saved search can still carry an engagement/reach sort without a
+  // social channel; fall back to Best match so the dropdown and the order agree.
+  const sortBy = SOCIAL_ONLY_SORTS.has(filters.sortBy) && !socialFiltersApply(filters) ? "score" : filters.sortBy;
+
   const filtered = useMemo(() => {
     const result = publishers.filter(p => matchesFilters(p, filters, rateCardPublisherIds));
-    return applySort(result, filters.sortBy);
-  }, [publishers, filters, rateCardPublisherIds]);
+    return applySort(result, sortBy);
+  }, [publishers, filters, sortBy, rateCardPublisherIds]);
 
   const active = activeCount(filters);
 
@@ -611,9 +637,12 @@ export default function Browse() {
                 {active > 0 && <span className="bg-billboard-green text-white font-mono text-[10px] px-1.5 py-0.5 rounded-full">{active}</span>}
               </button>
               <label className="text-xs font-semibold uppercase tracking-wide shrink-0">Sort</label>
-              <select value={filters.sortBy} onChange={e => update({ sortBy: e.target.value })} className="border-2 border-billboard-ink rounded px-2.5 py-1.5 text-sm bg-white">
-                {SORT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              <select value={sortBy} onChange={e => update({ sortBy: e.target.value })} className="border-2 border-billboard-ink rounded px-2.5 py-1.5 text-sm bg-white">
+                {SORT_OPTIONS.filter(o => socialFiltersApply(filters) || !SOCIAL_ONLY_SORTS.has(o.value)).map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
+              {filters.sortBy === "followers_desc" && !filters.channel && (
+                <span className="text-xs text-billboard-inkSoft" data-testid="audience-sort-note">Audience is counted differently on each channel — pick a channel for a like-for-like order.</span>
+              )}
             </div>
           </div>
 
@@ -652,7 +681,7 @@ export default function Browse() {
           ) : (
             <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-5">
               {filtered.map(p => (
-                <PublisherCard key={p.id} publisher={p} matchReason={filters.sortBy === "score" ? getMatchReason(p) : null} />
+                <PublisherCard key={p.id} publisher={p} matchReason={sortBy === "score" ? getMatchReason(p) : null} />
               ))}
             </div>
           )}

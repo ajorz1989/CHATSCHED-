@@ -10,6 +10,9 @@
  * number, so nothing about it is a black box.
  */
 
+import { showsEngagement } from "./leadAudience";
+import type { Publisher } from "./types";
+
 export const MIN_PRICE_PER_POST = 50;
 
 export interface PriceValuationInput {
@@ -64,4 +67,24 @@ export function calculateSuggestedPrice(input: PriceValuationInput): PriceValuat
     low: Math.max(MIN_PRICE_PER_POST, Math.round((suggested * 0.85) / 5) * 5),
     high: Math.round((suggested * 1.2) / 5) * 5,
   };
+}
+
+/**
+ * The Suggested Price for an existing listing, or null when there is no honest
+ * suggestion. The formula above is built on followers and engagement, which
+ * only social media and influencer listings have. A website, podcast, radio
+ * show or venue is priced by its own audience measure (visitors, downloads,
+ * covers, attendance...), so we say nothing rather than run a follower
+ * formula on a number that isn't followers.
+ */
+export function suggestedPriceFor(
+  p: Pick<Publisher, "channel_slug" | "followers" | "engagement" | "trust_score" | "monthly_reach">,
+): PriceValuation | null {
+  if (!showsEngagement(p)) return null;
+  return calculateSuggestedPrice({
+    followers: p.followers,
+    engagement: p.engagement,
+    trustScore: p.trust_score,
+    monthlyReach: p.monthly_reach,
+  });
 }
