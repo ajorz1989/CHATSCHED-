@@ -17,7 +17,8 @@ export default function RoiCalculator() {
     setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   }
 
-  const top = [...publishers].sort((a, b) => b.engagement - a.engagement).slice(0, 8);
+  // Ranked by the platform score: engagement only exists for social media and influencer listings.
+  const top = [...publishers].sort((a, b) => b.publisher_score - a.publisher_score).slice(0, 8);
 
   return (
     <div>

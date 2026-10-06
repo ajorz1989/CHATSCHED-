@@ -1,5 +1,6 @@
 import type { Publisher, Platform } from "./types";
 import type { MarketingIconName } from "../components/MarketingIcon";
+import { getLeadAudience } from "./leadAudience";
 
 export interface CampaignGoal {
   id: string;
@@ -257,7 +258,10 @@ export function generateCampaignRecommendation(
   }
 
   // Calculate dynamic reach estimate
-  const totalFollowers = selectedPublishers.reduce((acc, p) => acc + (p.followers || 15000), 0);
+  // Each listing counts for its own headline audience number (followers, downloads,
+  // attendance...). A listing with no honest number counts for nothing: we no longer
+  // invent 15,000 followers for it, which used to inflate the estimate for venues.
+  const totalFollowers = selectedPublishers.reduce((acc, p) => acc + (getLeadAudience(p).value ?? 0), 0);
   const estimatedReachRange = totalFollowers > 0
     ? `${Math.round(totalFollowers * 0.4).toLocaleString()} – ${Math.round(totalFollowers * 1.1).toLocaleString()} Estimated Impressions`
     : budgetTier.reachEstimate;

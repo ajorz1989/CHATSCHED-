@@ -6,8 +6,9 @@
 -- "ALL PASS" (or "n FAILED") and then a before/after table for every approved
 -- listing (stored values vs what the new rules give, read-only).
 --
--- Not run by the author: the Supabase connector cancelled the migration, so
--- neither the migration nor this test has been executed.
+-- Status: the migration is applied in production. The connector cancels this
+-- test (it writes temporary rows), so it has to be run in the SQL editor; only
+-- section 6 (the before/after table) has been run so far, as a plain select.
 
 do $$
 declare

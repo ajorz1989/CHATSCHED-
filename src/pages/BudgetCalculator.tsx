@@ -67,9 +67,13 @@ async function fetchMarketStats(): Promise<MarketStats> {
       .from("publishers")
       .select("id", { count: "exact", head: true })
       .eq("status", "approved"),
+    // Followers only exist for social media and influencer listings (legacy rows
+    // with no channel were all social pages); other channels' audience numbers
+    // (visitors, attendance, covers...) are different things and are left out.
     supabase
       .from("publishers")
       .select("followers")
+      .or("channel_slug.is.null,channel_slug.in.(social-media,influencer)")
       .not("followers", "is", null)
       .gt("followers", 0),
     supabase

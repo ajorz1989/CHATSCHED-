@@ -142,4 +142,20 @@ describe("campaignRecommendation", () => {
     expect(rec.channels.length).toBeGreaterThan(0);
     expect(rec.deliverables.length).toBeGreaterThan(0);
   });
+
+  it("does not invent an audience for a listing that has no audience number", () => {
+    const venue = (id: string) => makePublisher({
+      id, channel_slug: "restaurants", followers: 0, engagement: 0, channel_metadata: {},
+      status: "approved", verified: true, price_per_post: 800, platforms: [],
+    });
+    const inputs: CampaignBuilderInputs = {
+      goalId: "footfall", targetScope: "national", selectedProvinces: [], selectedCities: [],
+      targetCategories: [], targetLanguages: [], budgetTierId: "growth",
+      timingPreference: "immediate", durationOption: "7_days",
+    };
+    const budgetTier = BUDGET_TIERS.find((b) => b.id === "growth")!;
+    const rec = generateCampaignRecommendation(inputs, [venue("v1"), venue("v2")]);
+    // Two venues with no audience number: fall back to the tier's stated range, not 2 x 15,000 made-up followers.
+    expect(rec.estimatedReach).toBe(budgetTier.reachEstimate);
+  });
 });
