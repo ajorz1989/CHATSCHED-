@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { PREMIUM_ACCESS_PRICE } from "../lib/constants";
+import { formatCurrency } from "../lib/currency";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Seo from "../components/Seo";
@@ -134,17 +136,16 @@ function PricingSection() {
         <div className="grid md:grid-cols-2 gap-4">
           <div className="border-2 border-billboard-ink rounded-xl p-6 bg-white shadow-blockSm">
             <div className="font-mono text-[11px] font-bold uppercase">{t("pricing.businessLabel")}</div>
-            <div className="font-display text-4xl mt-2">R399</div>
-            <p className="font-bold mb-2">{t("pricing.onceOff")}</p>
+            <div className="font-display text-4xl mt-2 mb-2">{formatCurrency(0)}</div>
             <p className="text-sm text-billboard-inkSoft mb-5">{t("pricing.businessBody")}</p>
             <Link to="/register?role=business" data-cta="pricing-business" className="brand-button dark">{t("pricing.businessCta")}</Link>
           </div>
           <div className="border-2 border-billboard-ink rounded-xl p-6 bg-billboard-yellow shadow-blockSm">
             <div className="font-mono text-[11px] font-bold uppercase">{t("pricing.publisherLabel")}</div>
-            <div className="font-display text-4xl mt-2">R199</div>
+            <div className="font-display text-4xl mt-2">{formatCurrency(PREMIUM_ACCESS_PRICE)}</div>
             <p className="font-bold mb-2">{t("pricing.onceOff")}</p>
             <p className="text-sm text-billboard-inkSoft mb-5">{t("pricing.publisherBody")}</p>
-            <Link to="/register?role=publisher" data-cta="pricing-publisher" className="brand-button dark">{t("pricing.publisherCta")}</Link>
+            <Link to="/register" data-cta="pricing-publisher" className="brand-button dark">{t("pricing.publisherCta")}</Link>
           </div>
         </div>
       </div>

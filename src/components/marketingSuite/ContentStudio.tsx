@@ -131,7 +131,7 @@ export default function ContentStudio() {
 
     if (error || data?.error) {
       if (data?.needsActivation) {
-        // Neither an active subscription nor an active activation fee —
+        // No active Premium access —
         // re-check both on the next render rather than guessing which
         // one lapsed.
         loadActivation();
@@ -165,10 +165,10 @@ export default function ContentStudio() {
     return (
       <div className="border-[3px] border-billboard-ink rounded-lg p-6 md:p-8 bg-billboard-paperDim">
         <span className="inline-block font-mono text-[10px] font-semibold uppercase tracking-wider border-2 border-billboard-ink bg-billboard-yellow px-2.5 py-1 rounded mb-3">AI Content Studio</span>
-        <h3 className="font-display text-xl mb-2">Included with your Business activation.</h3>
-        <p className="text-sm text-billboard-inkSoft max-w-lg mb-5">This tool is part of your full Marketing Suite. Activate ChatSched Business once to unlock it — there is no separate Content Studio payment.</p>
-        <Link to="/activation-fee-info" className="inline-flex items-center gap-2 bg-billboard-yellow border-[3px] border-billboard-ink font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition">
-          Activate Business — R399 once-off →
+        <h3 className="font-display text-xl mb-2">Included with Premium access.</h3>
+        <p className="text-sm text-billboard-inkSoft max-w-lg mb-5">This tool is part of your full Marketing Suite. Get Premium access to unlock it — there is no separate Content Studio payment.</p>
+        <Link to="/account#premium" className="inline-flex items-center gap-2 bg-billboard-yellow border-[3px] border-billboard-ink font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition">
+          Get Premium access →
         </Link>
       </div>
     );
@@ -249,7 +249,7 @@ export default function ContentStudio() {
         <div className="mt-6 space-y-4">
           <p className="font-semibold text-sm">
             Your generated content
-            {tier && <span className="font-normal text-xs text-billboard-inkSoft"> · included activation tier</span>}
+            {tier && <span className="font-normal text-xs text-billboard-inkSoft"> · included with Premium access</span>}
           </p>
           {selectedFormats.filter((id) => results[id]).map((id) => {
             const format = CONTENT_STUDIO_FORMATS.find((f) => f.id === id);

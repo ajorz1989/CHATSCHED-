@@ -27,11 +27,11 @@
     "heading": "Nakuluphi na uhlangothi okulo, yenzelwe wena.",
     "businessBadge": "Ishishini / Umkhangisi",
     "businessTitle": "Fikelela kubaphulaphuli abathenjwa ngabathengi bakho kakade",
-    "businessBody": "I-R399, ihlawulwa kanye kuphela, ikunika ufikelelo kwimarike, iiphulo ezilawulwayo, kunye netyala lokuqala elingu-R199 elibandakanyiweyo. Ayihlaziywa. Ukujonga kusimahla — ukuthumela isicelo kufuna loo ntlawulo enye.",
+    "businessBody": "Ukujoyina nokukhangela kusimahla. Xa umpapashi ayamkela isicelo sakho, uhlawula ixabiso lakhe kunye nentlawulo encinci yokubhukisha (R30 phantsi kwe-R500, R50 ukususela kwi-R500).",
     "businessCta": "Jonga amashishini →",
     "publisherBadge": "Umpapashi / Umenzi",
     "publisherTitle": "Zuza kubaphulaphuli osele ubakhile",
-    "publisherBody": "I-R199, ihlawulwa kanye kuphela, yofikelelo olupheleleyo kuMnatha Wabapapashi — vumela izicelo, misela ixabiso lakho, amathuba, imali efunyenweyo kunye nohlalutyo. Ayihlaziywa. Iprofayile esisiseko ihlala isimahla.",
+    "publisherBody": "Ukulayisha kunye nokwamkela ukubhukisha kusimahla. I-ChatSched ithatha i-12% yexabiso lakho kukubhukisha okugqityiweyo. Ufikelelo lwePremium (R199 ngenyanga, alunyanzelekanga) longeza amathuba kunye neMarketing Suite.",
     "publisherCta": "Jonga abapapashi →"
   },
   "layers": {
@@ -310,15 +310,15 @@
   },
   "pricing": {
     "badge": "AMAXABISO ALULA",
-    "title": "Qala ngaphandle kobhaliso lwenyanga.",
-    "subtitle": "Ukwenza iakhawunti yeshishini okanye yompapashi kusebenzisa intlawulo enye. Akukho kuhlaziywa. Iintlawulo zokubhukisha ziboniswa ngaphambi kokuba uzibophelele.",
-    "businessLabel": "Ukuvula ishishini",
-    "publisherLabel": "Ukuvula umpapashi",
-    "onceOff": "Kanye kuphela. Akukho kuhlaziywa.",
-    "businessBody": "Fikelela ekwakheni amaphulo, kwintengiso elawulwayo nakwimarike.",
-    "publisherBody": "Vula iprofayile yakho kunye neempawu zomnatha wabapapashi.",
+    "title": "Joyina simahla. Hlawula kuphela xa ubhukisha.",
+    "subtitle": "Iintlawulo zokubhukisha ziboniswa ngaphambi kokuba uzibophelele. Ufikelelo lwePremium alunyanzelekanga.",
+    "businessLabel": "Joyina uze ubhukishe",
+    "publisherLabel": "Ufikelelo lwePremium",
+    "onceOff": "Ngenyanga. Rhoxisa nanini na.",
+    "businessBody": "Ukujoyina nokukhangela kusimahla. Xa umpapashi ayamkela isicelo sakho, uhlawula ixabiso lakhe kunye nentlawulo encinci yokubhukisha (R30 phantsi kwe-R500, R50 ukususela kwi-R500).",
+    "publisherBody": "Kuvula ibhodi yamathuba kunye neMarketing Suite, kumashishini nakubapapashi.",
     "businessCta": "Qala →",
-    "publisherCta": "Joyina NjengoMpapi →"
+    "publisherCta": "Vula iakhawunti yasimahla →"
   },
   "publisherCta": {
     "badge": "KUBAPAPASHI NAKWABADALI",

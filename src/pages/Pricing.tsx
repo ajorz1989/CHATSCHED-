@@ -3,13 +3,13 @@ import { useId, useState, type ReactNode } from "react";
 import Seo from "../components/Seo";
 import MarketingIcon, { type MarketingIconName } from "../components/MarketingIcon";
 import { formatCurrency as formatCurrencyShared } from "../lib/currency";
-import { PLATFORM_COMMISSION_RATE, SALES_EMAIL } from "../lib/constants";
+import { PLATFORM_COMMISSION_RATE, PREMIUM_ACCESS_PRICE, SALES_EMAIL } from "../lib/constants";
 
 const FAQS = [
-  { q: "Can my business also appear on the browse page as a publisher?", a: "Yes. Once your business account is activated (the once-off R399), you can create one publisher listing from your dashboard — no second fee and no Publisher Network subscription needed. Channels with no manual verification go live on the browse page straight away; social media and high-trust channels are submitted for ChatSched verification first. You can't book your own listing, and before activation the option isn't available." },
+  { q: "Can my business also appear on the browse page as a publisher?", a: "Yes. With Premium access you can create one publisher listing from your dashboard — no second fee. Channels with no manual verification go live on the browse page straight away; social media and high-trust channels are submitted for ChatSched verification first. You can't book your own listing." },
   { q: "How do I know a publisher is legitimate?", a: "Publishers and creators on high-trust channels — and every social media listing — are verified before they go live, and every listing carries a visible trust score and level built from campaign history and profile signals — not just follower count." },
-  { q: "Do I need a contract or subscription?", a: "No long-term contract and no recurring membership fee. Browsing and basic listing are free. Sending a booking request needs a one-time ChatSched Business activation of R399, and approving requests as a Publisher needs a one-time R199 activation. Neither renews." },
-  { q: "What exactly do I get for the activation fee?", a: "The activation fee unlocks the platform features on your side of the marketplace. Businesses unlock booking, opportunities, campaign tools and their launch credit. Publishers unlock Network access, opportunities, analytics, earnings tools and the ability to approve paid requests." },
+  { q: "Do I need a contract or subscription?", a: "No contract, and signing up, browsing, listing and booking are all free. Premium access is optional (R199 per month, cancel any time) and unlocks the Opportunities job board and the Marketing Suite." },
+  { q: "What do I get with Premium access?", a: "Premium access unlocks the Opportunities job board and the full Marketing Suite, for businesses and creators alike. Booking and listing never need it." },
   { q: "How does payment actually work?", a: "Payment happens after the booking reaches its required approval stage. The payment method depends on the channel, and payment is tracked through ChatSched before the placement moves live." },
   { q: "Can I choose which channels to advertise on?", a: "Yes. ChatSched spans 12 channels: social media, influencer, website, podcast, radio, sports & recreation, events, community groups, transport, spaza shops & informal retail, local associations, and restaurants & cafés — availability depends on what's live in your area." },
 ];
@@ -170,7 +170,7 @@ export default function Pricing() {
     <div>
       <Seo
         title="Pricing | ChatSched"
-        description="See ChatSched's once-off Business and Publisher activation fees, what each unlocks, campaign fees, launch credit and the tools included on each side of the marketplace."
+        description="See what ChatSched costs: free sign-up, the creator booking fee and commission, and optional Premium access for the Opportunities job board and the Marketing Suite."
       />
 
       {/* Hero */}
@@ -186,10 +186,10 @@ export default function Pricing() {
       </section>
 
       <section className="max-w-5xl mx-auto px-5 py-16">
-        <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">Membership</span>
-        <h2 className="text-3xl md:text-4xl mb-3 max-w-2xl">Choose the side of ChatSched you need.</h2>
+        <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">Pricing</span>
+        <h2 className="text-3xl md:text-4xl mb-3 max-w-2xl">Free to join. Pay only when you book.</h2>
         <p className="text-billboard-inkSoft max-w-2xl mb-10 leading-relaxed">
-          Browsing and basic listing stay free. Activation unlocks the paid features that let businesses book advertising and let publishers participate in paid opportunities. Both activation fees are once-off — no renewal, ever.
+          Signing up, browsing, listing and booking are free. Premium access is one optional monthly plan that unlocks the Opportunities job board and the Marketing Suite, for businesses and publishers alike.
         </p>
 
         <div className="grid md:grid-cols-2 gap-5 items-stretch">
@@ -199,22 +199,19 @@ export default function Pricing() {
               <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-ink bg-white px-2.5 py-1 rounded">ChatSched Business</span>
               <span className="font-mono text-[10px] uppercase tracking-wider bg-billboard-ink text-white rounded px-2 py-1">For advertisers</span>
             </div>
-            <p className="font-display text-4xl mb-1">R399<span className="text-base font-normal"> once-off</span></p>
-            <p className="text-sm font-semibold mb-2">One activation unlocks your business advertising workspace.</p>
-            <p className="text-sm text-billboard-inkSoft mb-6">Includes a <strong className="text-billboard-ink">R199 launch credit</strong> toward your first campaign. The credit is included in the R399 — it is not an extra payment.</p>
+            <p className="font-display text-4xl mb-1">Free<span className="text-base font-normal"> to join</span></p>
+            <p className="text-sm font-semibold mb-2">Create your account, browse the marketplace and send booking requests at no cost.</p>
+            <p className="text-sm text-billboard-inkSoft mb-6">When a creator accepts, you pay their price plus a small booking fee (R30 under R500, R50 from R500). That total is shown on your Payment Card before you pay.</p>
 
             <div className="border-2 border-billboard-ink/20 rounded-lg bg-white/60 p-4 mb-5">
-              <p className="font-mono text-[10px] uppercase tracking-wider font-bold mb-2">What you unlock</p>
+              <p className="font-mono text-[10px] uppercase tracking-wider font-bold mb-2">What you get</p>
               <ul className="space-y-2.5">
                 <BenefitItem>Full marketplace access — search, compare, save and request advertising from publishers.</BenefitItem>
                 <BenefitItem>Business-to-publisher messaging inside ChatSched, keeping the booking conversation on-platform.</BenefitItem>
                 <BenefitItem>Flexible campaign builder for your goal, channels, audience, location, budget, dates and creative brief.</BenefitItem>
-                <BenefitItem>Access to the gated business Opportunities area for relevant sponsorship and advertising opportunities.</BenefitItem>
                 <BenefitItem>Done-for-you campaign support — submit your brief and a ChatSched campaign manager coordinates the media plan. Most managed campaigns are billed per booking at the standard marketplace fee; larger campaigns may instead use a single agreed package price, always confirmed with you before anything is booked.</BenefitItem>
                 <BenefitItem>Campaign tracking, booking history and reporting so you can follow the job from request through delivery.</BenefitItem>
-                <BenefitItem>Full Marketing Suite — Match, Reach Planner, Content Studio, Caption Writer, Campaign Builder, Campaign Tracker and ROI Calculator, included with Business activation.</BenefitItem>
-                <BenefitItem>R199 launch credit applied toward an eligible first campaign after activation.</BenefitItem>
-                <BenefitItem>List your own business on the browse page — once activated you can create a publisher listing from your dashboard at no extra charge, and other businesses can book you. One listing per account.</BenefitItem>
+                <BenefitItem>List your own business on the browse page with Premium access and other businesses can book you. One listing per account.</BenefitItem>
               </ul>
             </div>
 
@@ -228,9 +225,9 @@ export default function Pricing() {
               <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-ink bg-billboard-paperDim px-2.5 py-1 rounded">ChatSched Publisher Network</span>
               <span className="font-mono text-[10px] uppercase tracking-wider bg-billboard-green text-white rounded px-2 py-1">For media owners</span>
             </div>
-            <p className="font-display text-4xl mb-1">R199<span className="text-base font-normal"> once-off</span></p>
+            <p className="font-display text-4xl mb-1">Free<span className="text-base font-normal"> to list</span></p>
             <p className="text-sm font-semibold mb-2">Turn your audience or advertising inventory into bookable opportunities.</p>
-            <p className="text-sm text-billboard-inkSoft mb-6">No recurring membership fee. Your activation unlocks the Network tools you need to receive, manage and deliver paid opportunities.</p>
+            <p className="text-sm text-billboard-inkSoft mb-6">No sign-up fee. ChatSched takes {Math.round(PLATFORM_COMMISSION_RATE * 100)}% of your price on a completed booking, and you set your own price.</p>
 
             <div className="border-2 border-billboard-ink/20 rounded-lg bg-billboard-paperDim p-4 mb-5">
               <p className="font-mono text-[10px] uppercase tracking-wider font-bold mb-2">What you unlock</p>
@@ -251,8 +248,18 @@ export default function Pricing() {
           </div>
         </div>
 
+        <div className="mt-6 border-[3px] border-billboard-ink rounded-lg p-6 bg-billboard-paperDim">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="max-w-xl">
+              <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-ink bg-billboard-yellow px-2.5 py-1 rounded mb-3">Premium access · optional</span>
+              <p className="font-display text-3xl mb-1">{formatCurrencyShared(PREMIUM_ACCESS_PRICE)}<span className="text-base font-normal"> per month</span></p>
+              <p className="text-sm text-billboard-inkSoft">For businesses and creators. Unlocks the gated Opportunities job board (post or apply for sponsorship and advertising opportunities) and the full Marketing Suite: Match, Reach Planner, Content Studio, Caption Writer, Campaign Builder, Campaign Tracker and ROI Calculator. Cancel any time.</p>
+            </div>
+            <Link to="/register" className="inline-flex items-center justify-center gap-2 border-[3px] border-billboard-ink bg-white font-bold px-4 py-3 rounded text-sm hover:-translate-y-0.5 transition">Create a free account →</Link>
+          </div>
+        </div>
         <p className="text-xs text-billboard-inkSoft mt-6 max-w-3xl leading-relaxed">
-          Activation is separate from campaign transaction fees. A completed booking can still carry the standard ChatSched marketplace fee shown before the transaction. Featured &amp; Advertise placements are separate optional products and start from R99/month.
+          Booking fees and commission are separate from Premium access and are always shown before a transaction. Featured &amp; Advertise placements are separate optional products and start from R99/month.
         </p>
       </section>
 
@@ -287,10 +294,10 @@ export default function Pricing() {
 
             <div className="mt-6 grid md:grid-cols-2 gap-3 text-xs md:text-sm">
               <div className="border border-billboard-yellow/40 rounded p-3 bg-billboard-yellow/10">
-                <strong className="text-billboard-yellow">Social media:</strong> PayFast (card or Instant EFT) or manual EFT may be offered for the confirmed booking.
+                <strong className="text-billboard-yellow">Every channel:</strong> once the creator accepts, you receive a Payment Card and pay ChatSched by bank transfer.
               </div>
               <div className="border border-billboard-green/50 rounded p-3 bg-billboard-green/10">
-                <strong className="text-billboard-green">Request-based channels:</strong> approval comes first, then manual EFT and payment verification before delivery moves forward.
+                <strong className="text-billboard-green">Going live:</strong> a placement goes live only once the money has cleared in the ChatSched bank account.
               </div>
             </div>
           </div>
@@ -304,7 +311,7 @@ export default function Pricing() {
       <section className="max-w-5xl mx-auto px-5 pb-8">
         <div className="border-2 border-billboard-ink bg-billboard-paperDim rounded p-5 flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm max-w-[58ch] leading-relaxed">
-            Beyond activation, <strong className="text-billboard-ink">ChatSched Tools</strong> is a growing catalogue of practical add-ons for getting leads, handling customers, taking bookings and running campaigns — free, once-off, monthly and annual pricing, priced individually per tool.
+            Beyond Premium access, <strong className="text-billboard-ink">ChatSched Tools</strong> is a growing catalogue of practical add-ons for getting leads, handling customers, taking bookings and running campaigns — free, once-off, monthly and annual pricing, priced individually per tool.
           </p>
           <Link to="/tools" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink font-bold px-4 py-2.5 rounded text-sm bg-white shrink-0 hover:-translate-y-0.5 transition">Explore ChatSched Tools →</Link>
         </div>
@@ -312,24 +319,24 @@ export default function Pricing() {
 
       <section className="max-w-5xl mx-auto px-5 pb-16 grid md:grid-cols-2 gap-10">
         <div className="border-[3px] border-billboard-ink rounded p-6">
-          <h2 className="font-display text-lg mb-3">What businesses can do before activating</h2>
-          <p className="text-billboard-inkSoft text-sm mb-4">Explore the marketplace first. Activation is only needed when you want to use the paid business workflow.</p>
+          <h2 className="font-display text-lg mb-3">What businesses can do for free</h2>
+          <p className="text-billboard-inkSoft text-sm mb-4">Everything you need to find and book advertising is free. Premium access is only for the Opportunities board and the Marketing Suite.</p>
           <ReachMockup />
           <ul className="text-sm text-billboard-inkSoft space-y-2 mt-5">
             <li>• See publisher profiles, audience fit and trust information before you commit</li>
             <li>• Compare available advertising inventory and channels</li>
-            <li>• Activate once at R399 when you are ready to request and book</li>
+            <li>• Send booking requests and pay only when a creator accepts</li>
           </ul>
           <Link to="/browse" className="inline-flex mt-5 items-center gap-2 border-[3px] border-billboard-ink font-bold px-4 py-2.5 rounded text-sm hover:-translate-y-0.5 transition">Browse Advertising →</Link>
         </div>
         <div className="border-[3px] border-billboard-ink rounded p-6 bg-billboard-paperDim">
-          <h2 className="font-display text-lg mb-3">What publishers can do before activating</h2>
-          <p className="text-billboard-inkSoft text-sm mb-4">Create a basic profile first. Activate when you are ready to participate in paid Network opportunities.</p>
+          <h2 className="font-display text-lg mb-3">What publishers can do for free</h2>
+          <p className="text-billboard-inkSoft text-sm mb-4">Create your profile and start receiving requests. Premium access is optional and adds the Opportunities board and the Marketing Suite.</p>
           <PayoutMockup />
           <ul className="text-sm text-billboard-inkSoft space-y-2 mt-5">
             <li>• Build your basic listing and decide what you want to sell</li>
             <li>• Set your own advertising rates and placement details</li>
-            <li>• Activate once at R199 when you are ready to receive and manage paid requests</li>
+            <li>• Approve or decline requests and see your earnings</li>
           </ul>
           <Link to="/register?role=publisher" className="inline-flex mt-5 items-center gap-2 border-[3px] border-billboard-ink font-bold px-4 py-2.5 rounded text-sm hover:-translate-y-0.5 transition">Join as a Publisher →</Link>
         </div>
@@ -338,7 +345,7 @@ export default function Pricing() {
       <section className="max-w-5xl mx-auto px-5 pb-10">
         <div className="border-2 border-billboard-yellow bg-billboard-yellow/10 rounded p-5 flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm max-w-[58ch] leading-relaxed">
-            Before you commit to a campaign, ChatSched shows the applicable campaign pricing, marketplace fees and expected publisher earnings. Your activation fee is separate from the campaign amount.
+            Before you commit to a campaign, ChatSched shows the applicable campaign pricing, marketplace fees and expected publisher earnings. The booking fee is separate from the creator’s price.
           </p>
           <Link to="/fees" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink font-bold px-4 py-2.5 rounded text-sm bg-white shrink-0 hover:-translate-y-0.5 transition">See exact fees →</Link>
         </div>

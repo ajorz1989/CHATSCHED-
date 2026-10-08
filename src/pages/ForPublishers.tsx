@@ -15,7 +15,7 @@ const commissionPct = Math.round(PLATFORM_COMMISSION_RATE * 100);
 const sharePct = Math.round(PUBLISHER_SHARE * 100);
 
 const STEPS = [
-  { n: "01", title: "List your channel", body: "Tell us your niche, audience and format. A basic profile is free — approving requests, plus full Publisher Network access (opportunities, analytics, earnings), needs a one-time R199 activation, no renewal, ever." },
+  { n: "01", title: "List your channel", body: "Tell us your niche, audience and format. Listing and approving requests are free, with no sign-up fee. Premium access (R199 per month, optional) adds the Opportunities job board and the Marketing Suite." },
   { n: "02", title: "Review requests", body: `Businesses find you through search and category browsing and send you a feature request to review — you have ${CREATOR_APPROVAL_WINDOW_DAYS} days to approve or decline it. Approving needs an active Publisher Network subscription; declining doesn't.` },
   { n: "03", title: "Approve, schedule, execute", body: "With an active Publisher Network subscription, accept the requests that fit, schedule the placement, and mark it live once it's done — you're always in control." },
   { n: "04", title: "Get paid, on a real clock", body: `Payment is confirmed by ChatSched before you ever post. Your payout lands within ${CREATOR_PAYOUT_WINDOW_HOURS} hours of going live.` },
@@ -53,7 +53,7 @@ export default function ForPublishers() {
     <div>
       <Seo
         title="For Publishers & Creators · ChatSched"
-        description="Monetise the audience you've already built. R199 once-off for the full Publisher Network — approve requests, set your own price, and payment is confirmed before you ever post. No renewal, ever."
+        description="Monetise the audience you've already built. Free to list — approve requests, set your own price, and payment is confirmed before you ever post."
       />
 
       {/* HERO */}
@@ -66,7 +66,7 @@ export default function ForPublishers() {
             Monetise the audience you've already built.
           </h1>
           <p className="text-lg text-billboard-paperDim max-w-[56ch] mb-6">
-            R199 once-off for the full Publisher Network — set your own price, approve every request yourself, and
+            Free to list — set your own price, approve every request yourself, and
             payment is confirmed before you ever post. Never chase an invoice again.
           </p>
           <ul className="grid sm:grid-cols-2 gap-x-6 gap-y-2 mb-6 max-w-[56ch] text-sm">
@@ -256,7 +256,7 @@ export default function ForPublishers() {
         <div className="max-w-2xl mx-auto px-5">
           <h2 className="font-display text-2xl md:text-3xl mb-4">Ready to turn your audience into income?</h2>
           <p className="text-billboard-inkSoft mb-6">
-            R199 once-off for the full network — approve every request yourself. Payment's confirmed before you ever post. No renewal, ever.
+            Free to list — approve every request yourself. Payment's confirmed before you ever post.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Link to="/register?role=publisher" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink bg-billboard-ink text-billboard-paper font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition">

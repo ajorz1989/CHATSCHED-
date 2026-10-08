@@ -7,12 +7,12 @@ type TabKey = "business" | "publisher";
 
 const BUSINESS_STEPS = [
   { title: "Explore the right channel", body: "Browse available publishers and media inventory across social, influencer, website, podcast and radio by channel, audience, category and location." },
-  { title: "Activate and send your brief", body: "Activate ChatSched Business when you're ready to request a booking, then describe the goal, placement, audience, budget and timing you need." },
+  { title: "Send your brief", body: "Create a free account when you're ready to request a booking, then describe the goal, placement, audience, budget and timing you need." },
   { title: "Track the booking to delivery", body: "Follow the request through review, payment, scheduling and delivery. Depending on the channel, proof can include screenshots, links, audio evidence or live delivery notes." },
 ];
 const OWNER_STEPS = [
   { title: "Create your publisher profile", body: "List your channel, audience, advertising methods, pricing and availability so businesses can understand what you offer." },
-  { title: "Review incoming opportunities", body: "With Publisher Network activation, review requests and opportunities in your dashboard and decide which ones fit your audience and inventory." },
+  { title: "Review incoming opportunities", body: "Review requests and opportunities in your dashboard and decide which ones fit your audience and inventory." },
   { title: "Approve, deliver and get paid", body: "Agree the placement, deliver it on schedule, mark it live and follow the tracked payout process inside ChatSched." },
 ];
 
@@ -145,13 +145,13 @@ const FLOW_SCENARIOS: FlowScenario[] = [
 const PROCESS_FAQS: Record<TabKey, { q: string; a: string }[]> = {
   business: [
     { q: "How do I know a channel's audience is real?", a: "We manually check every publisher before they're listed — real audience details, not just a follower count." },
-    { q: "Do I need a contract?", a: "There is no long-term contract required to use the marketplace. You choose the bookings and campaigns you want to run, subject to the applicable activation and campaign terms." },
+    { q: "Do I need a contract?", a: "There is no long-term contract required to use the marketplace. You choose the bookings and campaigns you want to run, subject to the applicable fees and campaign terms." },
     { q: "What happens after I submit a request?", a: "The publisher reviews the request and can approve, decline, or discuss it before anything is scheduled. Once the booking is accepted, payment and delivery details are tracked inside ChatSched." },
     { q: "Which channels can I request?", a: "Available channels currently include social media, influencer, website, podcast and radio. More channel types are registered in the platform and can be launched over time." },
     { q: "Where can campaigns run?", a: "ChatSched is built for South African advertising, with channel and publisher availability varying by location. Filter by geography and audience when you browse opportunities." },
   ],
   publisher: [
-    { q: "What does joining involve?", a: "Create your publisher profile, provide your channel details and complete the review process. Publisher Network activation is required for the paid opportunities listed in the marketplace." },
+    { q: "What does joining involve?", a: "Create your publisher profile, provide your channel details and complete the review process. Premium access (optional) adds the Opportunities job board and the Marketing Suite." },
     { q: "Can I decline a request?", a: "Yes — every request is yours to accept, decline, or discuss before anything is scheduled." },
     { q: "Do I control scheduling?", a: "Yes. Once you approve a request, you choose when it goes live and mark it done yourself." },
     { q: "Is there a minimum audience size to apply?", a: "We review every application on its own merits — reach out and we'll walk you through it." },

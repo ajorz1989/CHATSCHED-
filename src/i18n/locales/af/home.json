@@ -27,11 +27,11 @@
     "heading": "Watter kant jy ook al is, dit is vir jou gebou.",
     "businessBadge": "Besigheid / Adverteerder",
     "businessTitle": "Bereik die gehoor wat jou kliënte reeds vertrou",
-    "businessBody": "R399, eenmalig, gee jou toegang tot die mark, bestuurde veldtogte en 'n R199-lanseringskrediet wat ingesluit is. Geen hernuwing nie. Blaai gratis — om 'n versoek te stuur het die eenmalige aktivering nodig.",
+    "businessBody": "Gratis om aan te sluit en te blaai. Wanneer 'n uitgewer jou versoek aanvaar, betaal jy hul prys plus 'n klein besprekingsfooi (R30 onder R500, R50 vanaf R500).",
     "businessCta": "Verken vir besighede →",
     "publisherBadge": "Uitgewer / Vervaardiger",
     "publisherTitle": "Verdien uit die gehoor wat jy reeds opgebou het",
-    "publisherBody": "R199, eenmalig, vir volle Uitgewersnetwerk-toegang — keur versoeke goed, stel jou eie prys, geleenthede, verdienste en analise. Geen hernuwing nie. 'n Basiese profiel bly gratis om te lys.",
+    "publisherBody": "Gratis om te lys en bestellings te aanvaar. ChatSched neem 12% van jou prys op 'n voltooide bespreking. Premium-toegang (R199 per maand, opsioneel) voeg geleenthede en die Bemarkingsreeks by.",
     "publisherCta": "Verken vir uitgewers →"
   },
   "layers": {
@@ -310,15 +310,15 @@
   },
   "pricing": {
     "badge": "EENVOUDIGE PRYSE",
-    "title": "Begin sonder nog ’n maandelikse intekening.",
-    "subtitle": "Besigheids- en uitgeweraktivering is eenmalig. Geen hernuwing nie. Besprekingsfooie word gewys voordat jy verbind.",
-    "businessLabel": "Besigheidsaktivering",
-    "publisherLabel": "Uitgeweraktivering",
-    "onceOff": "Eenmalig. Geen hernuwing.",
-    "businessBody": "Kry toegang tot veldtogbou, bestuurde advertensies en die mark.",
-    "publisherBody": "Ontsluit jou uitgewerprofiel en advertensienetwerkfunksies.",
+    "title": "Gratis om aan te sluit. Betaal net wanneer jy bespreek.",
+    "subtitle": "Besprekingsfooie word gewys voordat jy verbind. Premium-toegang is opsioneel.",
+    "businessLabel": "Sluit aan en bespreek",
+    "publisherLabel": "Premium-toegang",
+    "onceOff": "Per maand. Kanselleer enige tyd.",
+    "businessBody": "Aansluit en blaai is gratis. Wanneer 'n uitgewer jou versoek aanvaar, betaal jy hul prys plus 'n klein besprekingsfooi (R30 onder R500, R50 vanaf R500).",
+    "publisherBody": "Ontsluit die geleenthedebord en die Bemarkingsreeks, vir besighede en uitgewers.",
     "businessCta": "Begin →",
-    "publisherCta": "Sluit as Uitgewer aan →"
+    "publisherCta": "Skep 'n gratis rekening →"
   },
   "publisherCta": {
     "badge": "VIR UITGEWERS & VERVAARDIGERS",

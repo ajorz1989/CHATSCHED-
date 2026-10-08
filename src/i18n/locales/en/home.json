@@ -27,11 +27,11 @@
     "heading": "Whichever side you're on, it's built for you.",
     "businessBadge": "Business / Advertiser",
     "businessTitle": "Reach the audience your customers already trust",
-    "businessBody": "R399, once-off, gets you the marketplace, managed campaigns and a R199 launch credit included. No renewal, ever. Browsing is free — sending a request needs that one-time activation.",
+    "businessBody": "Free to join and free to browse. When a creator accepts your request, you pay their price plus a small booking fee (R30 under R500, R50 from R500).",
     "businessCta": "Build My Campaign →",
     "publisherBadge": "Publisher / Creator",
     "publisherTitle": "Monetise the audience you've already built",
-    "publisherBody": "R199, once-off, for full Publisher Network access — approve requests, set your own price, opportunities, earnings and analytics. No renewal, ever. Listing a basic profile stays free.",
+    "publisherBody": "Free to list and free to accept bookings. ChatSched takes 12% of your price on a completed booking. Premium access (R199 per month, optional) adds opportunities and the Marketing Suite.",
     "publisherCta": "Join as a Publisher →"
   },
   "layers": {
@@ -326,15 +326,15 @@
   },
   "pricing": {
     "badge": "SIMPLE PRICING",
-    "title": "Start without another monthly subscription.",
-    "subtitle": "Business and publisher activation is once-off. No renewal. Booking fees are shown before you commit.",
-    "businessLabel": "Business activation",
-    "publisherLabel": "Publisher activation",
-    "onceOff": "Once-off. No renewal.",
-    "businessBody": "Access campaign building, managed advertising and the marketplace.",
-    "publisherBody": "Unlock your publisher profile and advertising network features.",
+    "title": "Free to join. Pay only when you book.",
+    "subtitle": "Booking fees are shown before you commit. Premium access is optional.",
+    "businessLabel": "Join and book",
+    "publisherLabel": "Premium access",
+    "onceOff": "Per month. Cancel any time.",
+    "businessBody": "Joining and browsing are free. When a creator accepts your request, you pay their price plus a small booking fee (R30 under R500, R50 from R500).",
+    "publisherBody": "Unlocks the Opportunities job board and the Marketing Suite, for businesses and creators.",
     "businessCta": "Get Started →",
-    "publisherCta": "Join as a Publisher →"
+    "publisherCta": "Create a free account →"
   },
   "publisherCta": {
     "badge": "FOR PUBLISHERS & CREATORS",

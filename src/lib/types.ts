@@ -118,7 +118,7 @@ export interface ContentStudioSubscription {
   created_at: string;
 }
 
-// ChatSched Business's once-off R399 activation fee (schema_phase86) —
+// ChatSched Premium access for a business (schema_phase115; was the once-off activation) —
 // same shape SubscriptionSection.tsx already selects, lifted out into a
 // real type so ActivationFeeInfo.tsx and ActivationNudge.tsx don't each
 // redeclare an inline row shape for the same table.
@@ -133,8 +133,8 @@ export interface BusinessSubscription {
   created_at: string;
 }
 
-// Same once-off shape as BusinessSubscription, for the R199 publisher
-// activation fee (schema_phase86) — used by PublisherActivationNudge.tsx.
+// Same shape as BusinessSubscription, for the creator Premium access (was the R199 publisher
+// Premium access (schema_phase115).
 export interface PublisherSubscription {
   id: string;
   publisher_id: string;

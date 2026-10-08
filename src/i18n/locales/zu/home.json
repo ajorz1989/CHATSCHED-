@@ -27,11 +27,11 @@
     "heading": "Noma ohlangothini luphi okukulo, kwakhelwe wena.",
     "businessBadge": "Ibhizinisi / Umkhangisi",
     "businessTitle": "Finyelela izilaleli osekade ziwathemba amakhasimende akho",
-    "businessBody": "I-R399, ikhokhwa kanye kuphela, ikunikeza ukufinyelela emakethe, imikhankaso ephethwe, kanye nesikweletu sokuqalisa esingu-R199 esifakiwe. Ayibuyi. Ukubhuka kumahhala — ukuthumela isicelo kudinga leyo nkokhelo eyodwa.",
+    "businessBody": "Ukujoyina nokubheka kumahhala. Uma umshicileli eyamukela isicelo sakho, ukhokha intengo yakhe kanye nenkokhelo encane yokubhuka (R30 ngaphansi kwe-R500, R50 kusukela ku-R500).",
     "businessCta": "Hlola amabhizinisi →",
     "publisherBadge": "Umshicileli / Umdidiyeli",
     "publisherTitle": "Zuza kubalaleli osubakhile",
-    "publisherBody": "I-R199, ikhokhwa kanye kuphela, ukufinyelela okugcwele kwiNethiwekhi Yabashicileli — vuma izicelo, misa intengo yakho, amathuba, imali eholiwe kanye nokuhlaziywa. Ayibuyi. Iphrofayela eyisisekelo ihlala imahhala.",
+    "publisherBody": "Ukulaywa nokwamukela ukubhuka kumahhala. I-ChatSched ithatha u-12% wentengo yakho ekubhukeni okuqediwe. Ukufinyelela kwePremium (R199 ngenyanga, akuphoqelekile) kwengeza amathuba kanye ne-Marketing Suite.",
     "publisherCta": "Hlola abashicileli →"
   },
   "layers": {
@@ -310,15 +310,15 @@
   },
   "pricing": {
     "badge": "AMANANI ALULA",
-    "title": "Qala ngaphandle kokunye okubhaliselwe nyanga zonke.",
-    "subtitle": "Ukuvulwa kwebhizinisi nomshicileli kukhokhwa kanye. Akukho ukuvuselelwa. Izimali zokubhuka ziboniswa ngaphambi kokuzibophezela.",
-    "businessLabel": "Ukuvulwa kwebhizinisi",
-    "publisherLabel": "Ukuvulwa komshicileli",
-    "onceOff": "Kanye kuphela. Akukho ukuvuselelwa.",
-    "businessBody": "Finyelela ukwakha imikhankaso, ukukhangisa okuphethwe nemakethe.",
-    "publisherBody": "Vula iphrofayela yakho nezici zenethiwekhi yabashicileli.",
+    "title": "Joyina simahla. Khokha kuphela uma ubhuka.",
+    "subtitle": "Izimali zokubhuka ziboniswa ngaphambi kokuzibophezela. Ukufinyelela kwePremium akuphoqelekile.",
+    "businessLabel": "Joyina ubhuke",
+    "publisherLabel": "Ukufinyelela kwePremium",
+    "onceOff": "Ngenyanga. Khansela noma nini.",
+    "businessBody": "Ukujoyina nokubheka kumahhala. Uma umshicileli eyamukela isicelo sakho, ukhokha intengo yakhe kanye nenkokhelo encane yokubhuka (R30 ngaphansi kwe-R500, R50 kusukela ku-R500).",
+    "publisherBody": "Kuvula ibhodi lamathuba kanye ne-Marketing Suite, kumabhizinisi nakubashicileli.",
     "businessCta": "Qala →",
-    "publisherCta": "Joyina Njengomshicileli →"
+    "publisherCta": "Vula i-akhawunti yamahhala →"
   },
   "publisherCta": {
     "badge": "ABASHICILELI NENZA ABADALI",

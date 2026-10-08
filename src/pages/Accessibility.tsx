@@ -41,7 +41,7 @@ const IN_PLACE = [
   },
   {
     title: "Subscription & payment flows",
-    body: "The PayFast checkout integration and subscription upgrade gates are keyboard-navigable. Grace-period warnings and activation-fee modals are announced to assistive technology.",
+    body: "The PayFast checkout integration and Premium access sign-up is keyboard-navigable. Payment and status messages are announced to assistive technology.",
   },
   {
     title: "Opportunity & campaign tools",

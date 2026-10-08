@@ -344,7 +344,7 @@ export default function OpportunityFeed() {
                       {alreadyApplied ? (
                         <span className="font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft">Already applied</span>
                       ) : subscribed === false ? (
-                        <span className="font-mono text-[10px] uppercase text-billboard-inkSoft">Activation required to apply</span>
+                        <span className="font-mono text-[10px] uppercase text-billboard-inkSoft">Premium access required to apply</span>
                       ) : applyingTo === o.id ? (
                         <div>
                           <textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Why you're a fit and what you would deliver" rows={3} className="w-full border-2 border-billboard-ink rounded-lg px-3 py-2 text-sm mb-2" />

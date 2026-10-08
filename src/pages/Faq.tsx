@@ -114,7 +114,7 @@ const CATEGORIES: FaqCategory[] = [
         a: `Content Studio is part of the Marketing Suite, which comes with Premium access. Fair-use generation limits apply.`
       },
       {
-        q: "What is the R199 launch credit I keep seeing mentioned?",
+        q: "Is there a sign-up fee or a launch credit?",
         a: `There is no launch credit and no sign-up fee. Booking costs the creator's price plus a small ChatSched booking fee (R30 under R500, R50 from R500), shown on your Payment Card before you pay.`,
       },
       {

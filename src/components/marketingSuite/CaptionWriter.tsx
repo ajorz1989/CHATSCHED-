@@ -107,10 +107,10 @@ export default function CaptionWriter() {
     return (
       <div className="border-[3px] border-billboard-ink rounded-lg p-6 md:p-8 bg-billboard-paperDim">
         <span className="inline-block font-mono text-[10px] font-semibold uppercase tracking-wider border-2 border-billboard-ink bg-billboard-yellow px-2.5 py-1 rounded mb-3">Caption Writer</span>
-        <h3 className="font-display text-xl mb-2">Included with your Business activation.</h3>
-        <p className="text-sm text-billboard-inkSoft max-w-lg mb-5">Caption Writer is part of your full Marketing Suite. Activate ChatSched Business once to unlock it — there is no separate Caption Writer payment.</p>
-        <a href="/activation-fee-info" className="inline-flex items-center gap-2 bg-billboard-yellow border-[3px] border-billboard-ink font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition">
-          Activate Business — R399 once-off →
+        <h3 className="font-display text-xl mb-2">Included with Premium access.</h3>
+        <p className="text-sm text-billboard-inkSoft max-w-lg mb-5">Caption Writer is part of your full Marketing Suite. Get Premium access to unlock it — there is no separate Caption Writer payment.</p>
+        <a href="/account#premium" className="inline-flex items-center gap-2 bg-billboard-yellow border-[3px] border-billboard-ink font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition">
+          Get Premium access →
         </a>
       </div>
     );
@@ -181,7 +181,7 @@ export default function CaptionWriter() {
         <div className="mt-5 border-2 border-billboard-ink rounded p-4">
           <div className="flex items-center justify-between gap-3 mb-2">
             <span className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft">
-              {PLATFORMS.find((p) => p.id === platform)?.label ?? platform} · included activation tier
+              {PLATFORMS.find((p) => p.id === platform)?.label ?? platform} · included with Premium access
             </span>
             <div className="flex gap-2 shrink-0">
               <button onClick={copyCaption} className="font-mono text-[10px] font-semibold uppercase border-2 border-billboard-ink rounded px-2.5 py-1 hover:bg-billboard-paperDim transition">
