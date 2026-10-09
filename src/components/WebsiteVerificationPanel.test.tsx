@@ -101,7 +101,7 @@ describe("OwnershipVerification", () => {
     expect(hasOwnershipCheck("social-media")).toBe(true);
     expect(hasOwnershipCheck("influencer")).toBe(true);
     expect(hasOwnershipCheck("website")).toBe(true);
-    expect(hasOwnershipCheck("podcast")).toBe(false);
+    expect(hasOwnershipCheck("podcast")).toBe(true);
     expect(hasOwnershipCheck("radio")).toBe(false);
     expect(hasOwnershipCheck(null)).toBe(false);
   });
@@ -113,8 +113,13 @@ describe("OwnershipVerification", () => {
     expect(screen.getByRole("heading", { name: /verify your social account/i })).toBeInTheDocument();
   });
 
-  it("renders nothing for a podcast", () => {
-    const { container } = render(<OwnershipVerification publisher={makePublisher({ channel_slug: "podcast" })} onChange={() => {}} />);
+  it("picks the podcast panel for podcasts", () => {
+    render(<OwnershipVerification publisher={makePublisher({ channel_slug: "podcast", channel_metadata: { showUrl: "https://feeds.example.co.za/a.xml" } })} onChange={() => {}} />);
+    expect(screen.getByRole("heading", { name: /verify your podcast/i })).toBeInTheDocument();
+  });
+
+  it("renders nothing for radio", () => {
+    const { container } = render(<OwnershipVerification publisher={makePublisher({ channel_slug: "radio" })} onChange={() => {}} />);
     expect(container).toBeEmptyDOMElement();
   });
 });

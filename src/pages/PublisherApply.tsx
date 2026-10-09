@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { podcastShowUrlError } from "../lib/podcastVerification";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
@@ -245,6 +246,14 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
     if (socialVerificationError) {
       setError(socialVerificationError);
       return;
+    }
+
+    if (channelSlug === "podcast" && !adminMode) {
+      const feedError = podcastShowUrlError(form.podcastShowUrl);
+      if (feedError) {
+        setError(feedError);
+        return;
+      }
     }
 
     if (requiresProof && !adminMode && proofFiles.length === 0) {

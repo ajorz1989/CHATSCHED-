@@ -208,7 +208,7 @@ export function buildChannelMetadata(channelSlug: ChannelSlug, form: FormState):
       hostingPlatform: form.podcastHostingPlatform,
       adSlotsAvailable: form.podcastAdSlots as PodcastOnboardingFields["adSlotsAvailable"],
       topListenerRegions: form.podcastRegions.split(",").map((r) => r.trim()).filter(Boolean),
-      showUrl: form.podcastShowUrl || null,
+      showUrl: form.podcastShowUrl.trim() || null,
       peakListeningTimes: form.podcastPeakTimes || null,
     };
     return fields as unknown as Record<string, unknown>;

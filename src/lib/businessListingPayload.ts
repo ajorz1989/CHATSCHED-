@@ -7,6 +7,7 @@
  */
 import type { ChannelSlug } from "./channelTypes";
 import type { Platform } from "./types";
+import { podcastShowUrlError } from "./podcastVerification";
 import { getChannelBySlug } from "./channelRegistry";
 import { isAuthorityChannel, AUTHORITY_SUBJECT } from "./channelOnboardingSchemas";
 import { platformFromOnboardingKey } from "./platforms";
@@ -69,6 +70,12 @@ export function buildBusinessListingPayload(
       const label = (ch.eligibility?.metricLabel ?? "Audience").toLowerCase();
       return { ok: false, error: `${ch.name} listings need at least ${min.toLocaleString()} ${label}.` };
     }
+  }
+
+  // Podcasts are checked by reading the show's RSS feed, so the listing must carry it.
+  if (channelSlug === "podcast") {
+    const feedError = podcastShowUrlError(form.podcastShowUrl);
+    if (feedError) return { ok: false, error: feedError };
   }
 
   // Social media: at least one public profile link per chosen platform.

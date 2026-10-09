@@ -2031,3 +2031,24 @@ supabase functions deploy verify-website-ownership
 Needs migration `20261005000000_digital_channel_ownership_checks.sql` first.
 Until the function is deployed, the "Check my website now" button shows an
 error and an admin can still confirm ownership by hand from the review screen.
+
+## Podcast ownership check (`verify-podcast-ownership`)
+
+Checks that a podcast listing's owner has put their ChatSched code in the show
+description or an episode's notes: `ChatSched verification: CS-XXXXX`. The
+function reads the RSS feed address saved on the listing (`channel_metadata.showUrl`)
+and looks for the code in the description, summary, subtitle, content or title
+fields. It only ever fetches the address on the caller's own listing, over
+https, with a public-address check, a timeout and a size cap. No secrets to set
+beyond the usual injected `SUPABASE_URL`, `SUPABASE_ANON_KEY` and
+`SUPABASE_SERVICE_ROLE_KEY`; DNS goes through Cloudflare's public DNS-over-HTTPS.
+
+```
+supabase functions deploy verify-podcast-ownership
+```
+
+Needs migration `20261008100000_podcast_ownership_check.sql` first (it stops a
+podcast being approved until ownership is confirmed and a feed address is on the
+listing). Until the function is deployed, "Check my podcast now" shows an error
+and an admin can still confirm ownership by hand from the review screen.
+Podcast hosts can take a few minutes to publish a changed description.

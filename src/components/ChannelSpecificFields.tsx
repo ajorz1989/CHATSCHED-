@@ -119,8 +119,8 @@ export default function ChannelSpecificFields({
                 <input placeholder="e.g. Gauteng, Western Cape" value={form.podcastRegions} onChange={(e) => update("podcastRegions", e.target.value)} className={inputClass} />
               </div>
               <div>
-                <label className={labelClass}>Show link <span className="font-normal text-billboard-inkSoft">(RSS feed or your show's page on Spotify/Apple — lets buyers actually listen before booking)</span></label>
-                <input placeholder="https://open.spotify.com/show/..." value={form.podcastShowUrl} onChange={(e) => update("podcastShowUrl", e.target.value)} className={inputClass} />
+                <label className={labelClass}>RSS feed address <span className="font-normal text-billboard-inkSoft">(your podcast host gives you this, not your Spotify or Apple page — we read it to confirm you own the show)</span></label>
+                <input placeholder="https://feeds.example.com/your-show.xml" value={form.podcastShowUrl} onChange={(e) => update("podcastShowUrl", e.target.value)} className={inputClass} />
               </div>
               <div>
                 <label className={labelClass}>When do most people actually listen? <span className="font-normal text-billboard-inkSoft">(optional)</span></label>

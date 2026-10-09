@@ -5,6 +5,7 @@ import { supabase, isSupabaseConfigured } from "../lib/supabase";
 import { formatSupabaseError } from "../lib/supabaseErrors";
 import { getChannelBySlug } from "../lib/channelRegistry";
 import { listedDomain } from "../lib/websiteVerification";
+import { listedShowUrl } from "../lib/podcastVerification";
 import { getOnboardingSummaryFields } from "../lib/channelOnboardingSchemas";
 import { formatCurrency } from "../lib/currency";
 import SetupNotice from "../components/SetupNotice";
@@ -1159,6 +1160,7 @@ function ApplicationCard({
   const [confirmingVerification, setConfirmingVerification] = useState(false);
   const socialVerificationLinks = (p.social_verification_links ?? []).filter((link) => link.url?.trim());
   const websiteDomain = listedDomain(p.channel_metadata);
+  const podcastFeed = listedShowUrl(p.channel_metadata);
   const highTrustProofCount = p.verification_proof_urls?.length ?? 0;
 
   async function handleConfirmSocialVerification(confirmed: boolean) {
@@ -1206,9 +1208,10 @@ function ApplicationCard({
       return;
     }
 
-    if (p.channel_slug === "social-media" || p.channel_slug === "influencer" || p.channel_slug === "website") {
+    if (p.channel_slug === "social-media" || p.channel_slug === "influencer" || p.channel_slug === "website" || p.channel_slug === "podcast") {
       const isWebsite = p.channel_slug === "website";
-      if (!isWebsite && socialVerificationLinks.length === 0) {
+      const isPodcast = p.channel_slug === "podcast";
+      if (!isWebsite && !isPodcast && socialVerificationLinks.length === 0) {
         setVerificationError("At least one public profile link must be submitted before verification.");
         return;
       }
@@ -1216,10 +1219,16 @@ function ApplicationCard({
         setVerificationError("This website listing has no domain filled in, so it can't be verified.");
         return;
       }
+      if (isPodcast && !podcastFeed) {
+        setVerificationError("This podcast listing has no RSS feed address filled in, so it can't be verified.");
+        return;
+      }
       if (!p.social_verification_confirmed) {
         setVerificationError(isWebsite
           ? "Confirm the website ownership code below (or ask the owner to run the check) before approving."
-          : "Confirm the bio verification code below before approving.");
+          : isPodcast
+            ? "Confirm the podcast ownership code below (or ask the owner to run the check) before approving."
+            : "Confirm the bio verification code below before approving.");
         return;
       }
       onApprove(p.id, {
@@ -1316,6 +1325,54 @@ function ApplicationCard({
                   ) : (
                     <button type="button" onClick={() => handleConfirmSocialVerification(true)} disabled={confirmingVerification} className="text-xs font-bold px-3 py-1.5 rounded border-2 border-billboard-ink bg-billboard-yellow disabled:opacity-60">
                       {confirmingVerification ? "Confirming…" : "Confirm — code is on their website"}
+                    </button>
+                  )}
+                </>
+              ) : (
+                <p className="text-sm text-billboard-inkSoft">The applicant hasn't generated a verification code yet.</p>
+              )}
+            </div>
+          </div>
+        )}
+        {p.channel_slug === "podcast" && (
+          <div className="mt-3 border-2 border-billboard-ink rounded p-3 bg-billboard-paperDim">
+            <p className="font-mono text-xs font-semibold uppercase tracking-wide mb-2">Podcast ownership</p>
+            {podcastFeed ? (
+              <a
+                href={podcastFeed}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="flex items-center justify-between gap-3 text-sm border-2 border-billboard-ink/15 rounded px-2.5 py-2 bg-white hover:bg-billboard-paper transition"
+              >
+                <span className="font-semibold">RSS feed</span>
+                <span className="font-mono text-xs text-billboard-greenDeep truncate max-w-[70%]" title={podcastFeed}>{podcastFeed}</span>
+              </a>
+            ) : (
+              <p className="text-sm text-billboard-red font-semibold">No RSS feed address on the listing — it cannot be verified.</p>
+            )}
+            <p className="text-[11px] text-billboard-inkSoft mt-2">The owner proves it by putting their code in the show description or an episode's notes and running the check themselves. You can also confirm by hand after looking for the code in the feed yourself.</p>
+            <div className="mt-3 pt-3 border-t-2 border-billboard-ink/15">
+              {p.social_verification_code ? (
+                <>
+                  <p className="text-sm mb-2">
+                    Code: <span className="font-mono font-bold">{p.social_verification_code}</span>
+                    {p.social_verification_code_generated_at && (
+                      <span className="text-billboard-inkSoft"> · generated {new Date(p.social_verification_code_generated_at).toLocaleDateString("en-ZA")}</span>
+                    )}
+                  </p>
+                  {p.social_verification_confirmed ? (
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold text-billboard-greenDeep">
+                        ✓ Confirmed{p.social_verification_confirmed_at ? ` on ${new Date(p.social_verification_confirmed_at).toLocaleDateString("en-ZA")}` : ""}
+                        {p.social_verification_confirmed_by ? " by an admin" : " by the automatic check"}
+                      </span>
+                      <button type="button" onClick={() => handleConfirmSocialVerification(false)} disabled={confirmingVerification} className="text-xs font-semibold underline text-billboard-inkSoft disabled:opacity-60">
+                        Undo
+                      </button>
+                    </div>
+                  ) : (
+                    <button type="button" onClick={() => handleConfirmSocialVerification(true)} disabled={confirmingVerification} className="text-xs font-bold px-3 py-1.5 rounded border-2 border-billboard-ink bg-billboard-yellow disabled:opacity-60">
+                      {confirmingVerification ? "Confirming…" : "Confirm — code is in their podcast feed"}
                     </button>
                   )}
                 </>

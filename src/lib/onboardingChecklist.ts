@@ -85,10 +85,11 @@ export function computePublisherChecklist(
   ];
 
   // Ownership check: a code the publisher puts where only the owner can —
-  // a social/influencer bio, or the website itself (meta tag, DNS or file).
+  // a social/influencer bio, the website itself (meta tag, DNS or file), or the
+  // podcast's show description.
   // Admins (or, for websites, the automatic check) confirm it, and approval
-  // is blocked until then (migration 20261005000000). Podcast and radio don't
-  // have this step yet.
+  // is blocked until then (migrations 20261005000000 and 20261008100000). Radio
+  // doesn't have this step yet.
   if (publisher.channel_slug === "social-media" || publisher.channel_slug === "influencer") {
     items.push({
       id: "social-verify",
@@ -101,6 +102,13 @@ export function computePublisherChecklist(
       id: "social-verify",
       label: "Verify your website",
       hint: "Add a short code to your site (a meta tag, a DNS record or a small file) — confirms you own it, and is required before we can approve your listing.",
+      done: publisher.social_verification_confirmed,
+    });
+  } else if (publisher.channel_slug === "podcast") {
+    items.push({
+      id: "social-verify",
+      label: "Verify your podcast",
+      hint: "Add a short code to your show description — confirms you own the show, and is required before we can approve your listing.",
       done: publisher.social_verification_confirmed,
     });
   }

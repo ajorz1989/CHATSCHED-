@@ -16,12 +16,12 @@ describe("computePublisherChecklist", () => {
     expect(confirmed.find((i) => i.id === "social-verify")?.done).toBe(true);
   });
 
-  it("shows the ownership item for social media, influencer and website only", () => {
-    for (const channel of ["social-media", "influencer", "website"] as const) {
+  it("shows the ownership item for social media, influencer, website and podcast only", () => {
+    for (const channel of ["social-media", "influencer", "website", "podcast"] as const) {
       const p = makePublisher({ channel_slug: channel });
       expect(computePublisherChecklist(p, channel !== "social-media", [], []).some((i) => i.id === "social-verify")).toBe(true);
     }
-    for (const channel of ["podcast", "radio", "events", "community"] as const) {
+    for (const channel of ["radio", "events", "community"] as const) {
       const p = makePublisher({ channel_slug: channel });
       expect(computePublisherChecklist(p, true, [], []).some((i) => i.id === "social-verify")).toBe(false);
     }
@@ -30,6 +30,11 @@ describe("computePublisherChecklist", () => {
   it("calls the website step 'Verify your website'", () => {
     const p = makePublisher({ channel_slug: "website" });
     expect(computePublisherChecklist(p, true, [], []).find((i) => i.id === "social-verify")?.label).toBe("Verify your website");
+  });
+
+  it("calls the podcast step 'Verify your podcast'", () => {
+    const p = makePublisher({ channel_slug: "podcast" });
+    expect(computePublisherChecklist(p, true, [], []).find((i) => i.id === "social-verify")?.label).toBe("Verify your podcast");
   });
 
   it("still shows placement-type formats for a social-media publisher", () => {

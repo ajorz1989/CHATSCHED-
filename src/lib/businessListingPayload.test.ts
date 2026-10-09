@@ -93,6 +93,20 @@ describe("buildBusinessListingPayload", () => {
     if (!bad.ok) expect(bad.error).toMatch(/https/i);
   });
 
+  it("podcast: needs the RSS feed address (it is how ownership is checked) and sends it in metadata", () => {
+    const base = { followers: "2000", podcastDownloads: "2000" };
+    const missing = buildBusinessListingPayload("podcast", general, form(base));
+    expect(missing.ok).toBe(false);
+    if (!missing.ok) expect(missing.error).toMatch(/RSS feed/i);
+
+    const bare = buildBusinessListingPayload("podcast", general, form({ ...base, podcastShowUrl: "feeds.example.co.za/show.xml" }));
+    expect(bare.ok).toBe(false);
+
+    const ok = buildBusinessListingPayload("podcast", general, form({ ...base, podcastShowUrl: " https://feeds.example.co.za/show.xml " }));
+    expect(ok.ok).toBe(true);
+    if (ok.ok) expect((ok.payload.channel_metadata as Record<string, unknown>).showUrl).toMatch(/^https:\/\/feeds\.example\.co\.za/);
+  });
+
   it("proof is required for exactly the authority channels", () => {
     for (const slug of PROOF_REQUIRED_CHANNELS) expect(isAuthorityChannel(slug)).toBe(true);
     expect(PROOF_REQUIRED_CHANNELS).toHaveLength(8);

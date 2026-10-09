@@ -8,7 +8,7 @@ import {
 } from "../lib/websiteVerification";
 import type { Publisher } from "../lib/types";
 
-function CopyField({ label, value }: { label: string; value: string }) {
+export function CopyField({ label, value }: { label: string; value: string }) {
   const [copied, setCopied] = useState(false);
   return (
     <div className="mt-2">
