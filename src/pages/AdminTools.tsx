@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { TOOL_ICON_NAMES } from "../components/ToolIcon";
 import { Link } from "react-router-dom";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
 import { formatSupabaseError } from "../lib/supabaseErrors";
@@ -595,7 +596,9 @@ function ToolEditor({
         <div className="grid sm:grid-cols-3 gap-3">
           <div>
             <label className={labelClass}>Icon (lucide-react name)</label>
-            <input className={inputClass} value={form.icon} onChange={(e) => onChange("icon", e.target.value)} placeholder="Calculator" />
+            <input className={inputClass} list="tool-icon-names" value={form.icon} onChange={(e) => onChange("icon", e.target.value)} placeholder="Calculator" />
+            <datalist id="tool-icon-names">{TOOL_ICON_NAMES.map((n) => <option key={n} value={n} />)}</datalist>
+            <p className="text-[11px] text-billboard-inkSoft mt-1">Pick from the suggestions. Any other name shows a wrench.</p>
           </div>
           <div>
             <label className={labelClass}>Cover image URL</label>

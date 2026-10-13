@@ -26,7 +26,10 @@ export default function EarningsEstimator({ embedded = false }: { embedded?: boo
       {!embedded && <Seo title="Publisher Earnings Estimator · ChatSched" description="Estimate what a social media or influencer page could earn on ChatSched — using the same Suggested Price formula the platform itself uses." />}
 
       <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">Publisher Tools</span>
-      <h1 className="text-3xl md:text-4xl mb-3 max-w-xl">What could your audience earn?</h1>
+      {/* Embedded inside For Publishers, which already has the page's h1. */}
+      {embedded
+        ? <h2 className="text-3xl md:text-4xl mb-3 max-w-xl">What could your audience earn?</h2>
+        : <h1 className="text-3xl md:text-4xl mb-3 max-w-xl">What could your audience earn?</h1>}
       <p className="text-billboard-inkSoft max-w-xl mb-10">This runs the exact same Suggested Price calculation your dashboard shows social media and influencer publishers — not a separate guess, the real formula. It is built on followers and engagement, so it does not apply to websites, podcasts, radio or venue listings.</p>
 
       <div className="grid md:grid-cols-2 gap-8">
