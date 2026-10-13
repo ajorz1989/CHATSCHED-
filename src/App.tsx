@@ -115,7 +115,6 @@ const ToolDetail = lazy(() => import("./pages/ToolDetail"));
 // WorkWithUs merged into Careers — /work-with-us redirects below
 const Partners = lazy(() => import("./pages/Partners"));
 const PartnersApply = lazy(() => import("./pages/PartnersApply"));
-const Mission = lazy(() => import("./pages/Mission"));
 
 // react-leaflet + leaflet pull in a real chunk of JS+CSS for a map only a
 // fraction of visitors will open — kept as its own case (rather than
@@ -238,7 +237,7 @@ function RoutedContent() {
         <Route path="/tools/:slug" element={<ToolDetail />} />
         <Route path="/partners" element={<Partners />} />
         <Route path="/partners/apply" element={<PartnersApply />} />
-        <Route path="/mission" element={<Mission />} />
+        <Route path="/mission" element={<Navigate to="/about#mission" replace />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>

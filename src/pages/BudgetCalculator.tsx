@@ -221,7 +221,7 @@ export default function BudgetCalculator() {
   return (
     <div className="max-w-4xl mx-auto px-5 py-16">
       <Seo
-        title="Campaign Budget Calculator · ChatSched"
+        title="Advertising Budget Calculator · ChatSched"
         description="Data-driven campaign budgeting: work backwards from your customer's lifetime value and get a real number — backed by live publisher pricing on the platform."
       />
 

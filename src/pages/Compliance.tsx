@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import PageCta from "../components/PageCta";
 import { Link } from "react-router-dom";
 import Seo from "../components/Seo";
 import PlatformRequirementCard from "../components/PlatformRequirementCard";
@@ -57,7 +58,7 @@ export default function Compliance() {
   return (
     <div className="max-w-3xl mx-auto px-5 py-16">
       <Seo
-        title="Compliance Centre · ChatSched"
+        title="Sponsored Content Rules & Disclosure · ChatSched"
         description="Platform requirements, disclosure rules, and advertising categories for sponsored campaigns run through ChatSched."
       />
       <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">
@@ -195,6 +196,7 @@ export default function Compliance() {
           </Link>
         </div>
       </section>
+      <PageCta />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import PageCta from "../components/PageCta";
 import { Link, useNavigate } from "react-router-dom";
 import Seo from "../components/Seo";
 import { CONTACT_EMAIL } from "../lib/constants";
@@ -62,7 +63,7 @@ export default function Help() {
 
   return (
     <div className="max-w-4xl mx-auto px-5 py-16">
-      <Seo title="Help Centre · ChatSched" description="Find what you need fast — search the FAQ, jump to account and billing help, or get a real answer from the team." />
+      <Seo title="Help: Bookings, Payments & Accounts · ChatSched" description="Find what you need fast — search the FAQ, jump to account and billing help, or get a real answer from the team." />
 
       <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">Help Centre</span>
       <h1 className="text-3xl md:text-4xl mb-3 max-w-2xl">Find your answer fast — or talk to a real person if you can't.</h1>
@@ -117,6 +118,7 @@ export default function Help() {
           Contact us →
         </Link>
       </div>
+      <PageCta />
     </div>
   );
 }

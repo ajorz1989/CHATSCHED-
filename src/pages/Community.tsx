@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import PageCta from "../components/PageCta";
 import { Link } from "react-router-dom";
 import Seo from "../components/Seo";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
@@ -145,6 +146,7 @@ export default function Community() {
           </Link>
         </div>
       </section>
+      <PageCta />
     </div>
   );
 }

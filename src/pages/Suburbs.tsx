@@ -12,7 +12,7 @@ export default function Suburbs() {
 
   return (
     <div className="max-w-6xl mx-auto px-5 py-16">
-      <Seo title="Suburbs · ChatSched" description="Browse South African publishers and creators by suburb, across every major city in the country." />
+      <Seo title="Advertise in Your Suburb · ChatSched" description="Browse South African publishers and creators by suburb, across every major city in the country." />
       <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">Suburbs</span>
       <div className="flex flex-wrap items-end justify-between gap-4 mb-2">
         <h1 className="text-3xl md:text-4xl max-w-xl">Right down to your neighbourhood.</h1>

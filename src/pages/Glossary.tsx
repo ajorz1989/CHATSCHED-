@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import PageCta from "../components/PageCta";
 import Seo from "../components/Seo";
 import {
   PLATFORM_COMMISSION_RATE, PUBLISHER_SHARE,
@@ -42,7 +43,7 @@ const CATEGORIES = Array.from(new Set(TERMS.map((t) => t.category)));
 export default function Glossary() {
   return (
     <div className="max-w-3xl mx-auto px-5 py-16">
-      <Seo title="Glossary · ChatSched" description="Plain-language definitions of ChatSched terms — payment holds, commission, trust score, Suggested Price, verification tiers, and more." />
+      <Seo title="Advertising Glossary for Small Business · ChatSched" description="Plain-language definitions of ChatSched terms — payment holds, commission, trust score, Suggested Price, verification tiers, and more." />
 
       <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">Glossary</span>
       <h1 className="text-3xl md:text-4xl mb-3">What the terms on ChatSched actually mean.</h1>
@@ -76,6 +77,7 @@ export default function Glossary() {
       <div className="mt-14 pt-10 border-t-2 border-billboard-ink/10 text-center">
         <p className="text-sm text-billboard-inkSoft">Missing a term, or something here doesn't match what you're seeing? <Link to="/contact" className="underline font-semibold text-billboard-ink">Let us know</Link>.</p>
       </div>
+      <PageCta />
     </div>
   );
 }

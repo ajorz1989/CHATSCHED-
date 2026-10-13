@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import PageCta from "../components/PageCta";
 import { Link, useLocation } from "react-router-dom";
 import Seo from "../components/Seo";
 import TrustBadge from "../components/TrustBadge";
@@ -82,7 +83,7 @@ export default function TrustCentre() {
   return (
     <div className="max-w-3xl mx-auto px-5 py-16">
       <Seo
-        title="Trust Centre · ChatSched"
+        title="Trust Centre: Verification, Payments & Disputes · ChatSched"
         description="How ChatSched verifies businesses and publishers, and what happens when a booking goes wrong — the verification process and dispute policy in plain language."
       />
       <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">
@@ -288,6 +289,7 @@ export default function TrustCentre() {
           <a href={`mailto:${CONTACT_EMAIL}`} className="underline font-semibold text-billboard-ink">{CONTACT_EMAIL}</a>.
         </p>
       </div>
+      <PageCta />
     </div>
   );
 }

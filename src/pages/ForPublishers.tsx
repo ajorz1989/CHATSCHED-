@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { feeCopy } from "../lib/fees";
 import Seo from "../components/Seo";
 import ChannelIcon from "../components/ChannelIcon";
 import { getAllChannels, getEnabledChannels } from "../lib/channelRegistry";
@@ -15,7 +16,7 @@ const commissionPct = Math.round(PLATFORM_COMMISSION_RATE * 100);
 const sharePct = Math.round(PUBLISHER_SHARE * 100);
 
 const STEPS = [
-  { n: "01", title: "List your channel", body: "Tell us your niche, audience and format. Listing and approving requests are free, with no sign-up fee. Premium access (R199 per month, optional) adds the Opportunities job board and the Marketing Suite." },
+  { n: "01", title: "List your channel", body: `Tell us your niche, audience and format. Listing and approving requests are free, with no sign-up fee. Premium access (${feeCopy.premiumPrice} per month, optional) adds the Opportunities job board and the Marketing Suite.` },
   { n: "02", title: "Review requests", body: `Businesses find you through search and category browsing and send you a feature request to review — you have ${CREATOR_APPROVAL_WINDOW_DAYS} days to approve or decline it. Approving needs an active Publisher Network subscription; declining doesn't.` },
   { n: "03", title: "Approve, schedule, execute", body: "With an active Publisher Network subscription, accept the requests that fit, schedule the placement, and mark it live once it's done — you're always in control." },
   { n: "04", title: "Get paid, on a real clock", body: `Payment is confirmed by ChatSched before you ever post. Your payout lands within ${CREATOR_PAYOUT_WINDOW_HOURS} hours of going live.` },
@@ -52,7 +53,7 @@ export default function ForPublishers() {
   return (
     <div>
       <Seo
-        title="For Publishers & Creators · ChatSched"
+        title="Earn From Your Audience: For Publishers & Creators · ChatSched"
         description="Monetise the audience you've already built. Free to list — approve requests, set your own price, and payment is confirmed before you ever post."
       />
 

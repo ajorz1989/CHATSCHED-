@@ -86,7 +86,6 @@ const STATIC_ROUTES = [
   ["/channel-quiz", 0.5],
   ["/compare", 0.5],
   ["/map", 0.5],
-  ["/mission", 0.5],
   ["/transparency", 0.5],
   ["/trust", 0.5],
   ["/partners", 0.5],

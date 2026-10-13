@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
+import { feeCopy } from "../lib/fees";
 import Seo from "../components/Seo";
-import { getAllChannels } from "../lib/channelRegistry";
+import { getAllChannels, getEnabledChannels } from "../lib/channelRegistry";
 import { isChannelEnabled } from "../lib/featureFlags";
 
 // Consolidated principles list. Previously About.tsx and Mission.tsx each
@@ -43,9 +44,9 @@ const COMPARISON = [
 
 // Roadmap content, carried over from the standalone Roadmap page.
 const NOW = [
-  "11 live advertising channels — social media, influencer, website, podcast, radio, sports, events, community, associations, restaurants, and in-venue screens",
+  `${getEnabledChannels().length} live advertising channels — social media, influencer, website, podcast, radio, sports, events, community, associations, restaurants, and in-venue screens`,
   "The two development channels are Minibus Taxi & Transport Media and Spaza Shops & Township Traders.",
-  "Held payments, with a publisher paid out within 48 hours of going live",
+  `Held payments, with a publisher paid out within ${feeCopy.payoutHours} hours of going live`,
   "Manual publisher verification and automated authenticity checks on every listing",
   "Self-serve applications for both businesses and publishers, with no minimum spend or contract",
   "A dispute process for when a campaign doesn't go as agreed",
@@ -71,7 +72,7 @@ export default function About() {
   return (
     <div>
       <Seo
-        title="About · ChatSched"
+        title="About ChatSched: Local Advertising in South Africa"
         description="Why ChatSched exists, our mission and principles, what's live today and what's next — real audiences, direct dealing, proof before promises."
       />
 

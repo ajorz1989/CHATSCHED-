@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PageCta from "../components/PageCta";
 import { Link } from "react-router-dom";
 import Seo from "../components/Seo";
 import { PUBLISHER_SUCCESS_ARTICLES } from "../lib/publisherSuccessArticles";
@@ -140,6 +141,7 @@ export default function PublisherSuccess() {
           Go to Dashboard \u2192
         </Link>
       </div>
+      <PageCta />
     </div>
   );
 }

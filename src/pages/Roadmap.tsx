@@ -1,9 +1,12 @@
 import { Link } from "react-router-dom";
+import PageCta from "../components/PageCta";
+import { getEnabledChannels } from "../lib/channelRegistry";
+import { feeCopy } from "../lib/fees";
 import Seo from "../components/Seo";
 
 const NOW = [
-  "12 live advertising channels — social media, influencer, website, podcast, radio, sports, events, community, transport, informal retail, associations, and restaurants",
-  "Held payments, with a publisher paid out within 48 hours of going live",
+  `${getEnabledChannels().length} live advertising channels — social media, influencer, website, podcast, radio, sports, events, community, associations, restaurants, and in-venue screens`,
+  `Held payments, with a publisher paid out within ${feeCopy.payoutHours} hours of going live`,
   "Manual publisher verification and automated authenticity checks on every listing",
   "Self-serve applications for both businesses and publishers, with no minimum spend or contract",
   "A dispute process for when a campaign doesn't go as agreed",
@@ -28,7 +31,7 @@ const NEXT = [
 export default function Roadmap() {
   return (
     <div>
-      <Seo title="Roadmap · ChatSched" description="What's live on ChatSched today, and the directions being explored next — more channel categories, deeper integrations, and programmatic buying." />
+      <Seo title="Roadmap: What's Live and What's Next · ChatSched" description="What's live on ChatSched today, and the directions being explored next — more channel categories, deeper integrations, and programmatic buying." />
 
       <section className="bg-billboard-ink text-billboard-paper border-b-[3px] border-billboard-ink py-16">
         <div className="max-w-3xl mx-auto px-5">
@@ -69,10 +72,11 @@ export default function Roadmap() {
       <section className="max-w-3xl mx-auto px-5 py-16 text-center">
         <p className="text-billboard-inkSoft max-w-xl mx-auto mb-6">This roadmap reflects direction, not a shipping schedule — priorities shift as real usage shows what actually matters. For the thinking behind it, see the mission and vision.</p>
         <div className="flex flex-wrap justify-center gap-3">
-          <Link to="/mission" className="inline-block border-[3px] border-billboard-ink font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition">Our Mission</Link>
-          <Link to="/investors" className="inline-block bg-billboard-yellow border-[3px] border-billboard-ink font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition">Company Overview</Link>
+          <Link to="/about#mission" className="inline-block border-[3px] border-billboard-ink font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition">Our Mission</Link>
+          <Link to="/collaborate" className="inline-block bg-billboard-yellow border-[3px] border-billboard-ink font-bold px-5 py-2.5 rounded hover:-translate-y-0.5 transition">Company Overview</Link>
         </div>
       </section>
+      <PageCta />
     </div>
   );
 }

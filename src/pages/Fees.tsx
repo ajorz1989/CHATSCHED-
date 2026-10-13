@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { feeCopy } from "../lib/fees";
 import { useId, useState } from "react";
 import Seo from "../components/Seo";
 import { formatCurrency as formatCurrencyShared } from "../lib/currency";
@@ -104,7 +105,7 @@ function FeeCalculator() {
 const FAQS = [
   {
     q: "Do publishers pay to join?",
-    a: `No. Signing up, listing and accepting bookings are free. The 12% marketplace fee below is taken from your price on a completed booking. Premium access (${formatCurrencyShared(PREMIUM_ACCESS_PRICE)}/month, optional) adds the Opportunities job board and the Marketing Suite.`,
+    a: `No. Signing up, listing and accepting bookings are free. The ${feeCopy.commission} marketplace fee below is taken from your price on a completed booking. Premium access (${formatCurrencyShared(PREMIUM_ACCESS_PRICE)}/month, optional) adds the Opportunities job board and the Marketing Suite.`,
   },
   {
     q: "What is the marketplace fee?",
@@ -120,7 +121,7 @@ const FAQS = [
   },
   {
     q: "Are there business fees?",
-    a: `A business pays the creator's price plus a ChatSched booking fee: R30 for bookings under R500, R50 for R500 and over. Nothing else is added, and the total is shown on your Payment Card before you pay. There is no sign-up fee.`,
+    a: `A business pays the creator's price plus a ChatSched booking fee: ${feeCopy.bookingFeeLong}. Nothing else is added, and the total is shown on your Payment Card before you pay. There is no sign-up fee.`,
   },
   {
     q: "When do I see the fees?",
@@ -136,7 +137,7 @@ export default function Fees() {
   return (
     <div>
       <Seo
-        title="Fees · ChatSched"
+        title="Fees & Booking Costs Explained · ChatSched"
         description={`ChatSched's transparent marketplace pricing — a flat ${commissionPct}% fee on completed campaign transactions, with worked examples and a live calculator.`}
       />
 
@@ -181,7 +182,7 @@ export default function Fees() {
         <section className="mb-14">
           <h2 className="font-display text-xl mb-2">For Businesses</h2>
           <p className="text-sm text-billboard-inkSoft mb-4">
-            A business pays the creator's price plus a ChatSched booking fee of R30 (bookings under R500) or R50 (R500 and over). Signing up is free. You pay by bank transfer using the Payment Card you receive when the creator accepts, and your placement goes live once the money has cleared.
+            A business pays the creator's price plus a ChatSched booking fee of {feeCopy.bookingFeeLong}. Signing up is free. You pay by bank transfer using the Payment Card you receive when the creator accepts, and your placement goes live once the money has cleared.
           </p>
           <Link
             to="/how-payment-works"

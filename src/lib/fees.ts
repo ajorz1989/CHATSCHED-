@@ -1,4 +1,5 @@
-import { PLATFORM_COMMISSION_RATE } from "./constants";
+import { PLATFORM_COMMISSION_RATE, PREMIUM_ACCESS_PRICE, CREATOR_PAYOUT_WINDOW_HOURS } from "./constants";
+import { formatCurrency } from "./currency";
 
 /**
  * Single source of truth for what a booking costs and who gets what.
@@ -114,3 +115,20 @@ export function businessCancelRefundCents(
   const cutoff = new Date(r.scheduled_live_at).getTime() - REFUND_CUTOFF_HOURS * 3_600_000;
   return now.getTime() <= cutoff ? bd.creatorPriceCents : 0;
 }
+
+
+/**
+ * Plain-language fee facts for page copy, built from the constants above so a
+ * change to a fee or price updates every page that quotes it.
+ */
+export const feeCopy = {
+  /** "R30 under R500, R50 from R500" */
+  bookingFee: `${formatCurrency(BOOKING_FEE_SMALL_CENTS / 100)} under ${formatCurrency(BOOKING_FEE_THRESHOLD_CENTS / 100)}, ${formatCurrency(BOOKING_FEE_STANDARD_CENTS / 100)} from ${formatCurrency(BOOKING_FEE_THRESHOLD_CENTS / 100)}`,
+  /** "R30 (bookings under R500) or R50 (R500 and over)" */
+  bookingFeeLong: `${formatCurrency(BOOKING_FEE_SMALL_CENTS / 100)} (bookings under ${formatCurrency(BOOKING_FEE_THRESHOLD_CENTS / 100)}) or ${formatCurrency(BOOKING_FEE_STANDARD_CENTS / 100)} (${formatCurrency(BOOKING_FEE_THRESHOLD_CENTS / 100)} and over)`,
+  /** "12%" */
+  commission: `${Math.round(PLATFORM_COMMISSION_RATE * 100)}%`,
+  /** "R199" */
+  premiumPrice: formatCurrency(PREMIUM_ACCESS_PRICE),
+  payoutHours: CREATOR_PAYOUT_WINDOW_HOURS,
+};

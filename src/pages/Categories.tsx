@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import PageCta from "../components/PageCta";
 import { CATEGORIES } from "../lib/constants";
 import { usePublishers } from "../hooks/usePublishers";
 import CategoryIcon from "../components/CategoryIcon";
@@ -41,7 +42,7 @@ export default function Categories() {
   return (
     <div className="max-w-6xl mx-auto px-5 py-16">
       <Seo
-        title="Categories · ChatSched"
+        title="Local Advertising by Category · ChatSched"
         description="Browse South African advertising publishers by category — food, lifestyle, community, retail, sports, township trade, and more — or by channel."
       />
       <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">Categories</span>
@@ -77,6 +78,7 @@ export default function Categories() {
         <p className="text-billboard-inkSoft max-w-xl mb-8">Categories sort publishers by audience. Channels are a different way to reach the same local customers — explore what is live now and what is coming next.</p>
         <LiveChannelTabs />
       </div>
+      <PageCta />
     </div>
   );
 }

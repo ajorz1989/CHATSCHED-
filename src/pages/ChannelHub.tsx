@@ -174,7 +174,7 @@ export default function ChannelHub() {
   return (
     <>
       <Seo
-        title="Advertising Channels — ChatSched"
+        title="Advertising Channels: Social, Radio, Podcasts & More · ChatSched"
         description="Every advertising channel available on ChatSched — social media, influencer campaigns, website advertising, podcast sponsorships, and radio."
       />
 

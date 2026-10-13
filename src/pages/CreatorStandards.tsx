@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import PageCta from "../components/PageCta";
 import Seo from "../components/Seo";
 
 const STANDARDS: { title: string; desc: string }[] = [
@@ -41,6 +42,7 @@ export default function CreatorStandards() {
         platform-specific requirements, and the <Link to="/trust" className="text-billboard-greenDeep underline transition-colors hover:text-billboard-ink">Trust Centre</Link> for
         verification levels and how disputes work.
       </p>
+      <PageCta />
     </div>
   );
 }

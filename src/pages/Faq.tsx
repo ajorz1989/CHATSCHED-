@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from "react";
+import { feeCopy } from "../lib/fees";
 import { Link, useSearchParams } from "react-router-dom";
 import Seo from "../components/Seo";
 import {
@@ -115,7 +116,7 @@ const CATEGORIES: FaqCategory[] = [
       },
       {
         q: "Is there a sign-up fee or a launch credit?",
-        a: `There is no launch credit and no sign-up fee. Booking costs the creator's price plus a small ChatSched booking fee (R30 under R500, R50 from R500), shown on your Payment Card before you pay.`,
+        a: `There is no launch credit and no sign-up fee. Booking costs the creator's price plus a small ChatSched booking fee (${feeCopy.bookingFee}), shown on your Payment Card before you pay.`,
       },
       {
         q: "Can I cancel a request?",
@@ -311,7 +312,7 @@ export default function Faq() {
   return (
     <div className="max-w-3xl mx-auto px-5 py-16">
       <Seo
-        title="FAQ · ChatSched"
+        title="FAQ: How Local Advertising Works · ChatSched"
         description="Real answers about how ChatSched works — payments and payouts, verification, disputes, pricing, AI Content Studio, and what to expect as a business or a publisher."
       />
       <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">

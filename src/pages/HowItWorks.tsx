@@ -349,7 +349,7 @@ export default function HowItWorks() {
 
   return (
     <div className="max-w-5xl mx-auto px-5 py-16">
-      <Seo title="How It Works · ChatSched" description="How businesses submit a feature request and how publishers review, approve and execute it — the simple version, for both sides." />
+      <Seo title="How Local Advertising Works · ChatSched" description="How businesses submit a feature request and how publishers review, approve and execute it — the simple version, for both sides." />
       <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">How it works</span>
       <h1 className="text-3xl md:text-4xl mb-8 max-w-xl">From first message to proof of results — here's exactly what happens.</h1>
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import PageCta from "../components/PageCta";
 import { Link } from "react-router-dom";
 import Seo from "../components/Seo";
 import ChannelIcon from "../components/ChannelIcon";
@@ -174,6 +175,7 @@ export default function Transparency() {
           </Link>
         </div>
       </section>
+      <PageCta />
     </div>
   );
 }

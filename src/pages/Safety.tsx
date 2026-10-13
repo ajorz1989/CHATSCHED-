@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import PageCta from "../components/PageCta";
 import Seo from "../components/Seo";
 
 /**
@@ -53,7 +54,7 @@ export default function Safety() {
   return (
     <div className="max-w-3xl mx-auto px-5 py-16">
       <Seo
-        title="Safety · ChatSched"
+        title="Safety & Protected Payments · ChatSched"
         description="How ChatSched approaches safety across verification, payments, disputes, fraud prevention, and sponsored-content compliance — one overview, linking to the full detail on each."
       />
       <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">
@@ -85,6 +86,7 @@ export default function Safety() {
           Contact us
         </Link>
       </div>
+      <PageCta />
     </div>
   );
 }

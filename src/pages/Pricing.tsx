@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+import { getAllChannels } from "../lib/channelRegistry";
+import { feeCopy } from "../lib/fees";
 import { useId, useState, type ReactNode } from "react";
 import Seo from "../components/Seo";
 import MarketingIcon, { type MarketingIconName } from "../components/MarketingIcon";
@@ -8,10 +10,10 @@ import { PLATFORM_COMMISSION_RATE, PREMIUM_ACCESS_PRICE, SALES_EMAIL } from "../
 const FAQS = [
   { q: "Can my business also appear on the browse page as a publisher?", a: "Yes. With Premium access you can create one publisher listing from your dashboard — no second fee. Channels with no manual verification go live on the browse page straight away; social media and high-trust channels are submitted for ChatSched verification first. You can't book your own listing." },
   { q: "How do I know a publisher is legitimate?", a: "Publishers and creators on high-trust channels — and every social media listing — are verified before they go live, and every listing carries a visible trust score and level built from campaign history and profile signals — not just follower count." },
-  { q: "Do I need a contract or subscription?", a: "No contract, and signing up, browsing, listing and booking are all free. Premium access is optional (R199 per month, cancel any time) and unlocks the Opportunities job board and the Marketing Suite." },
+  { q: "Do I need a contract or subscription?", a: `No contract, and signing up, browsing, listing and booking are all free. Premium access is optional (${feeCopy.premiumPrice} per month, cancel any time) and unlocks the Opportunities job board and the Marketing Suite.` },
   { q: "What do I get with Premium access?", a: "Premium access unlocks the Opportunities job board and the full Marketing Suite, for businesses and creators alike. Booking and listing never need it." },
   { q: "How does payment actually work?", a: "Payment happens after the booking reaches its required approval stage. The payment method depends on the channel, and payment is tracked through ChatSched before the placement moves live." },
-  { q: "Can I choose which channels to advertise on?", a: "Yes. ChatSched spans 12 channels: social media, influencer, website, podcast, radio, sports & recreation, events, community groups, transport, spaza shops & informal retail, local associations, and restaurants & cafés — availability depends on what's live in your area." },
+  { q: "Can I choose which channels to advertise on?", a: `Yes. ChatSched spans ${getAllChannels().length} channels: social media, influencer, website, podcast, radio, sports & recreation, events, community groups, transport, spaza shops & informal retail, local associations, restaurants & cafés, and in-venue screens — availability depends on what's live in your area.` },
 ];
 
 function FaqRow({ q, a }: { q: string; a: string }) {
@@ -169,7 +171,7 @@ export default function Pricing() {
   return (
     <div>
       <Seo
-        title="Pricing | ChatSched"
+        title="Pricing: Free to Join, Pay When You Book | ChatSched"
         description="See what ChatSched costs: free sign-up, the creator booking fee and commission, and optional Premium access for the Opportunities job board and the Marketing Suite."
       />
 
@@ -201,7 +203,7 @@ export default function Pricing() {
             </div>
             <p className="font-display text-4xl mb-1">Free<span className="text-base font-normal"> to join</span></p>
             <p className="text-sm font-semibold mb-2">Create your account, browse the marketplace and send booking requests at no cost.</p>
-            <p className="text-sm text-billboard-inkSoft mb-6">When a creator accepts, you pay their price plus a small booking fee (R30 under R500, R50 from R500). That total is shown on your Payment Card before you pay.</p>
+            <p className="text-sm text-billboard-inkSoft mb-6">When a creator accepts, you pay their price plus a small booking fee ({feeCopy.bookingFee}). That total is shown on your Payment Card before you pay.</p>
 
             <div className="border-2 border-billboard-ink/20 rounded-lg bg-white/60 p-4 mb-5">
               <p className="font-mono text-[10px] uppercase tracking-wider font-bold mb-2">What you get</p>

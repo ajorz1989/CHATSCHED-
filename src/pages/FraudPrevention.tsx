@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import PageCta from "../components/PageCta";
 import Seo from "../components/Seo";
 
 /**
@@ -27,7 +28,7 @@ export default function FraudPrevention() {
   return (
     <div className="max-w-3xl mx-auto px-5 py-16">
       <Seo
-        title="Fraud Prevention · ChatSched"
+        title="Fake Engagement & Fraud Prevention · ChatSched"
         description="How ChatSched flags fake engagement and inflated audiences for review — rule-based signals, an AI second opinion, and the reporting process, explained plainly."
       />
       <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">
@@ -110,6 +111,7 @@ export default function FraudPrevention() {
           </Link>
         </div>
       </div>
+      <PageCta />
     </div>
   );
 }

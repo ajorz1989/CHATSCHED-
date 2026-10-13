@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PageCta from "../components/PageCta";
 import { Link } from "react-router-dom";
 import Seo from "../components/Seo";
 import { BLOG_POSTS } from "../lib/blogPosts";
@@ -24,7 +25,7 @@ export default function Blog() {
   return (
     <div className="max-w-6xl mx-auto px-5 py-16">
       <Seo
-        title="Blog - ChatSched"
+        title="Blog: Local Advertising Tips · ChatSched"
         description="Short reads on local trust, attention, and what it actually takes for a small South African business to get seen in a modern, noisy market."
       />
       <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">
@@ -148,6 +149,7 @@ export default function Blog() {
           Browse Advertising
         </Link>
       </div>
+      <PageCta />
     </div>
   );
 }

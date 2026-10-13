@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import PageCta from "../components/PageCta";
 import Seo from "../components/Seo";
 import { CONTACT_EMAIL } from "../lib/constants";
 
@@ -49,7 +50,7 @@ export default function Security() {
   return (
     <div>
       <Seo
-        title="Security · ChatSched"
+        title="Security: How We Protect Your Data · ChatSched"
         description="How ChatSched protects data and accounts — row-level security, mandatory admin 2FA, user 2FA, TLS encryption, verified payment webhooks, session management, rate limiting, encrypted credentials, audit logging, and self-service data deletion."
       />
 
@@ -192,6 +193,7 @@ export default function Security() {
           </Link>
         </div>
       </section>
+      <PageCta />
     </div>
   );
 }
