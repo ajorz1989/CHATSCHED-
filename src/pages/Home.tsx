@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { PREMIUM_ACCESS_PRICE } from "../lib/constants";
+import { HOME_LAYOUT, PREMIUM_ACCESS_PRICE } from "../lib/constants";
 import { formatCurrency } from "../lib/currency";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -8,6 +8,7 @@ import ToolIcon from "../components/ToolIcon";
 import { HeroTopBand } from "../components/HomeHeroBands";
 import HomeOpenOpportunities from "../components/HomeOpenOpportunities";
 import HomeInventoryWall from "../components/HomeInventoryWall";
+import { CrossBrandingSection, WhatWeDoSection } from "../components/HomeAgencySections";
 import LazyLoopVideo from "../components/LazyLoopVideo";
 import type { Tool } from "../lib/types";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
@@ -162,21 +163,47 @@ export default function Home() {
     return () => cancelAnimationFrame(raf);
   }, []);
 
+  const agency = HOME_LAYOUT === "agency";
+
+  // The hero and its video are one continuous black section in both layouts.
+  const hero = (
+    <HeroTopBand loaded={loaded} variant={agency ? "agency" : "marketplace"}>
+      <div className={`max-w-3xl mx-auto px-4 sm:px-5 flex justify-center transition-all duration-700 ${loaded ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}>
+        <HeroMockup />
+      </div>
+    </HeroTopBand>
+  );
+
   return (
     <>
-      <Seo title={t("seo.title")} description={t("seo.description")} />
-      {/* Marketplace inventory leads the page; the hero and everything below are unchanged. */}
-      <HomeInventoryWall />
-      {/* Hero and video are one continuous black section. Section order alternates yellow / black / white / black / grey / black / green. */}
-      <HeroTopBand loaded={loaded}>
-        <div className={`max-w-3xl mx-auto px-4 sm:px-5 flex justify-center transition-all duration-700 ${loaded ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}>
-          <HeroMockup />
-        </div>
-      </HeroTopBand>
-      <ToolsSection />
-      <ProofSection />
-      <PricingSection />
-      <HomeOpenOpportunities />
+      {agency ? (
+        <Seo title={t("agency.seo.title", { defaultValue: "ChatSched — Managed Advertising for Local Businesses & Marketplace" })} description={t("agency.seo.description", { defaultValue: "Local advertising for South African small businesses, done for you: we plan it, match it with local pages and placements, you approve it. Or browse publishers yourself." })} />
+      ) : (
+        <Seo title={t("seo.title")} description={t("seo.description")} />
+      )}
+      {agency ? (
+        <>
+          {/* Agency layout. Section backgrounds alternate: black (hero) / white / black (proof) / yellow / white (tools) / grey (wall) / black (opportunities) / grey (pricing) / green. */}
+          {hero}
+          <WhatWeDoSection />
+          <ProofSection />
+          <CrossBrandingSection />
+          <ToolsSection />
+          <HomeInventoryWall variant="secondary" />
+          <HomeOpenOpportunities />
+          <PricingSection />
+        </>
+      ) : (
+        <>
+          {/* Marketplace layout: today's original order. Marketplace inventory leads the page; the hero and everything below are unchanged. Section order alternates yellow / black / white / black / grey / black / green. */}
+          <HomeInventoryWall />
+          {hero}
+          <ToolsSection />
+          <ProofSection />
+          <PricingSection />
+          <HomeOpenOpportunities />
+        </>
+      )}
       <section className="py-16 md:py-24 bg-billboard-green text-white border-b-[3px] border-billboard-ink">
         <div className="max-w-4xl mx-auto px-5 text-center">
           <h2 className="font-display text-4xl md:text-6xl leading-tight mb-5">{t("final.title")}</h2>

@@ -442,3 +442,16 @@ export function defaultToolCtaLabel(status: import("./types").ToolStatus, pricin
   if (pricingModel === "tbd" || pricingModel === "custom") return "Request Setup";
   return "Get Tool";
 }
+
+/**
+ * Homepage layout switch (the ONE switch). Flip this single line to change
+ * how the homepage reads:
+ *   "agency"      - managed, done-for-you advertising leads; the marketplace
+ *                   inventory wall is secondary (default, Oct 2026).
+ *   "marketplace" - today's original order and copy, restored exactly.
+ * Both copy variants live in the "home" i18n namespace (agency.* keys for the
+ * agency copy; the original keys for the marketplace copy). Nothing is
+ * deleted by either value. Touches the homepage only.
+ */
+export type HomeLayout = "agency" | "marketplace";
+export const HOME_LAYOUT = "agency" as HomeLayout;

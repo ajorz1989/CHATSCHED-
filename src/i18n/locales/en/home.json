@@ -348,5 +348,65 @@
     "build": "Build My Campaign →",
     "browse": "Browse Advertising →",
     "closer": "No ad account. No bidding war. One tracked workflow."
+  },
+  "agency": {
+    "seo": {
+      "title": "ChatSched — Managed Advertising for Local Businesses & Marketplace",
+      "description": "Local advertising for South African small businesses, done for you: we plan it, match it with local pages and placements, you approve it. Or browse publishers yourself."
+    },
+    "hero": {
+      "title1": "Local advertising,",
+      "title2": "done for you.",
+      "subtitle": "We plan your campaign, match it with local pages and placements, and you approve it.",
+      "ctaPlan": "Get my campaign plan →",
+      "ctaBrowse": "Browse publishers",
+      "postLead": "Have a specific placement in mind?"
+    },
+    "whatWeDo": {
+      "badge": "WHAT WE DO",
+      "title": "Your local advertising team, without the agency price tag.",
+      "subtitle": "You run the business. We handle the advertising, from the first idea to the proof that it ran.",
+      "cta": "Get my campaign plan →",
+      "cards": {
+        "plan": {
+          "title": "We plan it",
+          "body": "Tell us your goal, your audience and your budget. We shape a campaign that fits a small business."
+        },
+        "match": {
+          "title": "We match it with local pages and spaces",
+          "body": "We line your campaign up with local creators, podcasts, radio, websites and community spaces that reach your neighbourhood."
+        },
+        "approve": {
+          "title": "You approve and we track it",
+          "body": "You see the plan and say yes. Requests, payment and proof of delivery stay together in one place."
+        }
+      }
+    },
+    "crossBrand": {
+      "badge": "CROSS-BRANDING",
+      "title": "Local businesses, advertising each other.",
+      "body": "Businesses that share the same customers can feature on each other's pages and spaces. We do the matching, so you reach new people through places they already trust.",
+      "example": "For example, a café could feature on a nearby gym's page, and the gym on the café's.",
+      "cta": "Tell us about your business →",
+      "chipYou": "Your business",
+      "chipUs": "Matched by ChatSched",
+      "chipThem": "A neighbouring business"
+    },
+    "wallIntro": {
+      "badge": "DO IT YOURSELF",
+      "title": "Prefer to choose yourself? Browse publishers.",
+      "body": "Search local publishers, compare their placements and send a request for the ones you want."
+    }
+  },
+  "heroBands": {
+    "top": {
+      "title1": "Tell us what you need.",
+      "title2": "We build the campaign.",
+      "subtitle": "Tell us your goal, audience and budget and ChatSched builds the campaign. Verified creators, podcasts, radio stations, websites and events send proposals — with the request, payment and proof handled in one place.",
+      "ctaBuild": "Build my campaign →",
+      "selfServe": "Rather pick the placements yourself?",
+      "ctaPost": "Post an opportunity →",
+      "ctaTertiary": "Own an audience? Start earning as a publisher →"
+    }
   }
 }

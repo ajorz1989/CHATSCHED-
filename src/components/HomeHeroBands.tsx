@@ -77,26 +77,37 @@ function ChannelNetwork({ liveCount }: { liveCount: number }) {
   );
 }
 
-export function HeroTopBand({ loaded = true, children }: { loaded?: boolean; children?: ReactNode }) {
+export function HeroTopBand({
+  loaded = true,
+  children,
+  variant = "marketplace",
+}: {
+  loaded?: boolean;
+  children?: ReactNode;
+  /** "agency" = done-for-you headline and CTAs, and this headline becomes the page's single H1. */
+  variant?: "agency" | "marketplace";
+}) {
   const { t } = useTranslation("home");
+  const agency = variant === "agency";
+  const Title = agency ? "h1" : "h2";
   const liveCount = getEnabledChannels().length;
   const postHref = usePostOpportunityHref();
   return (
     <section className="bg-billboard-ink text-billboard-paper border-b-[3px] border-billboard-ink overflow-hidden pt-10 sm:pt-12 md:pt-14 pb-12 sm:pb-14 md:pb-16" aria-labelledby="hero-top-title">
       <div className="max-w-4xl mx-auto px-4 sm:px-5 text-center">
-        <h2
+        <Title
           id="hero-top-title"
           className={`text-4xl sm:text-5xl md:text-7xl leading-[.98] mb-4 transition-all duration-700 ${loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
         >
-          {t("heroBands.top.title1", { defaultValue: "Tell us what you need." })}
+          {agency ? t("agency.hero.title1", { defaultValue: "Local advertising," }) : t("heroBands.top.title1", { defaultValue: "Tell us what you need." })}
           <br />
           <span className="inline-block bg-billboard-yellow text-billboard-ink px-3 sm:px-4 pb-1 mt-2 -rotate-1 box-decoration-clone">
-            {t("heroBands.top.title2", { defaultValue: "We build the campaign." })}
+            {agency ? t("agency.hero.title2", { defaultValue: "done for you." }) : t("heroBands.top.title2", { defaultValue: "We build the campaign." })}
           </span>
-        </h2>
+        </Title>
 
         <p className="text-lg md:text-xl text-billboard-paperDim max-w-2xl mx-auto mb-6 leading-relaxed">
-          {t("heroBands.top.subtitle", {
+          {agency ? t("agency.hero.subtitle", { defaultValue: "We plan your campaign, match it with local pages and placements, and you approve it." }) : t("heroBands.top.subtitle", {
             defaultValue:
               "Tell us your goal, audience and budget and ChatSched builds the campaign. Verified creators, podcasts, radio stations, websites and events send proposals — with the request, payment and proof handled in one place.",
           })}
@@ -104,14 +115,25 @@ export function HeroTopBand({ loaded = true, children }: { loaded?: boolean; chi
 
         {/* One primary action. The self-serve route is named as the alternative
             (so visitors know there are two ways in), and publishers get their own link. */}
-        <div className="flex justify-center">
-          <Link to="/build-my-campaign" data-cta="hero-build" className="brand-button yellow w-full sm:w-auto">
-            {t("heroBands.top.ctaBuild", { defaultValue: "Build my campaign →" })}
-          </Link>
-        </div>
+        {agency ? (
+          <div className="flex flex-col sm:flex-row justify-center gap-3">
+            <Link to="/build-my-campaign" data-cta="hero-build" className="brand-button yellow w-full sm:w-auto">
+              {t("agency.hero.ctaPlan", { defaultValue: "Get my campaign plan →" })}
+            </Link>
+            <Link to="/browse" data-cta="hero-browse" className="brand-button light w-full sm:w-auto">
+              {t("agency.hero.ctaBrowse", { defaultValue: "Browse publishers" })}
+            </Link>
+          </div>
+        ) : (
+          <div className="flex justify-center">
+            <Link to="/build-my-campaign" data-cta="hero-build" className="brand-button yellow w-full sm:w-auto">
+              {t("heroBands.top.ctaBuild", { defaultValue: "Build my campaign →" })}
+            </Link>
+          </div>
+        )}
 
         <p className="text-sm sm:text-base text-billboard-paperDim mt-3">
-          {t("heroBands.top.selfServe", { defaultValue: "Rather pick the placements yourself?" })}{" "}
+          {agency ? t("agency.hero.postLead", { defaultValue: "Have a specific placement in mind?" }) : t("heroBands.top.selfServe", { defaultValue: "Rather pick the placements yourself?" })}{" "}
           <Link to={postHref} data-cta="hero-post" className="whitespace-nowrap font-bold text-billboard-yellow underline underline-offset-4 decoration-2 hover:decoration-4 transition-all">
             {t("heroBands.top.ctaPost", { defaultValue: "Post an opportunity →" })}
           </Link>

@@ -114,8 +114,14 @@ function initialBranch(): Branch {
   return (BRANCHES as string[]).includes(hash) ? (hash as Branch) : "marketplace";
 }
 
-export default function HomeInventoryWall() {
+export default function HomeInventoryWall({ variant = "primary" }: { variant?: "primary" | "secondary" } = {}) {
   const { t } = useTranslation("home");
+  // "secondary" (agency homepage): the wall sits lower on the page with a quieter
+  // heading and an intro line. All content is kept; only weight, heading level
+  // and the section background change. The page's single H1 is then the hero.
+  const secondary = variant === "secondary";
+  const Title = secondary ? "h3" : "h1";
+  const SubHeading = secondary ? "h3" : "h2";
   const navigate = useNavigate();
   const postHref = usePostOpportunityHref();
   const { publishers, loading } = usePublishers();
@@ -220,22 +226,33 @@ export default function HomeInventoryWall() {
   ];
 
   return (
-    <section className="relative bg-billboard-yellow text-billboard-ink border-b-[3px] border-billboard-ink overflow-hidden" aria-labelledby="inventory-wall-title">
+    <section className={`relative ${secondary ? "bg-billboard-paperDim" : "bg-billboard-yellow"} text-billboard-ink border-b-[3px] border-billboard-ink overflow-hidden`} aria-labelledby={secondary ? "inventory-wall-intro" : "inventory-wall-title"}>
       <svg viewBox="0 0 26 22" className="hidden lg:block pointer-events-none absolute -right-16 top-10 w-[34rem] text-billboard-ink opacity-[0.07]" fill="none" aria-hidden="true">
         <rect x="1" y="1" width="24" height="14" stroke="currentColor" strokeWidth="1.2" />
         <line x1="8" y1="15" x2="8" y2="21" stroke="currentColor" strokeWidth="1.2" />
         <line x1="18" y1="15" x2="18" y2="21" stroke="currentColor" strokeWidth="1.2" />
       </svg>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 pt-14 md:pt-20">
-        <h1 id="inventory-wall-title" className="text-4xl sm:text-5xl md:text-6xl xl:text-7xl leading-[.98] mb-5">
+      <div className={`relative max-w-7xl mx-auto px-4 sm:px-6 ${secondary ? "pt-12 md:pt-16" : "pt-14 md:pt-20"}`}>
+        {secondary && (
+          <div className="max-w-3xl mb-7 md:mb-9">
+            <span className="eyebrow">{t("agency.wallIntro.badge", { defaultValue: "DO IT YOURSELF" })}</span>
+            <h2 id="inventory-wall-intro" className="font-display text-3xl md:text-4xl leading-tight mb-2">
+              {t("agency.wallIntro.title", { defaultValue: "Prefer to choose yourself? Browse publishers." })}
+            </h2>
+            <p className="text-billboard-inkSoft max-w-prose leading-relaxed">
+              {t("agency.wallIntro.body", { defaultValue: "Search local publishers, compare their placements and send a request for the ones you want." })}
+            </p>
+          </div>
+        )}
+        <Title id="inventory-wall-title" className={secondary ? "text-2xl sm:text-3xl md:text-4xl leading-[1.05] mb-4" : "text-4xl sm:text-5xl md:text-6xl xl:text-7xl leading-[.98] mb-5"}>
           {t("inventoryWall.title1", { defaultValue: "Buy local attention." })}
           <br />
           <span className="inline-block bg-billboard-ink text-billboard-yellow px-3 sm:px-4 pb-1 mt-2 -rotate-1 box-decoration-clone">
             {t("inventoryWall.title2", { defaultValue: "Or get paid for yours." })}
           </span>
-        </h1>
-        <p className="text-lg md:text-xl text-billboard-inkSoft max-w-3xl leading-relaxed mb-9 md:mb-12">
+        </Title>
+        <p className={secondary ? "text-base md:text-lg text-billboard-inkSoft max-w-3xl leading-relaxed mb-6 md:mb-8" : "text-lg md:text-xl text-billboard-inkSoft max-w-3xl leading-relaxed mb-9 md:mb-12"}>
           {t("inventoryWall.subtitle", {
             defaultValue:
               "ChatSched is an advertising agency, a verified publisher network and a live marketplace. Let us run your campaign, pick placements yourself, or earn from your own audience.",
@@ -314,9 +331,9 @@ export default function HomeInventoryWall() {
 
               <Panel id="marketplace" active={branch}>
                 <div className="p-4 sm:p-6 lg:p-8">
-                  <h2 className="font-display text-2xl md:text-3xl leading-tight mb-1">
+                  <SubHeading className="font-display text-2xl md:text-3xl leading-tight mb-1">
                     {t("inventoryWall.marketplace.title", { defaultValue: "Find a placement. Book it today." })}
-                  </h2>
+                  </SubHeading>
                   <p className="text-billboard-inkSoft mb-5">
                     {t("inventoryWall.marketplace.body", { defaultValue: "Verified South African publishers, priced up front, with payment protected." })}
                   </p>
@@ -431,9 +448,9 @@ export default function HomeInventoryWall() {
               <Panel id="agency" active={branch}>
                 <div className="p-5 sm:p-7 lg:p-10 grid xl:grid-cols-[1.1fr_1fr] gap-8 xl:gap-10 items-start">
                   <div>
-                    <h2 className="font-display text-3xl md:text-4xl leading-tight mb-3">
+                    <SubHeading className="font-display text-3xl md:text-4xl leading-tight mb-3">
                       {t("inventoryWall.agency.title", { defaultValue: "Hand us the brief. We do the rest." })}
-                    </h2>
+                    </SubHeading>
                     <p className="text-billboard-inkSoft max-w-prose mb-7 leading-relaxed">
                       {t("inventoryWall.agency.body", {
                         defaultValue: "No media-buying experience needed. ChatSched plans it, sources verified publishers and keeps request, payment and proof in one place.",
@@ -505,9 +522,9 @@ export default function HomeInventoryWall() {
               <Panel id="network" active={branch}>
                 <div className="p-5 sm:p-7 lg:p-10 grid xl:grid-cols-[1fr_1.1fr] gap-8 xl:gap-10 items-start">
                   <div>
-                    <h2 className="font-display text-3xl md:text-4xl leading-tight mb-3">
+                    <SubHeading className="font-display text-3xl md:text-4xl leading-tight mb-3">
                       {t("inventoryWall.network.title", { defaultValue: "Own an audience? Get paid for it." })}
-                    </h2>
+                    </SubHeading>
                     <p className="text-billboard-inkSoft max-w-prose mb-7 leading-relaxed">
                       {t("inventoryWall.network.body", {
                         defaultValue: "Join ChatSched's verified publisher network. Businesses send you requests, you set your price, and payment is confirmed before you post.",
