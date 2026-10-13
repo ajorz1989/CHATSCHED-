@@ -65,6 +65,7 @@ describe("Home layouts", () => {
     expect(idx("what-we-do-title")).toBeGreaterThan(idx("hero-top-title"));
     expect(idx("cross-branding-title")).toBeGreaterThan(idx("what-we-do-title"));
     expect(idx("inventory-wall-intro")).toBeGreaterThan(idx("cross-branding-title"));
+    expect(container.querySelector("section#hero-top-title, section[aria-labelledby=\"hero-top-title\"]")?.className).toContain("bg-billboard-yellow");
     expect(container.querySelectorAll("video")).toHaveLength(2);
     expect(container.querySelector(".sr-only ol")).not.toBeNull();
     expect(container.textContent).toMatch(/Prefer to choose yourself\? Browse publishers\./);
@@ -79,6 +80,7 @@ describe("Home layouts", () => {
     const order = sectionTitles(container);
     expect(order[0]).toBe("inventory-wall-title");
     expect(order.indexOf("hero-top-title")).toBe(1);
+    expect(container.querySelector("section[aria-labelledby=\"hero-top-title\"]")?.className).toContain("bg-billboard-ink");
     expect(order).not.toContain("what-we-do-title");
     expect(order).not.toContain("cross-branding-title");
     expect(container.querySelectorAll("video")).toHaveLength(2);

@@ -13,14 +13,14 @@ import LazyLoopVideo from "../components/LazyLoopVideo";
 import type { Tool } from "../lib/types";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
 
-function HeroMockup() {
+function HeroMockup({ onYellow = false }: { onYellow?: boolean }) {
   // 15 s loop, 1920x1080 (16:9), silent: every beat is carried by on-screen
   // text. The frame is a plain 16:9 box, so nothing is cropped; the video's
   // own safe zone is the central 70%.
   return (
     <div className="relative w-full">
       <div
-        className="relative w-full overflow-hidden rounded-xl border-[3px] border-billboard-paper bg-billboard-paper shadow-[8px_8px_0_#F5B700]"
+        className={`relative w-full overflow-hidden rounded-xl border-[3px] bg-billboard-paper ${onYellow ? "border-billboard-ink shadow-[8px_8px_0_#1A1712]" : "border-billboard-paper shadow-[8px_8px_0_#F5B700]"}`}
         style={{ aspectRatio: "16 / 9" }}
       >
         <LazyLoopVideo
@@ -165,11 +165,11 @@ export default function Home() {
 
   const agency = HOME_LAYOUT === "agency";
 
-  // The hero and its video are one continuous black section in both layouts.
+  // The hero and its video are one continuous section in both layouts (yellow in agency, black in marketplace).
   const hero = (
     <HeroTopBand loaded={loaded} variant={agency ? "agency" : "marketplace"}>
       <div className={`max-w-3xl mx-auto px-4 sm:px-5 flex justify-center transition-all duration-700 ${loaded ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}>
-        <HeroMockup />
+        <HeroMockup onYellow={agency} />
       </div>
     </HeroTopBand>
   );
@@ -183,7 +183,7 @@ export default function Home() {
       )}
       {agency ? (
         <>
-          {/* Agency layout. Section backgrounds alternate: black (hero) / white / black (proof) / yellow / white (tools) / grey (wall) / black (opportunities) / grey (pricing) / green. */}
+          {/* Agency layout. Section backgrounds alternate: yellow (hero) / white / black (proof) / yellow / white (tools) / grey (wall) / black (opportunities) / grey (pricing) / green. */}
           {hero}
           <WhatWeDoSection />
           <ProofSection />

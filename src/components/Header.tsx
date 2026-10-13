@@ -12,9 +12,10 @@ const navCls = ({ isActive }: { isActive: boolean }) =>
   isActive ? "text-billboard-greenDeep" : "hover:text-billboard-greenDeep transition-colors";
 
 const PRIMARY_LINKS = [
-  { to: "/for-publishers", key: "nav.forPublishers" },
-  { to: "/channels", key: "nav.channels" },
-  { to: "/pricing", key: "nav.pricing" },
+  { to: "/for-publishers", key: "nav.forPublishers", fallback: undefined },
+  { to: "/channels", key: "nav.channels", fallback: undefined },
+  // Replaces the old "Pricing" tab (the /pricing page still exists and is linked from the footer).
+  { to: "/for-businesses", key: "nav.forBusinesses", fallback: "For Businesses" },
 ] as const;
 
 const ADVERTISE_LINKS = [
@@ -72,8 +73,8 @@ export default function Header() {
               </div>
             )}
           </div>
-          {PRIMARY_LINKS.map(({ to, key }) => (
-            <NavLink key={to} to={to} className={`${navCls} whitespace-nowrap`}>{t(key)}</NavLink>
+          {PRIMARY_LINKS.map(({ to, key, fallback }) => (
+            <NavLink key={to} to={to} className={`${navCls} whitespace-nowrap`}>{t(key, { defaultValue: fallback })}</NavLink>
           ))}
         </nav>
 
@@ -133,8 +134,8 @@ export default function Header() {
                 ))}
               </div>
               <div className="grid gap-1">
-                {PRIMARY_LINKS.map(({ to, key }) => (
-                  <NavLink key={to} to={to} onClick={closeMenu} className={({ isActive }) => `block py-3 border-b border-billboard-ink/10 font-semibold text-sm ${isActive ? "text-billboard-greenDeep" : ""}`}>{t(key)}</NavLink>
+                {PRIMARY_LINKS.map(({ to, key, fallback }) => (
+                  <NavLink key={to} to={to} onClick={closeMenu} className={({ isActive }) => `block py-3 border-b border-billboard-ink/10 font-semibold text-sm ${isActive ? "text-billboard-greenDeep" : ""}`}>{t(key, { defaultValue: fallback })}</NavLink>
                 ))}
               </div>
               <div className="flex flex-wrap items-center gap-3 py-4 border-b border-billboard-ink/10">
