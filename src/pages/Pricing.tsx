@@ -6,6 +6,7 @@ import Seo from "../components/Seo";
 import MarketingIcon, { type MarketingIconName } from "../components/MarketingIcon";
 import { formatCurrency as formatCurrencyShared } from "../lib/currency";
 import { PLATFORM_COMMISSION_RATE, PREMIUM_ACCESS_PRICE, SALES_EMAIL } from "../lib/constants";
+import { computeBookingBreakdownFromRand, fromCents } from "../lib/fees";
 
 const FAQS = [
   { q: "Can my business also appear on the browse page as a publisher?", a: "Yes. With Premium access you can create one publisher listing from your dashboard — no second fee. Channels with no manual verification go live on the browse page straight away; social media and high-trust channels are submitted for ChatSched verification first. You can't book your own listing." },
@@ -124,8 +125,10 @@ function PricingFeeTeaser() {
   const inputId = useId();
   const [raw, setRaw] = useState("500");
   const value = Math.max(0, Number(raw) || 0);
-  const fee = value * PLATFORM_COMMISSION_RATE;
-  const earnings = value - fee;
+  const bd = value > 0 ? computeBookingBreakdownFromRand(value) : null;
+  const bookingFee = bd ? fromCents(bd.bookingFeeCents) : 0;
+  const total = bd ? fromCents(bd.totalDueCents) : 0;
+  const earnings = bd ? fromCents(bd.creatorPayoutCents) : 0;
   const fmt = (n: number) => formatCurrencyShared(n, { cents: true });
   return (
     <div className="border-[3px] border-billboard-ink rounded-lg p-5 bg-billboard-paperDim">
@@ -135,7 +138,7 @@ function PricingFeeTeaser() {
           <h3 className="font-display text-xl">See the maths before you commit.</h3>
         </div>
         <label htmlFor={inputId} className="font-mono text-xs">
-          Campaign value
+          Creator price
           <input
             id={inputId}
             type="number"
@@ -155,13 +158,14 @@ function PricingFeeTeaser() {
       </div>
       <div
         id={`${inputId}-result`}
-        className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-center"
+        className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center"
         aria-live="polite"
-        aria-label={`Campaign ${fmt(value)}, marketplace fee ${fmt(fee)}, publisher earns ${fmt(earnings)}`}
+        aria-label={`Creator price ${fmt(value)}, booking fee ${fmt(bookingFee)}, you pay ${fmt(total)}, creator receives ${fmt(earnings)}`}
       >
-        <div><div className="font-display text-xl">{fmt(value)}</div><div className="text-[10px] font-mono uppercase text-billboard-inkSoft">Campaign</div></div>
-        <div><div className="font-display text-xl">-{fmt(fee)}</div><div className="text-[10px] font-mono uppercase text-billboard-inkSoft">Marketplace fee</div></div>
-        <div className="col-span-2 sm:col-span-1"><div className="font-display text-xl text-billboard-greenDeep">{fmt(earnings)}</div><div className="text-[10px] font-mono uppercase text-billboard-inkSoft">Publisher earns</div></div>
+        <div><div className="font-display text-xl">{fmt(value)}</div><div className="text-[10px] font-mono uppercase text-billboard-inkSoft">Creator price</div></div>
+        <div><div className="font-display text-xl">+{fmt(bookingFee)}</div><div className="text-[10px] font-mono uppercase text-billboard-inkSoft">Booking fee (you pay)</div></div>
+        <div><div className="font-display text-xl">{fmt(total)}</div><div className="text-[10px] font-mono uppercase text-billboard-inkSoft">You pay in total</div></div>
+        <div><div className="font-display text-xl text-billboard-greenDeep">{fmt(earnings)}</div><div className="text-[10px] font-mono uppercase text-billboard-inkSoft">Creator receives after {Math.round(PLATFORM_COMMISSION_RATE * 100)}%</div></div>
       </div>
     </div>
   );
@@ -172,16 +176,16 @@ export default function Pricing() {
     <div>
       <Seo
         title="Pricing: Free to Join, Pay When You Book | ChatSched"
-        description="See what ChatSched costs: free sign-up, the creator booking fee and commission, and optional Premium access for the Opportunities job board and the Marketing Suite."
+        description="What ChatSched costs: free sign-up, the creator price plus a small booking fee for your campaign, and optional Premium access for the Opportunities job board and the Marketing Suite."
       />
 
       {/* Hero */}
       <section className="bg-billboard-yellow text-billboard-ink py-16 border-b-[3px] border-billboard-ink">
         <div className="max-w-5xl mx-auto px-5">
           <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-ink px-3 py-1.5 rounded mb-3">Pricing</span>
-          <h1 className="text-3xl md:text-5xl mb-4 max-w-3xl">Pay once. Unlock the tools you need to advertise or earn.</h1>
+          <h1 className="text-3xl md:text-5xl mb-4 max-w-3xl">Local advertising, done for you. Simple pricing.</h1>
           <p className="text-billboard-inkSoft max-w-2xl mb-10 leading-relaxed">
-            ChatSched keeps membership simple: no recurring activation subscription. Businesses pay once to unlock campaign buying and business tools; publishers pay once to unlock Network features and paid opportunities.
+            We plan your campaign and match it with local pages and placements, and you approve it. Signing up is free. When a creator accepts, you pay their price plus a small booking fee, shown on your Payment Card before you pay.
           </p>
           <ValueFlow />
         </div>
@@ -208,10 +212,10 @@ export default function Pricing() {
             <div className="border-2 border-billboard-ink/20 rounded-lg bg-white/60 p-4 mb-5">
               <p className="font-mono text-[10px] uppercase tracking-wider font-bold mb-2">What you get</p>
               <ul className="space-y-2.5">
-                <BenefitItem>Full marketplace access — search, compare, save and request advertising from publishers.</BenefitItem>
+                <BenefitItem>Done-for-you campaign support — submit your brief and a ChatSched campaign manager coordinates the media plan. Most managed campaigns are billed per booking, on the same fees as any booking; larger campaigns may instead use a single agreed package price, always confirmed with you before anything is booked.</BenefitItem>
+                <BenefitItem>Prefer to choose yourself? Browse the marketplace — search, compare, save and request advertising from publishers.</BenefitItem>
                 <BenefitItem>Business-to-publisher messaging inside ChatSched, keeping the booking conversation on-platform.</BenefitItem>
                 <BenefitItem>Flexible campaign builder for your goal, channels, audience, location, budget, dates and creative brief.</BenefitItem>
-                <BenefitItem>Done-for-you campaign support — submit your brief and a ChatSched campaign manager coordinates the media plan. Most managed campaigns are billed per booking at the standard marketplace fee; larger campaigns may instead use a single agreed package price, always confirmed with you before anything is booked.</BenefitItem>
                 <BenefitItem>Campaign tracking, booking history and reporting so you can follow the job from request through delivery.</BenefitItem>
                 <BenefitItem>List your own business on the browse page with Premium access and other businesses can book you. One listing per account.</BenefitItem>
               </ul>

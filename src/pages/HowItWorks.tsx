@@ -6,9 +6,9 @@ import { CheckIcon } from "../components/UiIcons";
 type TabKey = "business" | "publisher";
 
 const BUSINESS_STEPS = [
-  { title: "Explore the right channel", body: "Browse available publishers and media inventory across social, influencer, website, podcast and radio by channel, audience, category and location." },
-  { title: "Send your brief", body: "Create a free account when you're ready to request a booking, then describe the goal, placement, audience, budget and timing you need." },
-  { title: "Track the booking to delivery", body: "Follow the request through review, payment, scheduling and delivery. Depending on the channel, proof can include screenshots, links, audio evidence or live delivery notes." },
+  { title: "Tell us your goal", body: "Send a short brief: what you're promoting, who you want to reach, your budget and your timing. No ad account needed." },
+  { title: "We plan it and match it locally", body: "We shape the campaign and match it with the local pages, creators, podcasts, radio and community spaces that reach your audience. Prefer to choose yourself? You can browse publishers and request placements directly." },
+  { title: "You approve it and we track it", body: "You approve the plan. Then follow the booking through review, payment, scheduling and delivery. Depending on the channel, proof can include screenshots, links, audio evidence or live delivery notes." },
 ];
 const OWNER_STEPS = [
   { title: "Create your publisher profile", body: "List your channel, audience, advertising methods, pricing and availability so businesses can understand what you offer." },
@@ -145,7 +145,7 @@ const FLOW_SCENARIOS: FlowScenario[] = [
 const PROCESS_FAQS: Record<TabKey, { q: string; a: string }[]> = {
   business: [
     { q: "How do I know a channel's audience is real?", a: "We manually check every publisher before they're listed — real audience details, not just a follower count." },
-    { q: "Do I need a contract?", a: "There is no long-term contract required to use the marketplace. You choose the bookings and campaigns you want to run, subject to the applicable fees and campaign terms." },
+    { q: "Do I need a contract?", a: "There is no long-term contract required to use ChatSched. You choose the bookings and campaigns you want to run, subject to the applicable fees and campaign terms." },
     { q: "What happens after I submit a request?", a: "The publisher reviews the request and can approve, decline, or discuss it before anything is scheduled. Once the booking is accepted, payment and delivery details are tracked inside ChatSched." },
     { q: "Which channels can I request?", a: "Available channels currently include social media, influencer, website, podcast and radio. More channel types are registered in the platform and can be launched over time." },
     { q: "Where can campaigns run?", a: "ChatSched is built for South African advertising, with channel and publisher availability varying by location. Filter by geography and audience when you browse opportunities." },
@@ -349,7 +349,7 @@ export default function HowItWorks() {
 
   return (
     <div className="max-w-5xl mx-auto px-5 py-16">
-      <Seo title="How Local Advertising Works · ChatSched" description="How businesses submit a feature request and how publishers review, approve and execute it — the simple version, for both sides." />
+      <Seo title="How Local Advertising Works · ChatSched" description="How ChatSched plans and places local advertising for your business, and how publishers review, approve and deliver it — the simple version, for both sides." />
       <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-3">How it works</span>
       <h1 className="text-3xl md:text-4xl mb-8 max-w-xl">From first message to proof of results — here's exactly what happens.</h1>
 
@@ -419,21 +419,21 @@ export default function HowItWorks() {
         <div className="border-[3px] border-billboard-ink rounded-lg overflow-hidden bg-white">
           <div className="bg-billboard-yellow p-6 md:p-7 border-b-[3px] border-billboard-ink">
             <span className="font-mono text-[10px] uppercase tracking-wider font-bold">Choose your route</span>
-            <h2 className="font-display text-2xl mt-1">Self-serve or let ChatSched coordinate it.</h2>
+            <h2 className="font-display text-2xl mt-1">Let ChatSched coordinate it, or choose yourself.</h2>
             <p className="text-sm text-billboard-inkSoft max-w-2xl mt-2 leading-relaxed">
-              Some bookings are straightforward enough to handle yourself. For a multi-channel campaign, you can send one brief and have a ChatSched campaign manager coordinate the media plan and publishers on your behalf.
+              The easiest route for most small businesses is to send one brief and have a ChatSched campaign manager coordinate the media plan and publishers on your behalf. If you would rather pick the placements yourself, you can do that too.
             </p>
           </div>
           <div className="grid md:grid-cols-2 divide-y-[3px] md:divide-y-0 md:divide-x-[3px] divide-billboard-ink">
             <div className="p-6">
-              <h3 className="font-display text-xl mb-2">Marketplace</h3>
-              <p className="text-sm text-billboard-inkSoft leading-relaxed mb-4">Choose the publisher, placement and budget yourself, then manage the booking through your dashboard.</p>
-              <Link to="/browse" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink font-bold px-4 py-2.5 rounded text-sm hover:-translate-y-0.5 transition">Browse advertising →</Link>
-            </div>
-            <div className="p-6">
               <h3 className="font-display text-xl mb-2">ChatSched Agency</h3>
               <p className="text-sm text-billboard-inkSoft leading-relaxed mb-4">Send your campaign goal, audience, channels, budget and dates. A campaign manager reviews the brief and coordinates the media plan and publishers.</p>
               <Link to="/build-my-campaign" className="inline-flex items-center gap-2 bg-billboard-ink text-white border-[3px] border-billboard-ink font-bold px-4 py-2.5 rounded text-sm hover:-translate-y-0.5 transition">Build my campaign →</Link>
+            </div>
+            <div className="p-6">
+              <h3 className="font-display text-xl mb-2">Choose it yourself</h3>
+              <p className="text-sm text-billboard-inkSoft leading-relaxed mb-4">Choose the publisher, placement and budget yourself, then manage the booking through your dashboard.</p>
+              <Link to="/browse" className="inline-flex items-center gap-2 border-[3px] border-billboard-ink font-bold px-4 py-2.5 rounded text-sm hover:-translate-y-0.5 transition">Browse advertising →</Link>
             </div>
           </div>
         </div>

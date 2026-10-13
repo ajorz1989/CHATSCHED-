@@ -80,9 +80,9 @@ export default function About() {
       <section className="bg-billboard-yellow border-b-[3px] border-billboard-ink py-16">
         <div className="max-w-3xl mx-auto px-5">
           <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-ink bg-billboard-paper px-3 py-1.5 rounded mb-4">About</span>
-          <h1 className="text-3xl md:text-4xl mb-5">Every audience worth reaching already exists locally.</h1>
+          <h1 className="text-3xl md:text-4xl mb-5">Local advertising for small businesses, done for you.</h1>
           <p className="text-lg text-billboard-inkSoft">
-            South African businesses want to reach real local audiences, and the people who've built those audiences — on social pages, as influencers, through websites, podcasts and radio — want to be found and booked properly. ChatSched helps them find each other and keeps the campaign request, communication and proof inside one tracked workflow.
+            ChatSched is a local advertising agency for South African small businesses. Every audience worth reaching already exists locally, on social pages, with influencers, and through websites, podcasts, radio and community spaces. We plan your campaign, match it with the right local pages and placements, and you approve it. The request, communication and proof stay inside one tracked workflow, and you can always browse publishers and choose for yourself.
           </p>
         </div>
       </section>
@@ -119,8 +119,8 @@ export default function About() {
 
       {/* Platform story: the channel types */}
       <section className="max-w-4xl mx-auto px-5 py-16">
-        <h2 className="font-display text-xl mb-2">One marketplace, local reach across multiple channel types</h2>
-        <p className="text-billboard-inkSoft text-sm mb-8 max-w-xl">Businesses submit a request, the publisher reviews it, and the creator schedules and executes the placement — the same simple flow across every channel. <strong>{CHANNELS.filter((c) => isChannelEnabled(c.slug)).length} channel types are live today.</strong> Only the two development channels remain outside the live marketplace.</p>
+        <h2 className="font-display text-xl mb-2">Local reach across many channel types, planned for you</h2>
+        <p className="text-billboard-inkSoft text-sm mb-8 max-w-xl">We plan and place your campaign, or you can pick placements yourself. Either way, the business submits a request, the publisher reviews it, and the creator schedules and executes the placement — the same simple flow across every channel. <strong>{CHANNELS.filter((c) => isChannelEnabled(c.slug)).length} channel types are live today.</strong> Only the two development channels are still being built.</p>
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
           {CHANNELS.map((c) => (
             <div key={c.name} className="border-[3px] border-billboard-ink rounded p-4 bg-white transition hover:-translate-y-1 hover:shadow-blockSm">
@@ -196,8 +196,8 @@ export default function About() {
       {/* Marketplace vs social ad platforms comparison */}
       <section className="bg-billboard-paperDim border-y-[3px] border-billboard-ink py-16">
         <div className="max-w-4xl mx-auto px-5">
-          <h2 className="font-display text-xl mb-2">A direct marketplace, not an ad platform</h2>
-          <p className="text-billboard-inkSoft text-sm mb-8 max-w-xl">How booking through real local publishers compares to running ads on a social media platform.</p>
+          <h2 className="font-display text-xl mb-2">Local publishers, planned for you. Not an ad platform.</h2>
+          <p className="text-billboard-inkSoft text-sm mb-8 max-w-xl">How having us plan and book real local publishers compares to running ads yourself on a social media platform.</p>
           <div className="border-[3px] border-billboard-ink rounded-lg overflow-hidden bg-white">
             <div className="grid grid-cols-2">
               <div className="bg-billboard-green text-white font-display text-sm md:text-base px-4 py-3 text-center">ChatSched</div>

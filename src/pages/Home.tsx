@@ -134,13 +134,7 @@ function PricingSection() {
           <h2 className="text-3xl md:text-5xl mb-3">{t("pricing.title")}</h2>
           <p className="text-billboard-inkSoft max-w-prose">{t("pricing.subtitle")}</p>
         </div>
-        <div className="grid md:grid-cols-2 gap-4">
-          <div className="border-2 border-billboard-ink rounded-xl p-6 bg-white shadow-blockSm">
-            <div className="font-mono text-[11px] font-bold uppercase">{t("pricing.businessLabel")}</div>
-            <div className="font-display text-4xl mt-2 mb-2">{formatCurrency(0)}</div>
-            <p className="text-sm text-billboard-inkSoft mb-5">{t("pricing.businessBody")}</p>
-            <Link to="/register?role=business" data-cta="pricing-business" className="brand-button dark">{t("pricing.businessCta")}</Link>
-          </div>
+        <div className="max-w-xl">
           <div className="border-2 border-billboard-ink rounded-xl p-6 bg-billboard-yellow shadow-blockSm">
             <div className="font-mono text-[11px] font-bold uppercase">{t("pricing.publisherLabel")}</div>
             <div className="font-display text-4xl mt-2">{formatCurrency(PREMIUM_ACCESS_PRICE)}</div>

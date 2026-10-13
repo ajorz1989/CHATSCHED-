@@ -11,10 +11,10 @@ import {
   CONTACT_EMAIL,
   PREMIUM_ACCESS_PRICE,
   FEATURED_PLACEMENT_MONTHLY_PRICE,
-  PLATFORM_BANK_DETAILS,
 } from "../lib/constants";
 import { MIN_PRICE_PER_POST } from "../lib/pricingEngine";
 import { formatCurrency } from "../lib/currency";
+import { BOOKING_FEE_SMALL_CENTS, BOOKING_FEE_STANDARD_CENTS, BOOKING_FEE_THRESHOLD_CENTS, fromCents } from "../lib/fees";
 import MarketingIcon from "../components/MarketingIcon";
 
 const commissionPct = Math.round(PLATFORM_COMMISSION_RATE * 100);
@@ -45,7 +45,7 @@ const CATEGORIES: FaqCategory[] = [
     items: [
       {
         q: "What actually is ChatSched?",
-        a: "A direct marketplace connecting South African small businesses with the publishers, creators and channels their customers already follow — social media pages, influencers, websites, podcasts, radio and WhatsApp channels — without an ad account or algorithm in between. A business finds a channel, sends a request, pays once it's approved (held by ChatSched, not released to the creator yet), and the creator gets paid once it's confirmed live.",
+        a: "A local advertising agency for South African small businesses, with a marketplace built in. You tell us your goal, audience and budget; we plan the campaign and match it with the local pages, creators, podcasts, radio and other channels your customers already follow, and you approve it — no ad account or algorithm in between. Prefer to choose yourself? Browse publishers and send a request. Either way, you pay once a creator accepts (held by ChatSched, not released to the creator yet), your placement goes live once the money has cleared, and the creator gets paid once it's confirmed live.",
       },
       {
         q: "Is this just for social media influencers?",
@@ -57,7 +57,7 @@ const CATEGORIES: FaqCategory[] = [
       },
       {
         q: "Is ChatSched free to use?",
-        a: `Yes, joining is free for both sides. A business pays exactly the agreed campaign price, nothing added on top. A publisher keeps ${sharePct}% of every booking, with a flat ${commissionPct}% platform commission — no listing fees, no tiers.`,
+        a: `Yes, joining is free for both sides. A business pays the creator's price plus a small booking fee (${formatCurrency(fromCents(BOOKING_FEE_SMALL_CENTS))} under ${formatCurrency(fromCents(BOOKING_FEE_THRESHOLD_CENTS))}, ${formatCurrency(fromCents(BOOKING_FEE_STANDARD_CENTS))} from ${formatCurrency(fromCents(BOOKING_FEE_THRESHOLD_CENTS))}), nothing else on top. A publisher keeps ${sharePct}% of every booking, with a flat ${commissionPct}% platform commission — no listing fees, no tiers.`,
       },
       {
         q: "Do I need to be technical to use this?",
@@ -192,7 +192,7 @@ const CATEGORIES: FaqCategory[] = [
       },
       {
         q: "What payment methods can a business use?",
-        a: `Card or instant EFT through PayFast (confirms automatically), or a manual EFT straight to ChatSched's bank account — ${PLATFORM_BANK_DETAILS.bank}, account ${PLATFORM_BANK_DETAILS.accountNumber}, branch ${PLATFORM_BANK_DETAILS.branchCode} — matched and confirmed by the team once funds land.`,
+        a: "By bank transfer. When a creator accepts, you get a Payment Card on your dashboard with the total due, ChatSched's bank details and a unique payment reference. Pay by bank transfer using that reference. ChatSched confirms once the funds have cleared in our account (not from a screenshot of proof of payment), and only then does your placement go live.",
       },
       {
         q: "What happens if a business doesn't pay after approving?",
