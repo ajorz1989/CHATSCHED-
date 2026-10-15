@@ -145,7 +145,7 @@ function SectionToggle({ label, open, onToggle, count }: { label: string; open: 
     >
       <span className="flex items-center gap-2">
         {label}
-        {count ? <span className="bg-billboard-green text-white font-mono text-[10px] px-1.5 py-0.5 rounded">{count}</span> : null}
+        {count ? <span className="bg-billboard-green text-white font-mono text-[11px] px-1.5 py-0.5 rounded">{count}</span> : null}
       </span>
       <span className="font-mono text-billboard-inkSoft text-lg leading-none">{open ? "−" : "+"}</span>
     </button>
@@ -305,24 +305,24 @@ function FilterFields({
       <div className="border-[3px] border-billboard-ink rounded p-5 bg-billboard-paperDim">
         <h3 className="font-bold text-sm mb-4">Location &amp; Category</h3>
         <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5">Category</label>
-        <select value={filters.category} onChange={e => update({ category: e.target.value })} className="w-full border-2 border-billboard-ink rounded px-2.5 py-2 mb-4 bg-white text-sm">
+        <select aria-label="Category" value={filters.category} onChange={e => update({ category: e.target.value })} className="w-full border-2 border-billboard-ink rounded px-2.5 py-2 mb-4 bg-white text-sm">
           <option value="">All categories</option>
           {CATEGORIES.map(c => <option key={c.slug} value={c.name}>{c.name}</option>)}
         </select>
         <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5">Province</label>
-        <select value={filters.province} onChange={e => update({ province: e.target.value })} className="w-full border-2 border-billboard-ink rounded px-2.5 py-2 mb-4 bg-white text-sm">
+        <select aria-label="Province" value={filters.province} onChange={e => update({ province: e.target.value })} className="w-full border-2 border-billboard-ink rounded px-2.5 py-2 mb-4 bg-white text-sm">
           <option value="">All provinces</option>
           {PROVINCES.map(p => <option key={p} value={p}>{p}</option>)}
         </select>
         <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5">City</label>
         <input
-          type="text" value={filters.city}
+          aria-label="City" type="text" value={filters.city}
           onChange={e => update({ city: e.target.value })}
           placeholder="e.g. Johannesburg"
           className="w-full border-2 border-billboard-ink rounded px-2.5 py-2 mb-4 bg-white text-sm"
         />
         <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5">Suburb</label>
-        <select value={filters.suburb} onChange={e => update({ suburb: e.target.value })} className="w-full border-2 border-billboard-ink rounded px-2.5 py-2 bg-white text-sm">
+        <select aria-label="Suburb" value={filters.suburb} onChange={e => update({ suburb: e.target.value })} className="w-full border-2 border-billboard-ink rounded px-2.5 py-2 bg-white text-sm">
           <option value="">All suburbs</option>
           {SA_CITIES_SUBURBS.map(c => (
             <optgroup key={c.city} label={`${c.city}, ${c.province}`}>
@@ -350,7 +350,7 @@ function FilterFields({
 
       <div className="border-[3px] border-billboard-ink rounded p-5 bg-billboard-paperDim">
         <h3 className="font-bold text-sm mb-3">Max price: <span className="font-mono">{formatCurrency(filters.maxPrice)}</span></h3>
-        <input type="range" min={MIN_PRICE_PER_POST} max={5000} step={50} value={filters.maxPrice} onChange={e => update({ maxPrice: Number(e.target.value) })} className="w-full accent-billboard-green mb-2" />
+        <input aria-label="Maximum price per post" type="range" min={MIN_PRICE_PER_POST} max={5000} step={50} value={filters.maxPrice} onChange={e => update({ maxPrice: Number(e.target.value) })} className="w-full accent-billboard-green mb-2" />
         <div className="flex justify-between text-xs text-billboard-inkSoft font-mono"><span>{formatCurrency(MIN_PRICE_PER_POST)}</span><span>{formatCurrency(5000)}</span></div>
       </div>
 
@@ -403,7 +403,7 @@ function FilterFields({
               <label className="block text-xs font-semibold uppercase tracking-wide mb-1">
                 Age group <span className="font-normal normal-case text-billboard-inkSoft">(from audience description)</span>
               </label>
-              <select value={filters.ageDemographic} onChange={e => update({ ageDemographic: e.target.value })} className="w-full border-2 border-billboard-ink rounded px-2 py-1.5 bg-white text-sm">
+              <select aria-label="Age group" value={filters.ageDemographic} onChange={e => update({ ageDemographic: e.target.value })} className="w-full border-2 border-billboard-ink rounded px-2 py-1.5 bg-white text-sm">
                 {AGE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
             </div>
@@ -411,7 +411,7 @@ function FilterFields({
               <label className="block text-xs font-semibold uppercase tracking-wide mb-1">
                 Gender split <span className="font-normal normal-case text-billboard-inkSoft">(from audience description)</span>
               </label>
-              <select value={filters.gender} onChange={e => update({ gender: e.target.value })} className="w-full border-2 border-billboard-ink rounded px-2 py-1.5 bg-white text-sm">
+              <select aria-label="Gender split" value={filters.gender} onChange={e => update({ gender: e.target.value })} className="w-full border-2 border-billboard-ink rounded px-2 py-1.5 bg-white text-sm">
                 {GENDER_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
             </div>
@@ -574,7 +574,7 @@ export default function Browse() {
             {channels.length} live
           </span>
         </div>
-        <div className="flex gap-2 overflow-x-auto pb-1" role="list" aria-label="Live advertising channels">
+        <div className="flex gap-2 overflow-x-auto pb-1" role="group" aria-label="Live advertising channels">
           {channels.map(({ definition: ch }) => {
             const selected = filters.channel === ch.slug;
             return (
@@ -591,7 +591,7 @@ export default function Browse() {
               >
                 <ChannelIcon slug={ch.slug} size="sm" />
                 <span>{ch.name}</span>
-                <span className={`font-mono text-[10px] ${selected ? "text-billboard-paper/70" : "text-billboard-inkSoft"}`}>
+                <span className={`font-mono text-[11px] ${selected ? "text-billboard-paper/70" : "text-billboard-inkSoft"}`}>
                   LIVE
                 </span>
               </button>
@@ -634,10 +634,10 @@ export default function Browse() {
               >
                 <FilterIcon />
                 Filters
-                {active > 0 && <span className="bg-billboard-green text-white font-mono text-[10px] px-1.5 py-0.5 rounded-full">{active}</span>}
+                {active > 0 && <span className="bg-billboard-green text-white font-mono text-[11px] px-1.5 py-0.5 rounded-full">{active}</span>}
               </button>
               <label className="text-xs font-semibold uppercase tracking-wide shrink-0">Sort</label>
-              <select value={sortBy} onChange={e => update({ sortBy: e.target.value })} className="border-2 border-billboard-ink rounded px-2.5 py-1.5 text-sm bg-white">
+              <select aria-label="Sort results" value={sortBy} onChange={e => update({ sortBy: e.target.value })} className="border-2 border-billboard-ink rounded px-2.5 py-1.5 text-sm bg-white">
                 {SORT_OPTIONS.filter(o => socialFiltersApply(filters) || !SOCIAL_ONLY_SORTS.has(o.value)).map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
               {filters.sortBy === "followers_desc" && !filters.channel && (

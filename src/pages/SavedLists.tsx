@@ -29,7 +29,7 @@ function PublisherRow({ publisher, onRemove, listId }: { publisher: Publisher; o
       </div>
       <div className="flex items-center gap-2 shrink-0">
         {publisher.level && (
-          <span className="hidden sm:inline font-mono text-[10px] border border-billboard-ink rounded-full px-2 py-0.5 bg-billboard-paperDim">
+          <span className="hidden sm:inline font-mono text-[11px] border border-billboard-ink rounded-full px-2 py-0.5 bg-billboard-paperDim">
             <TrustBadge kind="publisher" level={publisher.level} showLabel={false} />
           </span>
         )}
@@ -93,12 +93,12 @@ function ListCard({ list, publishers, onDelete, onRename, onRemovePublisher }: {
           {listPublishers.length > 0 && (
             <div className="flex gap-1.5 mt-2.5">
               {listPublishers.slice(0, 5).map(p => (
-                <div key={p.id} className={`w-7 h-7 rounded-full bg-gradient-to-br ${p.swatch} border-2 border-billboard-ink flex items-center justify-center font-display text-[9px]`} title={p.name}>
+                <div key={p.id} className={`w-7 h-7 rounded-full bg-gradient-to-br ${p.swatch} border-2 border-billboard-ink flex items-center justify-center font-display text-[11px]`} title={p.name}>
                   {p.initials}
                 </div>
               ))}
               {listPublishers.length > 5 && (
-                <div className="w-7 h-7 rounded-full bg-billboard-paperDim border-2 border-billboard-ink flex items-center justify-center text-[10px] font-bold text-billboard-inkSoft">
+                <div className="w-7 h-7 rounded-full bg-billboard-paperDim border-2 border-billboard-ink flex items-center justify-center text-[11px] font-bold text-billboard-inkSoft">
                   +{listPublishers.length - 5}
                 </div>
               )}

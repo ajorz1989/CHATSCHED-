@@ -72,7 +72,7 @@ export default function PublisherSuccessArticle() {
           to={`/publisher-success/${next.slug}`}
           className="group block border-[3px] border-billboard-ink rounded p-5 bg-billboard-yellow transition hover:-translate-y-1 hover:shadow-blockSm"
         >
-          <span className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft">Next up</span>
+          <span className="font-mono text-[11px] uppercase tracking-wider text-billboard-inkSoft">Next up</span>
           <h3 className="font-bold mt-1 group-hover:underline">{next.title}</h3>
         </Link>
       </div>

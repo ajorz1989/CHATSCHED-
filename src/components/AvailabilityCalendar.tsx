@@ -80,7 +80,7 @@ export default function AvailabilityCalendar({ publisherId, canEdit = false }: P
         <div className="text-center">
           <p className="font-bold text-sm">{MONTH_NAMES[month]} {year}</p>
           {!canEdit && (
-            <p className="text-[10px] font-mono uppercase text-billboard-inkSoft mt-0.5">
+            <p className="text-[11px] font-mono uppercase text-billboard-inkSoft mt-0.5">
               {availableInView} available · {blockedInView} blocked
             </p>
           )}
@@ -97,7 +97,7 @@ export default function AvailabilityCalendar({ publisherId, canEdit = false }: P
       {/* Day-of-week header */}
       <div className="grid grid-cols-7 bg-billboard-paperDim border-b border-billboard-paperDim px-2 pt-2">
         {DAY_ABBR.map(d => (
-          <div key={d} className="text-center text-[10px] font-mono uppercase text-billboard-inkSoft pb-2">
+          <div key={d} className="text-center text-[11px] font-mono uppercase text-billboard-inkSoft pb-2">
             {d}
           </div>
         ))}

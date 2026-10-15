@@ -146,7 +146,7 @@ export default function PortfolioManager({
       <div>
         <div className="flex items-center justify-between mb-1.5">
           <label className="block text-xs font-semibold uppercase tracking-wide">Portfolio images</label>
-          <span className="font-mono text-[10px] text-billboard-inkSoft">{images.length}/{MAX_PORTFOLIO_IMAGES}</span>
+          <span className="font-mono text-[11px] text-billboard-inkSoft">{images.length}/{MAX_PORTFOLIO_IMAGES}</span>
         </div>
         <p className="text-xs text-billboard-inkSoft mb-3">JPG, PNG or WebP, up to {formatMB(MAX_PORTFOLIO_IMAGE_BYTES)} each.</p>
 

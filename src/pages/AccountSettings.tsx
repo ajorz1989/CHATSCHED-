@@ -264,10 +264,10 @@ export default function AccountSettings() {
             )}
 
             {/* Confirm input */}
-            <label className="block text-xs font-semibold mb-1.5">
+            <label htmlFor="acct-1" className="block text-xs font-semibold mb-1.5">
               Type <span className="font-mono">{CONFIRM_PHRASE}</span> to confirm
             </label>
-            <input
+            <input id="acct-1"
               value={confirmText}
               onChange={(e) => {
                 setConfirmText(e.target.value);

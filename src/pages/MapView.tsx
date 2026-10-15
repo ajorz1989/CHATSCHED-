@@ -106,7 +106,7 @@ export default function MapView() {
                   <span className="font-semibold text-sm">{c.city}</span>
                   <span className="font-mono text-xs text-billboard-inkSoft">{c.count}</span>
                 </div>
-                <span className="font-mono text-[10px] uppercase text-billboard-inkSoft">{c.province}</span>
+                <span className="font-mono text-[11px] uppercase text-billboard-inkSoft">{c.province}</span>
               </button>
             ))}
             {cityCounts.unmatched > 0 && (

@@ -44,7 +44,7 @@ export default function Contact() {
   }
 
   return (
-    <main className="max-w-6xl mx-auto px-5 py-16">
+    <div className="max-w-6xl mx-auto px-5 py-16">
       <Seo
         title="Contact ChatSched | Cape Town, South Africa"
         description="Contact ChatSched in Cape Town, South Africa. Reach us by WhatsApp, email or visit our Century City address."
@@ -211,6 +211,6 @@ export default function Contact() {
           )}
         </div>
       </div>
-    </main>
+    </div>
   );
 }

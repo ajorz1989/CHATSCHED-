@@ -94,7 +94,7 @@ export default function RateCardManager({ publisherId, platforms = [], onChange 
             <div key={item.id} className="flex items-center justify-between gap-3 border-2 border-billboard-ink/15 rounded px-3 py-2">
               <div className="min-w-0">
                 <p className="text-sm font-semibold">{item.label} <span className="font-mono text-billboard-greenDeep">{formatCurrency(item.price)}</span></p>
-                <p className="font-mono text-[10px] uppercase text-billboard-greenDeep">{item.platform === "All platforms" ? "All platforms — package" : item.platform ?? "Any platform — edit by removing and re-adding with a platform"}</p>
+                <p className="font-mono text-[11px] uppercase text-billboard-greenDeep">{item.platform === "All platforms" ? "All platforms — package" : item.platform ?? "Any platform — edit by removing and re-adding with a platform"}</p>
                 {item.description && <p className="text-xs text-billboard-inkSoft">{item.description}</p>}
               </div>
               <button
@@ -119,7 +119,7 @@ export default function RateCardManager({ publisherId, platforms = [], onChange 
         <div className="border-2 border-billboard-ink rounded p-3 bg-billboard-paperDim">
           {platforms.length > 0 && (
             <div className="mb-2">
-              <label className="block text-[10px] font-mono uppercase text-billboard-inkSoft mb-1">Platform</label>
+              <label className="block text-[11px] font-mono uppercase text-billboard-inkSoft mb-1">Platform</label>
               <select value={platform} onChange={(e) => setPlatform(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-2.5 py-1.5 text-sm bg-white">
                 <option value="">Choose a platform…</option>
                 {platformChoices(platforms).map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
@@ -128,11 +128,11 @@ export default function RateCardManager({ publisherId, platforms = [], onChange 
           )}
           <div className="grid sm:grid-cols-2 gap-2 mb-2">
             <div>
-              <label className="block text-[10px] font-mono uppercase text-billboard-inkSoft mb-1">Name</label>
+              <label className="block text-[11px] font-mono uppercase text-billboard-inkSoft mb-1">Name</label>
               <input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="e.g. Story Post" maxLength={60} className="w-full border-2 border-billboard-ink rounded px-2.5 py-1.5 text-sm" />
             </div>
             <div>
-              <label className="block text-[10px] font-mono uppercase text-billboard-inkSoft mb-1">Price (R)</label>
+              <label className="block text-[11px] font-mono uppercase text-billboard-inkSoft mb-1">Price (R)</label>
               <input type="number" min={MIN_PRICE_PER_POST} value={price} onChange={(e) => setPrice(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-2.5 py-1.5 text-sm" />
             </div>
           </div>
@@ -141,7 +141,7 @@ export default function RateCardManager({ publisherId, platforms = [], onChange 
               Business price <strong>{formatCurrency(Number(price))}</strong> · marketplace fee ({Math.round(PLATFORM_COMMISSION_RATE * 100)}%) <strong>-{formatCurrency(Number(price) * PLATFORM_COMMISSION_RATE)}</strong> · your earnings <strong className="text-billboard-greenDeep">{formatCurrency(Number(price) * PUBLISHER_SHARE)}</strong>
             </p>
           )}
-          <label className="block text-[10px] font-mono uppercase text-billboard-inkSoft mb-1">Description (optional)</label>
+          <label className="block text-[11px] font-mono uppercase text-billboard-inkSoft mb-1">Description (optional)</label>
           <input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="What's included" maxLength={200} className="w-full border-2 border-billboard-ink rounded px-2.5 py-1.5 text-sm mb-2" />
           {error && <p className="text-billboard-red text-xs font-semibold mb-2">{error}</p>}
           <div className="flex gap-2">

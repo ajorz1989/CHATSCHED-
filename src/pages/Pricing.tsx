@@ -65,8 +65,8 @@ function ReachMockup() {
   return (
     <div className="border-2 border-billboard-ink rounded p-4 bg-billboard-paperDim">
       <div className="flex items-center justify-between mb-3">
-        <span className="font-mono text-[10px] uppercase tracking-wide text-billboard-inkSoft">Publisher profile preview</span>
-        <span className="font-mono text-[10px] uppercase text-billboard-greenDeep font-bold border border-billboard-greenDeep rounded px-1.5 py-0.5">Verified</span>
+        <span className="font-mono text-[11px] uppercase tracking-wide text-billboard-inkSoft">Publisher profile preview</span>
+        <span className="font-mono text-[11px] uppercase text-billboard-greenDeep font-bold border border-billboard-greenDeep rounded px-1.5 py-0.5">Verified</span>
       </div>
       <div className="space-y-2">
         <div className="flex items-center justify-between text-sm">
@@ -99,7 +99,7 @@ function PayoutMockup() {
   ];
   return (
     <div className="border-2 border-billboard-ink rounded p-4 bg-billboard-paperDim">
-      <span className="font-mono text-[10px] uppercase tracking-wide text-billboard-inkSoft block mb-3">Your dashboard</span>
+      <span className="font-mono text-[11px] uppercase tracking-wide text-billboard-inkSoft block mb-3">Your dashboard</span>
       <div className="space-y-2.5">
         {rows.map((r) => (
           <div key={r.label} className="flex items-center justify-between gap-3 text-sm">
@@ -115,7 +115,7 @@ function PayoutMockup() {
 function BenefitItem({ children }: { children: ReactNode }) {
   return (
     <li className="flex items-start gap-2.5 text-sm leading-relaxed">
-      <span aria-hidden="true" className="mt-[3px] inline-flex items-center justify-center w-4 h-4 rounded-full border-2 border-billboard-ink text-[10px] font-bold shrink-0">✓</span>
+      <span aria-hidden="true" className="mt-[3px] inline-flex items-center justify-center w-4 h-4 rounded-full border-2 border-billboard-ink text-[11px] font-bold shrink-0">✓</span>
       <span>{children}</span>
     </li>
   );
@@ -134,7 +134,7 @@ function PricingFeeTeaser() {
     <div className="border-[3px] border-billboard-ink rounded-lg p-5 bg-billboard-paperDim">
       <div className="flex flex-wrap items-end justify-between gap-4 mb-4">
         <div>
-          <span className="font-mono text-[10px] uppercase tracking-wide text-billboard-inkSoft">Quick fee check</span>
+          <span className="font-mono text-[11px] uppercase tracking-wide text-billboard-inkSoft">Quick fee check</span>
           <h3 className="font-display text-xl">See the maths before you commit.</h3>
         </div>
         <label htmlFor={inputId} className="font-mono text-xs">
@@ -162,10 +162,10 @@ function PricingFeeTeaser() {
         aria-live="polite"
         aria-label={`Creator price ${fmt(value)}, booking fee ${fmt(bookingFee)}, you pay ${fmt(total)}, creator receives ${fmt(earnings)}`}
       >
-        <div><div className="font-display text-xl">{fmt(value)}</div><div className="text-[10px] font-mono uppercase text-billboard-inkSoft">Creator price</div></div>
-        <div><div className="font-display text-xl">+{fmt(bookingFee)}</div><div className="text-[10px] font-mono uppercase text-billboard-inkSoft">Booking fee (you pay)</div></div>
-        <div><div className="font-display text-xl">{fmt(total)}</div><div className="text-[10px] font-mono uppercase text-billboard-inkSoft">You pay in total</div></div>
-        <div><div className="font-display text-xl text-billboard-greenDeep">{fmt(earnings)}</div><div className="text-[10px] font-mono uppercase text-billboard-inkSoft">Creator receives after {Math.round(PLATFORM_COMMISSION_RATE * 100)}%</div></div>
+        <div><div className="font-display text-xl">{fmt(value)}</div><div className="text-[11px] font-mono uppercase text-billboard-inkSoft">Creator price</div></div>
+        <div><div className="font-display text-xl">+{fmt(bookingFee)}</div><div className="text-[11px] font-mono uppercase text-billboard-inkSoft">Booking fee (you pay)</div></div>
+        <div><div className="font-display text-xl">{fmt(total)}</div><div className="text-[11px] font-mono uppercase text-billboard-inkSoft">You pay in total</div></div>
+        <div><div className="font-display text-xl text-billboard-greenDeep">{fmt(earnings)}</div><div className="text-[11px] font-mono uppercase text-billboard-inkSoft">Creator receives after {Math.round(PLATFORM_COMMISSION_RATE * 100)}%</div></div>
       </div>
     </div>
   );
@@ -203,14 +203,14 @@ export default function Pricing() {
           <div className="border-[3px] border-billboard-ink rounded-lg p-6 bg-billboard-yellow flex flex-col">
             <div className="flex items-start justify-between gap-4 mb-4">
               <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-ink bg-white px-2.5 py-1 rounded">ChatSched Business</span>
-              <span className="font-mono text-[10px] uppercase tracking-wider bg-billboard-ink text-white rounded px-2 py-1">For advertisers</span>
+              <span className="font-mono text-[11px] uppercase tracking-wider bg-billboard-ink text-white rounded px-2 py-1">For advertisers</span>
             </div>
             <p className="font-display text-4xl mb-1">Free<span className="text-base font-normal"> to join</span></p>
             <p className="text-sm font-semibold mb-2">Create your account, browse the marketplace and send booking requests at no cost.</p>
             <p className="text-sm text-billboard-inkSoft mb-6">When a creator accepts, you pay their price plus a small booking fee ({feeCopy.bookingFee}). That total is shown on your Payment Card before you pay.</p>
 
             <div className="border-2 border-billboard-ink/20 rounded-lg bg-white/60 p-4 mb-5">
-              <p className="font-mono text-[10px] uppercase tracking-wider font-bold mb-2">What you get</p>
+              <p className="font-mono text-[11px] uppercase tracking-wider font-bold mb-2">What you get</p>
               <ul className="space-y-2.5">
                 <BenefitItem>Done-for-you campaign support — submit your brief and a ChatSched campaign manager coordinates the media plan. Most managed campaigns are billed per booking, on the same fees as any booking; larger campaigns may instead use a single agreed package price, always confirmed with you before anything is booked.</BenefitItem>
                 <BenefitItem>Prefer to choose yourself? Browse the marketplace — search, compare, save and request advertising from publishers.</BenefitItem>
@@ -229,14 +229,14 @@ export default function Pricing() {
           <div className="border-[3px] border-billboard-ink rounded-lg p-6 bg-white flex flex-col">
             <div className="flex items-start justify-between gap-4 mb-4">
               <span className="inline-block font-mono text-xs font-semibold tracking-wider uppercase border-2 border-billboard-ink bg-billboard-paperDim px-2.5 py-1 rounded">ChatSched Publisher Network</span>
-              <span className="font-mono text-[10px] uppercase tracking-wider bg-billboard-green text-white rounded px-2 py-1">For media owners</span>
+              <span className="font-mono text-[11px] uppercase tracking-wider bg-billboard-green text-white rounded px-2 py-1">For media owners</span>
             </div>
             <p className="font-display text-4xl mb-1">Free<span className="text-base font-normal"> to list</span></p>
             <p className="text-sm font-semibold mb-2">Turn your audience or advertising inventory into bookable opportunities.</p>
             <p className="text-sm text-billboard-inkSoft mb-6">No sign-up fee. ChatSched takes {Math.round(PLATFORM_COMMISSION_RATE * 100)}% of your price on a completed booking, and you set your own price.</p>
 
             <div className="border-2 border-billboard-ink/20 rounded-lg bg-billboard-paperDim p-4 mb-5">
-              <p className="font-mono text-[10px] uppercase tracking-wider font-bold mb-2">What you unlock</p>
+              <p className="font-mono text-[11px] uppercase tracking-wider font-bold mb-2">What you unlock</p>
               <ul className="space-y-2.5">
                 <BenefitItem>Verified publisher profile with your audience information, positioning and advertising inventory.</BenefitItem>
                 <BenefitItem>Media kit and rate card tools so businesses can understand what you offer before requesting a booking.</BenefitItem>
@@ -274,7 +274,7 @@ export default function Pricing() {
           <div className="p-6 md:p-8 bg-billboard-ink">
             <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
               <div>
-                <span className="inline-block font-mono text-[10px] font-semibold tracking-wider uppercase border-2 border-billboard-yellow text-billboard-yellow px-3 py-1.5 rounded mb-3">How payment works</span>
+                <span className="inline-block font-mono text-[11px] font-semibold tracking-wider uppercase border-2 border-billboard-yellow text-billboard-yellow px-3 py-1.5 rounded mb-3">How payment works</span>
                 <h2 className="font-display text-2xl md:text-3xl max-w-2xl">See what happens to your money before you book.</h2>
               </div>
               <Link to="/how-payment-works" className="inline-flex items-center gap-2 border-2 border-white/70 text-white font-bold px-4 py-2.5 rounded text-sm hover:bg-white/10 transition shrink-0">Full payment guide →</Link>
@@ -291,7 +291,7 @@ export default function Pricing() {
                 { n: "04", title: "Go live & payout", body: "The placement is delivered and marked live, then the publisher payout is processed." },
               ].map((step) => (
                 <div key={step.n} className="border-2 border-white/20 rounded-lg p-4 bg-white/5">
-                  <span className="font-mono text-[10px] text-billboard-yellow font-bold">{step.n}</span>
+                  <span className="font-mono text-[11px] text-billboard-yellow font-bold">{step.n}</span>
                   <h3 className="font-display text-lg mt-1 mb-1.5">{step.title}</h3>
                   <p className="text-xs text-white/70 leading-relaxed">{step.body}</p>
                 </div>
@@ -303,7 +303,7 @@ export default function Pricing() {
                 <strong className="text-billboard-yellow">Every channel:</strong> once the creator accepts, you receive a Payment Card and pay ChatSched by bank transfer.
               </div>
               <div className="border border-billboard-green/50 rounded p-3 bg-billboard-green/10">
-                <strong className="text-billboard-green">Going live:</strong> a placement goes live only once the money has cleared in the ChatSched bank account.
+                <strong className="text-billboard-yellow">Going live:</strong> a placement goes live only once the money has cleared in the ChatSched bank account.
               </div>
             </div>
           </div>

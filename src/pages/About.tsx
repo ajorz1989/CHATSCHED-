@@ -101,7 +101,7 @@ export default function About() {
               <source src="/schedy/chatsched-avatar-explainer.mp4" type="video/mp4" />
               Your browser does not support the video element. Please use a modern browser to watch the ChatSched explainer.
             </video>
-            <p className="text-center font-mono text-[10px] text-billboard-paper/70 uppercase tracking-wider py-2">Schedy · Advertising for the better</p>
+            <p className="text-center font-mono text-[11px] text-billboard-paper/70 uppercase tracking-wider py-2">Schedy · Advertising for the better</p>
           </div>
         </div>
       </section>
@@ -126,7 +126,7 @@ export default function About() {
             <div key={c.name} className="border-[3px] border-billboard-ink rounded p-4 bg-white transition hover:-translate-y-1 hover:shadow-blockSm">
               <div className="flex items-start justify-between gap-2 mb-1">
                 <h3 className="font-bold text-sm">{c.name}</h3>
-                <span className={`shrink-0 border px-1.5 py-0.5 rounded-full font-mono text-[9px] font-bold uppercase tracking-wide ${
+                <span className={`shrink-0 border px-1.5 py-0.5 rounded-full font-mono text-[11px] font-bold uppercase tracking-wide ${
                   isChannelEnabled(c.slug)
                     ? "border-billboard-greenDeep/40 text-billboard-greenDeep bg-billboard-green/10"
                     : "border-billboard-inkSoft/40 text-billboard-inkSoft bg-billboard-paperDim"
@@ -185,7 +185,7 @@ export default function About() {
           <div className="space-y-4">
             {BELIEFS.map((b, i) => (
               <div key={b} className="flex gap-4 items-start border-b-2 border-billboard-paperDim pb-4 last:border-b-0">
-                <span className="font-display text-lg text-billboard-yellowDeep shrink-0">{String(i + 1).padStart(2, "0")}</span>
+                <span className="font-display text-lg text-[#7A5C00] shrink-0">{String(i + 1).padStart(2, "0")}</span>
                 <p className="text-billboard-inkSoft">{b}</p>
               </div>
             ))}
@@ -236,7 +236,7 @@ export default function About() {
           ))}
         </ul>
 
-        <span className="font-mono text-xs font-semibold tracking-wider uppercase text-billboard-yellowDeep">Next</span>
+        <span className="font-mono text-xs font-semibold tracking-wider uppercase text-[#7A5C00]">Next</span>
         <h3 className="font-display text-lg mt-2 mb-8">What's being explored.</h3>
         <div className="space-y-5">
           {NEXT.map((item) => (

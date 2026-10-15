@@ -199,7 +199,7 @@ export default function SocialVerificationPanel({ publisher, onChange }: { publi
       ) : null}
 
       {/* ── Step 1: profile links ── */}
-      <p className="font-mono text-[10px] font-bold uppercase tracking-wide text-billboard-inkSoft mb-2">Step 1 · Your public profiles</p>
+      <p className="font-mono text-[11px] font-bold uppercase tracking-wide text-billboard-inkSoft mb-2">Step 1 · Your public profiles</p>
       <div className="space-y-2 mb-3">
         {links.map((link, i) => (
           <div key={i} className="flex gap-2">
@@ -240,11 +240,11 @@ export default function SocialVerificationPanel({ publisher, onChange }: { publi
       {linksError && <p className="text-billboard-red text-xs font-semibold -mt-4 mb-4">{linksError}</p>}
 
       {/* ── Step 2: bio code ── */}
-      <p className="font-mono text-[10px] font-bold uppercase tracking-wide text-billboard-inkSoft mb-2">Step 2 · Your verification code</p>
+      <p className="font-mono text-[11px] font-bold uppercase tracking-wide text-billboard-inkSoft mb-2">Step 2 · Your verification code</p>
       {hasCode ? (
         <div className="border-2 border-billboard-ink rounded p-3 mb-2 flex items-center justify-between gap-3">
           <div>
-            <p className="font-mono text-[10px] uppercase text-billboard-inkSoft">Your code</p>
+            <p className="font-mono text-[11px] uppercase text-billboard-inkSoft">Your code</p>
             <p className="text-lg font-bold font-mono tracking-wider">{publisher.social_verification_code}</p>
           </div>
           <button
@@ -254,7 +254,7 @@ export default function SocialVerificationPanel({ publisher, onChange }: { publi
               setCopied(true);
               setTimeout(() => setCopied(false), 1500);
             }}
-            className="font-mono text-[10px] font-semibold uppercase border-2 border-billboard-ink rounded px-2 py-1 hover:bg-billboard-paperDim transition shrink-0"
+            className="font-mono text-[11px] font-semibold uppercase border-2 border-billboard-ink rounded px-2 py-1 hover:bg-billboard-paperDim transition shrink-0"
           >
             {copied ? "Copied ✓" : "Copy"}
           </button>
@@ -276,7 +276,7 @@ export default function SocialVerificationPanel({ publisher, onChange }: { publi
       {codeError && <p className="text-billboard-red text-xs font-semibold mt-1 mb-3">{codeError}</p>}
 
       {/* ── Step 3: screenshot ── */}
-      <p className="font-mono text-[10px] font-bold uppercase tracking-wide text-billboard-inkSoft mb-2 mt-6">Step 3 · Analytics screenshot</p>
+      <p className="font-mono text-[11px] font-bold uppercase tracking-wide text-billboard-inkSoft mb-2 mt-6">Step 3 · Analytics screenshot</p>
       <p className="text-xs text-billboard-inkSoft mb-3">
         A screenshot of your platform's own analytics (followers, reach, audience location) — make sure your account name and today's date are visible in the shot. Up to 5 files.
       </p>
@@ -307,7 +307,7 @@ export default function SocialVerificationPanel({ publisher, onChange }: { publi
       {uploadError && <p className="text-billboard-red text-xs font-semibold mt-2">{uploadError}</p>}
 
       {/* ── Step 4: optional AI summary ── */}
-      <p className="font-mono text-[10px] font-bold uppercase tracking-wide text-billboard-inkSoft mb-2 mt-6">Step 4 · Audience summary (optional)</p>
+      <p className="font-mono text-[11px] font-bold uppercase tracking-wide text-billboard-inkSoft mb-2 mt-6">Step 4 · Audience summary (optional)</p>
       <p className="text-xs text-billboard-inkSoft mb-3">
         A short, AI-written summary of your audience for businesses browsing the marketplace, based on your own follower count and bio — nothing invented.
       </p>

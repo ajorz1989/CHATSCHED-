@@ -52,11 +52,23 @@ h1, h2, h3 {
   outline-offset: 2px;
 }
 
+/* The green ring is invisible on the ink-black sections, so use yellow there. */
+.bg-billboard-ink :focus-visible,
+.bg-billboard-ink:focus-visible {
+  outline-color: #F5B700;
+}
+
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
   outline: 3px solid #1C6B45;
   outline-offset: 2px;
+}
+
+/* The green ring is invisible on the ink-black sections, so use yellow there. */
+.bg-billboard-ink :focus-visible,
+.bg-billboard-ink:focus-visible {
+  outline-color: #F5B700;
 }
 
 .skeleton-shimmer {

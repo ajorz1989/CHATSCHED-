@@ -91,7 +91,7 @@ export default function SavedSearches() {
                     <p className="font-display text-lg leading-tight">{s.name}</p>
                     <p className="text-xs text-billboard-inkSoft mt-0.5">{summarizeFilters(filters)}</p>
                   </div>
-                  <span className={`font-mono text-[10px] font-semibold uppercase px-2.5 py-1 rounded border-2 shrink-0 ${s.alerts_enabled ? "bg-billboard-green text-white border-billboard-greenDeep" : "bg-white text-billboard-inkSoft border-billboard-inkSoft"}`}>
+                  <span className={`font-mono text-[11px] font-semibold uppercase px-2.5 py-1 rounded border-2 shrink-0 ${s.alerts_enabled ? "bg-billboard-green text-white border-billboard-greenDeep" : "bg-white text-billboard-inkSoft border-billboard-inkSoft"}`}>
                     {s.alerts_enabled ? "Alerts on" : "Alerts off"}
                   </span>
                 </div>
@@ -104,7 +104,7 @@ export default function SavedSearches() {
                 <div className="flex flex-wrap gap-2">
                   <Link
                     to={browseUrlForFilters(filters)}
-                    className="font-mono text-[10px] font-semibold uppercase border-2 border-billboard-ink rounded px-2.5 py-1.5 hover:bg-billboard-paperDim transition"
+                    className="font-mono text-[11px] font-semibold uppercase border-2 border-billboard-ink rounded px-2.5 py-1.5 hover:bg-billboard-paperDim transition"
                   >
                     View results →
                   </Link>
@@ -112,7 +112,7 @@ export default function SavedSearches() {
                     type="button"
                     disabled={busyId === s.id}
                     onClick={() => toggleAlerts(s)}
-                    className="font-mono text-[10px] font-semibold uppercase border-2 border-billboard-ink rounded px-2.5 py-1.5 hover:bg-billboard-paperDim transition disabled:opacity-60"
+                    className="font-mono text-[11px] font-semibold uppercase border-2 border-billboard-ink rounded px-2.5 py-1.5 hover:bg-billboard-paperDim transition disabled:opacity-60"
                   >
                     {s.alerts_enabled ? "Turn alerts off" : "Turn alerts on"}
                   </button>
@@ -120,7 +120,7 @@ export default function SavedSearches() {
                     type="button"
                     disabled={busyId === s.id}
                     onClick={() => remove(s)}
-                    className="font-mono text-[10px] font-semibold uppercase border-2 border-billboard-red text-billboard-red rounded px-2.5 py-1.5 hover:bg-billboard-red/10 transition disabled:opacity-60"
+                    className="font-mono text-[11px] font-semibold uppercase border-2 border-billboard-red text-billboard-red rounded px-2.5 py-1.5 hover:bg-billboard-red/10 transition disabled:opacity-60"
                   >
                     Delete
                   </button>

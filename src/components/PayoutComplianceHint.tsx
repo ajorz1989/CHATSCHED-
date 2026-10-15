@@ -28,7 +28,7 @@ export default function PayoutComplianceHint({ campaignId }: { campaignId: strin
     <span className="inline-flex items-center gap-1.5">
       <RiskBadge level={risk.level as "low" | "medium" | "high" | null} score={risk.score} />
       {(risk.status === "under_review" || risk.status === "not_eligible") && (
-        <span className="font-mono text-[10px] uppercase text-billboard-red font-semibold">compliance: {risk.status.replace("_", " ")}</span>
+        <span className="font-mono text-[11px] uppercase text-billboard-red font-semibold">compliance: {risk.status.replace("_", " ")}</span>
       )}
     </span>
   );

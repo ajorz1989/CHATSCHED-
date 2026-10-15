@@ -99,21 +99,21 @@ export default function ReachChecker() {
       <form onSubmit={handleSearch} className="border-[3px] border-billboard-ink rounded p-6 mb-8 space-y-4">
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-semibold mb-1.5">Category</label>
-            <select value={categorySlug} onChange={(e) => setCategorySlug(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5 bg-white">
+            <label htmlFor="reach-1" className="block text-sm font-semibold mb-1.5">Category</label>
+            <select id="reach-1" value={categorySlug} onChange={(e) => setCategorySlug(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5 bg-white">
               {CATEGORIES.map((c) => <option key={c.slug} value={c.slug}>{c.name}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-sm font-semibold mb-1.5">Province</label>
-            <select value={province} onChange={(e) => setProvince(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5 bg-white">
+            <label htmlFor="reach-2" className="block text-sm font-semibold mb-1.5">Province</label>
+            <select id="reach-2" value={province} onChange={(e) => setProvince(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5 bg-white">
               {PROVINCES.map((p) => <option key={p} value={p}>{p}</option>)}
             </select>
           </div>
         </div>
         <div>
-          <label className="block text-sm font-semibold mb-1.5">Suburb / area <span className="font-normal text-billboard-inkSoft">(optional)</span></label>
-          <input value={suburb} onChange={(e) => setSuburb(e.target.value)} placeholder="e.g. Sea Point" className="w-full border-2 border-billboard-ink rounded px-3 py-2.5" />
+          <label htmlFor="reach-3" className="block text-sm font-semibold mb-1.5">Suburb / area <span className="font-normal text-billboard-inkSoft">(optional)</span></label>
+          <input id="reach-3" value={suburb} onChange={(e) => setSuburb(e.target.value)} placeholder="e.g. Sea Point" className="w-full border-2 border-billboard-ink rounded px-3 py-2.5" />
         </div>
         <Button type="submit" variant="primary" size="md" disabled={loading || !isSupabaseConfigured} className="w-full">
           {loading ? "Checking…" : "Check reach"}

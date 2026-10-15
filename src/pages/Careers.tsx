@@ -389,7 +389,7 @@ export default function Careers() {
             <h2 className="font-display text-2xl md:text-3xl">Current openings.</h2>
             <p className="text-sm text-billboard-inkSoft mt-1.5 max-w-2xl">Roles published by the ChatSched team appear here automatically. Open a role to see the brief, then apply without retyping the job title.</p>
           </div>
-          <span className="font-mono text-[10px] uppercase tracking-wider border-2 border-billboard-ink rounded-full px-3 py-1.5 shrink-0">
+          <span className="font-mono text-[11px] uppercase tracking-wider border-2 border-billboard-ink rounded-full px-3 py-1.5 shrink-0">
             {careersLoading ? "Loading openings" : careers.length === 1 ? "1 opening" : careers.length + " openings"}
           </span>
         </div>
@@ -427,15 +427,15 @@ export default function Careers() {
               <article key={career.id} className="border-[3px] border-billboard-ink rounded-lg bg-white p-5 flex flex-col hover:-translate-y-0.5 transition">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="font-mono text-[10px] uppercase tracking-wider text-billboard-greenDeep font-bold mb-1">{career.department}</p>
+                    <p className="font-mono text-[11px] uppercase tracking-wider text-billboard-greenDeep font-bold mb-1">{career.department}</p>
                     <h3 className="font-display text-xl">{career.job_title}</h3>
                   </div>
                   <span className="w-2.5 h-2.5 rounded-full bg-billboard-green shrink-0 mt-2" aria-label="Open role" />
                 </div>
                 <div className="flex flex-wrap gap-2 mt-3">
-                  <span className="font-mono text-[10px] border border-billboard-ink/20 rounded-full px-2 py-1">{career.location}</span>
-                  <span className="font-mono text-[10px] border border-billboard-ink/20 rounded-full px-2 py-1">{career.remote_type === "remote" ? "Remote" : career.remote_type === "hybrid" ? "Hybrid" : "On-site"}</span>
-                  <span className="font-mono text-[10px] border border-billboard-ink/20 rounded-full px-2 py-1">{career.employment_type === "full_time" ? "Full-time" : career.employment_type === "part_time" ? "Part-time" : career.employment_type === "internship" ? "Internship" : career.employment_type.charAt(0).toUpperCase() + career.employment_type.slice(1)}</span>
+                  <span className="font-mono text-[11px] border border-billboard-ink/20 rounded-full px-2 py-1">{career.location}</span>
+                  <span className="font-mono text-[11px] border border-billboard-ink/20 rounded-full px-2 py-1">{career.remote_type === "remote" ? "Remote" : career.remote_type === "hybrid" ? "Hybrid" : "On-site"}</span>
+                  <span className="font-mono text-[11px] border border-billboard-ink/20 rounded-full px-2 py-1">{career.employment_type === "full_time" ? "Full-time" : career.employment_type === "part_time" ? "Part-time" : career.employment_type === "internship" ? "Internship" : career.employment_type.charAt(0).toUpperCase() + career.employment_type.slice(1)}</span>
                 </div>
                 <p className="text-sm text-billboard-inkSoft mt-4 leading-relaxed flex-1">{career.short_summary}</p>
                 <details className="mt-4 border-t-2 border-billboard-ink/10 pt-3">

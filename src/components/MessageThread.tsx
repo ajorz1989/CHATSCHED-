@@ -146,13 +146,13 @@ export default function MessageThread({ requestId, channelRequestId, senderRole 
                 return (
                   <div key={m.id}>
                     <div className={`text-sm p-2.5 rounded border-2 ${isMine ? "border-billboard-greenDeep bg-[#EAF3EC] ml-6" : "border-billboard-ink bg-billboard-paperDim mr-6"}`}>
-                      <p className="font-mono text-[10px] uppercase text-billboard-inkSoft mb-1">
+                      <p className="font-mono text-[11px] uppercase text-billboard-inkSoft mb-1">
                         {m.sender_role === "admin" ? "Platform" : m.sender_role === "publisher" ? "Publisher" : "Business"} · {new Date(m.created_at).toLocaleString()}
                       </p>
                       <p>{m.body}</p>
                     </div>
                     {isMyLastMessage && (
-                      <p className="text-[10px] font-mono uppercase text-billboard-inkSoft text-right mr-1 mt-0.5">
+                      <p className="text-[11px] font-mono uppercase text-billboard-inkSoft text-right mr-1 mt-0.5">
                         {m.read_at ? "Seen" : "Sent"}
                       </p>
                     )}

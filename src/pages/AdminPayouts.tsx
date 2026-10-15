@@ -97,7 +97,7 @@ export default function AdminPayouts() {
             <div key={b.id} className="border-[3px] border-billboard-ink rounded p-5">
               <div className="flex flex-wrap justify-between items-center gap-3">
                 <div>
-                  <p className="font-mono text-[10px] text-billboard-inkSoft">{b.id}</p>
+                  <p className="font-mono text-[11px] text-billboard-inkSoft">{b.id}</p>
                   <p className="text-sm mt-0.5">
                     Status: <strong className="uppercase">{b.status}</strong> · {b.total_items} item{b.total_items === 1 ? "" : "s"} ·{" "}
                     <span className="font-mono font-bold text-billboard-greenDeep">{formatCurrency(b.total_amount_cents / 100, { cents: true })}</span>
@@ -114,7 +114,7 @@ export default function AdminPayouts() {
                 <div className="mt-4 pt-4 border-t-2 border-billboard-paperDim overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="text-left text-[10px] font-mono uppercase text-billboard-inkSoft">
+                      <tr className="text-left text-[11px] font-mono uppercase text-billboard-inkSoft">
                         <th className="pb-2 pr-3">Publisher</th>
                         <th className="pb-2 pr-3">Amount</th>
                         <th className="pb-2">Status</th>

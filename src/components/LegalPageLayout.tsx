@@ -34,7 +34,7 @@ export default function LegalPageLayout({
       <div className="grid md:grid-cols-[220px_1fr] gap-10">
         <nav className="hidden md:block">
           <div className="sticky top-24 border-2 border-billboard-ink rounded p-4 bg-billboard-paperDim">
-            <h2 className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft mb-3">On this page</h2>
+            <h2 className="font-mono text-[11px] uppercase tracking-wider text-billboard-inkSoft mb-3">On this page</h2>
             <ol className="space-y-2">
               {sections.map((s, i) => (
                 <li key={s.id}>

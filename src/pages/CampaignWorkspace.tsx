@@ -330,7 +330,7 @@ function OverviewTab({
       {isBusiness && campaign.raw.agency_campaign_id && <ManagedCampaignBacklink agencyCampaignId={campaign.raw.agency_campaign_id} />}
       {needsAttention.length > 0 && (
         <div className="border-2 border-billboard-yellow rounded p-4 bg-billboard-yellow/10">
-          <p className="font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft mb-2">Needs attention</p>
+          <p className="font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft mb-2">Needs attention</p>
           <div className="flex flex-wrap gap-2">
             {needsAttention.map((n) => (
               <button key={n.tab} onClick={() => setTab(n.tab)} className="text-xs font-semibold underline text-billboard-ink">
@@ -343,26 +343,26 @@ function OverviewTab({
 
       <div className="grid sm:grid-cols-2 gap-3">
         <div className="border-2 border-billboard-ink rounded p-3">
-          <p className="text-[10px] font-mono uppercase text-billboard-inkSoft">Business</p>
+          <p className="text-[11px] font-mono uppercase text-billboard-inkSoft">Business</p>
           <p className="text-sm font-semibold">{campaign.businessName}</p>
         </div>
         <div className="border-2 border-billboard-ink rounded p-3">
-          <p className="text-[10px] font-mono uppercase text-billboard-inkSoft">Creator</p>
+          <p className="text-[11px] font-mono uppercase text-billboard-inkSoft">Creator</p>
           <p className="text-sm font-semibold">{campaign.creatorName}</p>
         </div>
         <div className="border-2 border-billboard-ink rounded p-3">
-          <p className="text-[10px] font-mono uppercase text-billboard-inkSoft">Value</p>
+          <p className="text-[11px] font-mono uppercase text-billboard-inkSoft">Value</p>
           <p className="text-sm font-semibold">{campaign.amount != null ? formatCurrency(campaign.amount) : "Not set"}</p>
         </div>
         <div className="border-2 border-billboard-ink rounded p-3">
-          <p className="text-[10px] font-mono uppercase text-billboard-inkSoft">Started</p>
+          <p className="text-[11px] font-mono uppercase text-billboard-inkSoft">Started</p>
           <p className="text-sm font-semibold">{formatDate(campaign.createdAt)}</p>
         </div>
       </div>
 
       {compliance && (
         <div className="border-2 border-billboard-ink/15 rounded p-3 flex items-center gap-3 flex-wrap">
-          <span className="text-[10px] font-mono uppercase text-billboard-inkSoft">Compliance</span>
+          <span className="text-[11px] font-mono uppercase text-billboard-inkSoft">Compliance</span>
           <ComplianceBadge status={compliance.status} />
           <RiskBadge level={compliance.risk_level} score={compliance.risk_score} />
         </div>
@@ -370,7 +370,7 @@ function OverviewTab({
 
       {trackingCampaigns.length > 0 && (
         <div className="border-2 border-billboard-ink/15 rounded p-3">
-          <p className="text-[10px] font-mono uppercase text-billboard-inkSoft mb-1">Tracking links</p>
+          <p className="text-[11px] font-mono uppercase text-billboard-inkSoft mb-1">Tracking links</p>
           <p className="text-sm">{trackingCampaigns.length} linked — see the Tracking tab for details.</p>
         </div>
       )}
@@ -384,17 +384,17 @@ function BriefTab({ campaign }: { campaign: WorkspaceCampaign }) {
   return (
     <div className="space-y-4">
       <div>
-        <p className="text-[10px] font-mono uppercase text-billboard-inkSoft mb-1">Campaign message</p>
+        <p className="text-[11px] font-mono uppercase text-billboard-inkSoft mb-1">Campaign message</p>
         <p className="text-sm whitespace-pre-wrap">{campaign.summary}</p>
       </div>
       {campaign.kind === "channel_request" && (
         <div>
-          <p className="text-[10px] font-mono uppercase text-billboard-inkSoft mb-1">Advertising method</p>
+          <p className="text-[11px] font-mono uppercase text-billboard-inkSoft mb-1">Advertising method</p>
           <p className="text-sm">{campaign.raw.advertising_method}</p>
         </div>
       )}
       <div>
-        <p className="text-[10px] font-mono uppercase text-billboard-inkSoft mb-1">{campaign.kind === "channel_request" ? "Proposed amount" : "Budget / agreed amount"}</p>
+        <p className="text-[11px] font-mono uppercase text-billboard-inkSoft mb-1">{campaign.kind === "channel_request" ? "Proposed amount" : "Budget / agreed amount"}</p>
         <p className="text-sm">{campaign.amount != null ? formatCurrency(campaign.amount) : "Not set"}</p>
       </div>
       <p className="text-xs text-billboard-inkSoft">The creative brief (image, video, caption, CTA, link) lives in the Content tab, alongside the approval workflow.</p>
@@ -489,14 +489,14 @@ function ComplianceTab({
           <p className="text-xs text-billboard-inkSoft mb-3">Tell us the platform and category so we can show what's required before publishing.</p>
           <div className="grid sm:grid-cols-2 gap-3 mb-3">
             <div>
-              <label className="font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft block mb-1">Platform</label>
+              <label className="font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft block mb-1">Platform</label>
               <select value={platform} onChange={(e) => setPlatform(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2 text-sm">
                 <option value="">Select…</option>
                 {platforms.map((p) => <option key={p.platform} value={p.platform}>{p.display_name}</option>)}
               </select>
             </div>
             <div>
-              <label className="font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft block mb-1">Category</label>
+              <label className="font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft block mb-1">Category</label>
               <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2 text-sm">
                 <option value="">Select…</option>
                 {categories.map((c) => <option key={c.category} value={c.category}>{c.category}</option>)}
@@ -512,7 +512,7 @@ function ComplianceTab({
 
       {isBusiness && compliance.status !== "not_started" && (
         <div>
-          <p className="font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft">Platform &amp; category</p>
+          <p className="font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft">Platform &amp; category</p>
           <p className="text-sm mt-0.5">{rule?.display_name ?? compliance.platform} · {compliance.category}</p>
         </div>
       )}
@@ -576,16 +576,16 @@ function TrackingTab({ campaign, campaigns, stats }: { campaign: WorkspaceCampai
           <div key={c.id} className="border-2 border-billboard-ink rounded p-4">
             <div className="flex items-center justify-between gap-2 mb-2">
               <p className="font-bold text-sm">{c.name}</p>
-              <span className="font-mono text-[10px] uppercase text-billboard-inkSoft">{c.status}</span>
+              <span className="font-mono text-[11px] uppercase text-billboard-inkSoft">{c.status}</span>
             </div>
             <p className="text-xs font-mono break-all text-billboard-inkSoft mb-1">{trackingUrl(c.slug)}</p>
             <p className="text-xs font-mono break-all text-billboard-inkSoft mb-3">{utmTaggedUrl(c)}</p>
             {s && (
               <div className="grid grid-cols-4 gap-2 text-center">
-                <div><div className="font-display text-sm">{s.clicks}</div><div className="text-[9px] font-mono uppercase text-billboard-inkSoft">Clicks</div></div>
-                <div><div className="font-display text-sm">{s.visits}</div><div className="text-[9px] font-mono uppercase text-billboard-inkSoft">Visits</div></div>
-                <div><div className="font-display text-sm">{s.leads}</div><div className="text-[9px] font-mono uppercase text-billboard-inkSoft">Leads</div></div>
-                <div><div className="font-display text-sm">{s.conversions}</div><div className="text-[9px] font-mono uppercase text-billboard-inkSoft">Conversions</div></div>
+                <div><div className="font-display text-sm">{s.clicks}</div><div className="text-[11px] font-mono uppercase text-billboard-inkSoft">Clicks</div></div>
+                <div><div className="font-display text-sm">{s.visits}</div><div className="text-[11px] font-mono uppercase text-billboard-inkSoft">Visits</div></div>
+                <div><div className="font-display text-sm">{s.leads}</div><div className="text-[11px] font-mono uppercase text-billboard-inkSoft">Leads</div></div>
+                <div><div className="font-display text-sm">{s.conversions}</div><div className="text-[11px] font-mono uppercase text-billboard-inkSoft">Conversions</div></div>
               </div>
             )}
           </div>
@@ -594,7 +594,7 @@ function TrackingTab({ campaign, campaigns, stats }: { campaign: WorkspaceCampai
       {SUPABASE_URL && SUPABASE_ANON_KEY && campaigns[0] && (
         <details className="border-2 border-billboard-ink/15 rounded p-3">
           <summary className="text-xs font-semibold cursor-pointer">Embed snippet (for {campaigns[0].name})</summary>
-          <pre className="text-[10px] mt-2 whitespace-pre-wrap break-all bg-billboard-paperDim p-2 rounded">{buildEmbedSnippet(SUPABASE_URL, SUPABASE_ANON_KEY, campaigns[0].slug)}</pre>
+          <pre className="text-[11px] mt-2 whitespace-pre-wrap break-all bg-billboard-paperDim p-2 rounded">{buildEmbedSnippet(SUPABASE_URL, SUPABASE_ANON_KEY, campaigns[0].slug)}</pre>
         </details>
       )}
       <p className="text-xs text-billboard-inkSoft">
@@ -619,11 +619,11 @@ function AnalyticsTab({ campaigns, stats }: { campaigns: Campaign[]; stats: Reco
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-        <div className="border-2 border-billboard-ink rounded p-3"><div className="font-display text-lg">{totals.clicks}</div><div className="text-[10px] font-mono uppercase text-billboard-inkSoft">Clicks</div></div>
-        <div className="border-2 border-billboard-ink rounded p-3"><div className="font-display text-lg">{totals.visits}</div><div className="text-[10px] font-mono uppercase text-billboard-inkSoft">Visits</div></div>
-        <div className="border-2 border-billboard-ink rounded p-3"><div className="font-display text-lg">{totals.leads}</div><div className="text-[10px] font-mono uppercase text-billboard-inkSoft">Leads</div></div>
-        <div className="border-2 border-billboard-ink rounded p-3"><div className="font-display text-lg">{totals.conversions}</div><div className="text-[10px] font-mono uppercase text-billboard-inkSoft">Conversions</div></div>
-        <div className="border-2 border-billboard-ink rounded p-3"><div className="font-display text-lg">{formatCurrency(totals.value)}</div><div className="text-[10px] font-mono uppercase text-billboard-inkSoft">Value</div></div>
+        <div className="border-2 border-billboard-ink rounded p-3"><div className="font-display text-lg">{totals.clicks}</div><div className="text-[11px] font-mono uppercase text-billboard-inkSoft">Clicks</div></div>
+        <div className="border-2 border-billboard-ink rounded p-3"><div className="font-display text-lg">{totals.visits}</div><div className="text-[11px] font-mono uppercase text-billboard-inkSoft">Visits</div></div>
+        <div className="border-2 border-billboard-ink rounded p-3"><div className="font-display text-lg">{totals.leads}</div><div className="text-[11px] font-mono uppercase text-billboard-inkSoft">Leads</div></div>
+        <div className="border-2 border-billboard-ink rounded p-3"><div className="font-display text-lg">{totals.conversions}</div><div className="text-[11px] font-mono uppercase text-billboard-inkSoft">Conversions</div></div>
+        <div className="border-2 border-billboard-ink rounded p-3"><div className="font-display text-lg">{formatCurrency(totals.value)}</div><div className="text-[11px] font-mono uppercase text-billboard-inkSoft">Value</div></div>
       </div>
       <p className="text-xs text-billboard-inkSoft">
         {totals.clicks > 0 ? `${((totals.visits / totals.clicks) * 100).toFixed(0)}% of clicks reached the destination page` : "No clicks recorded yet"}
@@ -642,10 +642,10 @@ function PaymentsTab({ campaign }: { campaign: WorkspaceCampaign }) {
     return (
       <div className="space-y-4">
         <div className="grid sm:grid-cols-2 gap-3">
-          <div className="border-2 border-billboard-ink rounded p-3"><p className="text-[10px] font-mono uppercase text-billboard-inkSoft">Amount</p><p className="text-sm font-semibold">{formatCurrency(r.proposed_amount)}</p></div>
-          <div className="border-2 border-billboard-ink rounded p-3"><p className="text-[10px] font-mono uppercase text-billboard-inkSoft">Payment status</p><p className="text-sm font-semibold">{r.status.replace(/_/g, " ")}</p></div>
-          <div className="border-2 border-billboard-ink rounded p-3"><p className="text-[10px] font-mono uppercase text-billboard-inkSoft">Payment submitted</p><p className="text-sm">{formatDate(r.payment_submitted_at)}</p></div>
-          <div className="border-2 border-billboard-ink rounded p-3"><p className="text-[10px] font-mono uppercase text-billboard-inkSoft">Payment confirmed</p><p className="text-sm">{formatDate(r.paid_at)}</p></div>
+          <div className="border-2 border-billboard-ink rounded p-3"><p className="text-[11px] font-mono uppercase text-billboard-inkSoft">Amount</p><p className="text-sm font-semibold">{formatCurrency(r.proposed_amount)}</p></div>
+          <div className="border-2 border-billboard-ink rounded p-3"><p className="text-[11px] font-mono uppercase text-billboard-inkSoft">Payment status</p><p className="text-sm font-semibold">{r.status.replace(/_/g, " ")}</p></div>
+          <div className="border-2 border-billboard-ink rounded p-3"><p className="text-[11px] font-mono uppercase text-billboard-inkSoft">Payment submitted</p><p className="text-sm">{formatDate(r.payment_submitted_at)}</p></div>
+          <div className="border-2 border-billboard-ink rounded p-3"><p className="text-[11px] font-mono uppercase text-billboard-inkSoft">Payment confirmed</p><p className="text-sm">{formatDate(r.paid_at)}</p></div>
         </div>
         {r.status === "awaiting_payment" && (
           <div>
@@ -663,10 +663,10 @@ function PaymentsTab({ campaign }: { campaign: WorkspaceCampaign }) {
   return (
     <div className="space-y-4">
       <div className="grid sm:grid-cols-2 gap-3">
-        <div className="border-2 border-billboard-ink rounded p-3"><p className="text-[10px] font-mono uppercase text-billboard-inkSoft">Agreed amount</p><p className="text-sm font-semibold">{r.agreed_amount != null ? formatCurrency(r.agreed_amount) : "Not agreed yet"}</p></div>
-        <div className="border-2 border-billboard-ink rounded p-3"><p className="text-[10px] font-mono uppercase text-billboard-inkSoft">Payment status</p><p className="text-sm font-semibold">{payment?.status ?? "No payment yet"}</p></div>
-        <div className="border-2 border-billboard-ink rounded p-3"><p className="text-[10px] font-mono uppercase text-billboard-inkSoft">Method</p><p className="text-sm">{payment?.method ?? "—"}</p></div>
-        <div className="border-2 border-billboard-ink rounded p-3"><p className="text-[10px] font-mono uppercase text-billboard-inkSoft">Paid</p><p className="text-sm">{formatDate(payment?.paid_at)}</p></div>
+        <div className="border-2 border-billboard-ink rounded p-3"><p className="text-[11px] font-mono uppercase text-billboard-inkSoft">Agreed amount</p><p className="text-sm font-semibold">{r.agreed_amount != null ? formatCurrency(r.agreed_amount) : "Not agreed yet"}</p></div>
+        <div className="border-2 border-billboard-ink rounded p-3"><p className="text-[11px] font-mono uppercase text-billboard-inkSoft">Payment status</p><p className="text-sm font-semibold">{payment?.status ?? "No payment yet"}</p></div>
+        <div className="border-2 border-billboard-ink rounded p-3"><p className="text-[11px] font-mono uppercase text-billboard-inkSoft">Method</p><p className="text-sm">{payment?.method ?? "—"}</p></div>
+        <div className="border-2 border-billboard-ink rounded p-3"><p className="text-[11px] font-mono uppercase text-billboard-inkSoft">Paid</p><p className="text-sm">{formatDate(payment?.paid_at)}</p></div>
       </div>
       {!payment && <p className="text-xs text-billboard-inkSoft">Start or confirm payment from your dashboard.</p>}
     </div>
@@ -696,19 +696,19 @@ function ReportTab({
     <div className="space-y-4">
       <p className="text-xs text-billboard-inkSoft">A quick rollup of this campaign end to end — for a document to send someone, screenshot this tab.</p>
       <div className="border-2 border-billboard-ink rounded p-4">
-        <p className="text-[10px] font-mono uppercase text-billboard-inkSoft mb-1">Deal</p>
+        <p className="text-[11px] font-mono uppercase text-billboard-inkSoft mb-1">Deal</p>
         <p className="text-sm">{campaign.businessName} × {campaign.creatorName} — {campaign.amount != null ? formatCurrency(campaign.amount) : "amount not set"} — status: {campaign.status.replace(/_/g, " ")}</p>
       </div>
       <div className="border-2 border-billboard-ink rounded p-4">
-        <p className="text-[10px] font-mono uppercase text-billboard-inkSoft mb-1">Compliance</p>
+        <p className="text-[11px] font-mono uppercase text-billboard-inkSoft mb-1">Compliance</p>
         <p className="text-sm">{compliance ? `${compliance.status.replace(/_/g, " ")}${compliance.risk_level ? ` · risk: ${compliance.risk_level}` : ""}` : "No compliance record"}</p>
       </div>
       <div className="border-2 border-billboard-ink rounded p-4">
-        <p className="text-[10px] font-mono uppercase text-billboard-inkSoft mb-1">Proof</p>
+        <p className="text-[11px] font-mono uppercase text-billboard-inkSoft mb-1">Proof</p>
         <p className="text-sm">{proof.length > 0 ? `${proof.length} submission${proof.length === 1 ? "" : "s"} — latest: ${proof[0].status.replace(/_/g, " ")}` : "No proof submitted yet"}</p>
       </div>
       <div className="border-2 border-billboard-ink rounded p-4">
-        <p className="text-[10px] font-mono uppercase text-billboard-inkSoft mb-1">Performance</p>
+        <p className="text-[11px] font-mono uppercase text-billboard-inkSoft mb-1">Performance</p>
         <p className="text-sm">{totals.clicks} clicks · {totals.visits} visits · {totals.leads} leads · {totals.conversions} conversions</p>
       </div>
     </div>

@@ -187,20 +187,20 @@ export default function Register() {
 
       <form onSubmit={handleSubmit} className="border-[3px] border-billboard-ink rounded p-6">
         <div className="mb-4">
-          <label className="block text-sm font-semibold mb-1.5">Your name</label>
-          <input required value={fullName} onChange={(e) => setFullName(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5" />
+          <label htmlFor="reg-1" className="block text-sm font-semibold mb-1.5">Your name</label>
+          <input id="reg-1" autoComplete="name" required value={fullName} onChange={(e) => setFullName(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5" />
         </div>
         {role === "business" && (
           <div className="mb-4">
-            <label className="block text-sm font-semibold mb-1.5">Business name</label>
-            <input required value={companyName} onChange={(e) => setCompanyName(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5" />
+            <label htmlFor="reg-2" className="block text-sm font-semibold mb-1.5">Business name</label>
+            <input id="reg-2" autoComplete="organization" required value={companyName} onChange={(e) => setCompanyName(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5" />
           </div>
         )}
         {role === "business" && (
           <>
             <div className="mb-4">
-              <label className="block text-sm font-semibold mb-1.5">Business type</label>
-              <select required value={businessType} onChange={(e) => { setBusinessType(e.target.value); setOpportunityPreferences([]); }} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5">
+              <label htmlFor="reg-3" className="block text-sm font-semibold mb-1.5">Business type</label>
+              <select id="reg-3" required value={businessType} onChange={(e) => { setBusinessType(e.target.value); setOpportunityPreferences([]); }} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5">
                 <option value="">Select your business type</option>
                 <option>Educational Institution / School</option><option>Retail / SMME</option><option>Event Organizer</option><option>Corporate Brand</option><option>Venue Owner</option><option>Non-profit / Community Organisation</option><option>Sports Club / Organisation</option><option>Media / Publisher</option><option>Other</option>
               </select>
@@ -224,16 +224,16 @@ export default function Register() {
           </>
         )}
         <div className="mb-4">
-          <label className="block text-sm font-semibold mb-1.5">Mobile number{role === "business" ? " (WhatsApp works best)" : ""}</label>
-          <input required value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5" />
+          <label htmlFor="reg-4" className="block text-sm font-semibold mb-1.5">Mobile number{role === "business" ? " (WhatsApp works best)" : ""}</label>
+          <input id="reg-4" autoComplete="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5" />
         </div>
         <div className="mb-4">
-          <label className="block text-sm font-semibold mb-1.5">Email</label>
-          <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5" />
+          <label htmlFor="reg-5" className="block text-sm font-semibold mb-1.5">Email</label>
+          <input id="reg-5" autoComplete="email" required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5" />
         </div>
         <div className="mb-4">
-          <label className="block text-sm font-semibold mb-1.5">Password</label>
-          <input required minLength={8} type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5" />
+          <label htmlFor="reg-6" className="block text-sm font-semibold mb-1.5">Password</label>
+          <input id="reg-6" autoComplete="new-password" required minLength={8} type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5" />
           <p className="text-xs text-billboard-inkSoft mt-1">At least 8 characters.</p>
         </div>
         <div {...wrapperProps}>
@@ -256,7 +256,7 @@ export default function Register() {
 
       <div className="flex items-center gap-3 my-5">
         <div className="flex-1 h-px bg-billboard-paperDim" />
-        <span className="text-[10px] font-mono uppercase text-billboard-inkSoft">or</span>
+        <span className="text-[11px] font-mono uppercase text-billboard-inkSoft">or</span>
         <div className="flex-1 h-px bg-billboard-paperDim" />
       </div>
 

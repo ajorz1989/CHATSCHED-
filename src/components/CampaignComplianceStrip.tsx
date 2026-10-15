@@ -29,10 +29,10 @@ export default function CampaignComplianceStrip({ campaignId }: { campaignId: st
 
   return (
     <div className="flex flex-wrap items-center gap-2.5 border-2 border-billboard-paperDim rounded px-3 py-2 my-3 text-sm">
-      <span className="font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft">Campaign status</span>
+      <span className="font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft">Campaign status</span>
       <ComplianceBadge status={compliance.status} />
       {outstanding.length > 0 && <span className="text-billboard-inkSoft text-xs">{outstanding.join(" · ")}</span>}
-      <Link to={`/campaigns/${campaignId}?tab=compliance`} className="ml-auto font-mono text-[10px] font-semibold uppercase text-billboard-greenDeep underline whitespace-nowrap">
+      <Link to={`/campaigns/${campaignId}?tab=compliance`} className="ml-auto font-mono text-[11px] font-semibold uppercase text-billboard-greenDeep underline whitespace-nowrap">
         View campaign requirements
       </Link>
     </div>

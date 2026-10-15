@@ -88,10 +88,10 @@ export default function PodcastVerificationPanel({ publisher, onChange }: { publ
         </div>
       ) : (
         <>
-          <p className="font-mono text-[10px] font-bold uppercase tracking-wide text-billboard-inkSoft mb-2">Step 1 · Your verification code</p>
+          <p className="font-mono text-[11px] font-bold uppercase tracking-wide text-billboard-inkSoft mb-2">Step 1 · Your verification code</p>
           {code && (
             <div className="border-2 border-billboard-ink rounded p-3 mb-2">
-              <p className="font-mono text-[10px] uppercase text-billboard-inkSoft">Your code</p>
+              <p className="font-mono text-[11px] uppercase text-billboard-inkSoft">Your code</p>
               <p className="text-lg font-bold font-mono tracking-wider">{code}</p>
             </div>
           )}
@@ -108,14 +108,14 @@ export default function PodcastVerificationPanel({ publisher, onChange }: { publ
 
           {code && (
             <>
-              <p className="font-mono text-[10px] font-bold uppercase tracking-wide text-billboard-inkSoft mb-2 mt-6">Step 2 · Put it in your show</p>
+              <p className="font-mono text-[11px] font-bold uppercase tracking-wide text-billboard-inkSoft mb-2 mt-6">Step 2 · Put it in your show</p>
               <div className="border-2 border-billboard-ink/20 rounded p-3">
                 <p className="text-sm font-semibold">Paste this line into your show description <span className="font-normal text-billboard-inkSoft">— or into the notes of any recent episode</span></p>
                 <p className="text-xs text-billboard-inkSoft">Do this in your podcast host's dashboard (Spotify for Creators, Buzzsprout, Podbean and so on), then save and publish. You can remove it once you're verified.</p>
                 <CopyField label="Line to paste" value={podcastSnippet(code)} />
               </div>
 
-              <p className="font-mono text-[10px] font-bold uppercase tracking-wide text-billboard-inkSoft mb-2 mt-6">Step 3 · Check it</p>
+              <p className="font-mono text-[11px] font-bold uppercase tracking-wide text-billboard-inkSoft mb-2 mt-6">Step 3 · Check it</p>
               <button
                 type="button"
                 onClick={checkNow}

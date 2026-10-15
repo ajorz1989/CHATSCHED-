@@ -83,7 +83,7 @@ export default function CreatorHomeSummary({
               {opportunities.map((o) => (
                 <Link key={o.id} to={`/campaigns/${o.id}`} className="flex items-center justify-between text-sm hover:text-billboard-greenDeep">
                   <span className="font-semibold">{o.name}</span>
-                  <span className="text-billboard-inkSoft font-mono text-[10px]">{new Date(o.created_at).toLocaleDateString("en-ZA")}</span>
+                  <span className="text-billboard-inkSoft font-mono text-[11px]">{new Date(o.created_at).toLocaleDateString("en-ZA")}</span>
                 </Link>
               ))}
             </div>

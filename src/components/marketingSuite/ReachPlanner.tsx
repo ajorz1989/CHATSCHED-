@@ -92,7 +92,7 @@ export default function ReachPlanner() {
                 >
                   <div className="flex justify-between gap-2">
                     <p className="font-bold text-sm">{m.publisher.name}</p>
-                    <span className="font-mono text-[10px] font-bold uppercase bg-billboard-ink text-white px-2 py-1 rounded">
+                    <span className="font-mono text-[11px] font-bold uppercase bg-billboard-ink text-white px-2 py-1 rounded">
                       {m.score}% match
                     </span>
                   </div>

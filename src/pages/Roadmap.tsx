@@ -56,7 +56,7 @@ export default function Roadmap() {
 
       <section className="bg-billboard-paperDim border-y-[3px] border-billboard-ink py-16">
         <div className="max-w-3xl mx-auto px-5">
-          <span className="font-mono text-xs font-semibold tracking-wider uppercase text-billboard-yellowDeep">Next</span>
+          <span className="font-mono text-xs font-semibold tracking-wider uppercase text-[#7A5C00]">Next</span>
           <h2 className="font-display text-xl mt-2 mb-8">What's being explored.</h2>
           <div className="space-y-5">
             {NEXT.map((item) => (

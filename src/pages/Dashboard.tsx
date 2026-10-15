@@ -557,7 +557,7 @@ function RequestCard({ request: r, onChange }: { request: PublisherRequest; onCh
         </div>
       )}
 
-      <Link to={`/campaigns/${r.id}`} className="inline-block font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft underline mt-3">
+      <Link to={`/campaigns/${r.id}`} className="inline-block font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft underline mt-3">
         Open campaign workspace →
       </Link>
       <CampaignComplianceStrip campaignId={r.id} />

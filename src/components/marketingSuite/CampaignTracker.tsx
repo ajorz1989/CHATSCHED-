@@ -16,12 +16,12 @@ function CopyField({ label, value, mono }: { label: string; value: string; mono?
   return (
     <div className="flex items-center justify-between gap-3 py-1.5 border-b border-billboard-ink/10 last:border-b-0">
       <div className="min-w-0">
-        <p className="font-mono text-[10px] uppercase text-billboard-inkSoft">{label}</p>
+        <p className="font-mono text-[11px] uppercase text-billboard-inkSoft">{label}</p>
         <p className={`text-sm font-semibold truncate ${mono ? "font-mono" : ""}`} title={value}>{value}</p>
       </div>
       <button
         onClick={() => { navigator.clipboard.writeText(value); setCopied(true); setTimeout(() => setCopied(false), 1500); }}
-        className="font-mono text-[10px] font-semibold uppercase border-2 border-billboard-ink rounded px-2 py-1 hover:bg-billboard-paperDim transition shrink-0"
+        className="font-mono text-[11px] font-semibold uppercase border-2 border-billboard-ink rounded px-2 py-1 hover:bg-billboard-paperDim transition shrink-0"
       >
         {copied ? "Copied ✓" : "Copy"}
       </button>
@@ -33,7 +33,7 @@ function Stat({ label, value }: { label: string; value: string | number }) {
   return (
     <div className="border-2 border-billboard-ink rounded p-3">
       <div className="font-display text-lg">{value}</div>
-      <div className="text-[10px] font-mono uppercase text-billboard-inkSoft mt-0.5">{label}</div>
+      <div className="text-[11px] font-mono uppercase text-billboard-inkSoft mt-0.5">{label}</div>
     </div>
   );
 }
@@ -242,7 +242,7 @@ function CampaignCard({
           <p className="font-display text-lg">{campaign.name}</p>
           <p className="text-xs text-billboard-inkSoft">Created {new Date(campaign.created_at).toLocaleDateString("en-ZA")}</p>
         </div>
-        <span className={`font-mono text-[10px] font-semibold uppercase px-2.5 py-1 rounded border-2 ${STATUS_STYLE[campaign.status]}`}>
+        <span className={`font-mono text-[11px] font-semibold uppercase px-2.5 py-1 rounded border-2 ${STATUS_STYLE[campaign.status]}`}>
           {campaign.status}
         </span>
       </div>
@@ -284,17 +284,17 @@ function CampaignCard({
 
       <div className="flex flex-wrap gap-2 mt-4 pt-3 border-t border-billboard-ink/10">
         {campaign.status !== "active" && (
-          <button type="button" onClick={() => onStatusChange("active")} className="font-mono text-[10px] font-semibold uppercase border-2 border-billboard-greenDeep text-billboard-greenDeep rounded px-2.5 py-1.5 hover:bg-billboard-green/10 transition">
+          <button type="button" onClick={() => onStatusChange("active")} className="font-mono text-[11px] font-semibold uppercase border-2 border-billboard-greenDeep text-billboard-greenDeep rounded px-2.5 py-1.5 hover:bg-billboard-green/10 transition">
             Activate
           </button>
         )}
         {campaign.status === "active" && (
-          <button type="button" onClick={() => onStatusChange("paused")} className="font-mono text-[10px] font-semibold uppercase border-2 border-billboard-ink rounded px-2.5 py-1.5 hover:bg-billboard-paperDim transition">
+          <button type="button" onClick={() => onStatusChange("paused")} className="font-mono text-[11px] font-semibold uppercase border-2 border-billboard-ink rounded px-2.5 py-1.5 hover:bg-billboard-paperDim transition">
             Pause
           </button>
         )}
         {campaign.status !== "archived" && (
-          <button type="button" onClick={() => onStatusChange("archived")} className="font-mono text-[10px] font-semibold uppercase border-2 border-billboard-red text-billboard-red rounded px-2.5 py-1.5 hover:bg-billboard-red/10 transition">
+          <button type="button" onClick={() => onStatusChange("archived")} className="font-mono text-[11px] font-semibold uppercase border-2 border-billboard-red text-billboard-red rounded px-2.5 py-1.5 hover:bg-billboard-red/10 transition">
             Archive
           </button>
         )}
@@ -312,7 +312,7 @@ function EmbedSnippet({ slug }: { slug: string }) {
         <pre className="text-[11px] font-mono bg-billboard-ink text-white rounded p-3.5 overflow-x-auto whitespace-pre-wrap break-all">{snippet}</pre>
         <button
           onClick={() => { navigator.clipboard.writeText(snippet); setCopied(true); setTimeout(() => setCopied(false), 1500); }}
-          className="absolute top-2 right-2 font-mono text-[10px] font-semibold uppercase bg-billboard-yellow text-billboard-ink rounded px-2 py-1"
+          className="absolute top-2 right-2 font-mono text-[11px] font-semibold uppercase bg-billboard-yellow text-billboard-ink rounded px-2 py-1"
         >
           {copied ? "Copied ✓" : "Copy"}
         </button>

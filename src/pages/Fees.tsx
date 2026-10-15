@@ -86,15 +86,15 @@ function FeeCalculator() {
         aria-label={`Campaign ${rand(value)}, fee ${rand(fee)}, you earn ${rand(earnings)}`}
       >
         <div>
-          <div className="font-mono text-[10px] uppercase text-billboard-inkSoft mb-1">Campaign</div>
+          <div className="font-mono text-[11px] uppercase text-billboard-inkSoft mb-1">Campaign</div>
           <div className="font-display text-xl">{rand(value)}</div>
         </div>
         <div>
-          <div className="font-mono text-[10px] uppercase text-billboard-inkSoft mb-1">Fee ({commissionPct}%)</div>
+          <div className="font-mono text-[11px] uppercase text-billboard-inkSoft mb-1">Fee ({commissionPct}%)</div>
           <div className="font-display text-xl">−{rand(fee)}</div>
         </div>
         <div>
-          <div className="font-mono text-[10px] uppercase text-billboard-inkSoft mb-1">You earn</div>
+          <div className="font-mono text-[11px] uppercase text-billboard-inkSoft mb-1">You earn</div>
           <div className="font-display text-xl text-billboard-greenDeep">{rand(earnings)}</div>
         </div>
       </div>

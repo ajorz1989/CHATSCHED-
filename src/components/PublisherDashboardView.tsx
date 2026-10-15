@@ -918,7 +918,7 @@ function PublisherRequestCard({ request: r, publisher, onChange }: { request: Pu
           <p className="font-bold">
             {r.business?.company_name || r.business?.full_name || "A business"}
             {businessLevel && (
-              <span className="ml-2 font-mono text-[10px] uppercase text-billboard-inkSoft">
+              <span className="ml-2 font-mono text-[11px] uppercase text-billboard-inkSoft">
                 <TrustBadge kind="business" level={businessLevel} />
               </span>
             )}
@@ -954,7 +954,7 @@ function PublisherRequestCard({ request: r, publisher, onChange }: { request: Pu
         </div>
       )}
 
-      <Link to={`/campaigns/${r.id}`} className="inline-block font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft underline mt-3">
+      <Link to={`/campaigns/${r.id}`} className="inline-block font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft underline mt-3">
         Open campaign workspace →
       </Link>
       <CampaignComplianceStrip campaignId={r.id} />
@@ -1101,7 +1101,7 @@ function ChannelRequestCard({ request: r, publisher, onChange }: { request: Chan
           </p>
           {(
             <div className="mb-3">
-              <label className="block text-[10px] font-mono uppercase text-billboard-inkSoft mb-1">Go-live date (required to approve)</label>
+              <label className="block text-[11px] font-mono uppercase text-billboard-inkSoft mb-1">Go-live date (required to approve)</label>
               <input type="date" value={goLiveDate} min={new Date().toISOString().slice(0, 10)} onChange={(e) => setGoLiveDate(e.target.value)} className="border-2 border-billboard-ink rounded px-2 py-1.5 text-sm bg-white" />
             </div>
           )}
@@ -1126,7 +1126,7 @@ function ChannelRequestCard({ request: r, publisher, onChange }: { request: Chan
               <p className="text-xs font-semibold mb-2">One counter-offer — the business can accept or decline it, no further back-and-forth here (use messages for that).</p>
               <div className="flex gap-2 items-start flex-wrap mb-2">
                 <div>
-                  <label className="block text-[10px] font-mono uppercase text-billboard-inkSoft mb-1">Your price (R)</label>
+                  <label className="block text-[11px] font-mono uppercase text-billboard-inkSoft mb-1">Your price (R)</label>
                   <input
                     type="number"
                     min="1"
@@ -1137,7 +1137,7 @@ function ChannelRequestCard({ request: r, publisher, onChange }: { request: Chan
                   />
                 </div>
                 <div className="flex-1 min-w-[180px]">
-                  <label className="block text-[10px] font-mono uppercase text-billboard-inkSoft mb-1">Note (optional)</label>
+                  <label className="block text-[11px] font-mono uppercase text-billboard-inkSoft mb-1">Note (optional)</label>
                   <input
                     type="text"
                     value={counterNote}
@@ -1220,7 +1220,7 @@ function ChannelRequestCard({ request: r, publisher, onChange }: { request: Chan
         </p>
       )}
 
-      <Link to={`/campaigns/${r.id}`} className="inline-block font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft underline mt-3">
+      <Link to={`/campaigns/${r.id}`} className="inline-block font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft underline mt-3">
         Open campaign workspace →
       </Link>
       <CampaignComplianceStrip campaignId={r.id} />

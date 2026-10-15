@@ -134,7 +134,7 @@ export default function CampaignCompliance() {
 
       {isBusiness && compliance.status !== "not_started" && (
         <div className="mb-6">
-          <p className="font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft">Platform &amp; category</p>
+          <p className="font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft">Platform &amp; category</p>
           <p className="text-sm mt-0.5">
             {rule?.display_name ?? compliance.platform} · {compliance.category}
           </p>
@@ -250,7 +250,7 @@ function CampaignContextForm({
       <p className="text-xs text-billboard-inkSoft mb-3">Tell us the platform and category so we can show what's required before publishing.</p>
       <div className="grid sm:grid-cols-2 gap-3 mb-3">
         <div>
-          <label className="font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft block mb-1">Platform</label>
+          <label className="font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft block mb-1">Platform</label>
           <select value={platform} onChange={(e) => setPlatform(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2 text-sm">
             <option value="">Select…</option>
             {platforms.map((p) => (
@@ -259,7 +259,7 @@ function CampaignContextForm({
           </select>
         </div>
         <div>
-          <label className="font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft block mb-1">Category</label>
+          <label className="font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft block mb-1">Category</label>
           <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2 text-sm">
             <option value="">Select…</option>
             {categories.map((c) => (

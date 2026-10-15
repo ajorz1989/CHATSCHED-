@@ -48,7 +48,7 @@ export default function TrustBadge({
   if (!meta) return null;
 
   return (
-    <span className={`inline-flex items-center gap-1.5 border-2 border-billboard-ink bg-billboard-yellow text-billboard-ink rounded px-2.5 py-1 font-mono text-[10px] font-semibold uppercase ${className}`}>
+    <span className={`inline-flex items-center gap-1.5 border-2 border-billboard-ink bg-billboard-yellow text-billboard-ink rounded px-2.5 py-1 font-mono text-[11px] font-semibold uppercase ${className}`}>
       <RingMark count={RING_COUNT[level]} className={`w-5 h-5 ${RING_TONE[level]}`} />
       {showLabel && meta.label}
     </span>

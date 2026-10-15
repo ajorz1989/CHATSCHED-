@@ -474,8 +474,8 @@ export default function AdminTools() {
                 <div>
                   <p className="font-semibold text-sm flex items-center gap-2 flex-wrap">
                     {tool.name}
-                    {tool.featured && <span className="text-[10px] font-mono uppercase border border-billboard-yellowDeep text-billboard-yellowDeep px-1.5 py-0.5 rounded">Featured</span>}
-                    <span className="text-[10px] font-mono uppercase border border-billboard-ink text-billboard-inkSoft px-1.5 py-0.5 rounded">{TOOL_STATUS_LABEL[tool.status]}</span>
+                    {tool.featured && <span className="text-[11px] font-mono uppercase border border-billboard-yellowDeep text-billboard-yellowDeep px-1.5 py-0.5 rounded">Featured</span>}
+                    <span className="text-[11px] font-mono uppercase border border-billboard-ink text-billboard-inkSoft px-1.5 py-0.5 rounded">{TOOL_STATUS_LABEL[tool.status]}</span>
                   </p>
                   <p className="text-xs text-billboard-inkSoft mt-1">
                     /{tool.slug} · {TOOL_CATEGORIES.find((c) => c.value === tool.category)?.label ?? tool.category} · {TOOL_TYPE_LABEL[tool.tool_type]} · {priceSummary(tool)}
@@ -543,7 +543,7 @@ function ToolEditor({
     <div className="border-[3px] border-billboard-ink rounded p-5 mb-8 bg-billboard-paperDim">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
         <h2 className="font-display text-lg">{isNew ? "New tool" : `Editing: ${form.name || form.slug}`}</h2>
-        <span className="font-mono text-[10px] uppercase tracking-wide border border-billboard-ink/20 rounded px-2 py-1 text-billboard-inkSoft">
+        <span className="font-mono text-[11px] uppercase tracking-wide border border-billboard-ink/20 rounded px-2 py-1 text-billboard-inkSoft">
           {childContentReady ? "Supporting content ready" : "Loading supporting content…"}
         </span>
       </div>

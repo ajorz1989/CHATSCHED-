@@ -164,7 +164,7 @@ export default function ContentStudio() {
   if (!isActivated) {
     return (
       <div className="border-[3px] border-billboard-ink rounded-lg p-6 md:p-8 bg-billboard-paperDim">
-        <span className="inline-block font-mono text-[10px] font-semibold uppercase tracking-wider border-2 border-billboard-ink bg-billboard-yellow px-2.5 py-1 rounded mb-3">AI Content Studio</span>
+        <span className="inline-block font-mono text-[11px] font-semibold uppercase tracking-wider border-2 border-billboard-ink bg-billboard-yellow px-2.5 py-1 rounded mb-3">AI Content Studio</span>
         <h3 className="font-display text-xl mb-2">Included with Premium access.</h3>
         <p className="text-sm text-billboard-inkSoft max-w-lg mb-5">This tool is part of your full Marketing Suite. Get Premium access to unlock it — there is no separate Content Studio payment.</p>
         <Link to="/account#premium" className="inline-flex items-center gap-2 bg-billboard-yellow border-[3px] border-billboard-ink font-bold px-5 py-3 rounded hover:-translate-y-0.5 transition">
@@ -257,12 +257,12 @@ export default function ContentStudio() {
             return (
               <div key={id} className="border-2 border-billboard-ink rounded p-4">
                 <div className="flex items-center justify-between gap-3 mb-2">
-                  <span className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft">{format?.label ?? id}</span>
+                  <span className="font-mono text-[11px] uppercase tracking-wider text-billboard-inkSoft">{format?.label ?? id}</span>
                   <div className="flex gap-2 shrink-0">
-                    <button onClick={() => copyResult(id, text)} className="font-mono text-[10px] font-semibold uppercase border-2 border-billboard-ink rounded px-2.5 py-1 hover:bg-billboard-paperDim transition">
+                    <button onClick={() => copyResult(id, text)} className="font-mono text-[11px] font-semibold uppercase border-2 border-billboard-ink rounded px-2.5 py-1 hover:bg-billboard-paperDim transition">
                       {copiedId === id ? "Copied ✓" : "Copy"}
                     </button>
-                    <button onClick={() => sendToCreator(text)} className="font-mono text-[10px] font-semibold uppercase border-2 border-billboard-ink bg-billboard-green text-white rounded px-2.5 py-1 hover:bg-billboard-greenDeep transition">
+                    <button onClick={() => sendToCreator(text)} className="font-mono text-[11px] font-semibold uppercase border-2 border-billboard-ink bg-billboard-green text-white rounded px-2.5 py-1 hover:bg-billboard-greenDeep transition">
                       Send to Creator
                     </button>
                   </div>

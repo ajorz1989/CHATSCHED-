@@ -274,8 +274,8 @@ export default function BudgetCalculator() {
 
           {/* 1. Industry */}
           <div>
-            <label className="block text-sm font-semibold mb-2">What industry are you in?</label>
-            <select
+            <label htmlFor="budget-1" className="block text-sm font-semibold mb-2">What industry are you in?</label>
+            <select id="budget-1"
               value={industry}
               onChange={(e) => setIndustry(e.target.value)}
               className="w-full border-2 border-billboard-ink rounded px-3 py-2.5 bg-white"
@@ -302,10 +302,10 @@ export default function BudgetCalculator() {
 
           {/* 2. Customer LTV */}
           <div>
-            <label className="block text-sm font-semibold mb-2">
+            <label htmlFor="budget-2" className="block text-sm font-semibold mb-2">
               What's a typical customer worth to you over their lifetime? (R)
             </label>
-            <input
+            <input id="budget-2"
               type="number"
               min={0}
               value={customerValue}
@@ -319,11 +319,11 @@ export default function BudgetCalculator() {
 
           {/* 3. Repeat purchase probability */}
           <div>
-            <label className="flex items-center justify-between text-sm font-semibold mb-2">
+            <label htmlFor="budget-3" className="flex items-center justify-between text-sm font-semibold mb-2">
               <span>Chance a new customer buys again (%)</span>
               <span className="font-mono text-billboard-inkSoft">{repeatPurchaseRate}%</span>
             </label>
-            <input
+            <input id="budget-3"
               type="range" min={0} max={100} step={5}
               value={repeatPurchaseRate}
               onChange={(e) => setRepeatPurchaseRate(Number(e.target.value))}
@@ -336,11 +336,11 @@ export default function BudgetCalculator() {
 
           {/* 4. Acceptable CAC % */}
           <div>
-            <label className="flex items-center justify-between text-sm font-semibold mb-2">
+            <label htmlFor="budget-4" className="flex items-center justify-between text-sm font-semibold mb-2">
               <span>Max % of that LTV you'd spend to acquire one customer</span>
               <span className="font-mono text-billboard-inkSoft">{acceptablePct}%</span>
             </label>
-            <input
+            <input id="budget-4"
               type="range" min={5} max={60} step={1}
               value={acceptablePct}
               onChange={(e) => setAcceptablePct(Number(e.target.value))}
@@ -364,8 +364,8 @@ export default function BudgetCalculator() {
 
           {/* 5. Target customers */}
           <div>
-            <label className="block text-sm font-semibold mb-2">How many new customers is this campaign aiming for?</label>
-            <input
+            <label htmlFor="budget-5" className="block text-sm font-semibold mb-2">How many new customers is this campaign aiming for?</label>
+            <input id="budget-5"
               type="number" min={1} value={targetCustomers}
               onChange={(e) => setTargetCustomers(Math.max(1, Number(e.target.value) || 1))}
               className="w-full border-2 border-billboard-ink rounded px-3 py-2.5"
@@ -455,10 +455,10 @@ export default function BudgetCalculator() {
 
           {/* 10. Existing marketing spend */}
           <div>
-            <label className="block text-sm font-semibold mb-2">
+            <label htmlFor="budget-6" className="block text-sm font-semibold mb-2">
               What do you currently spend on marketing per month? (R)
             </label>
-            <input
+            <input id="budget-6"
               type="number" min={0} value={existingMonthlySpend}
               onChange={(e) => setExistingMonthlySpend(Number(e.target.value) || 0)}
               className="w-full border-2 border-billboard-ink rounded px-3 py-2.5"

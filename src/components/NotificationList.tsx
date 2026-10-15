@@ -32,9 +32,9 @@ export default function NotificationList({
   return (
     <>
       <div className="flex items-center justify-between px-4 py-3 border-b-2 border-billboard-ink bg-billboard-paperDim">
-        <span className="font-mono text-[10px] font-semibold uppercase tracking-wider">Notifications</span>
+        <span className="font-mono text-[11px] font-semibold uppercase tracking-wider">Notifications</span>
         {unreadCount > 0 && (
-          <button onClick={onMarkAllRead} className="font-mono text-[10px] font-semibold uppercase underline text-billboard-inkSoft hover:text-billboard-ink">
+          <button onClick={onMarkAllRead} className="font-mono text-[11px] font-semibold uppercase underline text-billboard-inkSoft hover:text-billboard-ink">
             Mark all read
           </button>
         )}
@@ -62,7 +62,7 @@ export default function NotificationList({
                 <div className="min-w-0">
                   <p className={`text-sm leading-snug ${!n.read_at ? "font-bold" : "font-semibold"}`}>{n.title}</p>
                   <p className="text-xs text-billboard-inkSoft mt-0.5 leading-snug">{n.body}</p>
-                  <p className="font-mono text-[10px] text-billboard-inkSoft mt-1">{timeAgo(n.created_at)}</p>
+                  <p className="font-mono text-[11px] text-billboard-inkSoft mt-1">{timeAgo(n.created_at)}</p>
                 </div>
               </div>
             </button>

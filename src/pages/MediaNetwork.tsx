@@ -75,7 +75,7 @@ export default function MediaNetwork() {
                         }`}
                       >
                         {!enabled && (
-                          <span className="absolute top-3 right-3 font-mono text-[10px] font-semibold uppercase tracking-wide text-billboard-inkSoft bg-white/70 border border-billboard-inkSoft/40 rounded-full px-2 py-0.5">
+                          <span className="absolute top-3 right-3 font-mono text-[11px] font-semibold uppercase tracking-wide text-billboard-inkSoft bg-white/70 border border-billboard-inkSoft/40 rounded-full px-2 py-0.5">
                             Coming soon
                           </span>
                         )}

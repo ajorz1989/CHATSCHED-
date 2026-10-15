@@ -47,7 +47,7 @@ export default function LanguageSwitcher({ compact = false }: { compact?: boolea
         aria-haspopup="listbox"
         className={
           compact
-            ? "font-mono text-xs font-semibold uppercase text-billboard-paperDim hover:text-billboard-yellow transition-colors"
+            ? "font-mono text-xs font-semibold uppercase py-1.5 px-1 text-billboard-paperDim hover:text-billboard-yellow transition-colors"
             : "font-mono text-xs font-semibold uppercase border-2 border-billboard-ink rounded px-2.5 py-1.5 hover:bg-billboard-paperDim transition"
         }
       >

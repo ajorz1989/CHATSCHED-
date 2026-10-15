@@ -147,7 +147,7 @@ export default function Messages() {
                       className={`w-full text-left px-4 py-3 border-b border-billboard-ink/10 last:border-b-0 hover:bg-white transition ${selected ? "bg-white" : ""}`}
                     >
                       <div className="flex items-center gap-2.5">
-                        <span className={`w-9 h-9 rounded-full border-2 border-billboard-ink flex items-center justify-center font-display text-[10px] shrink-0 ${c.publisher?.swatch ? `bg-gradient-to-br ${c.publisher.swatch}` : "bg-billboard-yellow"}`}>
+                        <span className={`w-9 h-9 rounded-full border-2 border-billboard-ink flex items-center justify-center font-display text-[11px] shrink-0 ${c.publisher?.swatch ? `bg-gradient-to-br ${c.publisher.swatch}` : "bg-billboard-yellow"}`}>
                           {counterpartInitials(c, viewerRole)}
                         </span>
                         <div className="min-w-0 flex-1">
@@ -324,7 +324,7 @@ function Thread({
         </button>
         <h2 className="font-bold text-sm truncate flex-1">{title}</h2>
         {conversation?.publisher && viewerRole !== "publisher" && (
-          <Link to={`/browse/${conversation.publisher.id}`} className="text-[10px] font-mono uppercase text-billboard-inkSoft underline shrink-0">
+          <Link to={`/browse/${conversation.publisher.id}`} className="text-[11px] font-mono uppercase text-billboard-inkSoft underline shrink-0">
             View listing
           </Link>
         )}
@@ -354,14 +354,14 @@ function Thread({
                         : "border-billboard-ink bg-billboard-paperDim mr-6"
                     }`}
                   >
-                    <p className="font-mono text-[10px] uppercase text-billboard-inkSoft mb-1">
+                    <p className="font-mono text-[11px] uppercase text-billboard-inkSoft mb-1">
                       {m.sender_role === "admin" ? "Platform" : m.sender_role === "publisher" ? "Publisher" : "Business"} ·{" "}
                       {new Date(m.created_at).toLocaleString()}
                     </p>
                     <p className="whitespace-pre-wrap">{m.body}</p>
                   </div>
                   {isMyLastMessage && (
-                    <p className="text-[10px] font-mono uppercase text-billboard-inkSoft text-right mr-1 mt-0.5">
+                    <p className="text-[11px] font-mono uppercase text-billboard-inkSoft text-right mr-1 mt-0.5">
                       {m.read_at ? "Seen" : "Sent"}
                     </p>
                   )}

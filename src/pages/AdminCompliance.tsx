@@ -169,7 +169,7 @@ export default function AdminCompliance() {
                 <div className="flex flex-wrap items-center gap-2 mb-2">
                   {r.campaign_compliance && <ComplianceBadge status={r.campaign_compliance.status} />}
                   {r.campaign_compliance && <RiskBadge level={r.campaign_compliance.risk_level} score={r.campaign_compliance.risk_score} />}
-                  <span className="font-mono text-[10px] text-billboard-inkSoft">{new Date(r.created_at).toLocaleDateString()}</span>
+                  <span className="font-mono text-[11px] text-billboard-inkSoft">{new Date(r.created_at).toLocaleDateString()}</span>
                 </div>
                 <p className="text-sm">
                   <strong>{r.campaign_compliance?.business?.company_name || r.campaign_compliance?.business?.full_name || "Business"}</strong>
@@ -205,9 +205,9 @@ export default function AdminCompliance() {
             {proofRows.map((p) => (
               <div key={p.id} className="border-[3px] border-billboard-ink rounded p-4 bg-white">
                 <div className="flex flex-wrap items-center gap-2 mb-2">
-                  <span className="font-mono text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full border border-billboard-ink">{p.platform}</span>
-                  <span className="font-mono text-[10px] text-billboard-inkSoft">{new Date(p.created_at).toLocaleDateString()}</span>
-                  {p.disclosure_confirmed && <span className="font-mono text-[10px] text-billboard-greenDeep">Disclosure confirmed by creator</span>}
+                  <span className="font-mono text-[11px] font-semibold uppercase px-2 py-0.5 rounded-full border border-billboard-ink">{p.platform}</span>
+                  <span className="font-mono text-[11px] text-billboard-inkSoft">{new Date(p.created_at).toLocaleDateString()}</span>
+                  {p.disclosure_confirmed && <span className="font-mono text-[11px] text-billboard-greenDeep">Disclosure confirmed by creator</span>}
                 </div>
                 <p className="text-sm mb-1">
                   <strong>{p.campaign_compliance?.business?.company_name || p.campaign_compliance?.business?.full_name || "Business"}</strong>
@@ -250,7 +250,7 @@ function StatBlock({ label, value, accent, onClick }: { label: string; value: nu
   return (
     <Tag onClick={onClick} className={`text-left border-[3px] rounded p-4 ${accent ? "border-billboard-yellow bg-[#FFF9E6]" : "border-billboard-ink bg-white"}`}>
       <div className="font-display text-2xl">{value}</div>
-      <div className="font-mono text-[10px] uppercase text-billboard-inkSoft mt-1">{label}</div>
+      <div className="font-mono text-[11px] uppercase text-billboard-inkSoft mt-1">{label}</div>
     </Tag>
   );
 }
@@ -335,7 +335,7 @@ function PlatformRuleForm({ rule, onDone }: { rule: PlatformComplianceRule; onDo
     <div className="mt-3 pt-3 border-t border-billboard-paperDim space-y-2.5">
       <div className="grid sm:grid-cols-2 gap-2.5">
         <div>
-          <label className="font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft block mb-1">Display name</label>
+          <label className="font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft block mb-1">Display name</label>
           <input value={displayName} onChange={(e) => setDisplayName(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-2.5 py-1.5 text-sm" />
         </div>
         <div className="flex items-end gap-4">
@@ -344,28 +344,28 @@ function PlatformRuleForm({ rule, onDone }: { rule: PlatformComplianceRule; onDo
         </div>
       </div>
       <div>
-        <label className="font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft block mb-1">Creator actions (one per line)</label>
+        <label className="font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft block mb-1">Creator actions (one per line)</label>
         <textarea value={creatorActions} onChange={(e) => setCreatorActions(e.target.value)} rows={2} className="w-full border-2 border-billboard-ink rounded px-2.5 py-1.5 text-sm" />
       </div>
       <div>
-        <label className="font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft block mb-1">Business actions (one per line)</label>
+        <label className="font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft block mb-1">Business actions (one per line)</label>
         <textarea value={businessActions} onChange={(e) => setBusinessActions(e.target.value)} rows={2} className="w-full border-2 border-billboard-ink rounded px-2.5 py-1.5 text-sm" />
       </div>
       <div>
-        <label className="font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft block mb-1">Required proof (one per line)</label>
+        <label className="font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft block mb-1">Required proof (one per line)</label>
         <textarea value={requiredProof} onChange={(e) => setRequiredProof(e.target.value)} rows={1} className="w-full border-2 border-billboard-ink rounded px-2.5 py-1.5 text-sm" />
       </div>
       <div>
-        <label className="font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft block mb-1">Content restrictions (one per line)</label>
+        <label className="font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft block mb-1">Content restrictions (one per line)</label>
         <textarea value={contentRestrictions} onChange={(e) => setContentRestrictions(e.target.value)} rows={1} className="w-full border-2 border-billboard-ink rounded px-2.5 py-1.5 text-sm" />
       </div>
       <div className="grid sm:grid-cols-2 gap-2.5">
         <div>
-          <label className="font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft block mb-1">Policy reference (URL/note)</label>
+          <label className="font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft block mb-1">Policy reference (URL/note)</label>
           <input value={policyReference} onChange={(e) => setPolicyReference(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-2.5 py-1.5 text-sm" />
         </div>
         <div>
-          <label className="font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft block mb-1">Internal notes</label>
+          <label className="font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft block mb-1">Internal notes</label>
           <input value={notes} onChange={(e) => setNotes(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-2.5 py-1.5 text-sm" />
         </div>
       </div>

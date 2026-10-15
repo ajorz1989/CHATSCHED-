@@ -423,7 +423,7 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
 
       <div className="mb-8">
         {stepIndex >= 0 && (
-          <p className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft mb-1.5">Step {stepIndex + 1} of {visibleSteps.length}</p>
+          <p className="font-mono text-[11px] uppercase tracking-wider text-billboard-inkSoft mb-1.5">Step {stepIndex + 1} of {visibleSteps.length}</p>
         )}
         <div
           className="h-2 border-2 border-billboard-ink rounded overflow-hidden"
@@ -658,7 +658,7 @@ export default function PublisherApply({ adminMode = false, forcedChannel, start
             })()}
             {Number(form.pricePerPost) >= MIN_PRICE_PER_POST && (
               <div className="mt-3 border-2 border-billboard-ink rounded p-3 bg-billboard-paperDim">
-                <p className="font-mono text-[10px] uppercase tracking-wide text-billboard-inkSoft mb-2">How your earnings work</p>
+                <p className="font-mono text-[11px] uppercase tracking-wide text-billboard-inkSoft mb-2">How your earnings work</p>
                 <div className="grid grid-cols-3 gap-2 text-sm">
                   <div>
                     <div className="text-[11px] text-billboard-inkSoft">You set</div>

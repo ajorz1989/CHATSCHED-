@@ -172,9 +172,9 @@ function ChannelFlowMockup({ scenario }: { scenario: FlowScenario }) {
           <span className="w-2 h-2 rounded-full bg-billboard-paper/40" />
           <span className="w-2 h-2 rounded-full bg-billboard-paper/40" />
           <span className="w-2 h-2 rounded-full bg-billboard-paper/40" />
-          <span className="ml-3 font-mono text-[10px] text-billboard-paper/70 uppercase tracking-wider truncate">{scenario.chromeLabel}</span>
+          <span className="ml-3 font-mono text-[11px] text-billboard-paper/70 uppercase tracking-wider truncate">{scenario.chromeLabel}</span>
         </div>
-        <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-billboard-yellow shrink-0">{scenario.channelLabel}</span>
+        <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-billboard-yellow shrink-0">{scenario.channelLabel}</span>
       </div>
 
       <div className="grid md:grid-cols-3 border-b-[3px] border-billboard-ink">
@@ -187,7 +187,7 @@ function ChannelFlowMockup({ scenario }: { scenario: FlowScenario }) {
             className={`px-4 py-4 text-left transition-colors ${i > 0 ? "md:border-l-[3px] border-t-[3px] md:border-t-0 border-billboard-ink" : ""} ${active === i ? accentClasses : "bg-billboard-paperDim"}`}
           >
             <div className="flex items-center justify-between gap-2">
-              <span className={`font-mono text-[10px] font-bold ${active === i && scenario.channelAccent === "green" ? "text-white/80" : "text-billboard-inkSoft"}`}>{s.label}</span>
+              <span className={`font-mono text-[11px] font-bold ${active === i && scenario.channelAccent === "green" ? "text-white/80" : "text-billboard-inkSoft"}`}>{s.label}</span>
               <span className="text-xs" aria-hidden="true">→</span>
             </div>
             <div className="font-bold text-sm leading-tight mt-1">{s.title}</div>
@@ -199,14 +199,14 @@ function ChannelFlowMockup({ scenario }: { scenario: FlowScenario }) {
         <div className="p-6 min-h-[250px] flex flex-col justify-center">
           {active === 0 && (
             <div className="border-2 border-billboard-ink rounded-lg p-5 bg-billboard-paperDim animate-[fadeIn_0.2s_ease]">
-              <div className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft mb-2">Business brief</div>
+              <div className="font-mono text-[11px] uppercase tracking-wider text-billboard-inkSoft mb-2">Business brief</div>
               <div className="flex items-start justify-between gap-3 mb-3">
                 <div className="font-bold">{scenario.businessName}</div>
-                <span className="font-mono text-[10px] font-bold border-2 border-billboard-ink rounded-full px-2 py-0.5 bg-white shrink-0">REQUEST</span>
+                <span className="font-mono text-[11px] font-bold border-2 border-billboard-ink rounded-full px-2 py-0.5 bg-white shrink-0">REQUEST</span>
               </div>
               <div className="flex gap-1.5 mb-4 flex-wrap">
                 {scenario.tags.map((tag) => (
-                  <span key={tag} className="font-mono text-[10px] border border-billboard-ink/40 rounded-full px-2 py-0.5 bg-white">{tag}</span>
+                  <span key={tag} className="font-mono text-[11px] border border-billboard-ink/40 rounded-full px-2 py-0.5 bg-white">{tag}</span>
                 ))}
               </div>
               <div className="border-t-2 border-dashed border-billboard-ink/30 pt-3 text-sm text-billboard-inkSoft leading-relaxed">{scenario.quote}</div>
@@ -217,7 +217,7 @@ function ChannelFlowMockup({ scenario }: { scenario: FlowScenario }) {
                   ["Timing", scenario.timing],
                 ].map(([label, value]) => (
                   <div key={label} className="bg-white border border-billboard-ink/15 rounded p-2.5">
-                    <div className="font-mono text-[9px] uppercase tracking-wider text-billboard-inkSoft">{label}</div>
+                    <div className="font-mono text-[11px] uppercase tracking-wider text-billboard-inkSoft">{label}</div>
                     <div className="text-xs font-semibold mt-1 leading-tight">{value}</div>
                   </div>
                 ))}
@@ -226,14 +226,14 @@ function ChannelFlowMockup({ scenario }: { scenario: FlowScenario }) {
           )}
           {active === 1 && (
             <div className="border-2 border-billboard-ink rounded-lg p-5 bg-billboard-paperDim animate-[fadeIn_0.2s_ease]">
-              <div className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft mb-3">{scenario.dashboardLabel}</div>
+              <div className="font-mono text-[11px] uppercase tracking-wider text-billboard-inkSoft mb-3">{scenario.dashboardLabel}</div>
               <div className="border-2 border-billboard-ink rounded-lg p-4 bg-white">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <div className="font-bold">{scenario.businessName}</div>
                     <div className="text-xs text-billboard-inkSoft mt-1">{scenario.statusDetail}</div>
                   </div>
-                  <span className="font-mono text-[10px] font-bold uppercase bg-billboard-yellow border-2 border-billboard-ink rounded-full px-2 py-1 shrink-0">Pending review</span>
+                  <span className="font-mono text-[11px] font-bold uppercase bg-billboard-yellow border-2 border-billboard-ink rounded-full px-2 py-1 shrink-0">Pending review</span>
                 </div>
                 <div className="flex flex-wrap gap-2 mt-4">
                   <span className="font-mono text-xs font-bold border-2 border-billboard-ink rounded px-3 py-1.5 bg-billboard-green text-white">Approve</span>
@@ -245,7 +245,7 @@ function ChannelFlowMockup({ scenario }: { scenario: FlowScenario }) {
           )}
           {active === 2 && (
             <div className="border-2 border-billboard-ink rounded-lg p-5 bg-billboard-paperDim animate-[fadeIn_0.2s_ease]">
-              <div className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft mb-3">Delivery &amp; tracking</div>
+              <div className="font-mono text-[11px] uppercase tracking-wider text-billboard-inkSoft mb-3">Delivery &amp; tracking</div>
               <div className="border-2 border-billboard-ink rounded-lg p-4 bg-white">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-billboard-green flex items-center justify-center text-white shrink-0">
@@ -261,31 +261,31 @@ function ChannelFlowMockup({ scenario }: { scenario: FlowScenario }) {
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-2 mt-3 text-center">
-                <div className="border border-billboard-ink/15 rounded p-2 bg-white"><div className="font-mono text-[9px] uppercase text-billboard-inkSoft">Booking</div><div className="text-xs font-bold">Booked</div></div>
-                <div className="border border-billboard-ink/15 rounded p-2 bg-white"><div className="font-mono text-[9px] uppercase text-billboard-inkSoft">Delivery</div><div className="text-xs font-bold">Live</div></div>
-                <div className="border border-billboard-ink/15 rounded p-2 bg-white"><div className="font-mono text-[9px] uppercase text-billboard-inkSoft">Payout</div><div className="text-xs font-bold">Pending</div></div>
+                <div className="border border-billboard-ink/15 rounded p-2 bg-white"><div className="font-mono text-[11px] uppercase text-billboard-inkSoft">Booking</div><div className="text-xs font-bold">Booked</div></div>
+                <div className="border border-billboard-ink/15 rounded p-2 bg-white"><div className="font-mono text-[11px] uppercase text-billboard-inkSoft">Delivery</div><div className="text-xs font-bold">Live</div></div>
+                <div className="border border-billboard-ink/15 rounded p-2 bg-white"><div className="font-mono text-[11px] uppercase text-billboard-inkSoft">Payout</div><div className="text-xs font-bold">Pending</div></div>
               </div>
             </div>
           )}
         </div>
 
-        <aside className="border-t-[3px] lg:border-t-0 lg:border-l-[3px] border-billboard-ink bg-billboard-paperDim p-5">
-          <div className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft mb-3">What changes by channel</div>
+        <div className="border-t-[3px] lg:border-t-0 lg:border-l-[3px] border-billboard-ink bg-billboard-paperDim p-5">
+          <div className="font-mono text-[11px] uppercase tracking-wider text-billboard-inkSoft mb-3">What changes by channel</div>
           <div className="space-y-3">
             <div>
               <div className="font-bold text-sm">{scenario.channelLabel}</div>
               <p className="text-xs text-billboard-inkSoft mt-1 leading-relaxed">{scenario.audience}</p>
             </div>
             <div className="border-t-2 border-billboard-ink/10 pt-3">
-              <div className="font-mono text-[9px] uppercase tracking-wider text-billboard-inkSoft">Typical placement</div>
+              <div className="font-mono text-[11px] uppercase tracking-wider text-billboard-inkSoft">Typical placement</div>
               <p className="text-xs font-semibold mt-1">{scenario.adFormat}</p>
             </div>
             <div className="border-t-2 border-billboard-ink/10 pt-3">
-              <div className="font-mono text-[9px] uppercase tracking-wider text-billboard-inkSoft">Timing</div>
+              <div className="font-mono text-[11px] uppercase tracking-wider text-billboard-inkSoft">Timing</div>
               <p className="text-xs font-semibold mt-1">{scenario.timing}</p>
             </div>
           </div>
-        </aside>
+        </div>
       </div>
     </div>
   );
@@ -374,7 +374,7 @@ export default function HowItWorks() {
         {steps.map((s, i) => (
           <div key={s.title} className="border-[3px] border-billboard-ink rounded p-5 bg-white transition hover:-translate-y-1 hover:shadow-blockSm">
             <div className="font-display text-2xl text-billboard-yellowDeep mb-2" style={{ WebkitTextStroke: "1.5px #1A1712" }}>0{i + 1}</div>
-            <h3 className="font-bold mb-1.5">{s.title}</h3>
+            <h2 className="font-bold mb-1.5">{s.title}</h2>
             <p className="text-sm text-billboard-inkSoft">{s.body}</p>
           </div>
         ))}
@@ -418,7 +418,7 @@ export default function HowItWorks() {
       <section className="mb-16">
         <div className="border-[3px] border-billboard-ink rounded-lg overflow-hidden bg-white">
           <div className="bg-billboard-yellow p-6 md:p-7 border-b-[3px] border-billboard-ink">
-            <span className="font-mono text-[10px] uppercase tracking-wider font-bold">Choose your route</span>
+            <span className="font-mono text-[11px] uppercase tracking-wider font-bold">Choose your route</span>
             <h2 className="font-display text-2xl mt-1">Let ChatSched coordinate it, or choose yourself.</h2>
             <p className="text-sm text-billboard-inkSoft max-w-2xl mt-2 leading-relaxed">
               The easiest route for most small businesses is to send one brief and have a ChatSched campaign manager coordinate the media plan and publishers on your behalf. If you would rather pick the placements yourself, you can do that too.

@@ -7,12 +7,12 @@ function CopyField({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between gap-3 py-1.5 border-b border-billboard-ink/10 last:border-b-0">
       <div>
-        <p className="font-mono text-[10px] uppercase text-billboard-inkSoft">{label}</p>
+        <p className="font-mono text-[11px] uppercase text-billboard-inkSoft">{label}</p>
         <p className="text-sm font-semibold">{value}</p>
       </div>
       <button
         onClick={() => { navigator.clipboard.writeText(value); setCopied(true); setTimeout(() => setCopied(false), 1500); }}
-        className="font-mono text-[10px] font-semibold uppercase border-2 border-billboard-ink rounded px-2 py-1 hover:bg-billboard-paperDim transition shrink-0"
+        className="font-mono text-[11px] font-semibold uppercase border-2 border-billboard-ink rounded px-2 py-1 hover:bg-billboard-paperDim transition shrink-0"
       >
         {copied ? "Copied ✓" : "Copy"}
       </button>

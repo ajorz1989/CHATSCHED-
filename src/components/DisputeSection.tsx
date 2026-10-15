@@ -146,7 +146,7 @@ function OpenDisputeForm({
 
   return (
     <div className="mt-2 border-2 border-billboard-red rounded p-3.5 bg-white">
-      <p className="font-mono text-[10px] font-semibold uppercase tracking-wider text-billboard-red mb-2">Open a dispute</p>
+      <p className="font-mono text-[11px] font-semibold uppercase tracking-wider text-billboard-red mb-2">Open a dispute</p>
       <select value={category} onChange={(e) => setCategory(e.target.value as DisputeCategory)} className="w-full border-2 border-billboard-ink rounded px-2.5 py-2 text-sm mb-2 bg-white">
         {(Object.keys(CATEGORY_LABEL) as DisputeCategory[]).map((c) => <option key={c} value={c}>{CATEGORY_LABEL[c]}</option>)}
       </select>
@@ -192,9 +192,9 @@ function DisputeCard({ dispute: d, currentUserId, onChange }: { dispute: Dispute
       <button onClick={() => setOpen((o) => !o)} className="w-full flex items-center justify-between gap-3 px-3.5 py-2.5 bg-billboard-paperDim text-left">
         <div className="min-w-0">
           <p className="text-sm font-bold truncate">{d.subject}</p>
-          <p className="font-mono text-[10px] text-billboard-inkSoft uppercase mt-0.5">{CATEGORY_LABEL[d.category]}</p>
+          <p className="font-mono text-[11px] text-billboard-inkSoft uppercase mt-0.5">{CATEGORY_LABEL[d.category]}</p>
         </div>
-        <span className={`font-mono text-[10px] font-semibold uppercase border-2 rounded-full px-2 py-1 shrink-0 ${STATUS_STYLE[d.status]}`}>
+        <span className={`font-mono text-[11px] font-semibold uppercase border-2 rounded-full px-2 py-1 shrink-0 ${STATUS_STYLE[d.status]}`}>
           {STATUS_LABEL[d.status]}
         </span>
       </button>
@@ -203,7 +203,7 @@ function DisputeCard({ dispute: d, currentUserId, onChange }: { dispute: Dispute
         <div className="p-3.5 bg-white">
           {d.resolution_outcome && (
             <div className="border-2 border-billboard-greenDeep bg-[#EAF3EC] rounded p-2.5 mb-3">
-              <p className="font-mono text-[10px] uppercase font-semibold text-billboard-greenDeep">{OUTCOME_LABEL[d.resolution_outcome]}</p>
+              <p className="font-mono text-[11px] uppercase font-semibold text-billboard-greenDeep">{OUTCOME_LABEL[d.resolution_outcome]}</p>
               {d.resolution_notes && <p className="text-sm mt-1">{d.resolution_notes}</p>}
             </div>
           )}
@@ -214,7 +214,7 @@ function DisputeCard({ dispute: d, currentUserId, onChange }: { dispute: Dispute
             <div className="space-y-2 mb-3 max-h-64 overflow-y-auto">
               {messages.map((m) => (
                 <div key={m.id} className={`text-sm p-2.5 rounded border-2 ${m.sender_id === currentUserId ? "border-billboard-greenDeep bg-[#EAF3EC] ml-6" : "border-billboard-ink bg-billboard-paperDim mr-6"}`}>
-                  <p className="font-mono text-[10px] uppercase text-billboard-inkSoft mb-1">
+                  <p className="font-mono text-[11px] uppercase text-billboard-inkSoft mb-1">
                     {m.sender_role === "admin" ? "Platform" : m.sender_role === "publisher" ? "Publisher" : "Business"} · {new Date(m.created_at).toLocaleString()}
                   </p>
                   <p>{m.body}</p>

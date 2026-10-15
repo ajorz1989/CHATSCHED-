@@ -101,10 +101,10 @@ export default function MarketingSuite() {
       <section className="border-[3px] border-billboard-ink rounded p-5 mb-10">
         <div className="border-2 border-billboard-ink/20 rounded-lg p-6 md:p-8 bg-billboard-paperDim">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-            <span className="inline-block font-mono text-[10px] font-semibold tracking-wider uppercase border-2 border-billboard-ink bg-billboard-yellow px-2 py-1 rounded">
+            <span className="inline-block font-mono text-[11px] font-semibold tracking-wider uppercase border-2 border-billboard-ink bg-billboard-yellow px-2 py-1 rounded">
               Marketing Suite
             </span>
-            <span className="font-mono text-[10px] font-bold uppercase border-2 border-billboard-red text-billboard-red px-2 py-1 rounded">
+            <span className="font-mono text-[11px] font-bold uppercase border-2 border-billboard-red text-billboard-red px-2 py-1 rounded">
               Locked
             </span>
           </div>
@@ -135,7 +135,7 @@ export default function MarketingSuite() {
     <section className="border-[3px] border-billboard-ink rounded p-5 mb-10">
       <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
         <div>
-          <span className="inline-block font-mono text-[10px] font-semibold tracking-wider uppercase border-2 border-billboard-greenDeep text-billboard-greenDeep px-2 py-1 rounded mb-2">
+          <span className="inline-block font-mono text-[11px] font-semibold tracking-wider uppercase border-2 border-billboard-greenDeep text-billboard-greenDeep px-2 py-1 rounded mb-2">
             Marketing Suite
           </span>
           <h2 className="font-display text-xl md:text-2xl">Plan campaigns with data — and generate content with AI</h2>

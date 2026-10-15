@@ -118,7 +118,7 @@ function PaymentStepList({ steps }: { steps: Step[] }) {
           const Icon = step.icon;
           return (
             <div key={step.n} className="relative">
-              <div className="absolute -left-8 top-0 w-7 h-7 rounded-full bg-billboard-yellow border-[3px] border-billboard-ink flex items-center justify-center font-mono text-[10px] font-bold">
+              <div className="absolute -left-8 top-0 w-7 h-7 rounded-full bg-billboard-yellow border-[3px] border-billboard-ink flex items-center justify-center font-mono text-[11px] font-bold">
                 {step.n}
               </div>
               <div className="border-[3px] border-billboard-ink rounded-lg p-5 bg-white shadow-blockSm">
@@ -165,7 +165,7 @@ function ChannelFlowCard({
   return (
     <div className="border-[3px] border-billboard-ink rounded-lg bg-white overflow-hidden">
       <div className={`p-5 border-b-[3px] ${accentClass}`}>
-        <div className="font-mono text-[10px] font-semibold uppercase tracking-wider text-billboard-inkSoft mb-1">{eyebrow}</div>
+        <div className="font-mono text-[11px] font-semibold uppercase tracking-wider text-billboard-inkSoft mb-1">{eyebrow}</div>
         <h2 className="font-display text-xl">{title}</h2>
         <p className="text-sm text-billboard-inkSoft mt-2 leading-relaxed">{description}</p>
       </div>
@@ -267,15 +267,15 @@ export default function HowPaymentWorks() {
           </div>
           <div className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x-2 divide-billboard-ink/10">
             <div className="p-5">
-              <div className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft mb-1">1 · Pay</div>
+              <div className="font-mono text-[11px] uppercase tracking-wider text-billboard-inkSoft mb-1">1 · Pay</div>
               <p className="text-sm font-semibold">Business pays the platform using the method shown for the booking.</p>
             </div>
             <div className="p-5">
-              <div className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft mb-1">2 · Verify</div>
+              <div className="font-mono text-[11px] uppercase tracking-wider text-billboard-inkSoft mb-1">2 · Verify</div>
               <p className="text-sm font-semibold">Automatic confirmation handles PayFast; manual EFT is checked by ChatSched.</p>
             </div>
             <div className="p-5">
-              <div className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft mb-1">3 · Deliver & pay out</div>
+              <div className="font-mono text-[11px] uppercase tracking-wider text-billboard-inkSoft mb-1">3 · Deliver & pay out</div>
               <p className="text-sm font-semibold">The placement goes live, then the publisher payout follows the rules for that booking flow.</p>
             </div>
           </div>
@@ -298,7 +298,7 @@ export default function HowPaymentWorks() {
                     <h3 className="font-bold text-sm">{channel.definition.name}</h3>
                     <p className="text-xs text-billboard-inkSoft mt-1.5 leading-relaxed">Request → publisher approval → manual EFT → payment verification → delivery.</p>
                   </div>
-                  <span className="font-mono text-[9px] uppercase tracking-wider border border-billboard-ink/30 rounded px-2 py-1 text-billboard-inkSoft shrink-0">Request flow</span>
+                  <span className="font-mono text-[11px] uppercase tracking-wider border border-billboard-ink/30 rounded px-2 py-1 text-billboard-inkSoft shrink-0">Request flow</span>
                 </div>
                 {methods.length > 0 && (
                   <div className="mt-3 flex flex-wrap gap-1.5">
@@ -326,13 +326,13 @@ export default function HowPaymentWorks() {
 
         <div className="grid xl:grid-cols-2 gap-8">
           <div>
-            <div className="inline-flex items-center gap-2 border-2 border-billboard-yellow bg-billboard-yellow/10 text-billboard-ink px-3 py-1.5 rounded font-mono text-[10px] uppercase tracking-wider font-semibold mb-4">
+            <div className="inline-flex items-center gap-2 border-2 border-billboard-yellow bg-billboard-yellow/10 text-billboard-ink px-3 py-1.5 rounded font-mono text-[11px] uppercase tracking-wider font-semibold mb-4">
               Social media
             </div>
             <PaymentStepList steps={SOCIAL_STEPS} />
           </div>
           <div>
-            <div className="inline-flex items-center gap-2 border-2 border-billboard-green bg-billboard-green/10 text-billboard-greenDeep px-3 py-1.5 rounded font-mono text-[10px] uppercase tracking-wider font-semibold mb-4">
+            <div className="inline-flex items-center gap-2 border-2 border-billboard-green bg-billboard-green/10 text-billboard-greenDeep px-3 py-1.5 rounded font-mono text-[11px] uppercase tracking-wider font-semibold mb-4">
               Request-based channels
             </div>
             <PaymentStepList steps={REQUEST_STEPS} />

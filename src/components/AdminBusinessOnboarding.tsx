@@ -97,7 +97,7 @@ async function invokeAdminFn<T = Record<string, unknown>>(name: string, body: Re
 }
 
 const inputCls = "w-full border-2 border-billboard-ink rounded px-3 py-2 bg-white text-sm";
-const labelCls = "block font-mono text-[10px] uppercase tracking-wider font-semibold mb-1";
+const labelCls = "block font-mono text-[11px] uppercase tracking-wider font-semibold mb-1";
 
 function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
   return (
@@ -110,7 +110,7 @@ function Field({ label, required, children }: { label: string; required?: boolea
 
 function Pill({ ok, children }: { ok: boolean; children: React.ReactNode }) {
   return (
-    <span className={"inline-flex items-center gap-1 font-mono text-[10px] uppercase px-2 py-0.5 rounded border " + (ok ? "border-billboard-greenDeep bg-billboard-green/15 text-billboard-greenDeep" : "border-billboard-ink/25 text-billboard-inkSoft")}>
+    <span className={"inline-flex items-center gap-1 font-mono text-[11px] uppercase px-2 py-0.5 rounded border " + (ok ? "border-billboard-greenDeep bg-billboard-green/15 text-billboard-greenDeep" : "border-billboard-ink/25 text-billboard-inkSoft")}>
       {ok ? "✓" : "○"} {children}
     </span>
   );
@@ -282,7 +282,7 @@ export default function AdminBusinessOnboarding() {
       <section className="rounded-xl border border-white/10 bg-billboard-ink text-white overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.16)]">
         <div className="p-5 md:p-7 flex flex-col xl:flex-row xl:items-end xl:justify-between gap-5">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider font-bold text-billboard-yellow border border-billboard-yellow/30 bg-billboard-yellow/10 rounded-full px-2.5 py-1 mb-3">
+            <div className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider font-bold text-billboard-yellow border border-billboard-yellow/30 bg-billboard-yellow/10 rounded-full px-2.5 py-1 mb-3">
               <UserPlus size={12} /> Super Tool
             </div>
             <h1 className="font-display text-3xl md:text-4xl">Business Onboarding</h1>
@@ -299,7 +299,7 @@ export default function AdminBusinessOnboarding() {
             ].map((s) => (
               <div key={s.l} className="rounded-lg border border-white/10 bg-white/[0.04] px-4 py-3">
                 <div className="font-display text-2xl">{s.n}</div>
-                <div className="font-mono text-[9px] uppercase tracking-wider text-white/40">{s.l}</div>
+                <div className="font-mono text-[11px] uppercase tracking-wider text-white/40">{s.l}</div>
               </div>
             ))}
           </div>
@@ -318,7 +318,7 @@ export default function AdminBusinessOnboarding() {
               <Plus size={19} strokeWidth={2.4} />
             </span>
             <div className="min-w-0">
-              <p className="font-mono text-[10px] uppercase tracking-wider text-billboard-yellow">Step 1</p>
+              <p className="font-mono text-[11px] uppercase tracking-wider text-billboard-yellow">Step 1</p>
               <h2 className="font-display text-xl truncate">Create a business</h2>
               <p className="text-xs text-white/40 mt-1">Creates the login + profile · you choose verification and activation</p>
             </div>
@@ -408,7 +408,7 @@ export default function AdminBusinessOnboarding() {
               )}
 
               <fieldset className="rounded-lg border-2 border-billboard-ink/15 p-4">
-                <legend className="px-2 font-mono text-[10px] uppercase tracking-wider font-semibold">Verification &amp; membership</legend>
+                <legend className="px-2 font-mono text-[11px] uppercase tracking-wider font-semibold">Verification &amp; membership</legend>
                 <div className="grid sm:grid-cols-2 gap-3 text-sm">
                   <label className="flex items-start gap-2"><input type="checkbox" className="mt-1" checked={form.email_confirmed} onChange={(e) => set("email_confirmed", e.target.checked)} /><span><strong>Email confirmed</strong><span className="block text-xs text-billboard-inkSoft">You've confirmed this address belongs to them.</span></span></label>
                   <label className="flex items-start gap-2"><input type="checkbox" className="mt-1" checked={form.phone_verified} onChange={(e) => set("phone_verified", e.target.checked)} /><span><strong>Phone verified</strong><span className="block text-xs text-billboard-inkSoft">Silver level needs email + phone.</span></span></label>
@@ -430,7 +430,7 @@ export default function AdminBusinessOnboarding() {
 
       <section className="rounded-xl border-2 border-billboard-ink bg-white text-billboard-ink overflow-hidden">
         <div className="p-5 md:p-6 border-b-2 border-billboard-ink/10">
-          <p className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft">Step 2</p>
+          <p className="font-mono text-[11px] uppercase tracking-wider text-billboard-inkSoft">Step 2</p>
           <h2 className="font-display text-xl">Verify &amp; activate</h2>
           <div className="mt-4 flex flex-col md:flex-row md:items-center gap-3">
             <div className="relative md:w-72">

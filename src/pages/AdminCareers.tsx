@@ -220,7 +220,7 @@ function ApplicationCard({
         >
           {downloading ? "Preparing…" : `⬇ Download CV (${a.cv_filename})`}
         </button>
-        <span className="font-mono text-[10px] uppercase text-billboard-inkSoft">Applied {new Date(a.created_at).toLocaleDateString("en-ZA")}</span>
+        <span className="font-mono text-[11px] uppercase text-billboard-inkSoft">Applied {new Date(a.created_at).toLocaleDateString("en-ZA")}</span>
         {downloadError && <span className="text-billboard-red text-xs font-semibold">{downloadError}</span>}
       </div>
 

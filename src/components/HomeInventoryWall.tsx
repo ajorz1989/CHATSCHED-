@@ -40,7 +40,7 @@ const BUDGET_STEPS = [500, 1000, 2500];
 const MARKETPLACE_CARDS = 6;
 const NETWORK_SHOWCASE = 6;
 
-const labelCls = "block font-mono text-[10px] uppercase tracking-wider font-bold text-billboard-inkSoft mb-1";
+const labelCls = "block font-mono text-[11px] uppercase tracking-wider font-bold text-billboard-inkSoft mb-1";
 const fieldCls = "w-full bg-transparent text-sm font-semibold text-billboard-ink focus:outline-none appearance-none cursor-pointer";
 
 /**
@@ -289,14 +289,14 @@ export default function HomeInventoryWall({ variant = "primary" }: { variant?: "
                   >
                     <BranchTile branch={tab.id} inverted={active} />
                     <span className="min-w-0 flex-1">
-                      <span className={`block font-mono text-[10px] font-bold tracking-wider ${active ? "text-billboard-yellow" : "text-billboard-inkSoft"}`}>{tab.num}</span>
+                      <span className={`block font-mono text-[11px] font-bold tracking-wider ${active ? "text-billboard-yellow" : "text-billboard-inkSoft"}`}>{tab.num}</span>
                       <span className="block font-display text-sm lg:text-2xl leading-tight">
                         <span className="lg:hidden">{tab.short}</span>
                         <span className="hidden lg:inline">{tab.name}</span>
                       </span>
                       <span className={`hidden lg:block text-sm mt-0.5 ${active ? "text-billboard-paperDim" : "text-billboard-inkSoft"}`}>{tab.line}</span>
                       {tab.stat && (
-                        <span className={`hidden lg:flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wide font-bold mt-2 ${active ? "text-billboard-yellow" : "text-billboard-greenDeep"}`}>
+                        <span className={`hidden lg:flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wide font-bold mt-2 ${active ? "text-billboard-yellow" : "text-billboard-greenDeep"}`}>
                           <span className={`h-1.5 w-1.5 rounded-full ${active ? "bg-billboard-yellow" : "bg-billboard-green"}`} aria-hidden="true" />
                           {tab.stat}
                         </span>
@@ -380,7 +380,7 @@ export default function HomeInventoryWall({ variant = "primary" }: { variant?: "
                         onClick={() => setSelected("all")}
                         className={`shrink-0 rounded-lg border-2 border-billboard-ink px-3.5 py-2 text-sm font-bold transition ${selected === "all" ? "bg-billboard-ink text-billboard-yellow" : "bg-billboard-paper hover:-translate-y-0.5 hover:shadow-blockSm"}`}
                       >
-                        {t("inventoryWall.all", { defaultValue: "All" })} <span className="font-mono text-[10px] ml-1">{publishers.length}</span>
+                        {t("inventoryWall.all", { defaultValue: "All" })} <span className="font-mono text-[11px] ml-1">{publishers.length}</span>
                       </button>
                       {channelTiles.map((c) => {
                         const active = selected === c.slug;
@@ -392,7 +392,7 @@ export default function HomeInventoryWall({ variant = "primary" }: { variant?: "
                             onClick={() => setSelected(c.slug)}
                             className={`shrink-0 inline-flex items-center gap-2 rounded-lg border-2 border-billboard-ink px-3 py-2 text-sm font-bold whitespace-nowrap transition ${active ? "bg-billboard-ink text-billboard-yellow" : "bg-billboard-paper hover:-translate-y-0.5 hover:shadow-blockSm"}`}
                           >
-                            {c.name} <span className="font-mono text-[10px]">{c.count}</span>
+                            {c.name} <span className="font-mono text-[11px]">{c.count}</span>
                           </button>
                         );
                       })}
@@ -480,7 +480,7 @@ export default function HomeInventoryWall({ variant = "primary" }: { variant?: "
                   <div className="space-y-5">
                     <div className="border-[3px] border-billboard-ink rounded-xl bg-billboard-paper shadow-blockSm -rotate-1 p-5">
                       <div className="flex items-center justify-between mb-4">
-                        <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-billboard-inkSoft">
+                        <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-billboard-inkSoft">
                           {t("inventoryWall.agency.exampleTag", { defaultValue: "Example brief" })}
                         </span>
                         <span className="w-7 h-5"><BranchMark branch="agency" /></span>
@@ -491,7 +491,7 @@ export default function HomeInventoryWall({ variant = "primary" }: { variant?: "
                         { k: t("inventoryWall.agency.budgetLabel", { defaultValue: "Budget" }), v: t("inventoryWall.agency.budgetEx", { defaultValue: "You set it" }) },
                       ].map((row) => (
                         <div key={row.k} className="flex items-baseline gap-3 py-2 border-t-2 border-dashed border-billboard-ink/30 first:border-t-0">
-                          <span className="w-20 shrink-0 font-mono text-[10px] font-bold uppercase text-billboard-inkSoft">{row.k}</span>
+                          <span className="w-20 shrink-0 font-mono text-[11px] font-bold uppercase text-billboard-inkSoft">{row.k}</span>
                           <span className="font-semibold">{row.v}</span>
                         </div>
                       ))}
@@ -567,7 +567,7 @@ export default function HomeInventoryWall({ variant = "primary" }: { variant?: "
                                 <PublisherAvatar imageUrl={p.profile_image_url} initials={p.initials} name={p.name} size="sm" />
                                 <span className="min-w-0">
                                   <span className="block font-bold truncate">{p.name}</span>
-                                  <span className="block font-mono text-[10px] uppercase text-billboard-inkSoft truncate">{[channel, p.city].filter(Boolean).join(" · ")}</span>
+                                  <span className="block font-mono text-[11px] uppercase text-billboard-inkSoft truncate">{[channel, p.city].filter(Boolean).join(" · ")}</span>
                                 </span>
                               </Link>
                             </li>

@@ -119,7 +119,7 @@ export default function ForBusinesses() {
                 <div className="mb-3"><ChannelIcon slug={m.definition.slug} /></div>
                 <div className="flex items-start justify-between gap-2">
                   <h3 className="font-bold text-sm mb-1">{m.definition.name}</h3>
-                  <span className={`shrink-0 border px-1.5 py-0.5 rounded-full font-mono text-[9px] font-bold uppercase tracking-wide ${
+                  <span className={`shrink-0 border px-1.5 py-0.5 rounded-full font-mono text-[11px] font-bold uppercase tracking-wide ${
                     isChannelEnabled(m.definition.slug)
                       ? "border-billboard-greenDeep/40 text-billboard-greenDeep bg-billboard-green/10"
                       : "border-billboard-inkSoft/40 text-billboard-inkSoft bg-billboard-paperDim"

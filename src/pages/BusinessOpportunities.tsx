@@ -368,7 +368,7 @@ export default function BusinessOpportunities() {
 
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
         <div>
-          <span className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft">Business Opportunities Engine</span>
+          <span className="font-mono text-[11px] uppercase tracking-wider text-billboard-inkSoft">Business Opportunities Engine</span>
           <h1 className="font-display text-3xl md:text-4xl mt-1">Turn an advertising need into a live brief.</h1>
           <p className="text-sm text-billboard-inkSoft mt-2 max-w-2xl">Define the channel, audience, timing, budget and deliverables. ChatSched then puts the brief in front of eligible publishers without exposing private contact details.</p>
         </div>
@@ -394,7 +394,7 @@ export default function BusinessOpportunities() {
         <section className="border-[3px] border-billboard-ink rounded-xl bg-white shadow-blockSm p-5 mb-6" aria-label="Opportunity editor">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-3 mb-5">
             <div>
-              <span className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft">{editingId ? "Edit opportunity" : "New opportunity"}</span>
+              <span className="font-mono text-[11px] uppercase tracking-wider text-billboard-inkSoft">{editingId ? "Edit opportunity" : "New opportunity"}</span>
               <h2 className="font-display text-2xl mt-1">{editingId ? "Refine the brief" : "Build your advertising brief"}</h2>
               <p className="text-xs text-billboard-inkSoft mt-1">Drafts stay private. Published briefs become discoverable to verified, active publishers who match the targeting.</p>
             </div>
@@ -402,18 +402,18 @@ export default function BusinessOpportunities() {
 
           <div className="space-y-4">
             <div>
-              <label className="block font-mono text-[10px] uppercase tracking-wider mb-1.5">Opportunity title</label>
+              <label className="block font-mono text-[11px] uppercase tracking-wider mb-1.5">Opportunity title</label>
               <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Sponsor a Cape Town fitness audience" className="w-full border-2 border-billboard-ink rounded-lg px-3 py-2.5 text-sm" />
             </div>
 
             <div>
-              <label className="block font-mono text-[10px] uppercase tracking-wider mb-1.5">Brief</label>
+              <label className="block font-mono text-[11px] uppercase tracking-wider mb-1.5">Brief</label>
               <textarea value={brief} onChange={(e) => setBrief(e.target.value)} placeholder="Describe what you need, why it matters, what the publisher should understand before applying, and any important campaign context." rows={5} className="w-full border-2 border-billboard-ink rounded-lg px-3 py-2.5 text-sm" />
             </div>
 
             <div className="grid md:grid-cols-2 gap-3">
               <div>
-                <label className="block font-mono text-[10px] uppercase tracking-wider mb-1.5">Opportunity type</label>
+                <label className="block font-mono text-[11px] uppercase tracking-wider mb-1.5">Opportunity type</label>
                 <select value={opportunityType} onChange={(e) => setOpportunityType(e.target.value)} className="w-full border-2 border-billboard-ink rounded-lg px-3 py-2.5 text-sm bg-white">
                   <option value="">Choose a type</option>
                   {typeOptions.map((t) => <option key={t.slug} value={t.slug}>{t.label}</option>)}
@@ -422,7 +422,7 @@ export default function BusinessOpportunities() {
               </div>
 
               <div>
-                <label className="block font-mono text-[10px] uppercase tracking-wider mb-1.5">Preferred channel</label>
+                <label className="block font-mono text-[11px] uppercase tracking-wider mb-1.5">Preferred channel</label>
                 <select value={channelSlug} onChange={(e) => setChannelSlug(e.target.value as ChannelSlug | "")} className="w-full border-2 border-billboard-ink rounded-lg px-3 py-2.5 text-sm bg-white">
                   <option value="">Open to any channel</option>
                   {(Object.keys(CHANNEL_LABEL) as ChannelSlug[]).map((c) => <option key={c} value={c}>{CHANNEL_LABEL[c]}</option>)}
@@ -431,7 +431,7 @@ export default function BusinessOpportunities() {
             </div>
 
             <div className="border-2 border-billboard-ink/15 rounded-xl bg-billboard-paperDim p-4">
-              <div className="font-mono text-[10px] uppercase tracking-wider mb-3">Targeting</div>
+              <div className="font-mono text-[11px] uppercase tracking-wider mb-3">Targeting</div>
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <select value={targetProvince} onChange={(e) => setTargetProvince(e.target.value)} className="border-2 border-billboard-ink rounded-lg px-3 py-2.5 text-sm bg-white">
                   <option value="">Any province</option>
@@ -445,26 +445,26 @@ export default function BusinessOpportunities() {
 
             <div className="grid md:grid-cols-3 gap-3">
               <div className="border-2 border-billboard-ink/15 rounded-xl p-4 bg-billboard-paperDim">
-                <label className="block font-mono text-[10px] uppercase tracking-wider mb-1.5">Budget minimum</label>
+                <label className="block font-mono text-[11px] uppercase tracking-wider mb-1.5">Budget minimum</label>
                 <input value={budgetMin} onChange={(e) => setBudgetMin(e.target.value)} type="number" min={0} placeholder="R" className="w-full border-2 border-billboard-ink rounded-lg px-3 py-2.5 text-sm bg-white" />
               </div>
               <div className="border-2 border-billboard-ink/15 rounded-xl p-4 bg-billboard-paperDim">
-                <label className="block font-mono text-[10px] uppercase tracking-wider mb-1.5">Budget maximum</label>
+                <label className="block font-mono text-[11px] uppercase tracking-wider mb-1.5">Budget maximum</label>
                 <input value={budgetMax} onChange={(e) => setBudgetMax(e.target.value)} type="number" min={0} placeholder="R" className="w-full border-2 border-billboard-ink rounded-lg px-3 py-2.5 text-sm bg-white" />
               </div>
               <div className="border-2 border-billboard-ink/15 rounded-xl p-4 bg-billboard-paperDim">
-                <label className="block font-mono text-[10px] uppercase tracking-wider mb-1.5">Publishers needed</label>
+                <label className="block font-mono text-[11px] uppercase tracking-wider mb-1.5">Publishers needed</label>
                 <input value={publishersNeeded} onChange={(e) => setPublishersNeeded(e.target.value)} type="number" min={1} step={1} className="w-full border-2 border-billboard-ink rounded-lg px-3 py-2.5 text-sm bg-white" />
               </div>
             </div>
 
             <div className="border-2 border-billboard-ink/15 rounded-xl bg-billboard-paperDim p-4">
-              <div className="font-mono text-[10px] uppercase tracking-wider mb-3">Timing</div>
+              <div className="font-mono text-[11px] uppercase tracking-wider mb-3">Timing</div>
               <div className="grid md:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-xs font-semibold mb-1">Application deadline</label>
                   <input value={applicationDeadline} onChange={(e) => setApplicationDeadline(e.target.value)} type="datetime-local" className="w-full border-2 border-billboard-ink rounded-lg px-3 py-2.5 text-sm bg-white" />
-                  <p className="text-[10px] text-billboard-inkSoft mt-1">The brief automatically closes when this deadline is reached.</p>
+                  <p className="text-[11px] text-billboard-inkSoft mt-1">The brief automatically closes when this deadline is reached.</p>
                 </div>
                 <div>
                   <label className="block text-xs font-semibold mb-1">Campaign starts</label>
@@ -479,11 +479,11 @@ export default function BusinessOpportunities() {
 
             <div className="grid md:grid-cols-2 gap-3">
               <div>
-                <label className="block font-mono text-[10px] uppercase tracking-wider mb-1.5">Expected deliverables</label>
+                <label className="block font-mono text-[11px] uppercase tracking-wider mb-1.5">Expected deliverables</label>
                 <textarea value={deliverables} onChange={(e) => setDeliverables(e.target.value)} placeholder="e.g. 2 feed posts, 3 stories, one podcast mention, proof screenshots" rows={4} className="w-full border-2 border-billboard-ink rounded-lg px-3 py-2.5 text-sm" />
               </div>
               <div>
-                <label className="block font-mono text-[10px] uppercase tracking-wider mb-1.5">Publisher requirements</label>
+                <label className="block font-mono text-[11px] uppercase tracking-wider mb-1.5">Publisher requirements</label>
                 <textarea value={publisherRequirements} onChange={(e) => setPublisherRequirements(e.target.value)} placeholder="e.g. verified Cape Town audience, 10K+ followers, fitness category" rows={4} className="w-full border-2 border-billboard-ink rounded-lg px-3 py-2.5 text-sm" />
               </div>
             </div>
@@ -540,23 +540,23 @@ export default function BusinessOpportunities() {
                   <div className="flex flex-wrap items-start gap-3">
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2 mb-2">
-                        <span className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft">{type?.label ?? "Advertising opportunity"}</span>
-                        <span className={"font-mono text-[10px] font-semibold uppercase border-2 rounded-full px-2 py-0.5 " + STATUS_TONE[o.status]}>{STATUS_LABEL[o.status]}</span>
+                        <span className="font-mono text-[11px] uppercase tracking-wider text-billboard-inkSoft">{type?.label ?? "Advertising opportunity"}</span>
+                        <span className={"font-mono text-[11px] font-semibold uppercase border-2 rounded-full px-2 py-0.5 " + STATUS_TONE[o.status]}>{STATUS_LABEL[o.status]}</span>
                       </div>
                       <h2 className="font-display text-xl mb-1">{o.title}</h2>
                       <p className="text-sm text-billboard-inkSoft whitespace-pre-wrap">{o.brief}</p>
                     </div>
                     <div className="text-right shrink-0">
-                      <div className="font-mono text-[9px] uppercase text-billboard-inkSoft">Budget</div>
+                      <div className="font-mono text-[11px] uppercase text-billboard-inkSoft">Budget</div>
                       <div className="font-display text-lg">{o.budget_min != null || o.budget_max != null ? formatR(o.budget_min) + " – " + formatR(o.budget_max) : "Open budget"}</div>
                     </div>
                   </div>
 
                   <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-2 mt-4 text-xs">
-                    <div className="border-2 border-billboard-ink/15 rounded-lg p-3 bg-billboard-paperDim"><div className="font-mono text-[9px] uppercase text-billboard-inkSoft mb-1">Channel</div><div>{o.channel_slug ? CHANNEL_LABEL[o.channel_slug] : "Open to any channel"}</div></div>
-                    <div className="border-2 border-billboard-ink/15 rounded-lg p-3 bg-billboard-paperDim"><div className="font-mono text-[9px] uppercase text-billboard-inkSoft mb-1">Target</div><div>{[o.target_city, o.target_province].filter(Boolean).join(", ") || "Flexible geography"}</div></div>
-                    <div className="border-2 border-billboard-ink/15 rounded-lg p-3 bg-billboard-paperDim"><div className="font-mono text-[9px] uppercase text-billboard-inkSoft mb-1">Publishers</div><div>{o.publishers_needed} needed{loaded && o.publishers_needed > 1 ? " · " + acceptedCount + " accepted" : ""}</div></div>
-                    <div className="border-2 border-billboard-ink/15 rounded-lg p-3 bg-billboard-paperDim"><div className="font-mono text-[9px] uppercase text-billboard-inkSoft mb-1">Deadline</div><div>{deadline ?? "No deadline"}</div></div>
+                    <div className="border-2 border-billboard-ink/15 rounded-lg p-3 bg-billboard-paperDim"><div className="font-mono text-[11px] uppercase text-billboard-inkSoft mb-1">Channel</div><div>{o.channel_slug ? CHANNEL_LABEL[o.channel_slug] : "Open to any channel"}</div></div>
+                    <div className="border-2 border-billboard-ink/15 rounded-lg p-3 bg-billboard-paperDim"><div className="font-mono text-[11px] uppercase text-billboard-inkSoft mb-1">Target</div><div>{[o.target_city, o.target_province].filter(Boolean).join(", ") || "Flexible geography"}</div></div>
+                    <div className="border-2 border-billboard-ink/15 rounded-lg p-3 bg-billboard-paperDim"><div className="font-mono text-[11px] uppercase text-billboard-inkSoft mb-1">Publishers</div><div>{o.publishers_needed} needed{loaded && o.publishers_needed > 1 ? " · " + acceptedCount + " accepted" : ""}</div></div>
+                    <div className="border-2 border-billboard-ink/15 rounded-lg p-3 bg-billboard-paperDim"><div className="font-mono text-[11px] uppercase text-billboard-inkSoft mb-1">Deadline</div><div>{deadline ?? "No deadline"}</div></div>
                   </div>
 
                   {o.target_audience && <p className="text-xs mt-3"><span className="font-semibold">Audience:</span> {o.target_audience}</p>}
@@ -583,8 +583,8 @@ export default function BusinessOpportunities() {
                           <div key={a.id} className="border-2 border-billboard-ink rounded-lg bg-white p-4">
                             <div className="flex flex-wrap items-center gap-2 mb-2">
                               <Link to={"/browse/" + a.publisher_id} className="text-sm font-semibold underline">{a.publisherName}</Link>
-                              {a.publisherChannelSlug && <span className="font-mono text-[10px] uppercase text-billboard-inkSoft">{CHANNEL_LABEL[a.publisherChannelSlug]}</span>}
-                              <span className="font-mono text-[10px] uppercase ml-auto text-billboard-inkSoft">{a.status}</span>
+                              {a.publisherChannelSlug && <span className="font-mono text-[11px] uppercase text-billboard-inkSoft">{CHANNEL_LABEL[a.publisherChannelSlug]}</span>}
+                              <span className="font-mono text-[11px] uppercase ml-auto text-billboard-inkSoft">{a.status}</span>
                             </div>
                             {a.advertising_method && <p className="text-xs font-semibold mb-1">{a.advertising_method}</p>}
                             <p className="text-sm whitespace-pre-wrap">{a.message}</p>

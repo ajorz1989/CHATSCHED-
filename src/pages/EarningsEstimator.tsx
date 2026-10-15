@@ -36,28 +36,28 @@ export default function EarningsEstimator({ embedded = false }: { embedded?: boo
         {/* Inputs */}
         <div className="border-[3px] border-billboard-ink rounded p-6 space-y-6">
           <div>
-            <label className="flex items-center justify-between text-sm font-semibold mb-2">
+            <label htmlFor="est-1" className="flex items-center justify-between text-sm font-semibold mb-2">
               <span>Followers / audience size</span>
               <span className="font-mono text-billboard-inkSoft">{followers.toLocaleString()}</span>
             </label>
-            <input type="range" min={0} max={100000} step={500} value={followers} onChange={(e) => setFollowers(Number(e.target.value))} className="w-full accent-billboard-yellow" />
+            <input id="est-1" type="range" min={0} max={100000} step={500} value={followers} onChange={(e) => setFollowers(Number(e.target.value))} className="w-full accent-billboard-yellow" />
           </div>
 
           <div>
-            <label className="flex items-center justify-between text-sm font-semibold mb-2">
+            <label htmlFor="est-2" className="flex items-center justify-between text-sm font-semibold mb-2">
               <span>Engagement rate</span>
               <span className="font-mono text-billboard-inkSoft">{engagement.toFixed(1)}%</span>
             </label>
-            <input type="range" min={0} max={15} step={0.1} value={engagement} onChange={(e) => setEngagement(Number(e.target.value))} className="w-full accent-billboard-yellow" />
+            <input id="est-2" type="range" min={0} max={15} step={0.1} value={engagement} onChange={(e) => setEngagement(Number(e.target.value))} className="w-full accent-billboard-yellow" />
             <p className="text-xs text-billboard-inkSoft mt-1.5">The model is centred around a ~2% baseline — typical for South African social platforms.</p>
           </div>
 
           <div>
-            <label className="flex items-center justify-between text-sm font-semibold mb-2">
+            <label htmlFor="est-3" className="flex items-center justify-between text-sm font-semibold mb-2">
               <span>Monthly reach <span className="font-normal text-billboard-inkSoft">(optional)</span></span>
               <span className="font-mono text-billboard-inkSoft">{monthlyReach !== null ? monthlyReach.toLocaleString() : "—"}</span>
             </label>
-            <input
+            <input id="est-3"
               type="number" min={0} placeholder="Leave blank if unsure"
               value={monthlyReach ?? ""}
               onChange={(e) => setMonthlyReach(e.target.value === "" ? null : Number(e.target.value))}

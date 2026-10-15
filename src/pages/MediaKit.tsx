@@ -163,7 +163,7 @@ export default function MediaKit() {
           </div>
         </div>
 
-        <p className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft mb-2">What's included</p>
+        <p className="font-mono text-[11px] uppercase tracking-wider text-billboard-inkSoft mb-2">What's included</p>
         <ul className="grid sm:grid-cols-2 gap-x-4 gap-y-1.5 mb-6">
           {SECTIONS.map((s) => (
             <li key={s} className="flex items-start gap-2 text-sm">

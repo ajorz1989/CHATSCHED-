@@ -16,7 +16,7 @@ export default function PlatformRequirementCard({ rule, compact = false }: { rul
       <div className="flex items-center justify-between gap-3 mb-2">
         <h3 className="font-display text-sm">{rule.display_name}</h3>
         {rule.disclosure_required && (
-          <span className="font-mono text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full border border-billboard-ink bg-billboard-yellow text-billboard-ink shrink-0">
+          <span className="font-mono text-[11px] font-semibold uppercase px-2 py-0.5 rounded-full border border-billboard-ink bg-billboard-yellow text-billboard-ink shrink-0">
             Disclosure required
           </span>
         )}
@@ -24,7 +24,7 @@ export default function PlatformRequirementCard({ rule, compact = false }: { rul
 
       {rule.required_creator_actions.length > 0 && (
         <div className="mb-2.5">
-          <p className="font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft mb-1">Creator action</p>
+          <p className="font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft mb-1">Creator action</p>
           <ul className="text-sm space-y-1">
             {rule.required_creator_actions.map((a, i) => (
               <li key={i} className="flex gap-1.5">
@@ -38,7 +38,7 @@ export default function PlatformRequirementCard({ rule, compact = false }: { rul
 
       {!compact && rule.required_business_actions.length > 0 && (
         <div className="mb-2.5">
-          <p className="font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft mb-1">Business responsibility</p>
+          <p className="font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft mb-1">Business responsibility</p>
           <ul className="text-sm space-y-1">
             {rule.required_business_actions.map((a, i) => (
               <li key={i} className="flex gap-1.5">
@@ -52,7 +52,7 @@ export default function PlatformRequirementCard({ rule, compact = false }: { rul
 
       {!compact && rule.required_proof.length > 0 && (
         <div className="mb-2.5">
-          <p className="font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft mb-1">Proof to submit</p>
+          <p className="font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft mb-1">Proof to submit</p>
           <p className="text-sm text-billboard-inkSoft">{rule.required_proof.join(", ")}</p>
         </div>
       )}

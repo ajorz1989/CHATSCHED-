@@ -262,7 +262,7 @@ export default function CreateRequestForClient({
                     <button
                       type="button"
                       onClick={() => removeFromQueue(q.publisher.id)}
-                      className="font-mono text-[10px] font-semibold uppercase text-billboard-red shrink-0"
+                      className="font-mono text-[11px] font-semibold uppercase text-billboard-red shrink-0"
                     >
                       Remove
                     </button>

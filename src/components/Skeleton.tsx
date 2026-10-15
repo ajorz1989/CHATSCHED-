@@ -68,7 +68,7 @@ export function PublisherCardSkeleton() {
 /** Grid of publisher card skeletons — drop-in replacement for a loading grid. */
 export function PublisherGridSkeleton({ count = 6 }: { count?: number }) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" aria-busy="true" aria-label="Loading results">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" role="status" aria-busy="true" aria-label="Loading results">
       {Array.from({ length: count }).map((_, i) => (
         <PublisherCardSkeleton key={i} />
       ))}

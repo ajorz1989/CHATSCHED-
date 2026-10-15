@@ -30,7 +30,7 @@ function TractionStat({ label, value }: { label: string; value: number | undefin
   return (
     <div className="border-2 border-billboard-ink/15 rounded p-3 text-center">
       <div className="font-display text-2xl">{value === undefined ? "—" : value}</div>
-      <div className="font-mono text-[10px] uppercase text-billboard-inkSoft mt-0.5">{label}</div>
+      <div className="font-mono text-[11px] uppercase text-billboard-inkSoft mt-0.5">{label}</div>
     </div>
   );
 }

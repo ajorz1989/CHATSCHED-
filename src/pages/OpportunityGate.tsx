@@ -21,7 +21,7 @@ function AccessRequired({
     return (
       <div className="max-w-2xl mx-auto px-5 py-16">
         <section className="border-[3px] border-billboard-ink rounded-xl p-7 md:p-9 bg-billboard-paperDim">
-          <span className="inline-block font-mono text-[10px] font-bold uppercase tracking-wider border-2 border-billboard-ink px-3 py-1.5 rounded bg-white mb-4">
+          <span className="inline-block font-mono text-[11px] font-bold uppercase tracking-wider border-2 border-billboard-ink px-3 py-1.5 rounded bg-white mb-4">
             {isBusiness ? "Business verification required" : "Publisher approval required"}
           </span>
           <h1 className="font-display text-3xl md:text-4xl mb-3">
@@ -49,7 +49,7 @@ function AccessRequired({
     <div className="max-w-2xl mx-auto px-5 py-16">
       <section className="border-[3px] border-billboard-ink rounded-xl overflow-hidden shadow-blockSm">
         <div className="bg-billboard-yellow p-7 md:p-9">
-          <span className="inline-block font-mono text-[10px] font-bold uppercase tracking-wider border-2 border-billboard-ink px-3 py-1.5 rounded bg-white mb-4">
+          <span className="inline-block font-mono text-[11px] font-bold uppercase tracking-wider border-2 border-billboard-ink px-3 py-1.5 rounded bg-white mb-4">
             Premium access
           </span>
           <h1 className="font-display text-3xl md:text-4xl mb-3">
@@ -170,7 +170,7 @@ export default function OpportunityGate({ business, publisher }: { business: Rea
       <div className="space-y-10">
         <section>
           <div className="max-w-3xl mx-auto px-4 pt-8 pb-2">
-            <span className="font-mono text-[10px] uppercase tracking-wider font-semibold text-billboard-inkSoft">
+            <span className="font-mono text-[11px] uppercase tracking-wider font-semibold text-billboard-inkSoft">
               Admin · Business opportunities
             </span>
           </div>
@@ -178,7 +178,7 @@ export default function OpportunityGate({ business, publisher }: { business: Rea
         </section>
         <section className="border-t-[3px] border-billboard-ink pt-8">
           <div className="max-w-3xl mx-auto px-4 pb-2">
-            <span className="font-mono text-[10px] uppercase tracking-wider font-semibold text-billboard-inkSoft">
+            <span className="font-mono text-[11px] uppercase tracking-wider font-semibold text-billboard-inkSoft">
               Admin · Publisher opportunities
             </span>
           </div>

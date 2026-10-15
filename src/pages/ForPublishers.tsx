@@ -150,7 +150,7 @@ export default function ForPublishers() {
                 <div className="flex items-start justify-between gap-2">
                   <h3 className="font-bold text-sm mb-1">{m.definition.name}</h3>
                   {!isChannelEnabled(m.definition.slug) && (
-                    <span className="shrink-0 border border-billboard-inkSoft/40 text-billboard-inkSoft font-mono text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-full">
+                    <span className="shrink-0 border border-billboard-inkSoft/40 text-billboard-inkSoft font-mono text-[11px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-full">
                       Coming soon
                     </span>
                   )}

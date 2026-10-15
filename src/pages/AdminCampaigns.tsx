@@ -361,7 +361,7 @@ export default function AdminCampaigns() {
                       <div className="flex items-center justify-between gap-2 mb-2">
                         <p className="text-xs font-semibold text-billboard-inkSoft">Package pricing</p>
                         {c.package_price != null && (
-                          <span className={`font-mono text-[10px] font-semibold uppercase px-2 py-0.5 rounded border-2 ${c.package_payment_status === "paid" ? "bg-billboard-green text-white border-billboard-greenDeep" : c.package_payment_status === "payment_submitted" ? "bg-billboard-yellow text-billboard-ink border-billboard-ink" : "border-billboard-inkSoft text-billboard-inkSoft"}`}>
+                          <span className={`font-mono text-[11px] font-semibold uppercase px-2 py-0.5 rounded border-2 ${c.package_payment_status === "paid" ? "bg-billboard-green text-white border-billboard-greenDeep" : c.package_payment_status === "payment_submitted" ? "bg-billboard-yellow text-billboard-ink border-billboard-ink" : "border-billboard-inkSoft text-billboard-inkSoft"}`}>
                             {PACKAGE_STATUS_LABEL[c.package_payment_status]}
                           </span>
                         )}

@@ -18,7 +18,7 @@ const SOCIAL_LINKS = [
   { label: "Instagram", Icon: InstagramIcon, href: "https://www.instagram.com/chatsched/" },
 ] as const;
 
-const LINK_CLASS = "block text-sm mb-2 hover:text-billboard-yellow transition-colors break-words";
+const LINK_CLASS = "block text-sm py-1 mb-1 hover:text-billboard-yellow transition-colors break-words";
 const HEADING_CLASS = "font-mono text-xs uppercase tracking-wider text-[#8A8272] mb-3";
 
 export default function Footer() {
@@ -53,7 +53,7 @@ export default function Footer() {
 
           {/* Platform */}
           <div>
-            <h4 className={HEADING_CLASS}>Platform</h4>
+            <h2 className={HEADING_CLASS}>Platform</h2>
             <Link to="/browse" className={LINK_CLASS}>Browse advertising</Link>
             <Link to="/build-my-campaign" className={LINK_CLASS}>Build a campaign</Link>
             <Link to="/channels" className={LINK_CLASS}>Channels</Link>
@@ -65,7 +65,7 @@ export default function Footer() {
 
           {/* Explore — Blog link renamed from Resources; Collaborate With Us added */}
           <div>
-            <h4 className={HEADING_CLASS}>Explore</h4>
+            <h2 className={HEADING_CLASS}>Explore</h2>
             <Link to="/categories" className={LINK_CLASS}>Categories</Link>
             <Link to="/suburbs" className={LINK_CLASS}>Locations</Link>
             <Link to="/audience-finder" className={LINK_CLASS}>Audience Finder</Link>
@@ -76,7 +76,7 @@ export default function Footer() {
 
           {/* Trust & Help */}
           <div>
-            <h4 className={HEADING_CLASS}>Trust &amp; Help</h4>
+            <h2 className={HEADING_CLASS}>Trust &amp; Help</h2>
             <Link to="/about" className={LINK_CLASS}>About ChatSched</Link>
             <Link to="/how-it-works" className={LINK_CLASS}>How it works</Link>
             <Link to="/trust" className={LINK_CLASS}>{t("footer.trustCentre")}</Link>
@@ -88,7 +88,7 @@ export default function Footer() {
 
           {/* Company */}
           <div>
-            <h4 className={HEADING_CLASS}>Company</h4>
+            <h2 className={HEADING_CLASS}>Company</h2>
             <Link to="/careers" className={LINK_CLASS}>Careers</Link>
             <Link to="/partners" className={LINK_CLASS}>Partners</Link>
             <Link to="/collaborate" className={LINK_CLASS}>Collaborate with us</Link>
@@ -96,7 +96,7 @@ export default function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 className={HEADING_CLASS}>Contact</h4>
+            <h2 className={HEADING_CLASS}>Contact</h2>
             <a href={`mailto:${CONTACT_EMAIL}`} className={`${LINK_CLASS} whitespace-nowrap break-normal leading-normal`}>{CONTACT_EMAIL}</a>
             <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className={LINK_CLASS}>{WHATSAPP_NUMBER_DISPLAY}</a>
             <p className="text-sm leading-relaxed mb-3">{CONTACT_ADDRESS_LINES.join(", ")}</p>

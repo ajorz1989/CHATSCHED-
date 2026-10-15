@@ -45,7 +45,7 @@ function BellIcon() {
 }
 
 const tabCls = ({ isActive }: { isActive: boolean }) =>
-  `flex flex-col items-center justify-center gap-0.5 flex-1 h-full text-[10px] font-semibold transition-colors ${
+  `flex flex-col items-center justify-center gap-0.5 flex-1 h-full text-[11px] font-semibold transition-colors ${
     isActive ? "text-billboard-greenDeep" : "text-billboard-inkSoft"
   }`;
 
@@ -122,14 +122,14 @@ export default function BottomNav() {
           type="button"
           onClick={handleBellTap}
           aria-label={t("nav.notifications")}
-          className={`flex flex-col items-center justify-center gap-0.5 flex-1 h-full text-[10px] font-semibold transition-colors ${
+          className={`flex flex-col items-center justify-center gap-0.5 flex-1 h-full text-[11px] font-semibold transition-colors ${
             sheetOpen ? "text-billboard-greenDeep" : "text-billboard-inkSoft"
           }`}
         >
           <span className="relative">
             <BellIcon />
             {user && unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1.5 min-w-[15px] h-[15px] px-[3px] flex items-center justify-center rounded-full bg-billboard-red text-white text-[9px] font-mono font-bold border-2 border-billboard-paper">
+              <span className="absolute -top-1 -right-1.5 min-w-[15px] h-[15px] px-[3px] flex items-center justify-center rounded-full bg-billboard-red text-white text-[11px] font-mono font-bold border-2 border-billboard-paper">
                 {unreadCount > 9 ? "9+" : unreadCount}
               </span>
             )}

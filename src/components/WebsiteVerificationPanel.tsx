@@ -12,7 +12,7 @@ export function CopyField({ label, value }: { label: string; value: string }) {
   const [copied, setCopied] = useState(false);
   return (
     <div className="mt-2">
-      <p className="font-mono text-[10px] uppercase text-billboard-inkSoft">{label}</p>
+      <p className="font-mono text-[11px] uppercase text-billboard-inkSoft">{label}</p>
       <div className="flex items-center gap-2">
         <code className="flex-1 min-w-0 break-all border-2 border-billboard-ink/20 rounded px-2 py-1.5 text-xs bg-billboard-paperDim/40">{value}</code>
         <button
@@ -22,7 +22,7 @@ export function CopyField({ label, value }: { label: string; value: string }) {
             setCopied(true);
             setTimeout(() => setCopied(false), 1500);
           }}
-          className="font-mono text-[10px] font-semibold uppercase border-2 border-billboard-ink rounded px-2 py-1 hover:bg-billboard-paperDim transition shrink-0"
+          className="font-mono text-[11px] font-semibold uppercase border-2 border-billboard-ink rounded px-2 py-1 hover:bg-billboard-paperDim transition shrink-0"
         >
           {copied ? "Copied ✓" : "Copy"}
         </button>
@@ -120,10 +120,10 @@ export default function WebsiteVerificationPanel({ publisher, onChange }: { publ
         </div>
       ) : (
         <>
-          <p className="font-mono text-[10px] font-bold uppercase tracking-wide text-billboard-inkSoft mb-2">Step 1 · Your verification code</p>
+          <p className="font-mono text-[11px] font-bold uppercase tracking-wide text-billboard-inkSoft mb-2">Step 1 · Your verification code</p>
           {code && (
             <div className="border-2 border-billboard-ink rounded p-3 mb-2">
-              <p className="font-mono text-[10px] uppercase text-billboard-inkSoft">Your code</p>
+              <p className="font-mono text-[11px] uppercase text-billboard-inkSoft">Your code</p>
               <p className="text-lg font-bold font-mono tracking-wider">{code}</p>
             </div>
           )}
@@ -140,7 +140,7 @@ export default function WebsiteVerificationPanel({ publisher, onChange }: { publ
 
           {snippets && (
             <>
-              <p className="font-mono text-[10px] font-bold uppercase tracking-wide text-billboard-inkSoft mb-2 mt-6">Step 2 · Add it to your site (any one)</p>
+              <p className="font-mono text-[11px] font-bold uppercase tracking-wide text-billboard-inkSoft mb-2 mt-6">Step 2 · Add it to your site (any one)</p>
               <div className="space-y-4">
                 <div className="border-2 border-billboard-ink/20 rounded p-3">
                   <p className="text-sm font-semibold">A · Meta tag <span className="font-normal text-billboard-inkSoft">— easiest if you can edit your site's header</span></p>
@@ -162,7 +162,7 @@ export default function WebsiteVerificationPanel({ publisher, onChange }: { publ
                 </div>
               </div>
 
-              <p className="font-mono text-[10px] font-bold uppercase tracking-wide text-billboard-inkSoft mb-2 mt-6">Step 3 · Check it</p>
+              <p className="font-mono text-[11px] font-bold uppercase tracking-wide text-billboard-inkSoft mb-2 mt-6">Step 3 · Check it</p>
               <button
                 type="button"
                 onClick={checkNow}

@@ -27,7 +27,7 @@ function Stat({ label, value }: { label: string; value: string | number }) {
   return (
     <div className="border-2 border-billboard-ink rounded p-3">
       <div className="font-display text-lg">{value}</div>
-      <div className="text-[10px] font-mono uppercase text-billboard-inkSoft mt-0.5">{label}</div>
+      <div className="text-[11px] font-mono uppercase text-billboard-inkSoft mt-0.5">{label}</div>
     </div>
   );
 }
@@ -98,7 +98,7 @@ export default function CampaignRollup() {
     <section className="border-[3px] border-billboard-ink rounded-lg p-6 bg-white mb-8">
       <div className="flex flex-wrap items-baseline justify-between gap-2 mb-1">
         <h2 className="font-display text-lg">Campaign performance</h2>
-        <span className="font-mono text-[10px] uppercase text-billboard-inkSoft">{activeCount} active · {stats.length} total</span>
+        <span className="font-mono text-[11px] uppercase text-billboard-inkSoft">{activeCount} active · {stats.length} total</span>
       </div>
       <p className="text-xs text-billboard-inkSoft mb-5">
         Rolled up across every tracking link you've created — manage individual links in Marketing Suite → Campaign Tracker below.
@@ -113,14 +113,14 @@ export default function CampaignRollup() {
 
       {hasClickHistory && (
         <div className="mb-6">
-          <p className="font-mono text-[10px] uppercase text-billboard-inkSoft mb-2">Clicks, last {WEEKS} weeks</p>
+          <p className="font-mono text-[11px] uppercase text-billboard-inkSoft mb-2">Clicks, last {WEEKS} weeks</p>
           <Sparkbars series={weeklyClicks} />
         </div>
       )}
 
       {top.length > 0 && (
         <div>
-          <p className="font-mono text-[10px] uppercase text-billboard-inkSoft mb-2">Top campaigns</p>
+          <p className="font-mono text-[11px] uppercase text-billboard-inkSoft mb-2">Top campaigns</p>
           <div className="space-y-1.5">
             {top.map((t) => (
               <div key={t.campaign_id} className="flex items-center justify-between gap-3 text-sm border-b border-billboard-ink/10 pb-1.5 last:border-b-0 last:pb-0">

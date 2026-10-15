@@ -88,7 +88,7 @@ export default function CampaignBuilder({
         {STEPS.map((s, i) => (
           <span
             key={s}
-            className={`font-mono text-[10px] uppercase tracking-wide px-2.5 py-1 rounded border-2 ${
+            className={`font-mono text-[11px] uppercase tracking-wide px-2.5 py-1 rounded border-2 ${
               step === s ? "border-billboard-ink bg-billboard-ink text-white" : "border-billboard-inkSoft text-billboard-inkSoft"
             }`}
           >
@@ -236,7 +236,7 @@ function QualityPanel({ quality }: { quality: QualityScoreResult }) {
         <span className="font-display text-2xl">{quality.score}</span>
         <span className="text-sm font-semibold">Campaign quality score</span>
         {!quality.providerEnhanced && (
-          <span className="font-mono text-[10px] uppercase border border-billboard-inkSoft text-billboard-inkSoft px-2 py-0.5 rounded">
+          <span className="font-mono text-[11px] uppercase border border-billboard-inkSoft text-billboard-inkSoft px-2 py-0.5 rounded">
             Rule-based · smarter scoring later
           </span>
         )}
@@ -265,7 +265,7 @@ function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="border-2 border-billboard-ink rounded p-3">
       <div className="font-display text-lg">{value}</div>
-      <div className="text-[10px] font-mono uppercase text-billboard-inkSoft mt-0.5">{label}</div>
+      <div className="text-[11px] font-mono uppercase text-billboard-inkSoft mt-0.5">{label}</div>
     </div>
   );
 }

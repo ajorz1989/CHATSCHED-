@@ -430,7 +430,7 @@ export default function PublisherProfile() {
                       </div>
                     )}
                     <form onSubmit={handleSaveToNewList} className={`p-2.5 ${lists.length > 0 ? "border-t-2 border-billboard-paperDim" : ""}`}>
-                      <p className="text-[10px] font-mono uppercase text-billboard-inkSoft mb-1.5">New list</p>
+                      <p className="text-[11px] font-mono uppercase text-billboard-inkSoft mb-1.5">New list</p>
                       <input
                         value={newListName}
                         onChange={e => setNewListName(e.target.value)}
@@ -442,7 +442,7 @@ export default function PublisherProfile() {
                         Create & save
                       </Button>
                     </form>
-                    <Link to="/lists" onClick={() => setShowSave(false)} className="block text-center text-[10px] font-mono uppercase text-billboard-inkSoft py-2 hover:bg-billboard-paperDim border-t border-billboard-paperDim">
+                    <Link to="/lists" onClick={() => setShowSave(false)} className="block text-center text-[11px] font-mono uppercase text-billboard-inkSoft py-2 hover:bg-billboard-paperDim border-t border-billboard-paperDim">
                       Manage lists →
                     </Link>
                   </div>
@@ -457,7 +457,7 @@ export default function PublisherProfile() {
           <div>
             {publisher.languages?.length > 0 && (
               <div className="flex flex-wrap items-center gap-2 mb-6">
-                <span className="font-mono text-[10px] uppercase tracking-wide text-billboard-inkSoft">Languages</span>
+                <span className="font-mono text-[11px] uppercase tracking-wide text-billboard-inkSoft">Languages</span>
                 {publisher.languages.map(l => (
                   <span key={l} className="font-mono text-xs border-2 border-billboard-inkSoft rounded-full px-3 py-1 bg-white text-billboard-inkSoft">{l}</span>
                 ))}
@@ -505,7 +505,7 @@ export default function PublisherProfile() {
             )}
             {publisher.ai_audience_summary && (
               <div className={`border-2 rounded p-4 mb-4 ${publisher.verified ? "border-billboard-green bg-[#EAF3EC]" : "border-billboard-ink/20 bg-billboard-paperDim/40"}`}>
-                <p className={`font-mono text-[10px] uppercase font-semibold mb-1 ${publisher.verified ? "text-billboard-greenDeep" : "text-billboard-inkSoft"}`}>
+                <p className={`font-mono text-[11px] uppercase font-semibold mb-1 ${publisher.verified ? "text-billboard-greenDeep" : "text-billboard-inkSoft"}`}>
                   Audience summary — {publisher.verified ? "verified by ChatSched" : "self-reported by publisher"}
                 </p>
                 <p className="text-sm text-billboard-inkSoft">{publisher.ai_audience_summary}</p>
@@ -620,7 +620,7 @@ export default function PublisherProfile() {
                   <div className="border-b-2 border-billboard-ink/10 pb-2.5">
                     <div className="flex items-center justify-between gap-2 mb-1">
                       <h3 className="font-display text-base min-w-0">Start Campaign Request</h3>
-                      <span className="shrink-0 whitespace-nowrap bg-billboard-greenDeep text-white text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded">
+                      <span className="shrink-0 whitespace-nowrap bg-billboard-greenDeep text-white text-[11px] font-mono font-bold uppercase px-2 py-0.5 rounded">
                         Managed
                       </span>
                     </div>

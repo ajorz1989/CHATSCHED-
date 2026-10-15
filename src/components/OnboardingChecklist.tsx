@@ -79,7 +79,7 @@ export default function OnboardingChecklist({ title, items, storageKey }: { titl
   // recovery path, always available in place of the full checklist.
   if (dismissed) {
     return (
-      <button onClick={showAgain} className="font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft underline hover:text-billboard-ink mb-8 block">
+      <button onClick={showAgain} className="font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft underline hover:text-billboard-ink mb-8 block">
         Show setup checklist
       </button>
     );
@@ -93,7 +93,7 @@ export default function OnboardingChecklist({ title, items, storageKey }: { titl
     return (
       <div className="border-[3px] border-billboard-greenDeep bg-[#EAF3EC] rounded p-4 mb-8 flex items-center justify-between gap-3">
         <p className="text-sm font-semibold text-billboard-greenDeep">✓ You're all set — {title.toLowerCase()} complete.</p>
-        <button onClick={dismiss} className="font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft hover:text-billboard-ink shrink-0">
+        <button onClick={dismiss} className="font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft hover:text-billboard-ink shrink-0">
           Dismiss
         </button>
       </div>
@@ -104,7 +104,7 @@ export default function OnboardingChecklist({ title, items, storageKey }: { titl
     <div className="border-[3px] border-billboard-ink rounded p-5 mb-8 bg-billboard-paperDim">
       <div className="flex items-center justify-between gap-3 mb-1">
         <h2 className="font-display text-lg">{title}</h2>
-        <button onClick={dismiss} className="font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft hover:text-billboard-ink shrink-0">
+        <button onClick={dismiss} className="font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft hover:text-billboard-ink shrink-0">
           Dismiss
         </button>
       </div>
@@ -119,31 +119,31 @@ export default function OnboardingChecklist({ title, items, storageKey }: { titl
         {items.map((item) => (
           <li key={item.id} className="flex items-start gap-3">
             <span className={`w-5 h-5 rounded-full border-2 border-billboard-ink shrink-0 flex items-center justify-center mt-0.5 ${item.done ? "bg-billboard-green" : "bg-white"}`}>
-              {item.done && <span className="text-white text-[10px] leading-none">✓</span>}
+              {item.done && <span className="text-white text-[11px] leading-none">✓</span>}
             </span>
             <div className="flex-1 min-w-0">
               <p className={`text-sm font-semibold ${item.done ? "text-billboard-inkSoft line-through" : "text-billboard-ink"}`}>{item.label}</p>
               {!item.done && <p className="text-xs text-billboard-inkSoft">{item.hint}</p>}
             </div>
             {!item.done && item.actionTo && item.actionLabel && (
-              <Link to={item.actionTo} className="font-mono text-[10px] font-semibold uppercase border-2 border-billboard-ink rounded px-2.5 py-1 hover:bg-white transition shrink-0 whitespace-nowrap">
+              <Link to={item.actionTo} className="font-mono text-[11px] font-semibold uppercase border-2 border-billboard-ink rounded px-2.5 py-1 hover:bg-white transition shrink-0 whitespace-nowrap">
                 {item.actionLabel}
               </Link>
             )}
             {!item.done && item.onAction && (
               <div className="shrink-0 text-right">
                 {actionState[item.id] === "sent" ? (
-                  <span className="font-mono text-[10px] font-semibold uppercase text-billboard-greenDeep whitespace-nowrap">Sent ✓</span>
+                  <span className="font-mono text-[11px] font-semibold uppercase text-billboard-greenDeep whitespace-nowrap">Sent ✓</span>
                 ) : (
                   <button
                     onClick={() => runAction(item)}
                     disabled={actionState[item.id] === "sending"}
-                    className="font-mono text-[10px] font-semibold uppercase border-2 border-billboard-ink rounded px-2.5 py-1 hover:bg-white transition whitespace-nowrap disabled:opacity-60"
+                    className="font-mono text-[11px] font-semibold uppercase border-2 border-billboard-ink rounded px-2.5 py-1 hover:bg-white transition whitespace-nowrap disabled:opacity-60"
                   >
                     {actionState[item.id] === "sending" ? "Sending…" : (item.onActionLabel ?? "Resend")}
                   </button>
                 )}
-                {actionState[item.id] === "error" && <p className="text-billboard-red text-[10px] font-semibold mt-1">Couldn't send — try again</p>}
+                {actionState[item.id] === "error" && <p className="text-billboard-red text-[11px] font-semibold mt-1">Couldn't send — try again</p>}
               </div>
             )}
           </li>

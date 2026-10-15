@@ -35,7 +35,7 @@ export default function LiveChannelTabs() {
               <ChannelIcon slug={tab.definition.slug} size="sm" />
               <span className="font-bold text-sm leading-tight min-w-0">{tab.definition.name}</span>
             </div>
-            <div className="flex items-center gap-1.5 mt-2 font-mono text-[9px] uppercase tracking-wide text-billboard-greenDeep">
+            <div className="flex items-center gap-1.5 mt-2 font-mono text-[11px] uppercase tracking-wide text-billboard-greenDeep">
               <span className="h-1.5 w-1.5 rounded-full bg-billboard-green" aria-hidden="true" />
               Live
             </div>
@@ -54,7 +54,7 @@ export default function LiveChannelTabs() {
             <ChannelIcon slug={ch.slug} size="lg" />
           </div>
           <div className="min-w-0">
-            <div className="font-mono text-[9px] uppercase tracking-[0.14em] text-billboard-yellow mb-2">
+            <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-billboard-yellow mb-2">
               Live advertising channel
             </div>
             <p className="font-display text-xl md:text-2xl leading-snug mb-3">{ch.tagline}</p>

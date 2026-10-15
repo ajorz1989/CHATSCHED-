@@ -10,7 +10,7 @@ export default function LastActiveBadge({ lastActiveAt, className }: { lastActiv
   const info = lastActiveInfo(lastActiveAt);
   if (!info) return null;
   return (
-    <span className={className ?? `inline-flex items-center gap-1 font-mono text-[10px] font-semibold ${TIER_CLASS[info.tier]}`}>
+    <span className={className ?? `inline-flex items-center gap-1 font-mono text-[11px] font-semibold ${TIER_CLASS[info.tier]}`}>
       <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${info.tier === "recent" ? "bg-billboard-greenDeep" : "bg-billboard-inkSoft/50"}`} />
       {info.label}
     </span>

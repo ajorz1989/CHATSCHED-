@@ -42,8 +42,8 @@ export default function CommunityAnnouncements() {
           {announcements.map((a) => (
             <div key={a.id} className={`border-[3px] rounded p-5 ${a.pinned ? "border-billboard-ink bg-billboard-yellow" : "border-billboard-ink"}`}>
               <div className="flex items-center gap-2 mb-2">
-                {a.pinned && <span className="font-mono text-[10px] font-semibold uppercase tracking-wider border-2 border-billboard-ink bg-white px-2 py-0.5 rounded">Pinned</span>}
-                <span className="font-mono text-[10px] uppercase text-billboard-inkSoft">{formatDate(a.created_at)}</span>
+                {a.pinned && <span className="font-mono text-[11px] font-semibold uppercase tracking-wider border-2 border-billboard-ink bg-white px-2 py-0.5 rounded">Pinned</span>}
+                <span className="font-mono text-[11px] uppercase text-billboard-inkSoft">{formatDate(a.created_at)}</span>
               </div>
               <h2 className="font-bold text-lg mb-1.5">{a.title}</h2>
               <p className="text-sm text-billboard-inkSoft whitespace-pre-wrap">{a.body}</p>

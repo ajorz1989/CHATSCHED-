@@ -65,7 +65,7 @@ function CampaignCard({ campaign, onCampaignUpdated }: { campaign: MyManagedCamp
             <p className="font-bold text-sm">{campaign.name}</p>
             {campaign.objective && <p className="text-xs text-billboard-inkSoft mt-0.5">{campaign.objective}</p>}
           </div>
-          <span className={`shrink-0 inline-block font-mono text-[10px] font-semibold uppercase px-2.5 py-1 rounded border-2 ${STATUS_STYLE[campaign.status] ?? STATUS_STYLE.draft}`}>
+          <span className={`shrink-0 inline-block font-mono text-[11px] font-semibold uppercase px-2.5 py-1 rounded border-2 ${STATUS_STYLE[campaign.status] ?? STATUS_STYLE.draft}`}>
             {STATUS_LABEL[campaign.status] ?? campaign.status}
           </span>
         </div>
@@ -86,13 +86,13 @@ function CampaignCard({ campaign, onCampaignUpdated }: { campaign: MyManagedCamp
           {campaign.package_price != null && <PackagePayment campaign={campaign} onPaid={onCampaignUpdated} />}
           {campaign.brief && (
             <div className="mb-3">
-              <p className="text-[10px] font-mono uppercase text-billboard-inkSoft mb-1">Brief</p>
+              <p className="text-[11px] font-mono uppercase text-billboard-inkSoft mb-1">Brief</p>
               <p className="text-sm whitespace-pre-wrap">{campaign.brief}</p>
             </div>
           )}
           {campaign.target_audience && (
             <div className="mb-3">
-              <p className="text-[10px] font-mono uppercase text-billboard-inkSoft mb-1">Target audience</p>
+              <p className="text-[11px] font-mono uppercase text-billboard-inkSoft mb-1">Target audience</p>
               <p className="text-sm">{campaign.target_audience}</p>
             </div>
           )}
@@ -100,21 +100,21 @@ function CampaignCard({ campaign, onCampaignUpdated }: { campaign: MyManagedCamp
             <div className="grid grid-cols-3 gap-2 mb-3 text-center">
               <div>
                 <div className="font-display text-lg">{totals.linked_requests}</div>
-                <div className="text-[9px] font-mono uppercase text-billboard-inkSoft">Bookings</div>
+                <div className="text-[11px] font-mono uppercase text-billboard-inkSoft">Bookings</div>
               </div>
               <div>
                 <div className="font-display text-lg">{totals.paid_requests}</div>
-                <div className="text-[9px] font-mono uppercase text-billboard-inkSoft">Paid</div>
+                <div className="text-[11px] font-mono uppercase text-billboard-inkSoft">Paid</div>
               </div>
               <div>
                 <div className="font-display text-lg">{formatCurrency(totals.total_spend)}</div>
-                <div className="text-[9px] font-mono uppercase text-billboard-inkSoft">Spent so far</div>
+                <div className="text-[11px] font-mono uppercase text-billboard-inkSoft">Spent so far</div>
               </div>
             </div>
           )}
           {bookings && bookings.length > 0 && (
             <div>
-              <p className="text-[10px] font-mono uppercase text-billboard-inkSoft mb-1.5">Bookings in this campaign</p>
+              <p className="text-[11px] font-mono uppercase text-billboard-inkSoft mb-1.5">Bookings in this campaign</p>
               <div className="space-y-1.5">
                 {bookings.map((b) => (
                   <Link key={b.id} to={`/campaigns/${b.id}`} className="flex items-center justify-between gap-2 border-2 border-billboard-ink/15 rounded px-3 py-2 text-xs hover:border-billboard-ink transition">

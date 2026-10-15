@@ -132,7 +132,7 @@ export default function AdminAJCreations() {
         <div className="p-5 md:p-7 border-b border-white/10">
           <div className="flex flex-col xl:flex-row xl:items-end xl:justify-between gap-5">
             <div className="max-w-3xl">
-              <div className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider font-bold text-billboard-yellow border border-billboard-yellow/30 bg-billboard-yellow/10 rounded-full px-2.5 py-1 mb-3">
+              <div className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider font-bold text-billboard-yellow border border-billboard-yellow/30 bg-billboard-yellow/10 rounded-full px-2.5 py-1 mb-3">
                 <Sparkles size={12} /> Super Tool
               </div>
               <h1 className="font-display text-3xl md:text-4xl">AJ: Creations</h1>
@@ -143,11 +143,11 @@ export default function AdminAJCreations() {
             <div className="grid grid-cols-2 gap-2 shrink-0">
               <div className="rounded-lg border border-white/10 bg-white/[0.04] px-4 py-3">
                 <div className="font-display text-2xl">{ALL_CHANNELS.length}</div>
-                <div className="font-mono text-[9px] uppercase tracking-wider text-white/40">Channel types</div>
+                <div className="font-mono text-[11px] uppercase tracking-wider text-white/40">Channel types</div>
               </div>
               <div className="rounded-lg border border-white/10 bg-white/[0.04] px-4 py-3">
                 <div className="font-display text-2xl">{created.length}</div>
-                <div className="font-mono text-[9px] uppercase tracking-wider text-white/40">Created this session</div>
+                <div className="font-mono text-[11px] uppercase tracking-wider text-white/40">Created this session</div>
               </div>
             </div>
           </div>
@@ -156,14 +156,14 @@ export default function AdminAJCreations() {
         <div className="p-5 md:p-7 bg-black/10">
           <div className="flex items-start justify-between gap-3 mb-4">
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-wider text-white/40">Step 1</p>
+              <p className="font-mono text-[11px] uppercase tracking-wider text-white/40">Step 1</p>
               <h2 className="font-display text-xl">Choose the channel inventory to create</h2>
               <p className="text-xs text-white/40 mt-1 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-billboard-green shrink-0" aria-hidden="true" />
                 Green = channel is publicly enabled. Any channel can still be created here.
               </p>
             </div>
-            <span className="font-mono text-[10px] uppercase text-white/35 shrink-0">{ALL_CHANNELS.length} available to admins</span>
+            <span className="font-mono text-[11px] uppercase text-white/35 shrink-0">{ALL_CHANNELS.length} available to admins</span>
           </div>
 
           <div role="group" aria-label="Channel inventory" className="grid sm:grid-cols-2 xl:grid-cols-3 gap-2.5">
@@ -197,10 +197,10 @@ export default function AdminAJCreations() {
                       aria-hidden="true"
                     />
                   </div>
-                  <p className={`text-[10px] mt-1.5 line-clamp-2 ${active ? "text-billboard-inkSoft" : "text-white/40"}`}>
+                  <p className={`text-[11px] mt-1.5 line-clamp-2 ${active ? "text-billboard-inkSoft" : "text-white/40"}`}>
                     {channel.definition.tagline}
                   </p>
-                  <div className={`font-mono text-[9px] uppercase tracking-wider mt-2 ${active ? "text-billboard-inkSoft" : "text-white/30"}`}>
+                  <div className={`font-mono text-[11px] uppercase tracking-wider mt-2 ${active ? "text-billboard-inkSoft" : "text-white/30"}`}>
                     {createdCount > 0
                       ? `${createdCount} created this session`
                       : publicLive
@@ -226,7 +226,7 @@ export default function AdminAJCreations() {
               <Layers3 size={19} strokeWidth={2.4} />
             </span>
             <div className="min-w-0">
-              <p className="font-mono text-[10px] uppercase tracking-wider text-billboard-yellow">Step 2</p>
+              <p className="font-mono text-[11px] uppercase tracking-wider text-billboard-yellow">Step 2</p>
               <h2 className="font-display text-xl truncate">Create {selectedModule.definition.name}</h2>
               <p className="text-xs text-white/40 mt-1">Same onboarding fields as /apply · immediate admin publishing</p>
             </div>
@@ -326,7 +326,7 @@ export default function AdminAJCreations() {
               <button
                 type="button"
                 onClick={() => setCreated([])}
-                className="font-mono text-[10px] uppercase tracking-wider text-white/40 hover:text-white transition"
+                className="font-mono text-[11px] uppercase tracking-wider text-white/40 hover:text-white transition"
               >
                 Clear list
               </button>
@@ -337,10 +337,10 @@ export default function AdminAJCreations() {
                   <span className="flex items-center gap-2 min-w-0">
                     <span aria-hidden="true">{channelEmoji(entry.slug)}</span>
                     <span className="truncate">{channelName(entry.slug)}</span>
-                    <span className="font-mono text-[10px] text-white/30 shrink-0">{entry.id.slice(0, 8)}</span>
+                    <span className="font-mono text-[11px] text-white/30 shrink-0">{entry.id.slice(0, 8)}</span>
                   </span>
                   <span className="flex items-center gap-3 shrink-0">
-                    <time dateTime={entry.at} className="font-mono text-[10px] uppercase tracking-wider text-white/40">
+                    <time dateTime={entry.at} className="font-mono text-[11px] uppercase tracking-wider text-white/40">
                       {formatTime(entry.at)}
                     </time>
                     <Link

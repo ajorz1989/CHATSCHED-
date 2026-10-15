@@ -145,7 +145,7 @@ export default function AdminNavigation({
             <LayoutDashboard size={18} strokeWidth={2.4} aria-hidden="true" />
           </span>
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-wider text-white/45">Control centre</p>
+            <p className="font-mono text-[11px] uppercase tracking-wider text-white/45">Control centre</p>
             <h2 className="font-display text-lg leading-tight">Admin Dashboard</h2>
           </div>
         </div>
@@ -170,7 +170,7 @@ export default function AdminNavigation({
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block text-sm font-bold">{group.label}</span>
-                  <span className="block text-[10px] text-white/40 truncate">{group.description}</span>
+                  <span className="block text-[11px] text-white/40 truncate">{group.description}</span>
                 </span>
                 <ChevronDown size={16} className={`text-white/45 transition-transform ${open ? "rotate-180" : ""}`} aria-hidden="true" />
               </button>
@@ -189,7 +189,7 @@ export default function AdminNavigation({
                           </span>
                           <span className="flex-1 truncate">{item.label}</span>
                           {count !== undefined && (
-                            <span className={`font-mono text-[9px] min-w-5 text-center px-1.5 py-0.5 rounded-full border ${isActive ? "border-billboard-ink/20" : "border-white/10"}`}>
+                            <span className={`font-mono text-[11px] min-w-5 text-center px-1.5 py-0.5 rounded-full border ${isActive ? "border-billboard-ink/20" : "border-white/10"}`}>
                               {count}
                             </span>
                           )}
@@ -234,7 +234,7 @@ export default function AdminNavigation({
       </nav>
 
       <div className="px-5 py-4 border-t border-white/10 bg-black/10">
-        <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-white/45">
+        <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-wider text-white/45">
           <span className="w-1.5 h-1.5 rounded-full bg-billboard-green" />
           Admin session protected
         </div>

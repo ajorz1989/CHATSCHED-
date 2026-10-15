@@ -13,7 +13,7 @@ export default function AdPlatformBadges({ platforms }: { platforms: Platform[] 
   const single = platforms.length === 1;
   return (
     <div className="my-2.5" aria-label={`Ads run on ${platforms.join(", ")}`}>
-      <p className="font-mono text-[10px] uppercase tracking-wide text-billboard-inkSoft mb-1">
+      <p className="font-mono text-[11px] uppercase tracking-wide text-billboard-inkSoft mb-1">
         Ads run on · <span className="font-semibold text-billboard-ink">{platformHeadline(platforms)}</span>
       </p>
       <div className="flex flex-wrap gap-1.5">

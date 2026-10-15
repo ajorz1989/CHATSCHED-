@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../hooks/useAuth";
@@ -39,6 +39,19 @@ export default function Header() {
     setAdvertiseOpen(false);
   }
 
+  // Escape closes whichever menu is open (WCAG 2.1.2 / 1.4.13).
+  useEffect(() => {
+    if (!menuOpen && !advertiseOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setMenuOpen(false);
+        setAdvertiseOpen(false);
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [menuOpen, advertiseOpen]);
+
   return (
     <header className="sticky top-0 z-50 bg-billboard-paper border-b-[3px] border-billboard-ink">
       <div className="max-w-[1400px] w-full mx-auto min-w-0 flex items-center justify-between px-3 sm:px-5 py-3 gap-2 sm:gap-4">
@@ -56,7 +69,7 @@ export default function Header() {
               className="inline-flex items-center gap-1 hover:text-billboard-greenDeep transition-colors"
             >
               Advertise
-              <span className={`text-[10px] transition-transform ${advertiseOpen ? "rotate-180" : ""}`}>▾</span>
+              <span className={`text-[11px] transition-transform ${advertiseOpen ? "rotate-180" : ""}`}>▾</span>
             </button>
             {advertiseOpen && (
               <div className="absolute top-full left-0 mt-3 w-60 border-2 border-billboard-ink rounded-lg bg-white shadow-blockSm p-2">

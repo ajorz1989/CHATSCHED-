@@ -123,7 +123,7 @@ function Field({
 }) {
   return (
     <label className={"block " + className}>
-      <span className="block text-[10px] font-mono uppercase tracking-wider text-white/45 mb-1.5">{label}</span>
+      <span className="block text-[11px] font-mono uppercase tracking-wider text-white/45 mb-1.5">{label}</span>
       {children}
     </label>
   );
@@ -310,7 +310,7 @@ export default function AdminCareersManager() {
       <div className="rounded-xl border border-white/10 bg-billboard-ink text-white overflow-hidden">
         <div className="p-5 md:p-6 flex flex-col md:flex-row md:items-end md:justify-between gap-5">
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-wider text-billboard-yellow font-bold mb-1">Platform Content</p>
+            <p className="font-mono text-[11px] uppercase tracking-wider text-billboard-yellow font-bold mb-1">Platform Content</p>
             <h1 className="font-display text-2xl md:text-3xl">Careers Manager</h1>
             <p className="text-sm text-white/55 mt-2 max-w-2xl leading-relaxed">
               Publish ChatSched job openings directly to the public Careers page. Draft, pause and close roles without touching the codebase.
@@ -337,7 +337,7 @@ export default function AdminCareersManager() {
           ].map(([label, count]) => (
             <div key={String(label)} className="p-4 border-r border-white/10 last:border-r-0">
               <div className="font-display text-xl">{count}</div>
-              <div className="text-[10px] font-mono uppercase tracking-wider text-white/40">{label}</div>
+              <div className="text-[11px] font-mono uppercase tracking-wider text-white/40">{label}</div>
             </div>
           ))}
         </div>
@@ -353,7 +353,7 @@ export default function AdminCareersManager() {
         <form onSubmit={save} className="rounded-xl border border-billboard-yellow/30 bg-billboard-ink text-white shadow-[0_20px_60px_rgba(0,0,0,0.16)] overflow-hidden">
           <div className="flex items-center justify-between gap-4 px-5 py-4 border-b border-white/10">
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-wider text-billboard-yellow">Job editor</p>
+              <p className="font-mono text-[11px] uppercase tracking-wider text-billboard-yellow">Job editor</p>
               <h2 className="font-display text-xl">{editingId ? "Edit listing" : "Create listing"}</h2>
             </div>
             <button type="button" onClick={closeEditor} disabled={saving} className="w-8 h-8 rounded-lg border border-white/10 flex items-center justify-center hover:bg-white/[0.05]" aria-label="Close job editor">
@@ -427,11 +427,11 @@ export default function AdminCareersManager() {
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-2">
                       <h3 className="font-display text-xl">{career.job_title}</h3>
-                      <span className={"font-mono text-[9px] uppercase tracking-wider border rounded-full px-2 py-1 " + STATUS_CLASS[career.status]}>{STATUS_LABEL[career.status]}</span>
+                      <span className={"font-mono text-[11px] uppercase tracking-wider border rounded-full px-2 py-1 " + STATUS_CLASS[career.status]}>{STATUS_LABEL[career.status]}</span>
                     </div>
                     <p className="text-xs text-white/45 font-mono">{career.department} · {career.location} · {career.remote_type} · {formatEmploymentType(career.employment_type)}</p>
                     <p className="text-sm text-white/65 mt-2 max-w-3xl leading-relaxed">{career.short_summary}</p>
-                    <div className="flex flex-wrap gap-2 mt-3 text-[10px] font-mono uppercase tracking-wide text-white/40">
+                    <div className="flex flex-wrap gap-2 mt-3 text-[11px] font-mono uppercase tracking-wide text-white/40">
                       {salary && <span className="border border-white/10 rounded px-2 py-1">{salary}</span>}
                       {career.application_deadline && <span className="border border-white/10 rounded px-2 py-1">Deadline {formatDateOnly(career.application_deadline)}</span>}
                     </div>

@@ -181,7 +181,7 @@ export default function AdminOpportunities() {
           ["Active types", activeTypeCount],
         ].map(([label, value]) => (
           <div key={String(label)} className="border-[3px] border-billboard-ink rounded-xl p-4 bg-white shadow-blockSm">
-            <div className="font-mono text-[9px] uppercase text-billboard-inkSoft">{label}</div>
+            <div className="font-mono text-[11px] uppercase text-billboard-inkSoft">{label}</div>
             <div className="font-display text-2xl mt-1">{value}</div>
           </div>
         ))}
@@ -192,7 +192,7 @@ export default function AdminOpportunities() {
       <section className="border-[3px] border-billboard-ink rounded-xl bg-billboard-paperDim p-4 mb-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
           <div>
-            <span className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft">Catalogue</span>
+            <span className="font-mono text-[11px] uppercase tracking-wider text-billboard-inkSoft">Catalogue</span>
             <h2 className="font-display text-xl mt-1">Opportunity types</h2>
           </div>
           <p className="text-xs text-billboard-inkSoft">These are admin-controlled discovery categories. Existing opportunities remain unchanged when a type is switched off.</p>
@@ -202,10 +202,10 @@ export default function AdminOpportunities() {
             <div key={type.slug} className="flex items-center gap-2 border-2 border-billboard-ink rounded-lg bg-white px-3 py-2">
               <div>
                 <div className="text-xs font-semibold">{type.label}</div>
-                <div className="font-mono text-[9px] uppercase text-billboard-inkSoft">{type.suggested_channel_slug ?? "any channel"}</div>
+                <div className="font-mono text-[11px] uppercase text-billboard-inkSoft">{type.suggested_channel_slug ?? "any channel"}</div>
               </div>
-              <span className={"font-mono text-[9px] " + (type.active ? "text-billboard-greenDeep" : "text-billboard-inkSoft")}>{type.active ? "active" : "disabled"}</span>
-              <button type="button" disabled={typeBusy === type.slug} onClick={() => toggleType(type)} className="text-[10px] font-semibold underline disabled:opacity-50">
+              <span className={"font-mono text-[11px] " + (type.active ? "text-billboard-greenDeep" : "text-billboard-inkSoft")}>{type.active ? "active" : "disabled"}</span>
+              <button type="button" disabled={typeBusy === type.slug} onClick={() => toggleType(type)} className="text-[11px] font-semibold underline disabled:opacity-50">
                 {type.active ? "Disable" : "Enable"}
               </button>
             </div>
@@ -246,7 +246,7 @@ export default function AdminOpportunities() {
                         {businessLabel(o.business_id, businesses)} · {typeMap.get(o.opportunity_type ?? "")?.label ?? "Uncategorised"} · {o.channel_slug ?? "any channel"}
                       </p>
                     </div>
-                    <span className={"shrink-0 inline-block font-mono text-[10px] font-semibold uppercase px-2.5 py-1 rounded border-2 " + STATUS_TONE[o.status]}>
+                    <span className={"shrink-0 inline-block font-mono text-[11px] font-semibold uppercase px-2.5 py-1 rounded border-2 " + STATUS_TONE[o.status]}>
                       {STATUS_LABEL[o.status]}
                     </span>
                   </div>
@@ -294,7 +294,7 @@ export default function AdminOpportunities() {
                           <div key={a.id} className="border-2 border-billboard-ink/15 rounded-lg p-3 bg-white">
                             <div className="flex flex-wrap items-center justify-between gap-2">
                               <p className="text-xs font-semibold">{publisherNames[a.publisher_id] ?? "Publisher"}</p>
-                              <span className={"font-mono text-[10px] font-semibold uppercase px-2 py-0.5 rounded border-2 " + APP_STATUS_TONE[a.status]}>{APP_STATUS_LABEL[a.status]}</span>
+                              <span className={"font-mono text-[11px] font-semibold uppercase px-2 py-0.5 rounded border-2 " + APP_STATUS_TONE[a.status]}>{APP_STATUS_LABEL[a.status]}</span>
                             </div>
                             <p className="text-xs mt-1 whitespace-pre-wrap">{a.message}</p>
                             <div className="flex flex-wrap gap-3 text-[11px] text-billboard-inkSoft mt-2">

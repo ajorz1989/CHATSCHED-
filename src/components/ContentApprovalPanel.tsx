@@ -102,7 +102,7 @@ function AssetField({
 
   return (
     <div>
-      <label className="block text-[10px] font-mono uppercase text-billboard-inkSoft mb-1">{label}</label>
+      <label className="block text-[11px] font-mono uppercase text-billboard-inkSoft mb-1">{label}</label>
       <div className="flex items-center gap-2 flex-wrap">
         <button
           type="button"
@@ -276,7 +276,7 @@ export default function ContentApprovalPanel({
       <div className="flex items-center justify-between gap-3 mb-3">
         <span className="font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft">Content approval</span>
         {approval && (
-          <span className={`inline-block font-mono text-[10px] font-semibold uppercase px-2.5 py-1 rounded border-2 ${STATUS_STYLE[approval.status]}`}>
+          <span className={`inline-block font-mono text-[11px] font-semibold uppercase px-2.5 py-1 rounded border-2 ${STATUS_STYLE[approval.status]}`}>
             {STATUS_LABEL[approval.status]}
           </span>
         )}
@@ -291,16 +291,16 @@ export default function ContentApprovalPanel({
             Upload what you'd like featured — the creator will prepare a draft from it before anything goes live.
           </p>
           <div>
-            <label className="block text-[10px] font-mono uppercase text-billboard-inkSoft mb-1">Caption</label>
+            <label className="block text-[11px] font-mono uppercase text-billboard-inkSoft mb-1">Caption</label>
             <textarea value={briefCaption} onChange={(e) => setBriefCaption(e.target.value)} rows={3} maxLength={600} className={inputClass} placeholder="What should the post say?" />
           </div>
           <div className="grid sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-[10px] font-mono uppercase text-billboard-inkSoft mb-1">Call to action</label>
+              <label className="block text-[11px] font-mono uppercase text-billboard-inkSoft mb-1">Call to action</label>
               <input value={briefCta} onChange={(e) => setBriefCta(e.target.value)} maxLength={60} className={inputClass} placeholder="e.g. Shop now" />
             </div>
             <div>
-              <label className="block text-[10px] font-mono uppercase text-billboard-inkSoft mb-1">Link</label>
+              <label className="block text-[11px] font-mono uppercase text-billboard-inkSoft mb-1">Link</label>
               <input type="url" value={briefLink} onChange={(e) => setBriefLink(e.target.value)} className={inputClass} placeholder="https://…" />
             </div>
           </div>
@@ -331,12 +331,12 @@ export default function ContentApprovalPanel({
         <div className="space-y-3">
           {approval.status === "changes_requested" && approval.change_request_notes && (
             <div className="border-2 border-billboard-red rounded p-3 bg-white">
-              <p className="text-[10px] font-mono uppercase text-billboard-red font-semibold mb-1">Changes requested</p>
+              <p className="text-[11px] font-mono uppercase text-billboard-red font-semibold mb-1">Changes requested</p>
               <p className="text-sm">{approval.change_request_notes}</p>
             </div>
           )}
           <div className="border-2 border-billboard-ink/15 rounded p-3">
-            <p className="text-[10px] font-mono uppercase text-billboard-inkSoft mb-2">Business brief</p>
+            <p className="text-[11px] font-mono uppercase text-billboard-inkSoft mb-2">Business brief</p>
             {approval.brief_caption && <p className="text-sm mb-2">{approval.brief_caption}</p>}
             <div className="flex gap-4 text-xs text-billboard-inkSoft flex-wrap">
               {approval.brief_cta_label && <span><strong className="text-billboard-ink">CTA:</strong> {approval.brief_cta_label}</span>}
@@ -348,7 +348,7 @@ export default function ContentApprovalPanel({
             </div>
           </div>
           <div>
-            <label className="block text-[10px] font-mono uppercase text-billboard-inkSoft mb-1">Your draft caption</label>
+            <label className="block text-[11px] font-mono uppercase text-billboard-inkSoft mb-1">Your draft caption</label>
             <textarea value={draftCaption} onChange={(e) => setDraftCaption(e.target.value)} rows={3} maxLength={600} className={inputClass} />
           </div>
           <div className="grid sm:grid-cols-2 gap-3">
@@ -356,7 +356,7 @@ export default function ContentApprovalPanel({
             <AssetField label="Draft video" contentApprovalId={approval.id} kind="draft_video" currentPath={approval.draft_video_path} onAttached={(p) => setApproval({ ...approval, draft_video_path: p })} />
           </div>
           <div>
-            <label className="block text-[10px] font-mono uppercase text-billboard-inkSoft mb-1">Notes for the business (optional)</label>
+            <label className="block text-[11px] font-mono uppercase text-billboard-inkSoft mb-1">Notes for the business (optional)</label>
             <input value={draftNotes} onChange={(e) => setDraftNotes(e.target.value)} maxLength={300} className={inputClass} />
           </div>
           <button onClick={submitOrResubmitDraft} disabled={acting} className="border-[3px] border-billboard-ink bg-billboard-green text-white font-bold px-4 py-2 rounded text-sm hover:-translate-y-0.5 transition disabled:opacity-60">
@@ -377,7 +377,7 @@ export default function ContentApprovalPanel({
       {approval && approval.status === "awaiting_review" && (
         <div className="space-y-3">
           <div className="border-2 border-billboard-ink/15 rounded p-3 bg-white">
-            <p className="text-[10px] font-mono uppercase text-billboard-inkSoft mb-2">Creator's draft</p>
+            <p className="text-[11px] font-mono uppercase text-billboard-inkSoft mb-2">Creator's draft</p>
             {approval.draft_caption && <p className="text-sm mb-2">{approval.draft_caption}</p>}
             {approval.draft_notes && <p className="text-xs text-billboard-inkSoft italic mb-2">"{approval.draft_notes}"</p>}
             <div className="flex gap-2">
@@ -397,7 +397,7 @@ export default function ContentApprovalPanel({
           )}
           {isBusiness && showChangeForm && (
             <div className="border-2 border-billboard-ink rounded p-3 bg-white">
-              <label className="block text-[10px] font-mono uppercase text-billboard-inkSoft mb-1">What needs to change?</label>
+              <label className="block text-[11px] font-mono uppercase text-billboard-inkSoft mb-1">What needs to change?</label>
               <textarea value={changeNotes} onChange={(e) => setChangeNotes(e.target.value)} rows={2} maxLength={500} className={inputClass} />
               <div className="flex gap-2 mt-2">
                 <button onClick={sendChangeRequest} disabled={acting} className="border-[3px] border-billboard-ink bg-billboard-red text-white font-bold px-3 py-1.5 rounded text-xs hover:-translate-y-0.5 transition disabled:opacity-60">

@@ -189,7 +189,7 @@ export default function SiteSearch() {
               ) : (
                 (Object.entries(grouped) as [string, SearchResult[]][]).map(([group, items]) => (
                   <div key={group} className="border-b border-billboard-ink/10 last:border-b-0">
-                    <p className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft px-4 pt-2.5 pb-1">{group}</p>
+                    <p className="font-mono text-[11px] uppercase tracking-wider text-billboard-inkSoft px-4 pt-2.5 pb-1">{group}</p>
                     {items.map((r) => (
                       <button
                         key={`${r.group}-${r.path}-${r.title}`}

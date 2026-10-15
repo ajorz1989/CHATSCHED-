@@ -70,12 +70,12 @@ export default function PublisherSuccess() {
             to={`/publisher-success/${a.slug}`}
             className="group flex flex-col border-[3px] border-billboard-ink rounded p-5 bg-white transition hover:-translate-y-1 hover:shadow-blockSm"
           >
-            <span className="inline-block font-mono text-[10px] font-semibold uppercase tracking-wider border-2 border-billboard-ink bg-billboard-paperDim px-2 py-0.5 rounded mb-3 self-start">
+            <span className="inline-block font-mono text-[11px] font-semibold uppercase tracking-wider border-2 border-billboard-ink bg-billboard-paperDim px-2 py-0.5 rounded mb-3 self-start">
               {a.tag}
             </span>
             <h3 className="font-bold mb-2 leading-snug">{a.title}</h3>
             <p className="text-sm text-billboard-inkSoft mb-4">{a.excerpt}</p>
-            <div className="mt-auto flex items-center gap-2.5 font-mono text-[10px] text-billboard-inkSoft">
+            <div className="mt-auto flex items-center gap-2.5 font-mono text-[11px] text-billboard-inkSoft">
               <span>{formatDate(a.date)}</span>
               <span>\u00b7</span>
               <span>{a.readMins} min read</span>

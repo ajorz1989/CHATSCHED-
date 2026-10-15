@@ -56,8 +56,8 @@ export default function ForgotPassword() {
 
       <form onSubmit={handleSubmit} className="border-[3px] border-billboard-ink rounded p-6">
         <div className="mb-4">
-          <label className="block text-sm font-semibold mb-1.5">Email</label>
-          <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5" autoFocus />
+          <label htmlFor="forgot-1" className="block text-sm font-semibold mb-1.5">Email</label>
+          <input id="forgot-1" autoComplete="email" required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5" autoFocus />
         </div>
         {error && <p className="text-billboard-red text-xs font-semibold mb-4">{error}</p>}
         <Button type="submit" variant="primary" size="md" disabled={loading} className="w-full">

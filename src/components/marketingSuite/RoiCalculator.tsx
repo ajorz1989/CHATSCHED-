@@ -50,7 +50,7 @@ export default function RoiCalculator() {
                 key={p.id}
                 type="button"
                 onClick={() => toggle(p.id)}
-                className={`font-mono text-[10px] border-2 border-billboard-ink rounded-full px-2.5 py-1 ${
+                className={`font-mono text-[11px] border-2 border-billboard-ink rounded-full px-2.5 py-1 ${
                   selected.includes(p.id) ? "bg-billboard-ink text-white" : "bg-white"
                 }`}
               >
@@ -92,7 +92,7 @@ function Metric({ label, value }: { label: string; value: string }) {
   return (
     <div className="border-[3px] border-billboard-ink rounded p-3 bg-white">
       <div className="font-display text-lg leading-tight">{value}</div>
-      <div className="text-[10px] font-mono uppercase text-billboard-inkSoft mt-1">{label}</div>
+      <div className="text-[11px] font-mono uppercase text-billboard-inkSoft mt-1">{label}</div>
     </div>
   );
 }

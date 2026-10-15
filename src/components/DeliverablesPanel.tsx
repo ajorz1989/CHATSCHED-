@@ -80,7 +80,7 @@ function DeliverableRow({
           <p className="font-bold text-sm">{item.quantity > 1 ? `${item.quantity}× ` : ""}{item.label}</p>
           {item.notes && <p className="text-xs text-billboard-inkSoft mt-0.5">{item.notes}</p>}
         </div>
-        <span className={`shrink-0 inline-block font-mono text-[10px] font-semibold uppercase px-2 py-1 rounded border-2 ${STATUS_STYLE[item.status]}`}>
+        <span className={`shrink-0 inline-block font-mono text-[11px] font-semibold uppercase px-2 py-1 rounded border-2 ${STATUS_STYLE[item.status]}`}>
           {STATUS_LABEL[item.status]}
         </span>
       </div>
@@ -90,7 +90,7 @@ function DeliverableRow({
 
       {item.status === "pending" && item.business_notes && (
         <div className="border-2 border-billboard-red rounded p-2.5 bg-white mt-2.5">
-          <p className="text-[10px] font-mono uppercase text-billboard-red font-semibold mb-1">Changes requested</p>
+          <p className="text-[11px] font-mono uppercase text-billboard-red font-semibold mb-1">Changes requested</p>
           <p className="text-xs">{item.business_notes}</p>
         </div>
       )}
@@ -259,7 +259,7 @@ export default function DeliverablesPanel({
     <div className="space-y-5">
       {campaign.kind === "channel_request" && (
         <div className="border-2 border-billboard-ink/15 rounded p-3 flex items-center gap-3 flex-wrap">
-          <span className="text-[10px] font-mono uppercase text-billboard-inkSoft">Campaign duration</span>
+          <span className="text-[11px] font-mono uppercase text-billboard-inkSoft">Campaign duration</span>
           {canEditDuration ? (
             <div className="flex items-center gap-2">
               <input type="number" min={1} value={duration} onChange={(e) => setDuration(e.target.value)} onBlur={saveDuration} className="w-20 border-2 border-billboard-ink rounded px-2 py-1 text-sm" placeholder="7" />
@@ -287,10 +287,10 @@ export default function DeliverablesPanel({
 
       {isBusiness && (
         <div className="border-2 border-billboard-yellow bg-billboard-yellow/5 rounded p-3.5">
-          <p className="font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft mb-2">Add a deliverable</p>
+          <p className="font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft mb-2">Add a deliverable</p>
           <div className="flex flex-wrap gap-1.5 mb-2.5">
             {DELIVERABLE_QUICK_ADD.map((q) => (
-              <button key={q} type="button" onClick={() => setLabel(q)} className={`font-mono text-[10px] uppercase px-2 py-1 rounded border-2 ${label === q ? "border-billboard-ink bg-billboard-ink text-white" : "border-billboard-ink/30 text-billboard-inkSoft"}`}>
+              <button key={q} type="button" onClick={() => setLabel(q)} className={`font-mono text-[11px] uppercase px-2 py-1 rounded border-2 ${label === q ? "border-billboard-ink bg-billboard-ink text-white" : "border-billboard-ink/30 text-billboard-inkSoft"}`}>
                 {q}
               </button>
             ))}

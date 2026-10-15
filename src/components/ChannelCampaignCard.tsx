@@ -83,7 +83,7 @@ function Timeline({ request: r }: { request: ChannelRequest }) {
         <div key={s.key} className="flex items-center gap-1.5 flex-1 last:flex-none">
           <div className={`flex flex-col items-center gap-1 ${i <= idx ? "" : "opacity-40"}`}>
             <span className={`w-3 h-3 rounded-full border-2 border-billboard-ink shrink-0 ${i <= idx ? "bg-billboard-green" : "bg-white"}`} />
-            <span className="font-mono text-[9px] uppercase text-billboard-inkSoft whitespace-nowrap">{s.label}</span>
+            <span className="font-mono text-[11px] uppercase text-billboard-inkSoft whitespace-nowrap">{s.label}</span>
           </div>
           {i < STEPS.length - 1 && <span className={`h-0.5 flex-1 ${i < idx ? "bg-billboard-green" : "bg-billboard-ink/15"}`} />}
         </div>
@@ -298,7 +298,7 @@ export default function ChannelCampaignCard({ request: r, onChange }: { request:
           <p className="text-xs text-billboard-inkSoft mb-3">Pay by bank transfer using the details below, with the reference exactly as shown, then confirm below. Your placement goes live once the money has cleared in our bank account.</p>
           <EscrowNote until="your placement goes live" />
           <div className="border-[3px] border-billboard-ink bg-billboard-yellow rounded p-4 mb-3 shadow-[4px_4px_0_0_#1A1712]">
-            <p className="font-mono text-[10px] uppercase font-bold">Payment Card</p>
+            <p className="font-mono text-[11px] uppercase font-bold">Payment Card</p>
             <p className="text-sm mt-1">{r.creator?.name ?? "Creator"}: {formatCurrency(r.proposed_amount, { cents: true })} + {formatCurrency(fromCents(channelRequestBreakdown(r).bookingFeeCents))} booking fee</p>
             <p className="font-display text-2xl">Total due {formatCurrency(fromCents(channelRequestBreakdown(r).totalDueCents), { cents: true })}</p>
             <Button variant="dark" size="sm" className="mt-3" onClick={() => buildAndDownloadPaymentCard(buildPaymentCardModel(r, profile))}>
@@ -363,7 +363,7 @@ export default function ChannelCampaignCard({ request: r, onChange }: { request:
 
       {error && <p className="text-billboard-red text-xs font-semibold mt-3">{error}</p>}
 
-      <Link to={`/campaigns/${r.id}`} className="inline-block font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft underline mt-3">
+      <Link to={`/campaigns/${r.id}`} className="inline-block font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft underline mt-3">
         Open campaign workspace →
       </Link>
       <CampaignComplianceStrip campaignId={r.id} />

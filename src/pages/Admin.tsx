@@ -102,7 +102,7 @@ function SignalBadges({ publisher }: { publisher: Publisher }) {
         <span
           key={s.id}
           title={s.detail}
-          className={`font-mono text-[10px] font-semibold uppercase border-2 rounded-full px-2 py-0.5 ${SEVERITY_META[s.severity].className}`}
+          className={`font-mono text-[11px] font-semibold uppercase border-2 rounded-full px-2 py-0.5 ${SEVERITY_META[s.severity].className}`}
         >
           ⚑ {s.label}
         </span>
@@ -143,7 +143,7 @@ function AuthenticityCheck({ publisher: p, onChecked }: { publisher: Publisher; 
     <div className="mt-2">
       {p.authenticity_risk ? (
         <div className={`inline-flex flex-col gap-0.5 border-2 rounded px-2.5 py-1.5 ${SEVERITY_META[p.authenticity_risk].className}`}>
-          <span className="font-mono text-[10px] font-semibold uppercase">AI second opinion: {SEVERITY_META[p.authenticity_risk].label} risk</span>
+          <span className="font-mono text-[11px] font-semibold uppercase">AI second opinion: {SEVERITY_META[p.authenticity_risk].label} risk</span>
           {p.authenticity_notes && <span className="text-xs normal-case font-sans">{p.authenticity_notes}</span>}
         </div>
       ) : null}
@@ -151,11 +151,11 @@ function AuthenticityCheck({ publisher: p, onChecked }: { publisher: Publisher; 
         <button
           onClick={run}
           disabled={running}
-          className="font-mono text-[10px] font-semibold uppercase border-2 border-billboard-ink rounded px-2.5 py-1 hover:-translate-y-0.5 transition disabled:opacity-60"
+          className="font-mono text-[11px] font-semibold uppercase border-2 border-billboard-ink rounded px-2.5 py-1 hover:-translate-y-0.5 transition disabled:opacity-60"
         >
           {running ? "Checking…" : p.authenticity_risk ? "Re-run AI check" : "Run AI authenticity check"}
         </button>
-        {p.authenticity_checked_at && <span className="text-[10px] text-billboard-inkSoft font-mono">last run {daysSince(p.authenticity_checked_at)}d ago</span>}
+        {p.authenticity_checked_at && <span className="text-[11px] text-billboard-inkSoft font-mono">last run {daysSince(p.authenticity_checked_at)}d ago</span>}
       </div>
       {error && <p className="text-billboard-red text-xs font-semibold mt-1">{error}</p>}
     </div>
@@ -527,7 +527,7 @@ export default function Admin() {
       <Seo title="Admin · ChatSched" noindex />
       <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
         <div>
-          <span className="inline-block font-mono text-[10px] font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-2">Admin</span>
+          <span className="inline-block font-mono text-[11px] font-semibold tracking-wider uppercase border-2 border-billboard-red text-billboard-red px-3 py-1.5 rounded mb-2">Admin</span>
           <h1 className="text-3xl md:text-4xl">Run the platform.</h1>
           <p className="text-sm text-billboard-inkSoft mt-1.5">One control centre for marketplace operations, content, finance and high-privilege tools.</p>
         </div>
@@ -740,7 +740,7 @@ function RequestsTab({
                     </button>
                     <PayoutComplianceHint campaignId={r.id} />
                     {payment.paid_at && daysSince(payment.paid_at) >= PAYOUT_DUE_DAYS && (
-                      <span className="font-mono text-[10px] uppercase text-billboard-red font-semibold">
+                      <span className="font-mono text-[11px] uppercase text-billboard-red font-semibold">
                         ⚠ Paid {daysSince(payment.paid_at)}d ago, no payout yet
                       </span>
                     )}
@@ -852,10 +852,10 @@ function PublishersTab({ publishers, onAdded, onToggleFeatured }: { publishers: 
                 <div>
                   <p className="font-bold text-sm">
                     {p.name} {p.verified && <span title="Verified">✓</span>}
-                    {p.level && <span className="ml-2 font-mono text-[10px] uppercase text-billboard-inkSoft">{p.level}</span>}
-                    {isCurrentlyFeatured(p) && <span className="ml-2 font-mono text-[10px] uppercase text-billboard-ink">★ Featured</span>}
-                    {p.status === "rejected" && <span className="ml-2 font-mono text-[10px] uppercase text-billboard-red">Rejected</span>}
-                    {p.status === "suspended" && <span className="ml-2 font-mono text-[10px] uppercase text-billboard-red">Suspended</span>}
+                    {p.level && <span className="ml-2 font-mono text-[11px] uppercase text-billboard-inkSoft">{p.level}</span>}
+                    {isCurrentlyFeatured(p) && <span className="ml-2 font-mono text-[11px] uppercase text-billboard-ink">★ Featured</span>}
+                    {p.status === "rejected" && <span className="ml-2 font-mono text-[11px] uppercase text-billboard-red">Rejected</span>}
+                    {p.status === "suspended" && <span className="ml-2 font-mono text-[11px] uppercase text-billboard-red">Suspended</span>}
                   </p>
                   <p className="text-xs text-billboard-inkSoft">{p.city}, {p.province} · {p.category} · {formatCurrency(p.price_per_post)}/post</p>
                   <SignalBadges publisher={p} />
@@ -1274,7 +1274,7 @@ function ApplicationCard({
           if (fields.length === 0) return null;
           return (
             <div className="mt-3 border-2 border-billboard-inkSoft/40 rounded p-3 bg-billboard-paperDim">
-              <p className="text-[10px] font-mono uppercase tracking-wider text-billboard-inkSoft mb-2">Channel-specific details</p>
+              <p className="text-[11px] font-mono uppercase tracking-wider text-billboard-inkSoft mb-2">Channel-specific details</p>
               <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
                 {fields.map((f) => (
                   <div key={f.label} className="contents">
@@ -1578,14 +1578,14 @@ function BusinessesTab({
                 <p className="font-bold text-sm">
                   {b.company_name || b.full_name || "Unnamed business"}
                   {level && (
-                    <span className="ml-2 font-mono text-[10px] uppercase text-billboard-inkSoft">
+                    <span className="ml-2 font-mono text-[11px] uppercase text-billboard-inkSoft">
                       <TrustBadge kind="business" level={level} />
                     </span>
                   )}
                 </p>
                 {detailLine && <p className="text-xs text-billboard-inkSoft mt-0.5">{detailLine}</p>}
                 {linkLine && <p className="text-xs text-billboard-inkSoft mt-0.5 font-mono">{linkLine}</p>}
-                <p className="text-[10px] font-mono uppercase text-billboard-inkSoft mt-1">
+                <p className="text-[11px] font-mono uppercase text-billboard-inkSoft mt-1">
                   Email {b.email_verified ? "✓ confirmed" : "not confirmed"}
                 </p>
               </div>
@@ -1668,7 +1668,7 @@ function ReportCard({
             {r.publisher?.name ?? "A publisher"} <span className="font-normal text-billboard-inkSoft text-sm">· {REASON_LABEL[r.reason]}</span>
           </p>
           {r.details && <p className="text-sm text-billboard-inkSoft mt-1.5 max-w-lg">{r.details}</p>}
-          <p className="text-[10px] font-mono uppercase text-billboard-inkSoft mt-2">Filed {daysSince(r.created_at)}d ago</p>
+          <p className="text-[11px] font-mono uppercase text-billboard-inkSoft mt-2">Filed {daysSince(r.created_at)}d ago</p>
         </div>
         <span className={`font-mono text-xs font-semibold uppercase border-2 rounded px-2.5 py-1 shrink-0 ${
           r.status === "open" ? "border-billboard-red text-billboard-red" : r.status === "dismissed" ? "border-billboard-inkSoft text-billboard-inkSoft" : "border-billboard-greenDeep text-billboard-greenDeep"
@@ -1806,7 +1806,7 @@ function AdminDisputeCard({ dispute: d, onChange }: { dispute: Dispute; onChange
           <p className="text-xs text-billboard-inkSoft mt-1">
             {businessName} ↔ {d.publisher?.name ?? "a publisher"} · {DISPUTE_CATEGORY_LABEL[d.category]} · opened by {d.opened_by_role}
           </p>
-          <p className="text-[10px] font-mono uppercase text-billboard-inkSoft mt-1.5">{daysSince(d.created_at)}d ago · updated {daysSince(d.updated_at)}d ago</p>
+          <p className="text-[11px] font-mono uppercase text-billboard-inkSoft mt-1.5">{daysSince(d.created_at)}d ago · updated {daysSince(d.updated_at)}d ago</p>
         </div>
         <span className={`font-mono text-xs font-semibold uppercase border-2 rounded px-2.5 py-1 shrink-0 ${DISPUTE_STATUS_STYLE[d.status]}`}>
           {d.status.replace(/_/g, " ")}
@@ -1821,7 +1821,7 @@ function AdminDisputeCard({ dispute: d, onChange }: { dispute: Dispute; onChange
             <div className="space-y-2 mb-4 max-h-72 overflow-y-auto">
               {(d.dispute_messages ?? []).map((m) => (
                 <div key={m.id} className={`text-sm p-2.5 rounded border-2 ${m.sender_role === "admin" ? "border-billboard-yellowDeep bg-billboard-yellow/20" : "border-billboard-ink bg-billboard-paperDim"}`}>
-                  <p className="font-mono text-[10px] uppercase text-billboard-inkSoft mb-1">
+                  <p className="font-mono text-[11px] uppercase text-billboard-inkSoft mb-1">
                     {m.sender_role === "admin" ? "Platform" : m.sender_role === "publisher" ? "Publisher" : "Business"} · {new Date(m.created_at).toLocaleString()}
                   </p>
                   <p>{m.body}</p>
@@ -1844,7 +1844,7 @@ function AdminDisputeCard({ dispute: d, onChange }: { dispute: Dispute; onChange
 
           {d.status !== "closed" && (
             <div className="border-2 border-billboard-ink rounded p-3.5 bg-billboard-paperDim">
-              <p className="font-mono text-[10px] font-semibold uppercase tracking-wider mb-2">Resolve</p>
+              <p className="font-mono text-[11px] font-semibold uppercase tracking-wider mb-2">Resolve</p>
               <select value={outcome} onChange={(e) => setOutcome(e.target.value as NonNullable<Dispute["resolution_outcome"]>)} className="w-full border-2 border-billboard-ink rounded px-2.5 py-2 text-sm mb-2 bg-white">
                 {OUTCOME_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
@@ -2027,7 +2027,7 @@ function WorkWithUsCard({
             {downloading ? "Preparing…" : `⬇ Download attachment (${w.attachment_filename})`}
           </button>
         )}
-        <span className="font-mono text-[10px] uppercase text-billboard-inkSoft">Submitted {new Date(w.created_at).toLocaleDateString("en-ZA")}</span>
+        <span className="font-mono text-[11px] uppercase text-billboard-inkSoft">Submitted {new Date(w.created_at).toLocaleDateString("en-ZA")}</span>
         {downloadError && <span className="text-billboard-red text-xs font-semibold">{downloadError}</span>}
       </div>
 
@@ -2215,7 +2215,7 @@ function PartnerCard({
       <p className="text-sm text-billboard-inkSoft mt-3 max-w-2xl whitespace-pre-wrap">{p.message}</p>
 
       <div className="mt-4 pt-4 border-t-2 border-billboard-paperDim flex flex-wrap items-center gap-3">
-        <span className="font-mono text-[10px] uppercase text-billboard-inkSoft">Submitted {new Date(p.created_at).toLocaleDateString("en-ZA")}</span>
+        <span className="font-mono text-[11px] uppercase text-billboard-inkSoft">Submitted {new Date(p.created_at).toLocaleDateString("en-ZA")}</span>
       </div>
 
       <div className="mt-4 pt-4 border-t-2 border-billboard-paperDim">
@@ -2353,7 +2353,7 @@ function AdvertiseCard({
       <p className="text-sm text-billboard-inkSoft mt-3 max-w-2xl whitespace-pre-wrap">{a.message}</p>
 
       <div className="mt-4 pt-4 border-t-2 border-billboard-paperDim flex flex-wrap items-center gap-3">
-        <span className="font-mono text-[10px] uppercase text-billboard-inkSoft">Submitted {new Date(a.created_at).toLocaleDateString("en-ZA")}</span>
+        <span className="font-mono text-[11px] uppercase text-billboard-inkSoft">Submitted {new Date(a.created_at).toLocaleDateString("en-ZA")}</span>
       </div>
 
       <div className="mt-4 pt-4 border-t-2 border-billboard-paperDim">
@@ -2477,18 +2477,18 @@ function AnnouncementsAdmin({
           {announcements.map((a) => (
             <div key={a.id} className="border-[3px] border-billboard-ink rounded p-4">
               <div className="flex items-start justify-between gap-3 mb-1.5">
-                <h4 className="font-bold text-sm">{a.title}{a.pinned && <span className="ml-2 font-mono text-[10px] uppercase border-2 border-billboard-ink bg-billboard-yellow px-1.5 py-0.5 rounded">Pinned</span>}</h4>
-                <span className={`font-mono text-[10px] uppercase px-2 py-0.5 rounded border-2 shrink-0 ${a.is_published ? "border-billboard-greenDeep text-billboard-greenDeep" : "border-billboard-inkSoft text-billboard-inkSoft"}`}>{a.is_published ? "Published" : "Draft"}</span>
+                <h4 className="font-bold text-sm">{a.title}{a.pinned && <span className="ml-2 font-mono text-[11px] uppercase border-2 border-billboard-ink bg-billboard-yellow px-1.5 py-0.5 rounded">Pinned</span>}</h4>
+                <span className={`font-mono text-[11px] uppercase px-2 py-0.5 rounded border-2 shrink-0 ${a.is_published ? "border-billboard-greenDeep text-billboard-greenDeep" : "border-billboard-inkSoft text-billboard-inkSoft"}`}>{a.is_published ? "Published" : "Draft"}</span>
               </div>
               <p className="text-sm text-billboard-inkSoft mb-3 whitespace-pre-wrap">{a.body}</p>
               <div className="flex flex-wrap gap-2">
-                <button onClick={() => onUpdate(a.id, { is_published: !a.is_published })} className="font-mono text-[10px] font-semibold uppercase border-2 border-billboard-ink rounded px-2.5 py-1.5 hover:-translate-y-0.5 transition">
+                <button onClick={() => onUpdate(a.id, { is_published: !a.is_published })} className="font-mono text-[11px] font-semibold uppercase border-2 border-billboard-ink rounded px-2.5 py-1.5 hover:-translate-y-0.5 transition">
                   {a.is_published ? "Unpublish" : "Publish"}
                 </button>
-                <button onClick={() => onUpdate(a.id, { pinned: !a.pinned })} className="font-mono text-[10px] font-semibold uppercase border-2 border-billboard-ink rounded px-2.5 py-1.5 hover:-translate-y-0.5 transition">
+                <button onClick={() => onUpdate(a.id, { pinned: !a.pinned })} className="font-mono text-[11px] font-semibold uppercase border-2 border-billboard-ink rounded px-2.5 py-1.5 hover:-translate-y-0.5 transition">
                   {a.pinned ? "Unpin" : "Pin"}
                 </button>
-                <button onClick={() => onDelete(a.id)} className="font-mono text-[10px] font-semibold uppercase border-2 border-billboard-red text-billboard-red rounded px-2.5 py-1.5 hover:-translate-y-0.5 transition">
+                <button onClick={() => onDelete(a.id)} className="font-mono text-[11px] font-semibold uppercase border-2 border-billboard-red text-billboard-red rounded px-2.5 py-1.5 hover:-translate-y-0.5 transition">
                   Delete
                 </button>
               </div>
@@ -2549,16 +2549,16 @@ function EventsAdmin({
           {events.map((ev) => (
             <div key={ev.id} className="border-[3px] border-billboard-ink rounded p-4">
               <div className="flex items-start justify-between gap-3 mb-1.5">
-                <h4 className="font-bold text-sm">{ev.title} <span className="font-mono text-[10px] uppercase text-billboard-inkSoft">· {COMMUNITY_EVENT_TYPE_LABEL[ev.event_type]}</span></h4>
-                <span className={`font-mono text-[10px] uppercase px-2 py-0.5 rounded border-2 shrink-0 ${ev.is_published ? "border-billboard-greenDeep text-billboard-greenDeep" : "border-billboard-inkSoft text-billboard-inkSoft"}`}>{ev.is_published ? "Published" : "Draft"}</span>
+                <h4 className="font-bold text-sm">{ev.title} <span className="font-mono text-[11px] uppercase text-billboard-inkSoft">· {COMMUNITY_EVENT_TYPE_LABEL[ev.event_type]}</span></h4>
+                <span className={`font-mono text-[11px] uppercase px-2 py-0.5 rounded border-2 shrink-0 ${ev.is_published ? "border-billboard-greenDeep text-billboard-greenDeep" : "border-billboard-inkSoft text-billboard-inkSoft"}`}>{ev.is_published ? "Published" : "Draft"}</span>
               </div>
               <p className="text-sm text-billboard-inkSoft mb-1">{ev.description}</p>
-              <p className="font-mono text-[10px] text-billboard-inkSoft mb-3">{new Date(ev.starts_at).toLocaleString("en-ZA")} · {ev.location_or_link}</p>
+              <p className="font-mono text-[11px] text-billboard-inkSoft mb-3">{new Date(ev.starts_at).toLocaleString("en-ZA")} · {ev.location_or_link}</p>
               <div className="flex flex-wrap gap-2">
-                <button onClick={() => onUpdate(ev.id, { is_published: !ev.is_published })} className="font-mono text-[10px] font-semibold uppercase border-2 border-billboard-ink rounded px-2.5 py-1.5 hover:-translate-y-0.5 transition">
+                <button onClick={() => onUpdate(ev.id, { is_published: !ev.is_published })} className="font-mono text-[11px] font-semibold uppercase border-2 border-billboard-ink rounded px-2.5 py-1.5 hover:-translate-y-0.5 transition">
                   {ev.is_published ? "Unpublish" : "Publish"}
                 </button>
-                <button onClick={() => onDelete(ev.id)} className="font-mono text-[10px] font-semibold uppercase border-2 border-billboard-red text-billboard-red rounded px-2.5 py-1.5 hover:-translate-y-0.5 transition">
+                <button onClick={() => onDelete(ev.id)} className="font-mono text-[11px] font-semibold uppercase border-2 border-billboard-red text-billboard-red rounded px-2.5 py-1.5 hover:-translate-y-0.5 transition">
                   Delete
                 </button>
               </div>
@@ -2584,7 +2584,7 @@ function QaAdmin({
     <div>
       <div className="flex flex-wrap gap-2 mb-5">
         {(["all", "pending", "answered", "published"] as const).map((s) => (
-          <button key={s} onClick={() => setStatusFilter(s)} className={`font-mono text-[10px] font-semibold uppercase px-2.5 py-1.5 rounded border-2 border-billboard-ink transition ${statusFilter === s ? "bg-billboard-yellow" : "bg-white hover:bg-billboard-paperDim"}`}>
+          <button key={s} onClick={() => setStatusFilter(s)} className={`font-mono text-[11px] font-semibold uppercase px-2.5 py-1.5 rounded border-2 border-billboard-ink transition ${statusFilter === s ? "bg-billboard-yellow" : "bg-white hover:bg-billboard-paperDim"}`}>
             {s === "all" ? "All" : s}
           </button>
         ))}
@@ -2620,28 +2620,28 @@ function QaCard({
   return (
     <div className="border-[3px] border-billboard-ink rounded p-4">
       <div className="flex items-start justify-between gap-3 mb-1.5">
-        <span className="font-mono text-[10px] font-semibold uppercase tracking-wider border-2 border-billboard-ink bg-billboard-paperDim px-2 py-0.5 rounded">{COMMUNITY_QUESTION_CATEGORY_LABEL[q.category]}</span>
-        <span className="font-mono text-[10px] uppercase text-billboard-inkSoft shrink-0">{q.status}</span>
+        <span className="font-mono text-[11px] font-semibold uppercase tracking-wider border-2 border-billboard-ink bg-billboard-paperDim px-2 py-0.5 rounded">{COMMUNITY_QUESTION_CATEGORY_LABEL[q.category]}</span>
+        <span className="font-mono text-[11px] uppercase text-billboard-inkSoft shrink-0">{q.status}</span>
       </div>
       <p className="font-bold text-sm mb-1">{q.question}</p>
-      <p className="font-mono text-[10px] text-billboard-inkSoft mb-3">{q.asked_by_name || "Anonymous"}{q.asked_by_email ? ` · ${q.asked_by_email}` : ""} · {new Date(q.created_at).toLocaleDateString("en-ZA")}</p>
+      <p className="font-mono text-[11px] text-billboard-inkSoft mb-3">{q.asked_by_name || "Anonymous"}{q.asked_by_email ? ` · ${q.asked_by_email}` : ""} · {new Date(q.created_at).toLocaleDateString("en-ZA")}</p>
       <textarea value={answer} onChange={(e) => setAnswer(e.target.value)} placeholder="Write an answer…" rows={3} className="w-full border-2 border-billboard-ink rounded px-3 py-2 text-sm resize-y mb-3" />
       <div className="flex flex-wrap gap-2">
-        <button onClick={() => saveAnswer()} disabled={saving} className="font-mono text-[10px] font-semibold uppercase border-2 border-billboard-ink rounded px-2.5 py-1.5 hover:-translate-y-0.5 transition disabled:opacity-60">
+        <button onClick={() => saveAnswer()} disabled={saving} className="font-mono text-[11px] font-semibold uppercase border-2 border-billboard-ink rounded px-2.5 py-1.5 hover:-translate-y-0.5 transition disabled:opacity-60">
           {saving ? "Saving…" : "Save answer"}
         </button>
-        <button onClick={() => saveAnswer("answered")} disabled={saving || !answer.trim()} className="font-mono text-[10px] font-semibold uppercase border-2 border-billboard-ink rounded px-2.5 py-1.5 hover:-translate-y-0.5 transition disabled:opacity-60">
+        <button onClick={() => saveAnswer("answered")} disabled={saving || !answer.trim()} className="font-mono text-[11px] font-semibold uppercase border-2 border-billboard-ink rounded px-2.5 py-1.5 hover:-translate-y-0.5 transition disabled:opacity-60">
           Mark answered
         </button>
-        <button onClick={() => saveAnswer("published")} disabled={saving || !answer.trim()} className="font-mono text-[10px] font-semibold uppercase border-2 border-billboard-greenDeep text-billboard-greenDeep rounded px-2.5 py-1.5 hover:-translate-y-0.5 transition disabled:opacity-60">
+        <button onClick={() => saveAnswer("published")} disabled={saving || !answer.trim()} className="font-mono text-[11px] font-semibold uppercase border-2 border-billboard-greenDeep text-billboard-greenDeep rounded px-2.5 py-1.5 hover:-translate-y-0.5 transition disabled:opacity-60">
           Publish
         </button>
         {q.status === "published" && (
-          <button onClick={() => onUpdate(q.id, { status: "answered" })} className="font-mono text-[10px] font-semibold uppercase border-2 border-billboard-ink rounded px-2.5 py-1.5 hover:-translate-y-0.5 transition">
+          <button onClick={() => onUpdate(q.id, { status: "answered" })} className="font-mono text-[11px] font-semibold uppercase border-2 border-billboard-ink rounded px-2.5 py-1.5 hover:-translate-y-0.5 transition">
             Unpublish
           </button>
         )}
-        <button onClick={() => onDelete(q.id)} className="font-mono text-[10px] font-semibold uppercase border-2 border-billboard-red text-billboard-red rounded px-2.5 py-1.5 hover:-translate-y-0.5 transition">
+        <button onClick={() => onDelete(q.id)} className="font-mono text-[11px] font-semibold uppercase border-2 border-billboard-red text-billboard-red rounded px-2.5 py-1.5 hover:-translate-y-0.5 transition">
           Delete
         </button>
       </div>

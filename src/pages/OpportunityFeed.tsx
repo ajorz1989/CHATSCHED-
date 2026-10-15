@@ -252,7 +252,7 @@ export default function OpportunityFeed() {
 
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
         <div>
-          <span className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft">Publisher Opportunity Feed</span>
+          <span className="font-mono text-[11px] uppercase tracking-wider text-billboard-inkSoft">Publisher Opportunity Feed</span>
           <h1 className="font-display text-3xl md:text-4xl mt-1">Find work that fits your inventory.</h1>
           <p className="text-sm text-billboard-inkSoft mt-2 max-w-2xl">ChatSched matches briefs to your channel and local audience while keeping the proposal and booking workflow on-platform.</p>
         </div>
@@ -315,36 +315,36 @@ export default function OpportunityFeed() {
                     <div className="flex flex-wrap items-start gap-3">
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2 mb-2">
-                          <span className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft">{type?.label ?? "Advertising opportunity"}</span>
-                          {o.channel_slug && <span className="font-mono text-[10px] uppercase border border-billboard-ink/30 rounded-full px-2 py-0.5">{CHANNEL_LABEL[o.channel_slug]}</span>}
-                          {match.score > 0 && <span className="font-mono text-[10px] font-bold uppercase bg-billboard-green text-white rounded-full px-2 py-0.5">{match.score} match</span>}
+                          <span className="font-mono text-[11px] uppercase tracking-wider text-billboard-inkSoft">{type?.label ?? "Advertising opportunity"}</span>
+                          {o.channel_slug && <span className="font-mono text-[11px] uppercase border border-billboard-ink/30 rounded-full px-2 py-0.5">{CHANNEL_LABEL[o.channel_slug]}</span>}
+                          {match.score > 0 && <span className="font-mono text-[11px] font-bold uppercase bg-billboard-green text-white rounded-full px-2 py-0.5">{match.score} match</span>}
                         </div>
                         <h2 className="font-display text-xl mb-1">{o.title}</h2>
                         <p className="text-sm text-billboard-inkSoft whitespace-pre-wrap">{o.brief}</p>
                       </div>
                       <div className="text-right shrink-0">
-                        <div className="font-mono text-[9px] uppercase text-billboard-inkSoft">Budget</div>
+                        <div className="font-mono text-[11px] uppercase text-billboard-inkSoft">Budget</div>
                         <div className="font-display text-lg">{o.budget_min != null || o.budget_max != null ? formatR(o.budget_min) + " – " + formatR(o.budget_max) : "Open budget"}</div>
                       </div>
                     </div>
 
                     <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-2 mt-4 text-xs">
-                      <div className="border-2 border-billboard-ink/15 rounded-lg p-3 bg-billboard-paperDim"><div className="font-mono text-[9px] uppercase text-billboard-inkSoft mb-1">Target</div><div>{[o.target_city, o.target_province].filter(Boolean).join(", ") || "Flexible geography"}</div></div>
-                      <div className="border-2 border-billboard-ink/15 rounded-lg p-3 bg-billboard-paperDim"><div className="font-mono text-[9px] uppercase text-billboard-inkSoft mb-1">Publishers</div><div>{o.publishers_needed} needed</div></div>
-                      <div className="border-2 border-billboard-ink/15 rounded-lg p-3 bg-billboard-paperDim"><div className="font-mono text-[9px] uppercase text-billboard-inkSoft mb-1">Campaign window</div><div>{formatDate(o.campaign_start_at) ?? "Flexible"}{o.campaign_end_at ? " → " + formatDate(o.campaign_end_at) : ""}</div></div>
-                      <div className="border-2 border-billboard-ink/15 rounded-lg p-3 bg-billboard-paperDim"><div className="font-mono text-[9px] uppercase text-billboard-inkSoft mb-1">Deadline</div><div>{deadline ?? "No deadline set"}</div></div>
+                      <div className="border-2 border-billboard-ink/15 rounded-lg p-3 bg-billboard-paperDim"><div className="font-mono text-[11px] uppercase text-billboard-inkSoft mb-1">Target</div><div>{[o.target_city, o.target_province].filter(Boolean).join(", ") || "Flexible geography"}</div></div>
+                      <div className="border-2 border-billboard-ink/15 rounded-lg p-3 bg-billboard-paperDim"><div className="font-mono text-[11px] uppercase text-billboard-inkSoft mb-1">Publishers</div><div>{o.publishers_needed} needed</div></div>
+                      <div className="border-2 border-billboard-ink/15 rounded-lg p-3 bg-billboard-paperDim"><div className="font-mono text-[11px] uppercase text-billboard-inkSoft mb-1">Campaign window</div><div>{formatDate(o.campaign_start_at) ?? "Flexible"}{o.campaign_end_at ? " → " + formatDate(o.campaign_end_at) : ""}</div></div>
+                      <div className="border-2 border-billboard-ink/15 rounded-lg p-3 bg-billboard-paperDim"><div className="font-mono text-[11px] uppercase text-billboard-inkSoft mb-1">Deadline</div><div>{deadline ?? "No deadline set"}</div></div>
                     </div>
 
                     {o.target_audience && <p className="text-xs mt-3"><span className="font-semibold">Audience:</span> {o.target_audience}</p>}
                     {o.deliverables && <p className="text-xs mt-2"><span className="font-semibold">Expected deliverables:</span> {o.deliverables}</p>}
                     {o.publisher_requirements && <p className="text-xs mt-2"><span className="font-semibold">Publisher requirements:</span> {o.publisher_requirements}</p>}
-                    {match.reasons.length > 0 && <div className="flex flex-wrap gap-1.5 mt-3">{match.reasons.map((reason) => <span key={reason} className="font-mono text-[9px] uppercase border border-billboard-green/30 text-billboard-greenDeep rounded-full px-2 py-1">{reason}</span>)}</div>}
+                    {match.reasons.length > 0 && <div className="flex flex-wrap gap-1.5 mt-3">{match.reasons.map((reason) => <span key={reason} className="font-mono text-[11px] uppercase border border-billboard-green/30 text-billboard-greenDeep rounded-full px-2 py-1">{reason}</span>)}</div>}
 
                     <div className="mt-4 pt-4 border-t-2 border-billboard-paperDim">
                       {alreadyApplied ? (
-                        <span className="font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft">Already applied</span>
+                        <span className="font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft">Already applied</span>
                       ) : subscribed === false ? (
-                        <span className="font-mono text-[10px] uppercase text-billboard-inkSoft">Premium access required to apply</span>
+                        <span className="font-mono text-[11px] uppercase text-billboard-inkSoft">Premium access required to apply</span>
                       ) : applyingTo === o.id ? (
                         <div>
                           <textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Why you're a fit and what you would deliver" rows={3} className="w-full border-2 border-billboard-ink rounded-lg px-3 py-2 text-sm mb-2" />
@@ -378,7 +378,7 @@ export default function OpportunityFeed() {
                 <article key={a.id} className="border-[3px] border-billboard-ink rounded-xl p-4 bg-white">
                   <div className="flex flex-wrap items-center gap-2">
                     <h2 className="font-display text-lg">{a.opportunityTitle}</h2>
-                    <span className="font-mono text-[10px] uppercase ml-auto">{APPLICATION_STATUS_LABEL[a.status]}</span>
+                    <span className="font-mono text-[11px] uppercase ml-auto">{APPLICATION_STATUS_LABEL[a.status]}</span>
                   </div>
                   <div className="flex flex-wrap gap-3 mt-2 text-xs text-billboard-inkSoft">
                     {a.proposed_amount != null && <span>Proposed {formatCurrencyShared(a.proposed_amount)}</span>}

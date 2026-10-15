@@ -25,7 +25,7 @@ export default function DisclosureNotice({
   if (existingAck) {
     return (
       <div className="border-[3px] border-billboard-greenDeep rounded bg-white p-4">
-        <p className="font-mono text-[10px] font-semibold uppercase text-billboard-greenDeep mb-1">Disclosure acknowledged</p>
+        <p className="font-mono text-[11px] font-semibold uppercase text-billboard-greenDeep mb-1">Disclosure acknowledged</p>
         <p className="text-sm text-billboard-inkSoft">
           You confirmed the {rule.display_name} disclosure requirement on {new Date(existingAck.acknowledged_at).toLocaleDateString()}.
         </p>
@@ -48,7 +48,7 @@ export default function DisclosureNotice({
 
   return (
     <div className="border-[3px] border-billboard-ink rounded bg-billboard-yellow p-4">
-      <p className="font-mono text-[10px] font-semibold uppercase text-billboard-ink mb-1">Paid campaign</p>
+      <p className="font-mono text-[11px] font-semibold uppercase text-billboard-ink mb-1">Paid campaign</p>
       <p className="text-sm font-semibold mb-2">This is a commercial collaboration.</p>
       {rule.required_creator_actions.length > 0 && (
         <p className="text-sm mb-3">{rule.required_creator_actions[0]}</p>

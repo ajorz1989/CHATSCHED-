@@ -162,22 +162,22 @@ export default function CaseStudies() {
 
                 <div className="p-6 space-y-7">
                   <div>
-                    <p className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft mb-2">The Challenge</p>
+                    <p className="font-mono text-[11px] uppercase tracking-wider text-billboard-inkSoft mb-2">The Challenge</p>
                     <p className="text-sm leading-6">{study.challenge}</p>
                   </div>
 
                   <div className="border-t-2 border-billboard-paperDim pt-6">
-                    <p className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft mb-2">The Multi-Channel Strategy</p>
+                    <p className="font-mono text-[11px] uppercase tracking-wider text-billboard-inkSoft mb-2">The Multi-Channel Strategy</p>
                     <p className="text-sm leading-6">{study.strategy}</p>
                   </div>
 
                   <div className="border-t-2 border-billboard-paperDim pt-6">
-                    <p className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft mb-2">The Result</p>
+                    <p className="font-mono text-[11px] uppercase tracking-wider text-billboard-inkSoft mb-2">The Result</p>
                     <p className="text-sm leading-6">{study.result}</p>
                   </div>
 
                   <div className="border-t-2 border-billboard-paperDim pt-6">
-                    <p className="font-mono text-[10px] uppercase tracking-wider text-billboard-inkSoft mb-3">Performance metrics</p>
+                    <p className="font-mono text-[11px] uppercase tracking-wider text-billboard-inkSoft mb-3">Performance metrics</p>
                     <div className="grid grid-cols-2 gap-2">
                       {study.metrics.map((metric) => (
                         <div key={metric} className="border-2 border-billboard-ink/10 rounded px-3 py-2 text-xs font-semibold bg-billboard-paperDim">

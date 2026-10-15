@@ -139,7 +139,7 @@ export default function AJListingsManager({ refreshKey }: { refreshKey: number }
     <section className="rounded-xl border border-white/10 bg-billboard-ink text-white overflow-hidden scroll-mt-4">
       <div className="p-5 md:p-6 flex items-start justify-between gap-4 border-b border-white/10">
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-wider text-billboard-yellow">Step 3</p>
+          <p className="font-mono text-[11px] uppercase tracking-wider text-billboard-yellow">Step 3</p>
           <h2 className="font-display text-xl">Manage your AJ: Creations listings</h2>
           <p className="text-xs text-white/40 mt-1 leading-relaxed">
             Add a profile photo and edit the profile details, the same as a creator can from their own dashboard.
@@ -151,7 +151,7 @@ export default function AJListingsManager({ refreshKey }: { refreshKey: number }
               type="button"
               onClick={deleteMockupBatch}
               disabled={bulkDeleting}
-              className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-billboard-red/90 hover:text-billboard-red transition disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wider text-billboard-red/90 hover:text-billboard-red transition disabled:opacity-50"
             >
               <Trash2 size={13} />
               {bulkDeleting ? "Deleting…" : `Delete demo mockups (${mockupCount})`}
@@ -161,7 +161,7 @@ export default function AJListingsManager({ refreshKey }: { refreshKey: number }
             type="button"
             onClick={load}
             disabled={loading}
-            className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-white/50 hover:text-white transition disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wider text-white/50 hover:text-white transition disabled:opacity-50"
           >
             <RefreshCw size={12} />
             {loading ? "Loading…" : "Refresh"}
@@ -171,7 +171,7 @@ export default function AJListingsManager({ refreshKey }: { refreshKey: number }
 
       {mockupCount > 0 && (
         <div className="mx-5 md:mx-6 mt-4 rounded-lg border border-billboard-yellow/30 bg-billboard-yellow/10 px-4 py-3 text-xs text-white/70 flex items-start gap-2">
-          <span className="font-mono text-[9px] uppercase tracking-wider text-billboard-yellow font-bold shrink-0 mt-0.5">Demo batch</span>
+          <span className="font-mono text-[11px] uppercase tracking-wider text-billboard-yellow font-bold shrink-0 mt-0.5">Demo batch</span>
           <span>{mockupCount} temporary social-media post publisher profiles are tagged internally for this marketplace mockup. They can be edited here or removed before launch.</span>
         </div>
       )}
@@ -210,7 +210,7 @@ export default function AJListingsManager({ refreshKey }: { refreshKey: number }
                     </p>
                   </div>
                   {listing.status && (
-                    <span className="font-mono text-[10px] uppercase tracking-wider text-white/40 shrink-0">{listing.status}</span>
+                    <span className="font-mono text-[11px] uppercase tracking-wider text-white/40 shrink-0">{listing.status}</span>
                   )}
                   <ChevronDown className={`shrink-0 transition-transform ${open ? "rotate-180" : ""}`} size={16} />
                 </button>
@@ -640,7 +640,7 @@ function ListingEditor({ listing, onChanged, onDeleted }: { listing: AJListing; 
                     className={`rounded border-2 p-1.5 text-left transition ${selected ? "border-billboard-ink ring-2 ring-billboard-yellow" : "border-billboard-ink/20 hover:border-billboard-ink"}`}
                   >
                     <span className={`block h-10 rounded bg-gradient-to-br ${option.value}`} aria-hidden="true" />
-                    <span className="block text-[10px] font-mono mt-1.5 truncate">{option.label}</span>
+                    <span className="block text-[11px] font-mono mt-1.5 truncate">{option.label}</span>
                   </button>
                 );
               })}
@@ -710,7 +710,7 @@ function ListingEditor({ listing, onChanged, onDeleted }: { listing: AJListing; 
             type="button"
             onClick={loadRequests}
             disabled={requestsLoading}
-            className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-wider text-billboard-inkSoft hover:text-billboard-ink disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider text-billboard-inkSoft hover:text-billboard-ink disabled:opacity-50"
           >
             <RefreshCw size={12} /> Refresh
           </button>
@@ -733,11 +733,11 @@ function ListingEditor({ listing, onChanged, onDeleted }: { listing: AJListing; 
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-xs font-bold text-billboard-ink">Business booking request</p>
-                    <p className="text-[10px] font-mono text-billboard-inkSoft mt-0.5">
+                    <p className="text-[11px] font-mono text-billboard-inkSoft mt-0.5">
                       {new Date(request.created_at).toLocaleDateString("en-ZA")} · {request.business_id.slice(0, 8)}
                     </p>
                   </div>
-                  <span className="font-mono text-[10px] uppercase tracking-wider px-2 py-1 border border-billboard-ink/20 rounded bg-billboard-paperDim">
+                  <span className="font-mono text-[11px] uppercase tracking-wider px-2 py-1 border border-billboard-ink/20 rounded bg-billboard-paperDim">
                     {request.status}
                   </span>
                 </div>

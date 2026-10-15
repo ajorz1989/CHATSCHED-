@@ -143,7 +143,7 @@ export default function ProofSubmissionCard({
           {proof.map((p) => (
             <li key={p.id} className="border-t border-billboard-paperDim pt-3 first:border-t-0 first:pt-0">
               <div className="flex items-center justify-between gap-2 mb-1">
-                <span className={`font-mono text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full border ${PROOF_STATUS_STYLE[p.status]}`}>
+                <span className={`font-mono text-[11px] font-semibold uppercase px-2 py-0.5 rounded-full border ${PROOF_STATUS_STYLE[p.status]}`}>
                   {PROOF_STATUS_LABEL[p.status]}
                 </span>
                 {p.published_at && <span className="text-xs text-billboard-inkSoft">{new Date(p.published_at).toLocaleDateString()}</span>}
@@ -174,7 +174,7 @@ export default function ProofSubmissionCard({
         showForm ? (
           <div className="space-y-2.5">
             <div>
-              <label className="font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft block mb-1">Public post URL</label>
+              <label className="font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft block mb-1">Public post URL</label>
               <input
                 type="url"
                 value={postUrl}
@@ -184,7 +184,7 @@ export default function ProofSubmissionCard({
               />
             </div>
             <div>
-              <label className="font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft block mb-1">Published on</label>
+              <label className="font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft block mb-1">Published on</label>
               <input
                 type="date"
                 value={publishedAt}
@@ -193,7 +193,7 @@ export default function ProofSubmissionCard({
               />
             </div>
             <div>
-              <label className="font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft block mb-1">
+              <label className="font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft block mb-1">
                 Screenshot <span className="normal-case text-billboard-inkSoft font-normal">(optional — recommended, since posts can be edited or removed later)</span>
               </label>
               {screenshotPath ? (
@@ -202,7 +202,7 @@ export default function ProofSubmissionCard({
                   <button
                     type="button"
                     onClick={() => { setScreenshotPath(null); setScreenshotName(null); }}
-                    className="font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft underline"
+                    className="font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft underline"
                   >
                     Remove
                   </button>
@@ -220,7 +220,7 @@ export default function ProofSubmissionCard({
               )}
             </div>
             <div>
-              <label className="font-mono text-[10px] font-semibold uppercase text-billboard-inkSoft block mb-1">Notes (optional)</label>
+              <label className="font-mono text-[11px] font-semibold uppercase text-billboard-inkSoft block mb-1">Notes (optional)</label>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}

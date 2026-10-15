@@ -56,15 +56,15 @@ export default function Login() {
 
       <form onSubmit={handleSubmit} className="border-[3px] border-billboard-ink rounded p-6">
         <div className="mb-4">
-          <label className="block text-sm font-semibold mb-1.5">Email</label>
-          <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5" />
+          <label htmlFor="login-1" className="block text-sm font-semibold mb-1.5">Email</label>
+          <input id="login-1" autoComplete="username" required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5" />
         </div>
         <div className="mb-4">
           <div className="flex items-center justify-between mb-1.5">
-            <label className="block text-sm font-semibold">Password</label>
+            <label htmlFor="login-2" className="block text-sm font-semibold">Password</label>
             <Link to="/forgot-password" className="text-xs font-semibold underline text-billboard-inkSoft hover:text-billboard-ink">Forgot password?</Link>
           </div>
-          <input required type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5" />
+          <input id="login-2" autoComplete="current-password" required type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full border-2 border-billboard-ink rounded px-3 py-2.5" />
         </div>
         {error && <p className="text-billboard-red text-xs font-semibold mb-4">{error}</p>}
         <Button type="submit" variant="primary" size="md" disabled={loading} className="w-full">
@@ -74,7 +74,7 @@ export default function Login() {
 
       <div className="flex items-center gap-3 my-5">
         <div className="flex-1 h-px bg-billboard-paperDim" />
-        <span className="text-[10px] font-mono uppercase text-billboard-inkSoft">or</span>
+        <span className="text-[11px] font-mono uppercase text-billboard-inkSoft">or</span>
         <div className="flex-1 h-px bg-billboard-paperDim" />
       </div>
 

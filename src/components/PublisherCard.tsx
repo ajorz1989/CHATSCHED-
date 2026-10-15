@@ -73,7 +73,7 @@ export default function PublisherCard({ publisher, matchReason = null }: { publi
             </span>
           )}
           {publisher.verified && (
-            <span className={`absolute top-2.5 right-2.5 text-white text-[10px] font-mono font-semibold px-2 py-1 rounded ${ownershipChecked ? "bg-billboard-greenDeep" : "bg-billboard-ink"}`}>
+            <span className={`absolute top-2.5 right-2.5 text-white text-[11px] font-mono font-semibold px-2 py-1 rounded ${ownershipChecked ? "bg-billboard-greenDeep" : "bg-billboard-ink"}`}>
               {ownershipChecked ? "✓ Ownership Verified" : "✓ Verified"}
             </span>
           )}
@@ -81,7 +81,7 @@ export default function PublisherCard({ publisher, matchReason = null }: { publi
             <PublisherAvatar imageUrl={publisher.profile_image_url} initials={publisher.initials} name={publisher.name} size="sm" shape={publisher.creation_source === "business" ? "tile" : "circle"} />
           </div>
           {isCurrentlyFeatured(publisher) && (
-            <span className="absolute bottom-2.5 right-2.5 bg-billboard-yellow text-billboard-ink text-[10px] font-mono font-semibold px-2 py-1 rounded border border-billboard-ink">
+            <span className="absolute bottom-2.5 right-2.5 bg-billboard-yellow text-billboard-ink text-[11px] font-mono font-semibold px-2 py-1 rounded border border-billboard-ink">
               ★ Featured
             </span>
           )}
@@ -91,23 +91,23 @@ export default function PublisherCard({ publisher, matchReason = null }: { publi
           <p className="text-xs text-billboard-inkSoft mt-0.5">
             {publisher.city}, {publisher.province}
             {publisher.channel_slug && publisher.channel_slug !== "social-media" && channelModule && (
-              <span className="ml-1.5 font-mono text-[10px] uppercase text-billboard-greenDeep">
+              <span className="ml-1.5 font-mono text-[11px] uppercase text-billboard-greenDeep">
                 · <><ChannelIcon slug={channelModule!.definition.slug} size="sm" /> {channelModule.definition.name}</>
               </span>
             )}
           </p>
           {matchReason && (
-            <p className="mt-1.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-billboard-greenDeep bg-[#EAF3EC] border border-billboard-greenDeep rounded-full px-2 py-0.5 inline-block">
+            <p className="mt-1.5 font-mono text-[11px] font-semibold uppercase tracking-wide text-billboard-greenDeep bg-[#EAF3EC] border border-billboard-greenDeep rounded-full px-2 py-0.5 inline-block">
               {matchReason}
             </p>
           )}
           <AdPlatformBadges platforms={getAdPlatforms(publisher)} />
-          <ResponseTimeBadge avgResponseHours={publisher.avg_response_hours} responseCount={publisher.response_count} className="inline-flex items-center gap-1 font-mono text-[10px] font-semibold text-billboard-greenDeep mb-1" />
+          <ResponseTimeBadge avgResponseHours={publisher.avg_response_hours} responseCount={publisher.response_count} className="inline-flex items-center gap-1 font-mono text-[11px] font-semibold text-billboard-greenDeep mb-1" />
           <div className="flex items-center justify-between text-sm mt-3 pt-3 border-t border-billboard-paperDim">
             <div>
               <div className="font-semibold">{formatLeadAudience(publisher)}</div>
               {publisher.channel_slug === "social-media" && countFollowerPlatforms(publisher) > 1 && (
-                <div className="font-mono text-[10px] uppercase text-billboard-inkSoft">across {countFollowerPlatforms(publisher)} platforms</div>
+                <div className="font-mono text-[11px] uppercase text-billboard-inkSoft">across {countFollowerPlatforms(publisher)} platforms</div>
               )}
               {showsEngagement(publisher) && publisher.engagement > 0 && (
                 <div className="text-billboard-inkSoft text-xs">{publisher.engagement}% engagement</div>
@@ -115,7 +115,7 @@ export default function PublisherCard({ publisher, matchReason = null }: { publi
             </div>
             <div className="text-right">
               <div className="font-mono font-bold text-billboard-greenDeep">{formatCurrency(publisher.price_per_post)}</div>
-              <div className="font-mono text-[10px] uppercase text-billboard-inkSoft">{getPriceUnit(publisher.channel_slug)}</div>
+              <div className="font-mono text-[11px] uppercase text-billboard-inkSoft">{getPriceUnit(publisher.channel_slug)}</div>
               <div className="text-xs text-billboard-inkSoft">
                 {publisher.rating ? `★ ${publisher.rating} (${publisher.reviews})` : "No reviews yet"}
               </div>
@@ -171,7 +171,7 @@ export default function PublisherCard({ publisher, matchReason = null }: { publi
                 </div>
               )}
               <form onSubmit={handleNewList} className={`p-2.5 ${lists.length > 0 ? "border-t-2 border-billboard-paperDim" : ""}`}>
-                <p className="text-[10px] font-mono uppercase text-billboard-inkSoft mb-1.5">New list</p>
+                <p className="text-[11px] font-mono uppercase text-billboard-inkSoft mb-1.5">New list</p>
                 <input
                   value={newListName}
                   onChange={e => setNewListName(e.target.value)}
@@ -183,7 +183,7 @@ export default function PublisherCard({ publisher, matchReason = null }: { publi
                   Create & save
                 </Button>
               </form>
-              <Link to="/lists" onClick={() => setShowSave(false)} className="block text-center text-[10px] font-mono uppercase text-billboard-inkSoft py-2 hover:bg-billboard-paperDim border-t border-billboard-paperDim">
+              <Link to="/lists" onClick={() => setShowSave(false)} className="block text-center text-[11px] font-mono uppercase text-billboard-inkSoft py-2 hover:bg-billboard-paperDim border-t border-billboard-paperDim">
                 Manage lists →
               </Link>
             </div>

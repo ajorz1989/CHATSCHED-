@@ -52,7 +52,7 @@ function MetricRow({ label, sub, values, render }: RowProps) {
     <tr className="border-t-2 border-billboard-paperDim">
       <td className="py-4 px-4 bg-billboard-paperDim font-semibold text-sm w-40 min-w-[140px] sticky left-0 z-10 border-r-2 border-billboard-ink">
         {label}
-        {sub && <div className="text-[10px] font-normal text-billboard-inkSoft font-mono uppercase mt-0.5">{sub}</div>}
+        {sub && <div className="text-[11px] font-normal text-billboard-inkSoft font-mono uppercase mt-0.5">{sub}</div>}
       </td>
       {values.map((p, i) => (
         <td key={i} className="py-4 px-5 text-sm align-top min-w-[200px]">
@@ -166,7 +166,7 @@ export default function ComparePublishers() {
                         </Link>
                         <p className="text-xs text-billboard-inkSoft mt-0.5">{p.city}, {p.province}</p>
                         {p.level && (
-                          <span className="inline-block mt-1.5 font-mono text-[10px] bg-billboard-ink text-white px-1.5 py-0.5 rounded">
+                          <span className="inline-block mt-1.5 font-mono text-[11px] bg-billboard-ink text-white px-1.5 py-0.5 rounded">
                             <TrustBadge kind="publisher" level={p.level} />
                           </span>
                         )}
@@ -192,7 +192,7 @@ export default function ComparePublishers() {
               <MetricRow label="Category" values={selected} render={p => p.category} />
               <MetricRow label="Verified" values={selected} render={p => (
                 p.verified
-                  ? <span className="inline-block bg-billboard-green text-white font-mono text-[10px] font-semibold px-2 py-0.5 rounded">✓ Verified</span>
+                  ? <span className="inline-block bg-billboard-green text-white font-mono text-[11px] font-semibold px-2 py-0.5 rounded">✓ Verified</span>
                   : <span className="text-billboard-inkSoft text-xs">Not verified</span>
               )} />
               <MetricRow label="Level" values={selected} render={p => (
@@ -203,7 +203,7 @@ export default function ComparePublishers() {
               {socialRows && <MetricRow label="Platforms" values={selected} render={p => (
                 <div className="flex flex-wrap gap-1">
                   {p.platforms.map(pl => (
-                    <span key={pl} className="font-mono text-[10px] border border-billboard-ink rounded-full px-2 py-0.5 bg-billboard-paperDim whitespace-nowrap">{pl}</span>
+                    <span key={pl} className="font-mono text-[11px] border border-billboard-ink rounded-full px-2 py-0.5 bg-billboard-paperDim whitespace-nowrap">{pl}</span>
                   ))}
                 </div>
               )} />}
@@ -214,7 +214,7 @@ export default function ComparePublishers() {
                   : (
                     <div>
                       <span className="font-display text-xl">{fmt(value)}</span>
-                      <div className="text-[10px] font-mono uppercase text-billboard-inkSoft mt-0.5">{label}</div>
+                      <div className="text-[11px] font-mono uppercase text-billboard-inkSoft mt-0.5">{label}</div>
                     </div>
                   );
               }} />
@@ -235,7 +235,7 @@ export default function ComparePublishers() {
               <MetricRow label="Price" sub="from" values={selected} render={p => (
                 <div>
                   <span className="font-mono font-bold text-billboard-greenDeep text-lg">{formatCurrency(p.price_per_post)}</span>
-                  <div className="text-[10px] font-mono uppercase text-billboard-inkSoft mt-0.5">{getPriceUnit(p.channel_slug)}</div>
+                  <div className="text-[11px] font-mono uppercase text-billboard-inkSoft mt-0.5">{getPriceUnit(p.channel_slug)}</div>
                 </div>
               )} />
               <MetricRow label="Rating" sub="avg score" values={selected} render={p => <Stars rating={p.rating} reviews={p.reviews} />} />
@@ -256,7 +256,7 @@ export default function ComparePublishers() {
               )} />
               <MetricRow label="Languages" values={selected} render={p => (
                 p.languages.length
-                  ? <div className="flex flex-wrap gap-1">{p.languages.map(l => <span key={l} className="font-mono text-[10px] border border-billboard-ink rounded-full px-2 py-0.5 bg-billboard-paperDim">{l}</span>)}</div>
+                  ? <div className="flex flex-wrap gap-1">{p.languages.map(l => <span key={l} className="font-mono text-[11px] border border-billboard-ink rounded-full px-2 py-0.5 bg-billboard-paperDim">{l}</span>)}</div>
                   : <span className="text-billboard-inkSoft text-xs">Not specified</span>
               )} />
               <MetricRow label="Audience" values={selected} render={p => (

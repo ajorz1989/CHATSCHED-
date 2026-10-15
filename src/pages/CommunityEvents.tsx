@@ -57,7 +57,7 @@ export default function CommunityEvents() {
         <div className="space-y-4">
           {visible.map((ev) => (
             <div key={ev.id} className="border-[3px] border-billboard-ink rounded p-5">
-              <span className="inline-block font-mono text-[10px] font-semibold uppercase tracking-wider border-2 border-billboard-ink bg-billboard-paperDim px-2 py-0.5 rounded mb-3">{TYPE_LABEL[ev.event_type]}</span>
+              <span className="inline-block font-mono text-[11px] font-semibold uppercase tracking-wider border-2 border-billboard-ink bg-billboard-paperDim px-2 py-0.5 rounded mb-3">{TYPE_LABEL[ev.event_type]}</span>
               <h2 className="font-bold text-lg mb-1.5">{ev.title}</h2>
               <p className="text-sm text-billboard-inkSoft mb-3">{ev.description}</p>
               <p className="font-mono text-xs text-billboard-inkSoft mb-1">{formatDateTime(ev.starts_at)}</p>

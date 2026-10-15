@@ -52,7 +52,7 @@ export default function NotificationBell() {
           <path d="M6.3 13.5a1.8 1.8 0 0 0 3.4 0" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
         </svg>
         {unreadCount > 0 && (
-          <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full bg-billboard-red text-white text-[10px] font-mono font-bold border-2 border-billboard-paper">
+          <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full bg-billboard-red text-white text-[11px] font-mono font-bold border-2 border-billboard-paper">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}

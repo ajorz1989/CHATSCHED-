@@ -259,7 +259,7 @@ export default function BusinessHomeSummary({
               {recentViews.map((v) => (
                 <Link key={`${v.publisher_id}-${v.created_at}`} to={`/browse/${v.publisher_id}`} className="flex items-center justify-between text-sm hover:text-billboard-greenDeep">
                   <span className="font-semibold">{v.name}</span>
-                  <span className="text-billboard-inkSoft font-mono text-[10px]">{new Date(v.created_at).toLocaleDateString("en-ZA")}</span>
+                  <span className="text-billboard-inkSoft font-mono text-[11px]">{new Date(v.created_at).toLocaleDateString("en-ZA")}</span>
                 </Link>
               ))}
             </div>

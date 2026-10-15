@@ -28,7 +28,7 @@ function ChannelCard({ module }: { module: ChannelModule }) {
       className={`relative border-[3px] rounded overflow-hidden flex flex-col transition-shadow
         ${enabled
           ? "border-billboard-ink bg-billboard-paper hover:shadow-[4px_4px_0_0_#1a1a1a] hover:-translate-y-0.5"
-          : "border-billboard-inkSoft/40 bg-billboard-paperDim opacity-75"
+          : "border-billboard-inkSoft/40 bg-billboard-paperDim"
         }`}
     >
       {/* Status badge — only for channels not yet open */}

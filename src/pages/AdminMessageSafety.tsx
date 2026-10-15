@@ -184,15 +184,15 @@ export default function AdminMessageSafety() {
           {rows.map((r) => (
             <div key={`${r.surface}-${r.id}`} className="border-[3px] border-billboard-ink rounded p-4 bg-white">
               <div className="flex flex-wrap items-center gap-2 mb-2">
-                <span className="font-mono text-[10px] font-semibold uppercase border-2 border-billboard-ink px-2 py-0.5 rounded">
+                <span className="font-mono text-[11px] font-semibold uppercase border-2 border-billboard-ink px-2 py-0.5 rounded">
                   {SURFACE_LABEL[r.surface]}
                 </span>
                 {r.flag_reason && (
-                  <span className={`font-mono text-[10px] font-semibold uppercase border-2 px-2 py-0.5 rounded ${REASON_COLOR[r.flag_reason]}`}>
+                  <span className={`font-mono text-[11px] font-semibold uppercase border-2 px-2 py-0.5 rounded ${REASON_COLOR[r.flag_reason]}`}>
                     {REASON_LABEL[r.flag_reason]}
                   </span>
                 )}
-                <span className="font-mono text-[10px] text-billboard-inkSoft ml-auto">{relativeTime(r.flagged_at)}</span>
+                <span className="font-mono text-[11px] text-billboard-inkSoft ml-auto">{relativeTime(r.flagged_at)}</span>
               </div>
               <p className="text-sm mb-2">{r.body}</p>
               <p className="text-[11px] text-billboard-inkSoft">
@@ -210,7 +210,7 @@ function StatBlock({ label, value, accent }: { label: string; value: number; acc
   return (
     <div className={`border-[3px] rounded p-4 ${accent ? "border-billboard-red" : "border-billboard-ink"}`}>
       <p className={`text-2xl font-display ${accent ? "text-billboard-red" : ""}`}>{value}</p>
-      <p className="font-mono text-[10px] uppercase text-billboard-inkSoft">{label}</p>
+      <p className="font-mono text-[11px] uppercase text-billboard-inkSoft">{label}</p>
     </div>
   );
 }

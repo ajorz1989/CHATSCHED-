@@ -132,7 +132,7 @@ function ChannelMark({ slug, className = "w-full h-full" }: { slug: string; clas
 type AvatarSize = "sm" | "card" | "md" | "lg";
 
 const AVATAR_BOX: Record<AvatarSize, string> = {
-  sm: "w-9 h-9 text-[10px]",
+  sm: "w-9 h-9 text-[11px]",
   card: "w-12 h-12 text-xs",
   md: "w-14 h-14 text-sm",
   lg: "w-24 h-24 text-xl md:w-28 md:h-28 md:text-2xl",
@@ -205,7 +205,7 @@ export function VisualAvatar({
 type CoverSize = "card" | "profile" | "compact";
 
 function CoverBadges({ publisher, size, system }: { publisher: Publisher; size: CoverSize; system: VisualSystem }) {
-  const pill = size === "compact" ? "text-[8px] px-1.5 py-0.5" : "text-[10px] px-2 py-1";
+  const pill = size === "compact" ? "text-[8px] px-1.5 py-0.5" : "text-[11px] px-2 py-1";
   return (
     <>
       {publisher.level && size !== "compact" && system === "current" && (
@@ -276,7 +276,7 @@ export function VisualCover({
             <ChannelMark slug={publisher.channel_slug} />
           </span>
         </div>
-        <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 font-mono text-[10px] font-semibold uppercase tracking-wider">
+        <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 font-mono text-[11px] font-semibold uppercase tracking-wider">
           <ChatSchedMark className="w-3.5 h-3" />
           ChatSched
         </div>
@@ -286,7 +286,7 @@ export function VisualCover({
             <p className={`font-display leading-[0.95] ${size === "profile" ? "text-3xl md:text-5xl max-w-2xl" : "text-lg"}`}>
               {publisher.name}
             </p>
-            <p className="font-mono text-[10px] uppercase tracking-wider mt-1 opacity-80">
+            <p className="font-mono text-[11px] uppercase tracking-wider mt-1 opacity-80">
               {crest.label} · {publisher.city}
             </p>
           </div>
@@ -301,11 +301,11 @@ export function VisualCover({
       <div className={`${height} relative bg-billboard-paperDim ${size === "profile" ? "border-b-[3px] border-billboard-ink" : ""}`}>
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-0 inset-x-0 h-7 bg-billboard-yellow border-b-[3px] border-billboard-ink flex items-center justify-between px-2.5 pointer-events-none">
-            <span className="flex items-center gap-1 font-mono text-[10px] font-bold uppercase tracking-wider text-billboard-ink">
+            <span className="flex items-center gap-1 font-mono text-[11px] font-bold uppercase tracking-wider text-billboard-ink">
               <ChatSchedMark className="w-3.5 h-3" />
               ChatSched
             </span>
-            <span className="font-mono text-[10px] uppercase truncate max-w-[45%] text-billboard-ink">
+            <span className="font-mono text-[11px] uppercase truncate max-w-[45%] text-billboard-ink">
               {channel?.name ?? publisher.category}
             </span>
           </div>
@@ -343,7 +343,7 @@ export function VisualCover({
         color: "#faf9f5",
       }}
     >
-      <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 text-billboard-yellow font-mono text-[10px] font-semibold uppercase tracking-wider">
+      <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 text-billboard-yellow font-mono text-[11px] font-semibold uppercase tracking-wider">
         <ChatSchedMark className="w-3.5 h-3" />
         Listed on ChatSched
       </div>
@@ -353,7 +353,7 @@ export function VisualCover({
           <p className={`font-display text-billboard-yellow leading-[0.92] ${size === "profile" ? "text-3xl md:text-5xl max-w-3xl" : "text-lg"}`}>
             {publisher.name}
           </p>
-          <p className="font-mono text-[10px] uppercase tracking-wider text-billboard-paperDim mt-1">
+          <p className="font-mono text-[11px] uppercase tracking-wider text-billboard-paperDim mt-1">
             {publisher.suburb ? `${publisher.suburb} · ` : ""}
             {publisher.city}
             {channel ? ` · ${channel.name}` : ""}

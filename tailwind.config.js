@@ -13,7 +13,7 @@ export default {
           paperDim: "#F0EEE6",
           green: "#1C6B45",
           greenDeep: "#134F34",
-          red: "#D4451F",
+          red: "#C23C19",
         },
       },
       fontFamily: {
